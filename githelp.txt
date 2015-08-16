@@ -1,0 +1,135 @@
+* Tricks for git
+
+** Creating a new branch locally and remotely:
+
+  $ git checkout -b new_feature_branch
+  $ git push origin HEAD:refs/heads/new_feature_branch
+
+** List all branches including remote branches
+
+  $ git branch -a
+
+** List all remote only branches
+
+  $ git branch -r
+
+** Checkout a remote branch in some repository
+
+  $ git checkout --track -b new_feature_branch origin/new_feature_branch
+
+or simpler:
+
+  $ git checkout -t origin/new_feature_branch
+
+** Merging branches with master and deleting old branch
+
+All changes must be committed at new_feature_branch at this stage (and
+pushed too).
+
+  $ git checkout master
+  $ git merge new_feature_branch
+
+  $ git diff
+
+if there are any conflicts. Resolve the conflicts and
+
+  $ git commit -a
+
+and delete the old branch
+
+  $ git branch -d new_feature_branch
+
+deleting the whole branch without merging is same, but -D. Careful!!!
+
+And delete the remote branch now
+
+  $ git push origin :new_feature_branch
+
+** Tagging
+
+  $ git tag -a v0.30 -m "Super puper version"
+  $ git push --tags
+
+Otherwise git will not push tags to the remote directory.
+
+You know, you have scheduled release and in the morning before
+turnover window find out there is a bug. Quickly fix it, test it
+all again and now what? Release tag is already pushed in remote
+repository! To clean the tag and retag:
+
+  $ git pull # to marge changes from others
+  $ git tag -d v0.99 # delete the tag
+  $ git push origin :refs/tags/v0.99 # this remove tag 
+                                     # from remote repository
+  $ git tag v0.99 # this mark the most recent commit
+  $ git push origin v0.99 # push a new tag position 
+                          # to remote repository
+
+** Reverting
+
+To revert to a particular version, you need to find out the commit
+signature. It is a long hash, for example
+be210a169daea9488d592b5bae69cd428971465f, it is sufficient to point a
+few first letters only:
+
+  $ git checkout be210a16
+
+Do not make changes if you do not want to branch from there. To revert
+back to the master branch or whatever branch you want:
+
+  $ git checkout master
+
+If you have an uncommitted change (its only in your working copy) that
+you wish to revert to the copy in your latest commit, do the
+following:
+
+  $ git checkout filename
+
+To checkout a particular tag, just use $ git tag -l to list all tags,
+choose one tagname and then simply do the following:
+
+  $ git checkout tagname
+
+** Bare repository setup
+
+  $ mkdir mynewrepo.git
+  $ git --bare init
+
+After cloning empty bare repository at your local drive and making
+changes you will need.
+
+  $  git push origin master
+
+To be able to start pushing changes up.
+
+** Proper permissions for group remote bare repository
+
+After creating the remote repo (git --bare init), we need to set the
+core.sharedRepository variable to "group" - this tells git to create
+directories and files with group-write permissions.
+
+  $ git repo-config core.sharedRepository group
+
+After that pfix.py or anything that set group s bit for directories
+need to run. Otherwise, this will not work!!!
+
+** Changing the remote origin repository location
+
+  $ git remote set-url origin [URL]
+
+URL for ARSC is in the form: 
+  ssh://<username>@athena.arsc.edu/projects/LUNARREG/git-repos/coupi.git
+
+** Setting identity
+
+First time after cloning, the identity need to be set
+
+$ git config --global user.name "John Doe"
+$ git config --global user.email johndoe@example.com
+
+** Bulk section: for emacs to automatically use outline mode
+
+--- Local Variables:
+--- mode: outline
+--- comment-start: "---"
+--- End:
