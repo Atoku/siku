@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="354.82877"
+   height="351.72375"
+   id="svg3915"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="logoice-var.pdf">
+  <defs
+     id="defs3917">
+    <linearGradient
+       id="linearGradient4515"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4517" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4954"
+       id="linearGradient4960"
+       x1="310.14099"
+       y1="150.23151"
+       x2="591.52002"
+       y2="150.23151"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0,1,-1,0,601.062,-300.599)" />
+    <linearGradient
+       id="linearGradient4954">
+      <stop
+         style="stop-color:#576bfd;stop-opacity:1;"
+         offset="0"
+         id="stop4956" />
+      <stop
+         style="stop-color:#57d1cb;stop-opacity:1;"
+         offset="1"
+         id="stop4958" />
+    </linearGradient>
+    <linearGradient
+       y2="150.23151"
+       x2="591.52002"
+       y1="150.23151"
+       x1="310.14099"
+       gradientTransform="matrix(0,-1.25,-1.25,0,559.21797,795.90034)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3947"
+       xlink:href="#linearGradient4954"
+       inkscape:collect="always" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4515"
+       id="linearGradient4519"
+       x1="183.6937"
+       y1="210.29626"
+       x2="455.19596"
+       y2="210.29626"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.7997078"
+     inkscape:cx="177.41438"
+     inkscape:cy="175.86188"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1030"
+     inkscape:window-height="817"
+     inkscape:window-x="431"
+     inkscape:window-y="22"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata3920">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-194.0142,-56.500303)">
+    <path
+       inkscape:connector-curvature="0"
+       id="path4146"
+       style="fill:url(#linearGradient3947);fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 371.42667,56.500303 c 97.9924,0 177.4163,78.736247 177.4163,175.849997 0,97.13875 -79.4239,175.87375 -177.4163,175.87375 -97.98872,0 -177.41247,-78.735 -177.41247,-175.87375 0,-97.11375 79.42375,-175.849997 177.41247,-175.849997 z" />
+    <text
+       xml:space="preserve"
+       style="font-size:134.51179504px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Purisa;-inkscape-font-specification:Purisa"
+       id="text3856"
+       sodipodi:linespacing="125%"
+       transform="translate(32.11535,-22.22583)"><textPath
+         xlink:href="#path3992"
+         id="textPath3994"
+         style="fill:#ffffff;fill-opacity:1"><tspan
+   id="tspan3858"
+   style="fill:#ffffff;fill-opacity:1">Siku</tspan></textPath></text>
+    <path
+       style="fill:none;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 269.02637,337.1014 c 0,0 0.86566,-51.2823 108.35093,-116.12996 107.48526,-64.84766 187.25261,-11.66856 187.25261,-11.66856"
+       id="path3992"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="czc" />
+  </g>
+</svg>
