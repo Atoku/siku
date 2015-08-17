@@ -1,0 +1,140 @@
+% FILE: quats.tex
+
+\chapter{Quaternions and Rotations}\label{ch:qandrot}
+
+%----------------------------------------------------------------------
+\section{Briefly about Quaternions}
+
+\cite{bib:graf2008quaternions} gives a good introduction to
+quaternions and their application to represent rigid body
+rotations. Here we will represent a few facts that will be useful in
+future discussions. Most of the proofs will be omitted.
+
+\subsection{Definitions}
+
+A quaternion is a number system that extends the complex
+numbers. Quaternions are 4-dimensional linear vector space over real
+numbers with scalar product and quaternion product defined on
+it. Algebraic definition similar to complex numbers is the
+following. A quaternion $\bm{q}$ is defined as
+\begin{equation}
+  \bm{q} = q_0 + q_1 i + q_2 j + q_3 k,\qquad q_l \in \mathbb{R},\quad
+  l=0,1,2,3,
+\end{equation}
+where $i^2=-1$ (same as with complex numbers), $j^2=k^2=ijk=-1$. The
+multiplication of quaternion is non-commutative. That is the main
+distinction of them with complex numbers.
+
+$q_0$ is said to be a real value and $q_1$, $q_2$, and $q_3$ to be
+imaginary values. The quaternion product ${}\circ{}$ of two
+quaternions can be algebraically derived from these rules.
+
+\subsection{Vector representation}
+
+Quaternions can be represented in different form as a pair of a number
+and a vector as follows
+\begin{equation}
+  \bm{q} = ( q_0, \vec{q} ), \qquad \Re{\bm{q}} = q_0, \qquad
+  \Im{\bm{q}}=\vec{q}.
+\end{equation}
+The quaternion product of two quaternions $\bm{q}$ and $\bm{p}$ can be
+defined in this notation as follows
+\begin{equation}\label{eq:quatproduct}
+  \bm{q}\circ\bm{p} = (q_0p_0-\vec{q}\cdot\vec{p},
+  q_0\vec{p} + p_0\vec{q} + \vec{q}\times\vec{p}).
+\end{equation}
+
+\subsection{Vectors as quaternions}
+
+Vectors can be considered to be quaternions with 0 real part. For two
+vectors $\vec{a}$ and $\vec{b}$ we have
+\begin{equation}
+  \vec{a}\circ\vec{b} = ( -\vec{a}\cdot\vec{b}, \vec{a}\times\vec{b} ).
+\end{equation}
+Thus, quaternion product contains both dot- and cross-products of
+vectors.
+
+\subsection{Norm}
+
+Norm of the quaternion is defined as follows
+\begin{equation}
+  |\bm{q}| = \left( q_0^2 + \vec{q}\cdot\vec{q} \right)^{1/2} = 
+  \left( q_0^2 + q_1^2 + q_2^2 + q_3^2 \right)^{1/2}.
+\end{equation}
+It can be shown that
+\begin{equation}
+  |\bm{q}\circ\bm{p}| = |\bm{q}||\bm{p}|.
+\end{equation}
+
+\subsection{Conjugate}
+
+The conjugate $\bm{\bar{q}}$ of quaternion $\bm{q}$ is defined as
+\begin{equation}
+  \bm{\bar{q}} = (q_0, -\vec{q}).
+\end{equation}
+It can be shown that
+\begin{equation}
+\bm{\bar{q}}\circ\bm{q} = \bm{q}\circ\bm{\bar{q}} = |q|^2.
+\end{equation}
+
+\subsection{Unit quaternions}
+
+Thus, unit quaternions such that $|q|=1$ form a subalgebra of
+quaternions over quaternion product operation. It can be shown that
+the quaternion is unit if and only if it can be represented in the
+following form
+\begin{equation}
+  \bm{q} = \left( \cos\frac{\psi}{2}, \sin\frac{\psi}{2}\,\vec{e}
+  \right), \qquad |\vec{e}|=1.
+\end{equation}
+$\psi$ is known as ``rotation angle'' and unit vector $\vec{e}$ is
+known as ``rotation axis vector''.
+
+\subsection{Coordinate transformations using quaternions}
+
+Let $\vec{a}$ be a vector represented in the Global frame
+$\{x,y,z\}$. Let $\vec{A}$ be the same vector represented in local
+coordinate system $\{X,Y,Z\}$. In this case it can be shown that
+coordinate transformations between two systems can be expressed as
+follows:
+\begin{equation}\label{eq:transform}
+  \vec{A} = \bar{\bm{q}}\circ \vec{a} \circ \bm{q},\qquad
+  \vec{a} = \bm{q}\circ \vec{A} \circ \bar{\bm{q}}
+\end{equation}
+
+%----------------------------------------------------------------------
+\section{Rotation Matrix and Positions}\label{sec:rotquat}
+
+An important problem (mostly for visualization) is to determine
+spherical coordinates $(\phi,\lambda)$ of an element polygon vertex by
+quaternion $\bm{q}$ of the polygon and vertex local coordinates
+$(X_i,Y_i)$. When local coordinates of the vertex $\vec{P}=(X,Y,Z)^T$
+are known, the global coordinates can be found as follows:
+\begin{equation}
+  \vec{p} = \bm{R}\cdot\vec{P},
+\end{equation}
+where $\bm{R}$ is 3D rotational matrix restored from quaternion.
+The formulas can be found in many places, for example in a general
+introduction \cite{bib:wikipedia-quaternions-srotation}. For rotation
+matrix $R$ and quaternion $\hat q$ with elements $(s,v_x,v_y,v_z)$ we
+have
+\begin{equation}
+  R({\hat q}) = 
+    \begin{pmatrix}
+      q_0^2 + q_1^2 - q_2^2 - q_3^2 & 2q_1 q_2 - 2 q_0 q_3 & 2q_1 q_3 + 2 q_0 q_2\\
+      2q_1 q_2 + 2 q_0 q_3 &  q_0^2 - q_1^2 + q_2^2 - q_3^2 & 2q_2q_3-2q_0q_1 \\
+      2q_1 q_3 - 2 q_0 q_2 &  2q_2q_3+2q_0q_1 & q_0^2 - q_1^2 - q_2^2 + q_3^2 \\
+    \end{pmatrix},
+\end{equation}
+or in a more computationally convenient way
+\begin{equation}
+  R({\hat q}) = 
+    \begin{pmatrix}
+      1 - 2q_2^2 - 2q_3^2 & 2q_1 q_2 - 2 q_0 q_3 & 2q_1 q_3 + 2 q_0 q_2\\
+      2q_1 q_2 + 2 q_0 q_3 &  1 - 2q_1^2 - 2q_3^2 & 2q_2q_3-2q_0q_1 \\
+      2q_1 q_3 - 2 q_0 q_2 &  2q_2q_3+2q_0q_1 & 1  - 2q_1^2 - 2q_2^2 \\
+    \end{pmatrix}
+\end{equation}
+The most efficient way to perfom these computations was found
+in~\cite{bib:geometrictools-rotation-performance}. We just use
+standard libraries available for these transformation.

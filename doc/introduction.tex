@@ -1,0 +1,46 @@
+% FILE: introduction.tex
+
+\chapter{Introduction}
+
+%---------------------------------------------------------------------
+\section{Basic Information}
+
+Siku is written on a subset of C++ language. Please, see
+Sec.~\ref{sec:programing-policy} for strict programming policy.
+
+%---------------------------------------------------------------------
+\section{Software Requirements}
+
+To compile and use the model, the following packages are required:
+\begin{enumerate}
+\item Python 3.0 or higher
+  \begin{enumerate}
+  \item \texttt{mathutils} from blender project. 
+    See \url{https://code.google.com/p/blender-mathutils/}.
+  \item \texttt{netcdf4-python} (recommended if you need import
+    NetCDF4 forcing files).
+  \item \texttt{numpy}
+  \item \texttt{shapefile} (known also as \texttt{pyshp}).
+  \end{enumerate}
+\item HDF5 version 1.8 or higher.
+\item NetCDF4 version 4.1.1 or higher.
+\item GSL version 1.16 or higher.
+\item Boost library version 1.53 or higher.
+\item OpenGL Mathematics (GLM) version 0.9.6.1 or higher.
+\item \LaTeX\/ for creating documentation.
+\end{enumerate}
+
+The packages that are necessary to compile the core are checked during
+the configuration step. Python libraries are not checked.
+
+%---------------------------------------------------------------------
+\section{Programming Policy}\label{sec:programing-policy}
+
+A strict programming policy is enforced to keep the code clean and
+rational. This policy is strictly enforced in particular due to usage
+of such an obscure, overloaded and heavy language as C++.
+
+%----------------------------------------------------------------------
+\section{Development Policy}
+
+
