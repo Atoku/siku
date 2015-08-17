@@ -1,0 +1,14 @@
+# Dict file is case, space, tab and newline - SENSITIVE
+# Each coloumn must be splited by 'tab', AND 'tab' should allways be after second
+# coloumn, but comments after that are exceptable. Empty line are alowed
+
+!	 	special symbol for spacing
+region	 -R	some comment
+projection	 -J	other 
+ground_color	 -G	
+earth	g	entire earth region
+
+two_line_comment	 -h2	
+portrait	 -P	
+
+#kinda eof
