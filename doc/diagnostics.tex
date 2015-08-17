@@ -1,0 +1,13 @@
+%%% File: diagnostics.tex
+
+\chapter{Diagnostics}
+
+Diagnostics is a facility to calculate and output some values from the
+model on a set of coordinates.
+
+For each diagnostics, the user registers a function in python script
+where the data from diagnostics will be transferred to. Together with
+this function, the user provides and registers set of points,
+a.k.a. ``mesh'' where the data will be calculated. The user also
+schedules the runs such that diagnostics will be performed only when
+necessary, not at each time step.

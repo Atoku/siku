@@ -1,0 +1,64 @@
+%
+% titlepage.tex
+
+% Template to create title page for all documentation in the
+% project. It contains all authors, contributors, and consultants
+% names. Change it if you add more contributors or consultants. You
+% also want to change it to change the look and feel of the title
+% pages everywhere through final documentation
+%
+
+
+\begin{titlepage}
+\begin{center}
+% Upper part of the page
+\includegraphics[width=0.2\textwidth]{../pics/logoice.pdf}\\[4.5cm]
+
+%\textsc{\LARGE University of Alaska Fairbanks}\\[1.5cm]
+% \textsc{\Large Final year project}\\[0.5cm]
+
+% Title
+\HRule \\[0.4cm]
+
+{\huge\bfseries \mytitleone}\\[0.4cm]
+\ifthenelse{\equal{\mytitletwo}{0}}{}%
+                  {{\huge\bfseries  \mytitletwo}\\[0.4cm]}
+\ifthenelse{\equal{\myexttitle}{0}}{}%
+                  {{\large\bfseries  \myexttitle}\\[0.4cm]}
+
+\HRule \\[1.5cm]
+
+% Author and supervisor
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Authors:}\\
+Anton V \textsc{Kulchitsky}\\
+Jennifer \textsc{Hutchings}\\
+Jerome B \textsc{Johnson}
+\end{flushleft}
+\begin{flushleft} \large
+%{\emph{Contributors:} } \\
+%Paul \textsc{Duvoy}\\
+%Ben \textsc{Nye}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\vspace{42pt}
+\begin{flushright} \large
+%\emph{Consultants:}\\
+%Mark \textsc{Hopkins}\\
+%Otis \textsc{Walton}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large \coupidate}
+
+\end{center}
+{\hfill\textit{branch:} \branchname}
+
+{\hfill\textit{version:} \coupiversion}
+
+\end{titlepage}

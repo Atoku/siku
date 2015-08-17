@@ -1,0 +1,9 @@
+** 2014-06-11 Wednesday 
+
+Python notice: the search path for python is defined by
+PYTHONPATH. When using embedded python, this variable may be essential
+as sys.path and sys.cpath are not defined when running from
+C/C++. Thus, you need to set up the variable before using the program
+siku.
+
+

@@ -1,0 +1,9 @@
+NAME        = "Siku"
+BRIEF       = "UAF Sea Ice Discrete Element Method Model"
+LOGOPDF     = "pics/logoice.pdf"
+LOGOPNG     = "pics/logoice.png"
+MAINPROGRAM = "siku"
+VERSION     = "0.1.0"
+EMAIL       = "anton@kulchitsky.org"
+AUTHOR      = "Anton Kulchitsky"
+COPYRIGHT   = "Copyright (C) 2013-2014 UAF, Author: %s" % AUTHOR

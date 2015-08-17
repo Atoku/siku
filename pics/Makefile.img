@@ -1,0 +1,14 @@
+# -*- makefile-gmake -*-
+# 
+#
+
+NAME = logoice
+INKSCAPE = inkscape
+LOGODPI = 24
+
+%.png: %.svg
+	$(INKSCAPE) $^ --export-png=$(basename $^).png --export-dpi=$(LOGODPI)
+
+all: $(NAME).png
+
+

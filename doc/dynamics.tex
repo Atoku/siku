@@ -1,0 +1,86 @@
+%%% File: dynamics.tex
+
+\chapter{Dynamics}
+
+%----------------------------------------------------------------------
+
+\section{Introduction}
+
+The main problem in dynamics is to calculate 3D ``pendulum'' angular
+velocity $\vct{\Omega}$ in ice-element reference frame. This vector
+can be calculated exactly using 3D dynamics of a rigid body with
+constraints. However, it is not necessary. A much simpler way should
+be sufficient if we suppose that the ice-element size is much smaller
+than the radius of the Earth. This is equivalent to the assumption
+that the ice element is flat.
+
+In spite of this assumptions we are not solving 2D cartesian
+problem. All we are saying is that we are considering the dynamics on
+a sphere with locally flat ice elements.
+
+%----------------------------------------------------------------------
+
+\section{Dynamics in ice-element reference frame}
+
+As ice-element reference frame is a standard cartesian coordinates and
+we assume that the ice-element is a flat 2D ridig body, its velocity
+and rotation rate can be calculated simply by the following equations
+\begin{equation}\label{eq:dynamicsset}
+  \dot{V_x} = F_x/m, \qquad \dot{V_y} = F_y/m, 
+  \qquad \dot\Omega_z = N/I,
+\end{equation}
+where $(F_x,F_y)$ are external forces that include all driving forces,
+integral forces from interaction with other ice-elements, and Earth
+Coriolis force, $m$ is the total mass of the ice element, $I$ is a
+moment of inertia around $Z$ axis, and $N$ is a total torque
+calculated in the center of mass $\vct{C}$ that includes a torque from
+interaction with other ice elements and possible torque that can be
+calculated from the integral $(\nabla\times F)_z$ of the driving
+forces over the ice element (TODO: discuss with Jenny).
+
+%----------------------------------------------------------------------
+
+\section{Restoring 3D angular velocity}
+
+It is pretty clear that if we know $V_x$, $V_y$, and $\Omega_z$, we
+can restore $\vct{\Omega}$ as follows: 
+\begin{equation}
+  \vct{\Omega}= (-V_y/R, V_x/R, \Omega_z)^T.
+\end{equation}
+Indeed, $V_x$ is directed normal to $Z$ and tends to rotate the
+``pendulum'' around $Y$ axis with $V_x/R$ rate. The rotation
+direction is ``right'' and that is exactly $\Omega_y$. Same
+considerations show that $|\Omega_x| = V_y/R$ and we need to choose
+``-'' as a sign to take into account the right direction.
+
+Taking this into account, we can rewrite the dynamics ecuations for
+global angular velocity vector in Local frame:
+\begin{equation}\label{eq:dynamicsH}
+  \dot{\vct{\Omega}} = \vct{H} = \left( -\frac{F_y}{mR}, \frac{F_x}{mR},
+  \frac{N}{I} \right)^T.
+\end{equation}
+
+%----------------------------------------------------------------------
+
+\section{Dynamics Integration}
+
+A straightforward 2nd order in time scheme is applicable for
+Eq.~\eqref{eq:dynamicsH}:
+\begin{equation}
+  \left\{
+  \begin{aligned}
+  \Omega_x^{n+1/2} &= \Omega_x^{n-1/2} - \Delta t\,F_y^n/mR,\\
+  \Omega_y^{n+1/2} &= \Omega_y^{n-1/2} + \Delta t\,F_x^n/mR,\\
+  \Omega_z^{n+1/2} &= \Omega_z^{n-1/2} + \Delta t\,N^n/I\\
+  \end{aligned}
+  \right.
+\end{equation}
+Or in vector form:
+\begin{equation}
+  \vct{\Omega}^{n+1/2} = \vct{\Omega}^{n-1/2} + \Delta t\,\vct{H}^n.
+\end{equation}
+
+
+Thus, the numerical scheme for integration of motion of the ice
+element is completed in terms of rotational quaternions.
+

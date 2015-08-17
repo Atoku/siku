@@ -1,0 +1,46 @@
+# -*- makefile-gmake -*-
+
+PDFLATEX = pdflatex
+BIBTEX   = bibtex
+INKSCAPE = inkscape
+
+MAINFILE = developer
+TEXFILES = introduction coordinates polygon quats dynamics formulas \
+diagnostics mesh
+BIBFILES = siku
+HEADERS  = titlepage date acknowledgements
+
+#SVGFILES = sphere-dynamics
+
+TEXS  = $(addsuffix .tex, $(MAINFILE) $(TEXFILES))
+HEADS = $(addsuffix .tex, $(HEADERS))
+
+BIBS  = $(addsuffix .bib, $(BIBFILES))
+SVGS  = $(addsuffix .svg, $(SVGFILES))
+
+PDFS = $(addsuffix .pdf, $(SVGFILES) $(MAINFILE))
+AUXS = $(addsuffix .aux, $(MAINFILE) $(TEXFILES) $(HEADERS))
+LOGS = $(addsuffix .log, $(MAINFILE))
+OUTS = $(addsuffix .out, $(MAINFILE))
+BBLS = $(addsuffix .bbl, $(MAINFILE))
+BBGS = $(addsuffix .blg, $(MAINFILE))
+TOCS = $(addsuffix .toc, $(MAINFILE))
+
+all: $(BIBS) $(PDFS) $(HEADS) $(TEXS)
+
+%.pdf: %.tex $(BIBS) $(HEADS) $(TEXS)
+	$(PDFLATEX) $<
+	$(BIBTEX) $(basename $<)
+	$(PDFLATEX) $<
+	$(PDFLATEX) $<
+
+%.pdf: %.svg
+	$(INKSCAPE) $< --export-pdf $(addsuffix .pdf, $(basename $<))
+
+.PHONY: clean purge
+
+clean:
+	rm -f $(PDFS) $(AUXS) $(LOGS) $(OUTS) $(BBLS) $(BBGS) $(TOCS)
+
+purge: clean
+	rm -f *~

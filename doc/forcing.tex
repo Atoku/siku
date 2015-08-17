@@ -1,0 +1,72 @@
+\newcommand{\Div} {\nabla\cdot}
+\newcommand{\Vecsymb}[1] {{\boldsymbol{#1}}}
+\newcommand{\ddt}[1] {{\partial #1 \over \partial t }}
+\newcommand{\Grad} {\nabla}
+
+
+%FILE: coordinates.tex
+
+\chapter{Force Balance on Ice Elements}
+
+During the Arctic Ice Dynamics Joint Experiment (AIDJEX) it was found that long term mean ice motion, in the summer when ice concentration is low, results from the balance of four forces on the ice \cite{Hunkins75, McPhee79}. In free drift the significant forces on the ice  are wind stress,   ocean stress, the Coriolis force and acceleration down the sea surface tilt. Inertial terms were found to be an order of magnitude smaller than these on daily or longer time scales \cite{Thorndike86}, however are important on shorter time scales and accumulative impact of the inertial motion of the ocean and ice maybe significant in the sea ice mass balance \cite{HeilandHibler2002}. The residual term in the measured force balance is found to be comparable to the Coriolis force, and an order of magnitude smaller than the wind stress \cite{McPhee79}. This residual is attributed to interactions between ice floes. In areas of ice convergence, resistance to compression becomes important, and ice can no longer be considered to be in free drift. For climatological studies small time scale forcing may be ignored. Contributions to the force balance from tidal motion, pressure gradients and inertial terms are considered to be small when averaged over time scales greater than a day \cite{McPhee79}. For short term ice drift estimation, and in regions with strong tides the tidal and inertial terms may become important. 
+
+The force balance on the ice, per unit area, is given by: 
+{\color{red} *** This needs to be replaced with force balance on an ice element. It needs to be integrated over the element area for surface forces and volume for body forces. We need to replace $\Div{\Vecsymb{\sigma}}$ with contact forces.***.}
+% 
+\begin{equation} 
+\label{Ueqn}
+    \ddt{m \Vec{U}} + \Div{ \left ( m \Vec{U} \Vec{U} \right )} = 
+     \Vecsymb{\tau}_a + \Vecsymb{\tau}_w - m f \hat{\Vec{k}} \times \Vec{U} - m g \Grad H
+    + \Div{\Vecsymb{\sigma}} ,
+\end{equation}
+%
+where $m$ is the ice mass, $\Vec{U}$ is the ice velocity, $\Vecsymb{\tau}_a$ and $\Vecsymb{\tau}_w$ are the wind stress and ocean stress on the ice, $f$ is the Coriolis parameter, $\Vec{\hat{k}}$ is a unit vector normal to the surface, $g$ is the acceleration due to gravity and $H$ is the sea surface dynamic height. The remaining term $\Div{\Vecsymb{\sigma}}$ is a force due to sub-scale interactions between ice floes. A constitutive law defining the ice stress $\Vecsymb{\sigma}$ will be outlined in section \ref{rheologysection}. By scale analysis \cite{Hibler79} it can be shown that the advection of momentum, $\Div{(m\Vec{U}\Vec{U})}$ is two orders of magnitude smaller than the coriolis and gravitational terms and may be  neglected. The inertial term $\ddt{m\Vec{U}}$ is also small on time scales greater than a day. The momentum may be found from the balance between external forces and $\Div{\Vecsymb{\sigma}}$, which is the form \cite{Tremblay&Mysak1997} take for their model. The two largest terms, $\Vecsymb{\tau}_a$ and $\Vecsymb{\tau}_w$, are of the order $1 \, \mathrm{kg m^{-1} s^{-2}}$, and tend to oppose each other. The Coriolis, gravitational and interaction terms are of the same order of magnitude, and typically an order of magnitude smaller than $\Vecsymb{\tau}_a$ and $\Vecsymb{\tau}_w$. 
+
+{\color{red}*** Need to re-write the above to reflect the shorter timescale we will resolve with Siku. And to write in terms of contact mechanics rather than continuum form. We also need to discuss inertial motion. The ice/ocean does manifest inertial oscillations in response to storms, it is the motion of the massive ocean that is causing the ice to oscillate. Which is not possible to model with out a coupled ice/ocean model. ***}
+
+\section{Surface Forcing}
+
+The force balance on an ice element includes stresses to the upper (atmosphere) and lower (ocean) surfaces that must be prescribed. 
+
+The stress applied over a unit area of ice by the wind and ocean current is modelled with a quadratic boundary layer model \cite{Brown79,McPhee_Smith,McPheeJPO}. Ice velocity is an order of magnitude smaller than the wind velocity and insignificant when calculating the wind stress over the ice,
+%
+\begin{equation}
+    \Vecsymb{\tau}_a = \rho_a C_a |\Vec{U}_a| 
+          \left ( \Vec{U}_a \mathrm{cos} \theta_a + 
+          \hat{\Vec{k}} \times \Vec{U}_a \mathrm{sin} \theta_a \right ) ,
+\end{equation}
+%
+\begin{equation}
+    \Vecsymb{\tau}_w = \rho_w C_w |\Vec{U}_w - \Vec{U}| 
+         \left ( \left (\Vec{U}_w - \Vec{U} \right ) \mathrm{cos} \theta_w +
+         \left (\Vec{U}_w - \Vec{U} \right ) \hat{\Vec{k}} \times \mathrm{sin} \theta_w
+         \right ) .
+\end{equation}
+%
+The drag laws require the air velocity, $\Vec{U}_a$, at a known height in the atmosphere and the ocean current, $\Vec{U}_w$, usually below the surface Ekman layer, to be known. It is possible to take these as geostrophic velocities, though they could equally well be provided at heights within the boundary layer by atmospheric and oceanic models. The other variables are the density of air, $\rho_a$; density of water, $\rho_w$; the drag coefficients for the air and water interfaces, $C_a$ and $C_w$; and the turning angles across the boundary layers, $\theta_a$ and $\theta_w$. The magnitude of the drag parameters and turning angle is dependent upon the height (depth) that winds (currents) are provided for.
+
+{\color{red} *** Let's start with the simplist implimentation for drag coefficients and turning angles, assuming they are constant. $C_a$ and $C_w$ could be modeled as a function of ice morphology following \cite{Tsamadosetal2014}, and they can be adjusted to better fit observed ice drift following \cite{Kreysher??}. I also need to consider a version of the atmospheric stress parameterisation that allows for an unstable atmosphere boundary layer. This will take me a couple of days to sort out in my head. So beware, we may be replacing the wind stress equation with something else.}
+
+For testing it is appropriate to start with the default values for the parameterisations. These are $C_w = 0.0045$, $\theta_w = 0$, $C_a=0.0016$ and $theta_a= 0$. We are assuming the velocities are sufficiently close to the surface that Eckmann turning is negligable.
+
+%
+\section{Data Input}
+% 
+
+Wind and ocean current data can be sourced from various agencies. Either forecast model output can be used or reanalysis fields. Provided data is provided on a known grid SLERP (see section ??) will interpolate the fields to ice element locations.
+
+%
+\subsection{Winds}
+%
+
+Siku is set up to run with $10\,\mathrm{m}$ winds by default. It is possible to use geostropic winds or winds from different atmospheric levels, however to do this the drag parameterisation and turning angles will have to be adjusted in Siku's calculation of surface stress. {\color{red} *** ANTON: I assume we will have a lookup table variables are read in from where these can be set ***.}
+
+Example wind fields are provided with the Siku distribution for testing purposes. 
+
+%
+\subsection{Ocean Currents}
+%
+
+{\color{red} *** Will provide information as soon as we have narrowed down which fields we shall use from Hycom or RASM. We should also include a note about adding tides to the currents, which could be provided by \cite{Kowalik&Proshutinsky??} for example. ***}
+
+For testing purposes one can set the ocean currents to zero. In this can the ice is moving over a stationary ocean that provides drag. 

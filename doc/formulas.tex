@@ -1,0 +1,28 @@
+%FILE: formulas.tex
+
+\chapter{Formulas Summary}
+
+\paragraph{Dynamics}
+
+\begin{equation}\label{eq:dynamicsH-x}
+  \dot{\vct{\Omega}} = \vct{H} = \left( -\frac{F_y}{mR}, \frac{F_x}{mR},
+  \frac{N}{I} \right)^T.
+\end{equation}
+\begin{equation}
+  \vct{\Omega}^{n+1/2} = \vct{\Omega}^{n-1/2} + \Delta t\,\vct{H}^n.
+\end{equation}
+
+\paragraph{Placement}
+
+\begin{equation}\label{eq:positionomega-x}
+  \untqtrn{\dot q} = \frac{1}{2}\untqtrn{q}\circ\vct{\Omega},
+\end{equation}
+\begin{equation}
+  \untqtrn{p} = \left(1 - \frac{\Omega^2\,\Delta t}{16} + \frac{\Delta
+    t}{2}\,\vct{\Omega} \right) / \left( 1 +\frac{ \Omega^2\,\Delta
+    t^2}{16}\right),
+\end{equation}
+\begin{equation}
+  \untqtrn{q}^{n+1} = \untqtrn{q}^{n} \circ \untqtrn{p}.
+\end{equation}
+
