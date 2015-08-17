@@ -131,8 +131,13 @@ class NMCWind:
         '''saves data into file #yet on testing
         '''
         with open(filename, mode='w') as output:
-            output.write(str(self.cart_wind[0]))
-            output.write(str(self.cart_coords[0]))
+            for la in range(len(self.lat)):
+                for lo in range(len(self.lon)):
+                    output.write(str(self.lat[la]) + ' ' + \
+                                 str(self.lon[lo]) + ' ' + \
+                                 str(self.wind[la][lo][0]) + ' ' + \
+                                 str(self.wind[la][lo][1]) + ' ' + \
+                                 ' 0 0 0 \n')
         return
 
 #------------------------------------------------------------------------------
