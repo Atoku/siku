@@ -1,0 +1,6 @@
+This library is added to Siku under LGPL license (see COPYING)
+file. It is taken as it is intact with additions of Makefile.am,
+COPYING (which is just a copy of LICENSE.GPL) and this README.siku
+
+Original Makefile is copied to Makefile.orig to no interfere with
+Automake Makefile
