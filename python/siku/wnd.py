@@ -12,34 +12,43 @@ from nmc import NMC
 #------------------------------------------------------------------------------
 
         
-class Wind(NMC):
+class NMCVar(NMC):
+    '''A class for storaging NMC specified variable data
     '''
-    A class for storaging and processing wind data for siku
-    '''
-    def open( self, filename, wind_value='uwnd' ):
+    def __init__( self, filename = None, var_name = ''):
+        '''Inits the class instance
+        '''
+        self.reinit_()
+        if filename:
+            self.open( filename, var_name)
+        return        
+    
+    def open( self, filename, var_name='' ):
         '''Opens file and reads grid and time information
         '''
         NMC.open( self, filename )
-        self.read_wnd_( wind_value )
+        if var_name:
+            self.read_var_( var_name )
 
         return
 
     def is_header_match( self, nmc ):
         '''Checks if the header of another NMC object matches the current one
-
         '''
         return ( NMC.is_header_match( nmc ) and \
-                 (self.wnd == nmc.wnd).all() )
+                 (self.val == nmc.val).all() )
 
     def reinit_( self ):
+        '''Reinits tha class instance
+        '''
         NMC.reinit_( self )
-        self.wnd = []
+        self.val = []
         return
 
-    def read_wnd_( self, wind_value ):
-        '''Reads uwnd data from file
+    def read_var_( self, var_name ):
+        '''Reads variable data from file
         '''
-        self.wnd = self.f1.variables[wind_value][:][:][:]
+        self.val = self.f1.variables[var_name][:][:][:]
         return
 
     pass
@@ -48,8 +57,8 @@ class Wind(NMC):
 # CARTESIAN
 #------------------------------------------------------------------------------
 
-class CartesianWind: #actually more like a template for now
-    '''A class for storaging NMC wind data in Cartesian 3D coords
+class NMCWind:
+    '''A class for storaging and processing NMC wind data
 
     Wind data is storaged as 2D lists:
     first dimension is time
@@ -57,41 +66,73 @@ class CartesianWind: #actually more like a template for now
 
     Coords are stored as 1D list of [x, y, z] lists
     '''
-    def __init__( self, wind=None ):
+    def __init__( self, uwind=None, vwind=None, time=None):
+        '''Inits the class instance
+        '''
+        self.clear_()
 
         #in case of immidiate initialization
-        if wind:
-            self.make_cartesian_( wind )
+        if uwind and vwind:
+            self.load( uwind, vwind, time )
+            #self.make_cartesian_( uvind, vwind, time )
 
         return
     
-    def make_cartesian_( self, wind ): #processes coords automaticly
-        '''Converts data into Cartesian grid
+    def load( self, uwind, vwind, time=None ):
+        '''Loads 1 timestep data from two wind variable class instances
         '''
-        self.times = wind.times_raw
-        self.coords = [[geocoords.xyz_geographic(wind.lat[la],wind.lon[lo]) \
-            for lo in range(len(wind.lon)) for la in range(len(wind.lat))] \
-            for t in range(3)]#len(self.times))] #too much data!!
-        self.wind = [[wind.wnd[t][la][lo] \
-            for lo in range(len(wind.lon)) for la in range(len(wind.lat))] \
-            for t in range(3)]#len(self.times))] #too much data!!
+        if not time: #default timestep is 'last'
+            time = len(uwind.times)-1
 
-## Attempt to process all in 1 cycle. Failed due to bad pack/unpack procedure
-##        (self.wind, self.coords) = \
-##                     [[(wind.wnd[t][la][lo],\
-##                     geocoords.xyz_geographic(wind.lat[la],wind.lon[lo])) \
-##                     for lo in range(len(wind.lon)) \
-##                     for la in range(len(wind.lat))] \
-##                     for t in range(3)]#len(self.times))]
-     
+        self.lat = uwind.lat
+        self.lon = uwind.lon
+        self.time = time
+        self.load_wind( uwind, vwind, time )
+
+        return
+
+    def clear_( self ):
+        '''Clears inner data
+        '''
+        self.time = None
+        self.lat = []
+        self.lon = []
+        self.wind = [[]]
+        self.cart_wind = []
+        self.cart_coords = []
+        return
+
+    def load_wind( self, uwind, vwind, time ):
+        '''Loads only wind data from two wind variable class instances
+        '''
+        self.wind = [[(uwind.val[time][la][lo], vwind.val[time][la][lo]) \
+                for lo in range(len(self.lon))] for la in range(len(self.lat))]
+
+        return
+
+    def make_cartesian_( self ):
+        '''Generetes inner data in Cartesian coords
+
+        creates two 1D arrays for (uwnd, vwnd) and (x, y, z) tuples
+        '''
+        if not self.wind:
+            raise RuntimeError('no wind data assigned')
+        self.cart_coords = []
+
+        for la in range(len(self.lat)):
+            for lo in range(len(self.lon)):
+                self.cart_coords.append( \
+                    geocoords.xyz_geographic(self.lon[lo],self.lat[la]))
+                self.cart_wind.append(self.wind[la][lo])
+        
         return
     
     def test_save_( self, filename ):
-        '''saves data into file
+        '''saves data into file #yet on testing
         '''
         with open(filename, mode='w') as output:
-            ##print('test')
-            output.write(str(self.wind[0][0]))
+            output.write(str(self.cart_wind[0]))
+            output.write(str(self.cart_coords[0]))
         return
 
 #------------------------------------------------------------------------------
@@ -100,8 +141,11 @@ class CartesianWind: #actually more like a template for now
 
 if __name__ == '__main__':
     
-    uw = Wind('2014.nc')
+    uw = NMCVar('2014.nc', 'uwnd')
+    vw = NMCVar('2014.nc', 'uwnd')
 
-    carw = CartesianWind ( uw )
+    carw = NMCWind ( uw, vw, 1)
+
+    carw.make_cartesian_()
     
     carw.test_save_('test.txt')
