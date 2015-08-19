@@ -10,7 +10,7 @@ import math
 import datetime
 import bisect
 
-from . import geocoords                # geocoordinates
+#from . import geocoords                # geocoordinates
 
 class NMC:
     '''Siku: NMC class
