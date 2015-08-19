@@ -53,3 +53,12 @@ m4/ltversion.m4
 m4/lt~obsolete.m4
 missing
 src/Doxygen
+
+#MyIgnore
+config.log
+python/siku/Doxyfile
+python/siku/Doxyfile.bak
+python/siku/NMC_TEST_DIR/
+python/siku/config.dox
+
+
