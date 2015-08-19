@@ -1,0 +1,17 @@
+#first line is header in format:
+#outputname any_comments...
+outDraw.eps 'comment'
+
+#nextline is perspective setting
+#-Rg -JG0/50/6i -Bag30 -G255/226/164 -P
+-R beaufort_chukchi -J alaska_albers -Bag30 -G255/226/164 -P
+
+#then several overlays
+pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 
+psvelo int_res1 -R -J -W0.25p,50/50/250  -L -A3.0p+e+g50/50/250 -Se0.02/1/1
+psvelo int_res -R -J -W0.25p,150/50/50  -L -A3.0p+e+g150/50/50 -Se0.02/1/1
+psvelo vel -R -J -W0.5p,white  -L -A3.0p+e+gwhite -Se0.02/1/1
+
+
+#aftercomments
+#blah blah blah
