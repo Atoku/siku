@@ -11,7 +11,11 @@ class GMT_Drawer:
         '''
         self.Dict = Dictionary(dictFile, '\t')
         self.config_header = ''
+<<<<<<< HEAD
         self.AUTOSPACING = True
+=======
+        self.AUTOSPACING = False
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
         
         if configFile:
             self.load_config(configFile)
@@ -41,6 +45,10 @@ class GMT_Drawer:
             temp = self.config.readline()
         if not temp:
             self.config.close()
+<<<<<<< HEAD
+=======
+            raise StopIteration('end of file')
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
         return temp.split()
 
     #-------------------------- drawing ----------------------------------
@@ -53,8 +61,12 @@ class GMT_Drawer:
             self.load_config(configFile)
 
         self.start_drawing()
+<<<<<<< HEAD
         #for i in range(int(self.config_header[1])):
         while not self.config.closed:
+=======
+        for i in range(int(self.config_header[1])):
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
             self.draw_overlay()
         self.finish_drawing()
 
@@ -65,12 +77,29 @@ class GMT_Drawer:
         if not self.config:
             raise Error('no draw config loaded')
 
+<<<<<<< HEAD
         command = self.make_GMT_command('gmt psbasemap ', \
                     self.read_config(), ' -K > '+self.config_header[0])
 
         if command:
             print(command)
             os.system(command)
+=======
+        command = 'gmt psbasemap '
+
+        tegs = self.read_config()
+        for word in tegs:
+            if word in self.Dict:
+                command = command + self.Dict[word]
+            elif self.AUTOSPACING:
+                command = command + ' ' + word
+            else:
+                command = command + word
+
+        command= command + ' -K  > '+ self.config_header[0]
+        print(command)
+        os.system(command)
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
 
     def draw_overlay( self ):
         '''GMT draw medium layer
@@ -78,6 +107,7 @@ class GMT_Drawer:
         '''
         if not self.config:
             raise Error('no draw config loaded')
+<<<<<<< HEAD
 
         command = self.make_GMT_command('gmt', self.read_config(), \
                                     ' -K -O >> '+self.config_header[0])
@@ -85,6 +115,23 @@ class GMT_Drawer:
         if command:
             print(command)
             os.system(command)
+=======
+        
+        command = 'gmt '
+
+        tegs = self.read_config()
+        for word in tegs:
+            if word in self.Dict:
+                command = command + self.Dict[word]
+            elif self.AUTOSPACING:
+                command = command + ' ' + word
+            else:
+                command = command + word
+
+        command = command + ' -K -O >> '+self.config_header[0]
+        print(command)
+        os.system(command)
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
 
     def finish_drawing( self ):
         '''GMT final layer
@@ -93,6 +140,7 @@ class GMT_Drawer:
         if not self.config:
             raise Error('no draw config loaded')
         
+<<<<<<< HEAD
         command = 'gmt psxy -R -J -T -O >> '+self.config_header[0]
         if not self.config.closed:
             self.config.close()
@@ -109,19 +157,39 @@ class GMT_Drawer:
 
         command = begin_str
         for word in string:
+=======
+        command = 'gmt psbasemap '
+
+        tegs = self.read_config()
+        for word in tegs:
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
             if word in self.Dict:
                 command = command + self.Dict[word]
             elif self.AUTOSPACING:
                 command = command + ' ' + word
             else:
                 command = command + word
+<<<<<<< HEAD
         command = command + end_str
         return command
+=======
+
+        command = command + ' -O >> '+self.config_header[0]
+        print(command)
+        self.config.close()
+        os.system(command)
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
 	
 
 #---------------------------------- MAIN -----------------------------------
 
 if __name__=='__main__':
+<<<<<<< HEAD
     D = GMT_Drawer('dict.txt')
+=======
+    D = GMT_Drawer('dict.txt','Draw_config1.txt')
+    D.draw()
+    print('\n')
+>>>>>>> c9574a0870a878f7adc885fdf0c13e32d973d0ee
     D.AUTOSPACING = True
     D.draw('Draw_config.txt')
