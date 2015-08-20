@@ -127,8 +127,8 @@ class NMCWind:
         
         return
     
-    def test_save_( self, filename ):
-        '''saves data into file #yet on testing
+    def grid_save_( self, filename ):
+        '''saves grided data into file for further plotting
         '''
         with open(filename, mode='w') as output:
             for la in range(len(self.lat)):
@@ -153,4 +153,4 @@ if __name__ == '__main__':
 
     carw.make_cartesian_()
     
-    carw.test_save_('test.txt')
+    carw.grid_save_('test.txt')

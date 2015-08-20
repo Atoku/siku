@@ -26,3 +26,5 @@ MAP_GRID_PEN_SECONDARY	thinner,gray	#
 MAP_VECTOR_SHAPE	2	#
 
 beaufort_small	185/195/65/75	#
+cyclone_eye	330/350/50/60 	#
+cyclone_pos	B340/55/30/60/6i 	#
