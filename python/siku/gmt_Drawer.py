@@ -26,7 +26,7 @@ class GMT_Drawer:
         '''
         self.Dict.load( dictFile, '\t' )
 
-    def load_config( self, configFile = 'Draw_config.txt' ):
+    def load_config( self, configFile = 'draw_config.txt' ):
         '''load drawing configuration from specified file
         '''
         self.config = open(configFile)
@@ -124,4 +124,4 @@ class GMT_Drawer:
 if __name__=='__main__':
     D = GMT_Drawer('dict.txt')
     D.AUTOSPACING = True
-    D.draw('Draw_config.txt')
+    D.draw('draw_config.txt')

@@ -13,6 +13,27 @@ import mathutils
 ratio180 = pi / 180.0        # antidegree constant
 ratioPI  = 180.0 / pi        # antiradian constant
 
+def norm_lat( lat ):
+    while lat > 90:
+        lat -= 180
+    while lat < -90:
+        lat += 180
+    return lat
+
+def norm_lon( lon ):
+    while lon >= 360:
+        lon -= 360
+    while lon < 0:
+        lon += 360
+    return lon
+
+def norm_delta( ang ):
+    while ang >180:
+        ang -= 360
+    while ang < -180:
+        ang +=360
+    return ang
+
 def xyz_geographic( lon, lat ):
     '''Cartesian extrinsic normalized coordinates calculated by geographic
     coordinates in degrees

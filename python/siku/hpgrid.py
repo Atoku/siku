@@ -6,11 +6,11 @@ Voronoi tesselations with appropriate resolutions.
 
 '''
 
-from    math   import sin,cos,pow,ceil,floor,pi,sqrt,acos
+from    math   import sin,cos,pow,ceil,floor,pi,sqrt,acos, atan2
 import random
 
-import siku
-from siku import geocoords
+import geocoords
+from geocoords import ratio180,ratioPI,norm_lat,norm_lon,norm_delta
 
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
@@ -26,7 +26,7 @@ class Domain:
     A rectangular in spherical coordinates domain on the unit sphere
     '''
 
-    def __init__( self, phi=(0,2*pi), theta=(0,pi) ):
+    def __init__( self, phi=(0,2*pi), theta=(0,pi), units=RADIANS):
         '''Arguments (defining the region):
         phi   (tuple=(float,float)) - interval in phi spherical coordinate
         theta (tuple=(float,float)) - interval in theta s.c.
@@ -34,14 +34,17 @@ class Domain:
         Default: full range, no arguments = the whole sphere
  
         '''
-
-        assert( phi[0] < phi[1] )
+        if units == DEGREES:
+            phi = ( phi[0]*ratio180, phi[1]*ratio180 )
+            theta  = (theta[0]*ratio180, theta[1]*ratio180 )
+        
+        #assert( phi[0] < phi[1] )
         assert( theta[0] < theta[1] )
 
         # intervals to define the region
         self.phi = ( phi[0], phi[1] )
         self.theta = ( theta[0], theta[1] )
-        self.Dphi  = phi[1] - phi[0]
+        self.Dphi  = ( phi[1] - phi[0] )
         self.Dtheta = theta[1] - theta[0]
 
     def point_count( self, psi, units=DEGREES ):
@@ -60,7 +63,7 @@ class Domain:
 
         # degrees into radians if necessary
         if units == DEGREES:
-            psi = pi * psi / 180.0 
+            psi = psi*ratio180 
 
         Ntheta = int( ceil( self.Dtheta / psi ) )
         dtheta = self.Dtheta / Ntheta
@@ -97,6 +100,13 @@ class Domain:
 
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
+def phi_theta( x, y, z ):
+    r = sqrt( x*x + y*y + z*z )
+    theta = atan2( y, x )*ratioPI
+    phi = acos( z / r )*ratioPI-90.0
+    phi = norm_lon( phi )
+    theta = norm_lat( theta )
+    return ( phi, theta )
 
 class Grid:
     '''
@@ -108,6 +118,7 @@ class Grid:
         self.children = []
         self.domain = domain
         self.points = []
+        self.points_angular = []
 
         if not self.domain:
             self.domain = Domain()
@@ -132,8 +143,8 @@ class Grid:
         t1 = 0.5* ( 1 + cos( self.domain.theta[0] ) )
 
         N = self.domain.point_count( psi, units )
+        print("points amount to generate " + str(N))
         self.points_clear()
-
         # arccos method:
         for j in range( N ):
             
@@ -146,6 +157,7 @@ class Grid:
             x,y,z = geocoords.xyz_spherical( theta, phi )
 
             self.points.append( (x,y,z) )
+            self.points_angular.append( (phi*ratioPI, theta*ratioPI) )
 
         return
 
@@ -163,11 +175,12 @@ class Grid:
         mst = sorted( self.points, key = lambda x: x[1] ) # sort by x
 
         nst = [ mst[0] ]            # resulting list: first point is
-                                    # always there
+                                    # always there 
+        nst_ang = [ phi_theta( mst[0][0], mst[0][1], mst[0][2]) ]
 
         # degrees into radians if necessary
         if units == DEGREES:
-            psi = pi * psi / 180.0 
+            psi = psi*ratio180 
 
         Cpsi = cos( psi )
 
@@ -183,16 +196,20 @@ class Grid:
                     break
                 k -= 1
 
-            if good_point: nst.append( m )
+            if good_point:
+                nst.append( m )
+                nst_ang.append(phi_theta( nst[-1][0], nst[-1][1], nst[-1][2]))
 
         self.points = nst
-
+        self.points_angular = nst_ang
+        print('points left ' + str(len(self.points)))
         return
 
     def points_clear( self ):
         '''Clear the list of points
         '''
         self.points = []
+        self.points_angular = []
 
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------

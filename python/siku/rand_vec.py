@@ -5,9 +5,10 @@ Not even close to final realization
 Requires hpgrid discusiion and completion
 
 '''
-#import hpgrid
+import hpgrid
 import random
 import math
+from hpgrid import DEGREES,RADIANS
 
 class RandVecGenerator:
     '''class for generating random vectors'''
@@ -16,17 +17,24 @@ class RandVecGenerator:
         self.reinit( min_x, max_x, min_y, max_y, seed )
 
     def reinit( self, min_x, max_x, min_y, max_y, seed = None ):
-        '''respecification of range'''        
+        '''respecification of range'''
         self.min_x = min_x
         self.max_x = max_x
         self.min_y = min_y
         self.max_y = max_y
+        self.Domain = hpgrid.Domain((min_x,max_x),(min_y,max_y), DEGREES)
+        self.Grid = hpgrid.Grid( self.Domain )
         random.seed(seed)  
         
     def generate( self ):
         '''generation of random tuple ( x, y )'''
         return ( random.uniform(self.min_x, self.max_x), \
                  random.uniform(self.min_y, self.max_y) )
+
+    def hp_generate( self, psi, units=DEGREES ):
+        '''generating hpgrid point set'''
+        self.Grid.points_gen( psi, units )
+        self.Grid.points_filter( psi, units )
 
 def polar( filename = 'invecs.txt', Generator = None, amo=1000):
     '''for testing and generating vectors in polar coords AROUND THE POLE '''
@@ -42,5 +50,6 @@ def polar( filename = 'invecs.txt', Generator = None, amo=1000):
 
 
 if __name__=='__main__':
-    polar()
+##    polar()
+    pass
     

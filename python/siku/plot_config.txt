@@ -1,0 +1,26 @@
+#this is plotting config example
+#next block is for header
+u2014.nc#uwind file
+v2014.nc#vwind file
+-1 #time index to read
+2.5 #grid step in latitude degrees
+2.5 #grid step in longitude degrees
+outDraw.eps #output picture name
+0 360 -90 90 #interpolation domain in degrees
+#330 350 50 60 #interpolation domain in degrees
+#-10 10 -10 10 #interpolation domain in degrees
+-Rg -JG90/30/6i -Bag30 -G255/226/164 -P#
+#-R330/350/50/60 -JB340/0/50/50/6i -Bag30 #view
+#-R-20/20/-20/20 -JB340/0/50/50/6i -Bag30 #view
+10 #interpolation grid resolution (average)
+
+#any additional overlays
+#pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 
+#psvelo int_res2 -R -J -W0.25p,10/180/10  -L -A3.0p+e+g10/180/10 -Se0.04/1/1
+##psvelo int_res1 -R -J -W0.25p,red  -L -A3.0p+e+gred -Se0.04/1/1 #
+#psvelo int_res -R -J -W0.25p,150/50/50  -L -A3.0p+e+g150/50/50 -Se0.04/1/1
+#psvelo vel -R -J -W0.5p,white  -L -A3.0p+e+gwhite -Se0.04/1/1
+#psvelo vel1 -R -J -W0.5p,red  -L -A3.0p+e+gred -Se10/1/1
+
+#aftercomments
+#blah blah blah
