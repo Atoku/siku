@@ -10,7 +10,8 @@ from    math   import sin,cos,pow,ceil,floor,pi,sqrt,acos, atan2
 import random
 
 import geocoords
-from geocoords import ratio180,ratioPI,norm_lat,norm_lon,norm_delta
+from geocoords import ratio180,ratioPI,norm_lat,norm_lon,norm_delta,\
+     norm_lat_rad,norm_lon_rad
 
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
@@ -37,10 +38,16 @@ class Domain:
         if units == DEGREES:
             phi = ( phi[0]*ratio180, phi[1]*ratio180 )
             theta  = (theta[0]*ratio180, theta[1]*ratio180 )
+
+        #phi = ( norm_lon_rad( phi[0] ), norm_lon_rad( phi[1] ) )
+        #theta = ( norm_lat_rad( theta[0] ), norm_lat_rad( theta[1] ) )
         
         #assert( phi[0] < phi[1] )
+        if phi[0] >= phi[1]:
+            phi = ( phi[0] - 2*pi, phi[1] )
+        
         assert( theta[0] < theta[1] )
-
+        
         # intervals to define the region
         self.phi = ( phi[0], phi[1] )
         self.theta = ( theta[0], theta[1] )
@@ -101,11 +108,11 @@ class Domain:
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
 def phi_theta( x, y, z ):
+    '''Converts x, y, z tripplet into phi, theta normalizing output on the fly
+    '''
     r = sqrt( x*x + y*y + z*z )
-    theta = atan2( y, x )*ratioPI
-    phi = acos( z / r )*ratioPI-90.0
-    phi = norm_lon( phi )
-    theta = norm_lat( theta )
+    phi = norm_lon(  atan2( y, x )*ratioPI  )
+    theta = norm_lat( acos( z / r )*ratioPI - 90.0 )
     return ( phi, theta )
 
 class Grid:
@@ -125,7 +132,7 @@ class Grid:
 
         return
 
-    def points_gen( self, psi, units=DEGREES ):
+    def points_gen( self, psi, units=DEGREES, verbose = True ):
         '''Genertion of the points randomly distributed with *average*
         resolution of psi.
 
@@ -143,7 +150,8 @@ class Grid:
         t1 = 0.5* ( 1 + cos( self.domain.theta[0] ) )
 
         N = self.domain.point_count( psi, units )
-        print("points amount to generate " + str(N))
+        if verbose:
+            print("points amount to generate " + str(N))
         self.points_clear()
         # arccos method:
         for j in range( N ):
@@ -157,11 +165,12 @@ class Grid:
             x,y,z = geocoords.xyz_spherical( theta, phi )
 
             self.points.append( (x,y,z) )
-            self.points_angular.append( (phi*ratioPI, theta*ratioPI) )
+            self.points_angular.append( ( norm_lon( phi*ratioPI), \
+                                          norm_lat( theta*ratioPI) ) )
 
         return
 
-    def points_filter( self, psi, units = DEGREES ):
+    def points_filter( self, psi, units = DEGREES, verbose = True ):
         '''Filters the list of poinst (in place) by the distance criteria:
         each point cannot be closer than the angle psi. The method is
         described in the documentation.
@@ -202,7 +211,8 @@ class Grid:
 
         self.points = nst
         self.points_angular = nst_ang
-        print('points left ' + str(len(self.points)))
+        if verbose:
+            print('points left ' + str(len(self.points)))
         return
 
     def points_clear( self ):

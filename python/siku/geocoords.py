@@ -14,6 +14,7 @@ ratio180 = pi / 180.0        # antidegree constant
 ratioPI  = 180.0 / pi        # antiradian constant
 
 def norm_lat( lat ):
+    '''Normalizing lattiude in degrees'''
     while lat > 90:
         lat -= 180
     while lat < -90:
@@ -21,6 +22,7 @@ def norm_lat( lat ):
     return lat
 
 def norm_lon( lon ):
+    '''Normalizing longitude in degrees'''
     while lon >= 360:
         lon -= 360
     while lon < 0:
@@ -28,11 +30,36 @@ def norm_lon( lon ):
     return lon
 
 def norm_delta( ang ):
+    '''Normalizing angle differance in degrees'''
     while ang >180:
         ang -= 360
     while ang < -180:
         ang +=360
     return ang
+
+def norm_delta_rad( ang ):
+    '''Normalizing angle differance in radians'''
+    while ang >180:
+        ang -= 360
+    while ang < -180:
+        ang +=360
+    return ang
+
+def norm_lat_rad( lat ):
+    '''Normalizing lattitude in radians'''
+    while lat > pi/2:
+        lat -= pi
+    while lat < -pi/2:
+        lat += pi
+    return lat
+
+def norm_lon_rad( lon ):
+    '''Normalizing longitude in radians'''
+    while lon >= 2*pi:
+        lon -= 2*pi
+    while lon < 0:
+        lon += 2*pi
+    return lon
 
 def xyz_geographic( lon, lat ):
     '''Cartesian extrinsic normalized coordinates calculated by geographic

@@ -1,39 +1,42 @@
 '''GMT_Drawer: class for using GMT scripts to create .eps files
+
+Should be used by GMT_Plotter module
 '''
-from Dict import Dictionary
+
 import os
+import pickle
 
 class GMT_Drawer:
     '''Class for drawing GMT staff
     '''
-    def __init__( self, dictFile = None, configFile = None ):
+    def __init__( self, configFile = None ):
         '''Init, try to load dictionary and config file
+        dictionary is made for predefining script options
+        and fast access to them
+
         '''
-        self.Dict = Dictionary(dictFile, '\t')
+        self.dict = {}
+        with open( 'draw_dict', 'rb' ) as inp:
+            self.dict = pickle.load( inp )
         self.config_header = ''
         self.AUTOSPACING = True
         
         if configFile:
             self.load_config(configFile)
 
-    def load_dict( self, dictFile = 'dict.txt' ):
-        '''(re)loads dictionary from specified file
-        '''
-        self.Dict = Dictionary(dictFile, '\t')
-
-    def expand_dict( self, dictFile):
-        '''expand (or load if empty) a dictionary from specified file
-        '''
-        self.Dict.load( dictFile, '\t' )
+    def __del__( self ):
+        '''Automatic saving dictionary configuration'''
+        with open( 'draw_dict', 'wb' ) as out:
+            pickle.dump( self.dict, out )
 
     def load_config( self, configFile = 'draw_config.txt' ):
-        '''load drawing configuration from specified file
+        '''Load drawing configuration from specified file
         '''
         self.config = open(configFile)
         self.config_header = self.read_config()
 
     def read_config( self ):
-        '''read and split one line from config ignoring empty \
+        '''Read and split one line from config ignoring empty \
         and commented lines
         '''
         temp = self.config.readline()
@@ -45,15 +48,15 @@ class GMT_Drawer:
 
     #-------------------------- drawing ----------------------------------
 
-    def draw( self, configFile = None ):
-        '''perform GMT drawing with optional specification of \
+    def draw( self, configFile = None, verbose = True ):
+        '''Perform GMT drawing with optional specification of \
         drawing configuration file
         '''
         if configFile:
             self.load_config(configFile)
 
+        self.verbose = verbose
         self.start_drawing()
-        #for i in range(int(self.config_header[1])):
         while not self.config.closed:
             self.draw_overlay()
         self.finish_drawing()
@@ -69,7 +72,8 @@ class GMT_Drawer:
                     self.read_config(), ' -K > '+self.config_header[0])
 
         if command:
-            print(command)
+            if self.verbose:
+                print(command)
             os.system(command)
 
     def draw_overlay( self ):
@@ -83,7 +87,8 @@ class GMT_Drawer:
                                     ' -K -O >> '+self.config_header[0])
         
         if command:
-            print(command)
+            if self.verbose:
+                print(command)
             os.system(command)
 
     def finish_drawing( self ):
@@ -96,11 +101,12 @@ class GMT_Drawer:
         command = 'gmt psxy -R -J -T -O >> '+self.config_header[0]
         if not self.config.closed:
             self.config.close()
-        print(command)
+        if self.verbose:
+            print(command)
         os.system(command)
 
     def make_GMT_command( self, begin_str, string, end_str ):
-        '''inner usage function
+        '''Inner usage function
         should be 'protected' in C++ manner,
         but there is no 'protected' in python...
         '''
@@ -109,8 +115,8 @@ class GMT_Drawer:
 
         command = begin_str
         for word in string:
-            if word in self.Dict:
-                command = command + self.Dict[word]
+            if word in self.dict:
+                command = command + self.dict[word]
             elif self.AUTOSPACING:
                 command = command + ' ' + word
             else:
@@ -122,6 +128,6 @@ class GMT_Drawer:
 #---------------------------------- MAIN -----------------------------------
 
 if __name__=='__main__':
-    D = GMT_Drawer('dict.txt')
+    D = GMT_Drawer()
     D.AUTOSPACING = True
     D.draw('draw_config.txt')

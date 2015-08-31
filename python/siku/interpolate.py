@@ -1,11 +1,12 @@
 '''interpol - module for interpolation of wind data for input coordinates list
 uses NMCWind as a datasource
 '''
+import math
 
 import geocoords
+from geocoords import norm_lat,norm_lon,norm_delta,norm_delta_rad
 import nmc
 import wnd
-import math
 
 class Interpolator:
     '''Class interpolator provides several methods for simple interpolation
@@ -37,8 +38,8 @@ class Interpolator:
         Uses bilinear aproximation between the vectors.
         Proportion is linear scaling of angle and linear scaling of length
         '''
-        in_lat = self.norm_lat(in_lat)
-        in_lon = self.norm_lon(in_lon)
+        in_lat = norm_lat(in_lat)
+        in_lon = norm_lon(in_lon)
         
         lat_ind = in_lat // self.step_la
         if in_lat == 90:
@@ -55,8 +56,8 @@ class Interpolator:
 
         LB = self.wind_grid[bottom][left]
         LT = self.wind_grid[top][left]
-        RB = self.wind_grid[bottom][self.norm_lon(right)]
-        RT = self.wind_grid[top][self.norm_lon(right)]
+        RB = self.wind_grid[bottom][norm_lon(right)]
+        RT = self.wind_grid[top][norm_lon(right)]
 
         top_vec = self.proport( LT, RT, (in_lon - left) / (right - left) )
         bot_vec = self.proport( LB, RB, (in_lon - left) / (right - left) )
@@ -73,34 +74,34 @@ class Interpolator:
         r1 = math.sqrt( vec1[0]*vec1[0] + vec1[1]*vec1[1] )
         r2 = math.sqrt( vec2[0]*vec2[0] + vec2[1]*vec2[1] )
 
-        f = f1 + self.norm_ang_diff(f2 - f1) * t
+        f = f1 + norm_delta_rad( f2 - f1 ) * t
         r = r1 + (r2 - r1) * t
             
         return ( r * math.cos(f), r * math.sin(f) )
 
-    def norm_lat( self, lat ):
-        '''Thechnical function for normalizing latitude value'''
-        while lat < -180:
-            lat += 90
-        while lat > 180:
-            lat -= 90
-        return lat
-
-    def norm_lon( self, lon ):
-        '''Technical function for normalizing longitude value'''
-        while lon < 0:
-            lon += 360
-        while lon >= 360:
-            lon -= 360
-        return lon
-
-    def norm_ang_diff( self, diff ):
-        '''Technical function for normalizing angle differance in radians'''
-        while diff > math.pi:
-            diff -= ( math.pi*2 )
-        while diff < -math.pi:
-            diff += ( math.pi*2 )
-        return diff
+##    def norm_lat( self, lat ):
+##        '''Thechnical function for normalizing latitude value'''
+##        while lat < -180:
+##            lat += 90
+##        while lat > 180:
+##            lat -= 90
+##        return lat
+##
+##    def norm_lon( self, lon ):
+##        '''Technical function for normalizing longitude value'''
+##        while lon < 0:
+##            lon += 360
+##        while lon >= 360:
+##            lon -= 360
+##        return lon
+##
+##    def norm_ang_diff( self, diff ):
+##        '''Technical function for normalizing angle differance in radians'''
+##        while diff > math.pi:
+##            diff -= ( math.pi*2 )
+##        while diff < -math.pi:
+##            diff += ( math.pi*2 )
+##        return diff
 
 #----------------------------- for comparation ---------------------------
     def proport_simple( self, vec1, vec2, t ):
@@ -116,8 +117,8 @@ class Interpolator:
         Uses bilinear aproximation between the vectors.
         Proportion is linear scaling of vector components
         '''
-        in_lat = self.norm_lat(in_lat)
-        in_lon = self.norm_lon(in_lon)
+        in_lat = norm_lat(in_lat)
+        in_lon = norm_lon(in_lon)
         
         lat_ind = in_lat // self.step_la
         if in_lat == 90:
@@ -134,8 +135,8 @@ class Interpolator:
 
         LB = self.wind_grid[bottom][left]
         LT = self.wind_grid[top][left]
-        RB = self.wind_grid[bottom][self.norm_lon(right)]
-        RT = self.wind_grid[top][self.norm_lon(right)]
+        RB = self.wind_grid[bottom][norm_lon(right)]
+        RT = self.wind_grid[top][norm_lon(right)]
 
         top_vec = self.proport_simple( LT, RT, (in_lon - left)/(right - left) )
         bot_vec = self.proport_simple( LB, RB, (in_lon - left)/(right - left) )
@@ -167,8 +168,8 @@ class Interpolator:
         Uses bilinear aproximation between the vectors.
         Proportion is 'slerp'
         '''
-        in_lat = self.norm_lat(in_lat)
-        in_lon = self.norm_lon(in_lon)
+        in_lat = norm_lat(in_lat)
+        in_lon = norm_lon(in_lon)
         
         lat_ind = in_lat // self.step_la
         if in_lat == 90:
@@ -185,8 +186,8 @@ class Interpolator:
 
         LB = self.wind_grid[bottom][left]
         LT = self.wind_grid[top][left]
-        RB = self.wind_grid[bottom][self.norm_lon(right)]
-        RT = self.wind_grid[top][self.norm_lon(right)]
+        RB = self.wind_grid[bottom][norm_lon(right)]
+        RT = self.wind_grid[top][norm_lon(right)]
 
         top_vec = self.slerp( LT, RT, (in_lon - left) / (right - left) )
         bot_vec = self.slerp( LB, RB, (in_lon - left) / (right - left) )
@@ -199,8 +200,8 @@ class Interpolator:
         Resulting vector is proportional to how it`s close to \
         corner base grid vectors
         '''
-        in_lat = self.norm_lat(in_lat)
-        in_lon = self.norm_lon(in_lon)
+        in_lat = norm_lat(in_lat)
+        in_lon = norm_lon(in_lon)
         
         lat_ind = in_lat // self.step_la
         if in_lat == 90:
@@ -217,8 +218,8 @@ class Interpolator:
 
         LB = self.wind_grid[bottom][left]
         LT = self.wind_grid[top][left]
-        RB = self.wind_grid[bottom][self.norm_lon(right)]
-        RT = self.wind_grid[top][self.norm_lon(right)]
+        RB = self.wind_grid[bottom][norm_lon(right)]
+        RT = self.wind_grid[top][norm_lon(right)]
 
         ltx = math.sqrt( \
             (in_lat-top)*(in_lat-top) + (in_lon-left)*(in_lon-left) )
