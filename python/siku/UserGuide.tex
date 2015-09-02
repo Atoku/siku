@@ -1,0 +1,82 @@
+\documentclass[a4paper,10pt]{article}
+%\documentclass[a4paper,10pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+
+\title{GMT\_Plotter User Guide}
+\author{Botangens}
+\date{1.08.2015}
+
+\pdfinfo{%
+  /Title    (GMT\_Plotter User Guide)
+  /Author   (Botangens)
+  /Creator  ()
+  /Producer ()
+  /Subject  ()
+  /Keywords ()
+}
+
+\begin{document}
+\maketitle
+
+%\begin{center}
+ %{\huge GMT\_Plotter User Guide \normalsize}
+%\end{center}
+
+%------------------------------------------
+
+\section{General information}
+
+GMT\_Plotter is python interface class for 'siku' project.
+
+It uses several other python classes for reading wind input
+data and configuration settings, constructing check-positions 
+grid, interpolation of wind velosity and actually drawing .eps file.
+
+%---------------------------------------
+
+\section{Config file}
+
+'plot\_config.py' is cinfiguration file for GMT\_Plotter class.
+
+It contains various settings and is used at the begining of plotting procedure.
+
+
+Although all variables are optional - user MUST specify interpolation domain
+and drawing view.
+
+\subsection{inter\_domain}
+
+'inter\_domain' is a tuple that contains info about boarders 
+of interpolation region in next format:
+( min\_lon, max\_lon, min\_lat, max\_lat )
+
+\subsection{view}
+
+'view' is string of characters that spacify output region, projection 
+and coordinates grid parameters.
+
+\begin{itemize}
+ \item '-G' is output region in format:
+ -Gmin\_lon/max\_lon/min\_lat/max\_lat
+ 
+ NO SPACES ALLOWED!
+ 
+ \item '-J' is projection specification. For more read GMT official 
+ guide or use predefined values
+ 
+ \item '-B' is coordinates grid parameters. For more read GMT official 
+ guide or just write '-BagX', where X - is resolution in degrees
+\end{itemize}
+
+\subsection{scale}
+
+Other VERY important value is 'vector\_scaling'.
+It`s a factor for correct vector size on output. 
+
+Generaly Vectors are being scaled automaticly, but in some projections 
+hardcoded parameters become too small for proper vectors output.
+If that happens - user could (should) scale the resulting vectors 
+at his own taste.
+
+\end{document}

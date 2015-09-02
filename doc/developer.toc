@@ -1,0 +1,57 @@
+\contentsline {chapter}{Contents}{2}{chapter*.1}
+\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}
+\contentsline {section}{\numberline {1.1}Basic Information}{4}{section.1.1}
+\contentsline {section}{\numberline {1.2}Software Requirements}{4}{section.1.2}
+\contentsline {section}{\numberline {1.3}Programming Policy}{5}{section.1.3}
+\contentsline {section}{\numberline {1.4}Development Policy}{5}{section.1.4}
+\contentsline {chapter}{\numberline {2}Ice Element Location and Position}{6}{chapter.2}
+\contentsline {section}{\numberline {2.1}Introduction}{6}{section.2.1}
+\contentsline {section}{\numberline {2.2}Equivalence to 3D Rigid Body Rotations}{6}{section.2.2}
+\contentsline {section}{\numberline {2.3}Coordinate Systems and Frames}{7}{section.2.3}
+\contentsline {section}{\numberline {2.4}Initial Frame Relation}{8}{section.2.4}
+\contentsline {section}{\numberline {2.5}Position Update Equation}{9}{section.2.5}
+\contentsline {section}{\numberline {2.6}Placement Numerical Integration}{9}{section.2.6}
+\contentsline {chapter}{\numberline {3}Dynamics}{11}{chapter.3}
+\contentsline {section}{\numberline {3.1}Introduction}{11}{section.3.1}
+\contentsline {section}{\numberline {3.2}Dynamics in ice-element reference frame}{11}{section.3.2}
+\contentsline {section}{\numberline {3.3}Restoring 3D angular velocity}{11}{section.3.3}
+\contentsline {section}{\numberline {3.4}Dynamics Integration}{12}{section.3.4}
+\contentsline {chapter}{\numberline {4}Ice Element Polygon}{13}{chapter.4}
+\contentsline {section}{\numberline {4.1}Introduction}{13}{section.4.1}
+\contentsline {section}{\numberline {4.2}Center of Mass, Area, Moment of Inertia}{13}{section.4.2}
+\contentsline {section}{\numberline {4.3}Mass}{14}{section.4.3}
+\contentsline {chapter}{\numberline {5}Wind Interpolation}{15}{chapter.5}
+\contentsline {section}{\numberline {5.1}Introduction}{15}{section.5.1}
+\contentsline {section}{\numberline {5.2}Analytical Testing Fields}{15}{section.5.2}
+\contentsline {section}{\numberline {5.3}NCEP/NCAR Reanalysis grids}{15}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Basic interpolation method}{15}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}Proportion functions}{16}{subsection.5.3.2}
+\contentsline {section}{\numberline {5.4}Advanced interpolation (expected soon)}{16}{section.5.4}
+\contentsline {chapter}{\numberline {6}Force Balance on Ice Elements}{17}{chapter.6}
+\contentsline {section}{\numberline {6.1}Surface Forcing}{18}{section.6.1}
+\contentsline {section}{\numberline {6.2}Data Input}{18}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}Winds}{19}{subsection.6.2.1}
+\contentsline {subsection}{\numberline {6.2.2}Ocean Currents}{19}{subsection.6.2.2}
+\contentsline {chapter}{\numberline {7}Diagnostics}{20}{chapter.7}
+\contentsline {chapter}{\numberline {8}Random points generation}{21}{chapter.8}
+\contentsline {section}{\numberline {8.1}Problem Statement}{21}{section.8.1}
+\contentsline {section}{\numberline {8.2}Random points on sphere}{21}{section.8.2}
+\contentsline {subsection}{\numberline {8.2.1}Uniform distribution on sphere}{21}{subsection.8.2.1}
+\contentsline {subsection}{\numberline {8.2.2}Blue noise}{22}{subsection.8.2.2}
+\contentsline {subsection}{\numberline {8.2.3}Large voids}{22}{subsection.8.2.3}
+\contentsline {subsection}{\numberline {8.2.4}Changing the distribution}{22}{subsection.8.2.4}
+\contentsline {subsection}{\numberline {8.2.5}Uniform distribution is selected region}{23}{subsection.8.2.5}
+\contentsline {chapter}{\numberline {A}Formulas Summary}{24}{appendix.A}
+\contentsline {paragraph}{Dynamics}{24}{section*.2}
+\contentsline {paragraph}{Placement}{24}{section*.3}
+\contentsline {chapter}{\numberline {B}Quaternions and Rotations}{25}{appendix.B}
+\contentsline {section}{\numberline {B.1}Briefly about Quaternions}{25}{section.B.1}
+\contentsline {subsection}{\numberline {B.1.1}Definitions}{25}{subsection.B.1.1}
+\contentsline {subsection}{\numberline {B.1.2}Vector representation}{25}{subsection.B.1.2}
+\contentsline {subsection}{\numberline {B.1.3}Vectors as quaternions}{26}{subsection.B.1.3}
+\contentsline {subsection}{\numberline {B.1.4}Norm}{26}{subsection.B.1.4}
+\contentsline {subsection}{\numberline {B.1.5}Conjugate}{26}{subsection.B.1.5}
+\contentsline {subsection}{\numberline {B.1.6}Unit quaternions}{26}{subsection.B.1.6}
+\contentsline {subsection}{\numberline {B.1.7}Coordinate transformations using quaternions}{26}{subsection.B.1.7}
+\contentsline {section}{\numberline {B.2}Rotation Matrix and Positions}{27}{section.B.2}
+\contentsline {chapter}{Bibliography}{28}{appendix*.4}

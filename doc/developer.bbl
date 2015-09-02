@@ -1,0 +1,59 @@
+\begin{thebibliography}{}
+
+\bibitem[Arribas et~al., 2006]{bib:arribas2006quaternions}
+Arribas, M., Elipe, A., and Palacios, M. (2006).
+\newblock Quaternions and the rotation of a rigid body.
+\newblock {\em Celestial Mechanics and Dynamical Astronomy}, 96(3-4):239--251.
+
+\bibitem[Eberly, 2008]{bib:geometrictools-rotation-performance}
+Eberly, D. (2008).
+\newblock Rotation representation and performance issues.
+\newblock Technical report, Geometric Tools, {LLC}, www.geometrictools.com.
+\newblock From documentation to {W}ild {M}agic library.
+
+\bibitem[Fuselier and Wright, 2009]{bib:fuselier2009stability}
+Fuselier, E.~J. and Wright, G.~B. (2009).
+\newblock Stability and error estimates for vector field interpolation and
+  decomposition on the sphere with rbfs.
+\newblock {\em SIAM Journal on Numerical Analysis}, 47(5):3213--3239.
+
+\bibitem[Graf, 2008]{bib:graf2008quaternions}
+Graf, B. (2008).
+\newblock Quaternions and dynamics.
+\newblock {\em arXiv preprint arXiv:0811.2889}.
+
+\bibitem[Harada, 2008]{bib:gpugems3-harada-2008}
+Harada, T. (2008).
+\newblock Real-time rigid body simulation on {GPU}s.
+\newblock In Nguyen, H., editor, {\em GPU Gems 3}, pages 611--631.
+  Addison-{W}esley, {NVIDIA}.
+
+\bibitem[Marsaglia, 1972]{bib:marsaglia1972}
+Marsaglia, G. (1972).
+\newblock Choosing a point from the surface of a sphere.
+\newblock {\em Ann. Math. Statist.}, 43(2):645--646.
+
+\bibitem[Nemes and Mik{\'o}czi, 2013]{bib:nemes2013perturbed}
+Nemes, F. and Mik{\'o}czi, B. (2013).
+\newblock Perturbed kepler problem in general relativity with quaternions.
+\newblock {\em International Journal of Modern Physics D}, 22(08).
+
+\bibitem[Waldvogel, 2008]{bib:waldvogel2008quaternions}
+Waldvogel, J. (2008).
+\newblock Quaternions for regularizing celestial mechanics: the right way.
+\newblock {\em Celestial Mechanics and Dynamical Astronomy}, 102(1-3):149--162.
+
+\bibitem[Walton and Braun, 1993]{bib:Walton-Braun-1993}
+Walton, O.~R. and Braun, R.~L. (1993).
+\newblock Simulation of rotary-drum and repose tests for frictional spheres and
+  rigid spere clusters.
+\newblock In {\em 5-th Joint {DOE/NSF} workshop on flow of particulates and
+  fluids}, Ithaca, {NY}, {USA}.
+
+\bibitem[Wikipedia, 2012]{bib:wikipedia-quaternions-srotation}
+Wikipedia (2012).
+\newblock Quaternions and spacial rotationa.
+\newblock Wikipedia.org.
+\newblock at http://en.wikipedia.org/wiki/Quaternions\_and\_spatial\_rotation.
+
+\end{thebibliography}
