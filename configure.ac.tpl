@@ -157,12 +157,12 @@ AX_BOOST_THREAD
 
 # CGAL
 
-AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR([GNU MP not found, see https://gmplib.org/])])
+#AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR([GNU MP not found, see https://gmplib.org/])])
 
-AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR([Need MPFR either from GNU MP 4 or separate MPFR package.
-      See http://www.mpfr.org or http://swox.com/gmp])])
+#AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR([Need MPFR either from GNU MP 4 or separate MPFR package.
+#      See http://www.mpfr.org or http://swox.com/gmp])])
 
-AX_LIB_CGAL_CORE([], [AC_MSG_ERROR([No CGAL library found, please, install CGAL])] )
+#AX_LIB_CGAL_CORE([], [AC_MSG_ERROR([No CGAL library found, please, install CGAL])] )
 
 # ====================================================================
 #             *********  LIBRARIES CHECK **********
