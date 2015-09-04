@@ -1,4 +1,5 @@
-'''File: wnd.py
+'''file: wnd.py
+module: wnd
 
 Contains classes for wind grid storaging and methods for translation wind
 speed data into Cartesian coordinates array.
@@ -10,7 +11,6 @@ from nmc import NMC
 #------------------------------------------------------------------------------
 #   LATITUDE-LONGITUDE
 #------------------------------------------------------------------------------
-
         
 class NMCVar(NMC):
     '''A class for storaging NMC specified variable data
@@ -84,8 +84,8 @@ class NMCWind:
         if not time: #default timestep is 'last'
             time = len(uwind.times)-1
 
-        self.lat = uwind.lat
-        self.lon = uwind.lon
+        self.lat = list(uwind.lat)
+        self.lon = list(uwind.lon)
         self.time = time
         self.load_wind( uwind, vwind, time )
 
@@ -139,18 +139,20 @@ class NMCWind:
                                  str(self.wind[la][lo][1]) + ' ' + \
                                  ' 0 0 0 \n')
         return
-
+    pass
 #------------------------------------------------------------------------------
 #   MAIN
 #------------------------------------------------------------------------------
-
+#def main():
 if __name__ == '__main__':
-    
-    uw = NMCVar('2014.nc', 'uwnd')
-    vw = NMCVar('2014.nc', 'uwnd')
+    uw = NMCVar('u2014.nc', 'uwnd')
+    vw = NMCVar('v2014.nc', 'vwnd')
 
-    carw = NMCWind ( uw, vw, 1)
+    carw = NMCWind ( uw, vw )
 
     carw.make_cartesian_()
-    
-    carw.grid_save_('test.txt')
+    #print(NMCVar)
+    #carw.grid_save_('test.txt')
+##
+##if __name__ == '__main__':
+##    main()

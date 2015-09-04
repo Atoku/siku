@@ -61,5 +61,31 @@ python/siku/Doxyfile.bak
 python/siku/NMC_TEST_DIR/
 python/siku/config.dox
 
+Makefile
+config.h
+config.h.in~
+config.status
+deps/Makefile
+deps/shapelib/Makefile
+libtool
+src/.deps/siku-auxutils.Po
+src/.deps/siku-coordinates.Po
+src/.deps/siku-diagnostics.Po
+src/.deps/siku-dynamics.Po
+src/.deps/siku-element.Po
+src/.deps/siku-highio.Po
+src/.deps/siku-lowio.Po
+src/.deps/siku-mesh.Po
+src/.deps/siku-modeltime.Po
+src/.deps/siku-monitoring.Po
+src/.deps/siku-mproperties.Po
+src/.deps/siku-options.Po
+src/.deps/siku-position.Po
+src/.deps/siku-scheduler.Po
+src/.deps/siku-siku.Po
+src/.deps/siku-sikupy.Po
+src/.deps/siku-vecfield.Po
+src/Makefile
+stamp-h1
 
 /.project
