@@ -91,6 +91,10 @@ void Sikupy::initialize( Globals &siku )
   success = read_diagnostics ( siku.diagnostics );
   assert ( success );
 
+  /// vecfield testing
+  success = read_nmc_vecfield ( siku.windgrid );
+  assert ( success );
+
   if ( success == 0 ) fatal( 1, "Something wrong went on initialization" );
 }
 
@@ -137,7 +141,7 @@ int Sikupy::read_info( Info& info )
 
   // currently we do nothing
   PyObject *pSiku_info;
-  pSiku_info = PyObject_GetAttrString( pSiku, "info" ); // borrowed
+  pSiku_info = PyObject_GetAttrString( pSiku, "info" ); // new
   assert( pSiku_info );
 
   // check it is dictionary
@@ -1103,3 +1107,109 @@ bool Sikupy::read_time( PyObject* pobj,
 
   return true;
 }
+
+//---------------------------------------------------------------------
+//-------------------- vecfield reader function -----------------------
+//---------------------------------------------------------------------
+
+int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
+{
+	int success = 1;
+
+	// currently we do nothing
+	PyObject *pSiku_wind;
+	pSiku_wind = PyObject_GetAttrString(pSiku, "wind"); // NEW!!
+	assert(pSiku_wind);
+
+	/*
+	 * TODO: check while pSiku_wind is really the NMCSurfaceVField
+	 */
+
+	//////////////////////////// TESTING STRINGS ////////////////////////////
+	std::cout << "show import pathes:\n";
+	PyRun_SimpleString("import sys; print(sys.path)");
+	std::cout << "\nshow current working directory:\n";
+	PyRun_SimpleString("import os; print(os.getcwd())");
+	std::cout << "\n";
+	//////////////////////
+	PyObject* pTemp;
+
+	PyObject* Lat = PyObject_GetAttrString(pSiku_wind, "lat"); //new
+	size_t lat_s = PyList_Size(Lat);
+
+	PyObject* Lon = PyObject_GetAttrString(pSiku_wind, "lon"); //new
+	size_t lon_s = PyList_Size(Lon);
+
+	vField.init_grid( lat_s, lon_s );
+
+	for( size_t i=0; i < lat_s; ++i )
+	{
+		pTemp = PyList_GetItem( Lat, i); //borrowed
+		double cur_lat = PyFloat_AsDouble( pTemp );
+		vField.lat_indexer[ cur_lat ] = i;
+		vField.lat_valuator[ i ] = cur_lat;
+	}
+
+	for( size_t i=0; i < lon_s; ++i )
+	{
+		pTemp = PyList_GetItem( Lon, i); //borrowed
+		double cur_lon = PyFloat_AsDouble( pTemp );
+		vField.lon_indexer[ cur_lon ] = i;
+		vField.lon_valuator[ i ] = cur_lon;
+	}
+
+    pTemp = PyObject_GetAttrString( pSiku_wind, "vec" ); //new
+    PyObject* pTuple;
+    for( size_t i=0; i < lat_s; ++i )
+    {
+        PyObject* pLine  = PyList_GetItem( pTemp, i ); //borrowed
+        /*
+         * TODO: as soon as wnd.py is shanged into (x, y, z)-value grid:
+         * replace next 'for' cycle with following fuction call:
+         */
+    	//read_vec3d_vector( pLine, vField.grid[i] );
+
+        for( size_t j=0; j < lon_s; ++j )
+        {
+            pTuple = PyList_GetItem( pLine, j ); //borrowed
+
+            double ew = PyFloat_AsDouble( PyTuple_GetItem( pTuple, 0 ) );
+            double nw = PyFloat_AsDouble( PyTuple_GetItem( pTuple, 1 ) );
+
+//            double cur_lat = PyFloat_AsDouble( PyList_GetItem( Lat, i) );
+//            double cur_lon = PyFloat_AsDouble( PyList_GetItem( Lon, j) );
+//
+//            GridNode<UVWind> tempW( cur_lat, cur_lon, UVWind( ew, nw ) );
+//            set_node( tempW, i,  j );
+
+            // !!! DANGER !!!
+            // Yet while convertions from eastwind-northwind into
+            // (x,y,z)-wind_on_sphere is not discussed - wind is stored as
+            // (east_w, north_w, 0) - vec3d
+            // !!! AaAAAH !!!
+            vField.set_vec( vec3d( ew, nw, 0.), i, j );
+        }
+    }
+
+	Py_DECREF( Lat );
+	Py_DECREF( Lon );
+    Py_DECREF( pTemp );
+
+    std::cout<<"!!! TESTING !!!\n";
+    std::cout<<"get wind at 10, 20 internally (x component):\n";
+    std::cout<<vField.grid[10][20].x<<"\n";
+
+    std::cout<<"get wind at 10, 20 externally (x component):\n";
+    std::cout<<vField.get_vec( (size_t)10, (size_t)20 )->x<<"\n";
+
+    std::cout<<"get latitude at 10 20 internally:\n";
+    std::cout<<vField.lat_valuator[10]<<"\n";
+    std::cout<<"get longitude at 10 20 externally:\n";
+    std::cout<<vField.get_node( (size_t)10, (size_t)20 ).lon<<"\n";
+
+    std::cout<<"get wind by lat-lon 65, 50 (x component):\n";
+    std::cout<<vField.get_vec( 65., 50. )->x<<"\n\n";
+
+	return success;
+}
+

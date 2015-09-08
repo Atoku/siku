@@ -48,6 +48,10 @@ struct Globals
 
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
+
+  //-----------------------------------
+  //! NMC vecfield
+  NMCVecfield windgrid;
 };
 
 #endif      /* GLOBALS_HH */

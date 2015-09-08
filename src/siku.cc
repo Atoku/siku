@@ -55,6 +55,10 @@ extern "C" {
 #include "monitoring.hh"
 #include "mproperties.hh"
 
+////////////////
+//#include  "nmc_reader.hh"
+#include "vecfield.hh"
+
 //const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
 
 //--------------------------------------------------------------------
@@ -62,6 +66,14 @@ extern "C" {
 int main( int argc, char* argv[] )
 {
 
+	/*
+	NMC_Wind_Reader WR;
+	WR.load( string("wnd.py") );
+
+	std::cout<<"\npress any key for exiting...";
+	std::cin.get();
+*/
+///*
   // Reading and populating program options
   Options options( argc, argv );
 
@@ -133,6 +145,7 @@ int main( int argc, char* argv[] )
       // --- END OF LOOP ---
       siku.time.increment();
     }
+//*/
 
   return 0;
 }

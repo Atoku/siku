@@ -30,7 +30,7 @@ class Interpolator:
     def gener_grid( self ):
         '''Technical function for generation the grid'''
         self.wind_grid = { self.wind.lat[la] : { self.wind.lon[lo] : \
-            self.wind.wind[la][lo] for lo in range(len(self.wind.lon)) } \
+            self.wind.vec[la][lo] for lo in range(len(self.wind.lon)) } \
             for la in range(len(self.wind.lat)) }
 
     def interpolate( self, in_lat, in_lon ):

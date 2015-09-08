@@ -4,12 +4,21 @@ module: wnd
 Contains classes for wind grid storaging and methods for translation wind
 speed data into Cartesian coordinates array.
 '''
+### AAAAHH!!! Dis dependencies are killin me!
+## For proper importing all dependencies in case, when module is being ran
+## from outer directories we have to manually change current working dir and
+## append importing pathes!!!
+## This problem MUST be discussed and solved.
+import sys
+sys.path.append('/home/gleb/Documents/wrkdir/siku (copy)/python/siku')
+import os
+os.chdir('/home/gleb/Documents/wrkdir/siku (copy)/python/siku/')
 
 import geocoords
 from nmc import NMC
 
 #------------------------------------------------------------------------------
-#   LATITUDE-LONGITUDE
+# VARIABLE STORAGING (IN LATITUDE-LONGITUDE COORDINATES)
 #------------------------------------------------------------------------------
         
 class NMCVar(NMC):
@@ -53,41 +62,43 @@ class NMCVar(NMC):
 
     pass
 
+
 #------------------------------------------------------------------------------
-# CARTESIAN
+# SURFACE VECTOR FIELDS (WITH CARTESIAN INTERPRATATION)
 #------------------------------------------------------------------------------
 
-class NMCWind:
-    '''A class for storaging and processing NMC wind data
+class NMCSurfaceVField:
+    '''A class for storaging and processing NMC surface vector fields.
 
-    Wind data is storaged as 2D lists:
-    first dimension is time
-    second dimension is an index of coords list
+    Loads vector field from two NMCVar instances, that are considered to be
+    'east' and 'north' components of resulting vector.
 
-    Coords are stored as 1D list of [x, y, z] lists
+    Basically made for NMC wind data.
+    
+    Methods for transforming surface data into cartesian coords are included.
     '''
-    def __init__( self, uwind=None, vwind=None, time=None):
+    def __init__( self, ucomp=None, vcomp=None, time=None):
         '''Inits the class instance
         '''
         self.clear_()
 
         #in case of immidiate initialization
-        if uwind and vwind:
-            self.load( uwind, vwind, time )
+        if ucomp and vcomp:
+            self.load( ucomp, vcomp, time )
             #self.make_cartesian_( uvind, vwind, time )
 
         return
     
-    def load( self, uwind, vwind, time=None ):
+    def load( self, ucomp, vcomp, time=None ):
         '''Loads 1 timestep data from two wind variable class instances
         '''
         if not time: #default timestep is 'last'
-            time = len(uwind.times)-1
+            time = len(ucomp.times)-1
 
-        self.lat = list(uwind.lat)
-        self.lon = list(uwind.lon)
+        self.lat = list(ucomp.lat)
+        self.lon = list(ucomp.lon)
         self.time = time
-        self.load_wind( uwind, vwind, time )
+        self.load_vec( ucomp, vcomp, time )
 
         return
 
@@ -97,15 +108,15 @@ class NMCWind:
         self.time = None
         self.lat = []
         self.lon = []
-        self.wind = [[]]
-        self.cart_wind = []
+        self.vec = [[]]
+        self.cart_vec = []
         self.cart_coords = []
         return
 
-    def load_wind( self, uwind, vwind, time ):
+    def load_vec( self, ucomp, vcomp, time ):
         '''Loads only wind data from two wind variable class instances
         '''
-        self.wind = [[(uwind.val[time][la][lo], vwind.val[time][la][lo]) \
+        self.vec = [[(ucomp.val[time][la][lo], vcomp.val[time][la][lo]) \
                 for lo in range(len(self.lon))] for la in range(len(self.lat))]
 
         return
@@ -115,7 +126,7 @@ class NMCWind:
 
         creates two 1D arrays for (uwnd, vwnd) and (x, y, z) tuples
         '''
-        if not self.wind:
+        if not self.vec:
             raise RuntimeError('no wind data assigned')
         self.cart_coords = []
 
@@ -123,7 +134,7 @@ class NMCWind:
             for lo in range(len(self.lon)):
                 self.cart_coords.append( \
                     geocoords.xyz_geographic(self.lon[lo],self.lat[la]))
-                self.cart_wind.append(self.wind[la][lo])
+                self.cart_vec.append(self.vec[la][lo])
         
         return
     
@@ -135,24 +146,24 @@ class NMCWind:
                 for lo in range(len(self.lon)):
                     output.write(str(self.lon[lo]) + ' ' + \
                                  str(self.lat[la]) + ' ' + \
-                                 str(self.wind[la][lo][0]) + ' ' + \
-                                 str(self.wind[la][lo][1]) + ' ' + \
+                                 str(self.vec[la][lo][0]) + ' ' + \
+                                 str(self.vec[la][lo][1]) + ' ' + \
                                  ' 0 0 0 \n')
         return
     pass
 #------------------------------------------------------------------------------
 #   MAIN
 #------------------------------------------------------------------------------
-#def main():
-if __name__ == '__main__':
+def main():
+    #if __name__ == '__main__':
     uw = NMCVar('u2014.nc', 'uwnd')
     vw = NMCVar('v2014.nc', 'vwnd')
 
-    carw = NMCWind ( uw, vw )
+    carw = NMCSurfaceVField ( uw, vw )
 
     carw.make_cartesian_()
     #print(NMCVar)
     #carw.grid_save_('test.txt')
-##
-##if __name__ == '__main__':
-##    main()
+
+if __name__ == '__main__':
+    main()

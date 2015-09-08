@@ -45,6 +45,8 @@ using namespace std;
 #include "globals.hh"
 #include "diagnostics.hh"
 
+#include "vecfield.hh"
+
 //! \brief Python interface wrapper
 class Sikupy
 {
@@ -211,6 +213,12 @@ private:
   //! \brief Flag value saying that initialize was called. The flag is
   //! dropped in finalize member.
   static const unsigned int FLAG_INITIALIZED    { 0x2 };
+
+  // -----------------------------------------------------------------
+  // -------------- loader for NMC-python vecfields ------------------
+  // -----------------------------------------------------------------
+
+  int read_nmc_vecfield( NMCVecfield& vField );
 
 };
 

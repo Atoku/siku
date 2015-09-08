@@ -9,18 +9,31 @@ grid_step_lon = 2.5 #grid step in longitude degrees
 out_pic_name = 'outDraw.eps' #output picture name
 verbose = True
 
-#inter_domain = ( 0, 360, 60, 90 ) #interpolation domain in degrees
-inter_domain = ( 330, 350, 50, 60 )
+inter_domain = ( 0, 360, 60, 90 ) #interpolation domain in degrees
+#inter_domain = ( 330, 350, 50, 60 )
 #inter_domain = ( -10, 10, -10, 10 )
 inter_density = 1.25 #interpolation grid resolution in degrees (average)
 
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
+#view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
+
+#Polar Stereographic (hope that is really stereo)
+view = '-R0/360/70/90 -JS0/90/6i -Bag30 ' #north pole
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 #view = '-R0/360/78/90 -JG0/90/6i -Bag30 ' #north pole
 #view = '-Rg -JG350/20/6i -Bag30 '  #view
-view = '-R330/350/50/60 -JB340/0/50/50/6i -Bag30 ' #view
+#view = '-R330/350/50/60 -JB340/0/50/50/6i -Bag30 ' #view
 #view = '-R-20/20/-20/20 -JB340/0/50/50/6i -Bag30 ' #view
+
 ground_colr = '255/226/164' #ground color
 coasts = 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 '
+
+#vector_scaling = 5.5
 
 inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
 -A3.0p+e+gblue -Se'

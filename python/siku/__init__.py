@@ -7,6 +7,7 @@
 
 from . import bootstrap_config
 from . import earth
+#import wnd
 
 # ---------------------------------------------------------------------
 # main function: by default it is None
@@ -82,3 +83,9 @@ diagnostics.meshes = []
 diagnostics.wind = []
 
 # ---------------------------------------------------------------------
+# Surface wind grid (NMC)
+# ---------------------------------------------------------------------
+
+wind = None
+
+

@@ -99,7 +99,7 @@ void NMC_Wind_Reader::load( std::string filename )
 	{
 		pTemp = PyList_GetItem( Lon, i); //borrowed
 		double cur_lon = PyFloat_AsDouble( pTemp );
-		lat_indexer[ cur_lon ] = i;
+		lon_indexer[ cur_lon ] = i;
 	}
 
     pTemp = PyObject_GetAttrString( pWind, "wind" ); //new
@@ -139,29 +139,8 @@ void NMC_Wind_Reader::load( std::string filename )
     std::cout<<"get wind by lat-lon 65, 50:\n";
     std::cout<<get_value_by_lat_lon( 65, 50 )->uwind<<"\n";
 
-	//pTemp = PyObject_GetAttrString(pVar, "x");
-
-	//double result = PyFloat_AsDouble(pTemp);
-	//std::cout<<result;
-
 	Py_Finalize();
-/*
-	  // access to the siku.callback
 
-	  // new ref
-	  pSiku_callback = PyObject_GetAttrString( pSiku, "callback" );
-	  assert ( pSiku_callback );
-
-	  if ( !PyObject_IsInstance( pSiku_callback, pSiku ) )
-	    fatal( 1, "Cannot read siku.callback" );
-
-	  // access to the diagnostics (always defined)
-	  pSiku_diagnostics = PyObject_GetAttrString( pSiku, "diagnostics" );
-	  assert( pSiku_diagnostics );
-
-	  if ( !PyObject_IsInstance( pSiku_diagnostics, pSiku ) )
-	    fatal( 1, "Cannot read siku.diagnostics" );
-*/
 }
 
 

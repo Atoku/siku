@@ -29,6 +29,7 @@ draw_config_string = \
 
 #dafault values dictionary for template string completion
 default_config = {
+    'vector_scaling' : 1.0,
     'coasts' : 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 ',
     'inter_wind' : 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
@@ -71,7 +72,7 @@ class GMT_Plotter:
             print( 'plotter start plotting' )
         UW = wnd.NMCVar( self.config.get( 'uwind_file', 'uwnd.nc' ), 'uwnd' )
         VW = wnd.NMCVar( self.config.get( 'vwind_file', 'vwnd.nc' ), 'vwnd' )
-        W = wnd.NMCWind( UW, VW, self.config.get( 'time_index', -1 ) )
+        W = wnd.NMCSurfaceVField( UW, VW, self.config.get( 'time_index', -1 ) )
         Inter = Interpolator( W, self.config.get( 'grid_step_lat', 2.5 ),\
                               self.config.get( 'grid_step_lon', 2.5 ) )
         W.grid_save_( 'grid.txt' ) #saving base gird
@@ -109,7 +110,10 @@ class GMT_Plotter:
 
         if self.config.get('verbose'):
             print('preparing draw_config')
-        psi = self.config['inter_density']
+        #scaling factor for vectors on picture
+        psi = self.config['inter_density'] * \
+                self.config.get( 'vector_scaling', \
+                default_config['vector_scaling'] )
 ##        if dphi > 90:
 ##            psi /=4
         with open('draw_config.txt','w') as dc:
@@ -134,13 +138,15 @@ class GMT_Plotter:
 
         if self.config.get('verbose'):
             print('drawing')
-        D = GMT_Drawer('draw_config.txt') 
-        D.draw( verbose = self.config.get( 'verbose' ) ) #at last - plotting
+        self.D = GMT_Drawer('draw_config.txt') 
+        self.D.draw( verbose = self.config.get( 'verbose' ) ) #at last - plotting
 
     pass
 
-if __name__ == '__main__':
+def main():
     G = GMT_Plotter ( 'plot_config.py')
     G.plot()
 
+if __name__ == '__main__':
+    main()   
     
