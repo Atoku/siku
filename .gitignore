@@ -92,3 +92,17 @@ src/Makefile
 stamp-h1
 
 /.project
+
+# LaTeX files
+*.aux
+*.bbl
+*.blg
+doc/*.log
+doc/developer.pdf
+*.toc
+
+# Executables and objects
+src/siku
+
+# Others
+samples/*.nc

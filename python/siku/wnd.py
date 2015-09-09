@@ -10,12 +10,14 @@ speed data into Cartesian coordinates array.
 ## append importing pathes!!!
 ## This problem MUST be discussed and solved.
 import sys
-sys.path.append('/home/gleb/Documents/wrkdir/siku (copy)/python/siku')
+#sys.path.append('/home/gleb/Documents/wrkdir/siku (copy)/python/siku')
 import os
-os.chdir('/home/gleb/Documents/wrkdir/siku (copy)/python/siku/')
+#os.chdir('/home/gleb/Documents/wrkdir/siku (copy)/python/siku/')
 
-import geocoords
-from nmc import NMC
+from siku import geocoords
+from siku import nmc
+
+NMC = nmc.NMC
 
 #------------------------------------------------------------------------------
 # VARIABLE STORAGING (IN LATITUDE-LONGITUDE COORDINATES)
