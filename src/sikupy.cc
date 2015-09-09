@@ -20,6 +20,15 @@ extern "C" {
 #include "sikupy.hh"
 #include "auxutils.hh"
 
+#include "coordinates.hh"
+
+////// TESTING ///////
+#include <cmath>
+double UBERCHECK=0.;
+int ind1 = 15;
+int ind2 = 25;
+////// \TESTING ///////
+
 //---------------------------------------------------------------------
 
 Sikupy::Sikupy( string filename )
@@ -702,12 +711,139 @@ int Sikupy::read_diagnostics_winds( Diagnostics& diag )
 
     }
 
- read_diagnostics_winds_finalize:
+	read_diagnostics_winds_finalize:
 
-  Py_DECREF( pLst );
+	Py_DECREF( pLst );
 
   return success;
 }
+
+//---------------------------------------------------------------------
+
+int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
+{
+	int success = 1;
+
+	PyObject *pSiku_wind;
+	pSiku_wind = PyObject_GetAttrString(pSiku, "wind"); // NEW!!
+	assert(pSiku_wind);
+
+	/*
+	 * TODO: check while pSiku_wind is really the NMCSurfaceVField
+	 */
+
+	PyObject* pTemp;
+
+	PyObject* Lat = PyObject_GetAttrString(pSiku_wind, "lat"); //new
+	size_t lat_s = PyList_Size(Lat);
+
+	PyObject* Lon = PyObject_GetAttrString(pSiku_wind, "lon"); //new
+	size_t lon_s = PyList_Size(Lon);
+
+	vField.init_grid( lat_s, lon_s );
+
+	double dtemp; // temporal double
+
+	//
+	for( size_t i=0; i < lat_s; ++i )
+	{
+		pTemp = PyList_GetItem( Lat, i); //borrowed
+
+		// ERROR: in read_double, described below (inside loops)
+		//read_double( pTemp, dtemp );
+		dtemp = PyFloat_AsDouble( pTemp );
+		vField.lat_indexer[ dtemp ] = i;
+		vField.lat_valuator[ i ] = dtemp;
+	}
+
+	for( size_t i=0; i < lon_s; ++i )
+	{
+		pTemp = PyList_GetItem( Lon, i); //borrowed
+
+		// ERROR: in read_double, described below (inside loops)
+		//read_double( pTemp, dtemp );
+		dtemp = PyFloat_AsDouble( pTemp );
+		vField.lon_indexer[ dtemp ] = i;
+		vField.lon_valuator[ i ] = dtemp;
+	}
+
+    pTemp = PyObject_GetAttrString( pSiku_wind, "vec" ); //new
+    PyObject* pTuple;
+
+    double ew, nw; // temporal variables for next loop
+
+    // I wish it was a namespace, NOT a class
+    Coordinates Co;
+
+    for( size_t i=0; i < lat_s; ++i )
+    {
+        PyObject* pLine  = PyList_GetItem( pTemp, i ); //borrowed
+        /*
+         * TODO: as soon as wnd.py is shanged into (x, y, z)-value grid:
+         * replace next 'for' cycle with following fuction call:
+         */
+    	//read_vec3d_vector( pLine, vField.grid[i] );
+
+        for( size_t j=0; j < lon_s; ++j )
+        {
+            pTuple = PyList_GetItem( pLine, j ); //borrowed
+
+            ew = PyFloat_AsDouble( PyTuple_GetItem( pTuple, 0 ) );
+            nw = PyFloat_AsDouble( PyTuple_GetItem( pTuple, 1 ) );
+
+////			!!! DOES NOT WORK !!!: read_double makes wrong checks
+////				python uses more types, then just long and float
+//            if(! read_double( PyTuple_GetItem( pTuple, 0 ), ew))
+//            	std::cout<<" not ew"<<endl;
+//            if(! read_double( PyTuple_GetItem( pTuple, 1 ), nw))
+//            	std::cout<<" not nw"<<endl;
+
+            ////// TESTING ///////
+            if(i ==ind1 && j==ind2)
+            	UBERCHECK = sqrt(ew*ew+nw*nw);
+            ////// \TESTING ///////
+
+            // seems to be working
+            vec3d velo = Co.geo_to_cart_surf_velo(
+            		Co.deg_to_rad( vField.lat_valuator[i] ) ,
+            		Co.deg_to_rad( vField.lon_valuator[j] ),
+            		ew, nw );
+
+            vField.set_vec( velo, i, j );
+        }
+    }
+
+	Py_DECREF( Lat );
+	Py_DECREF( Lon );
+    Py_DECREF( pTemp );
+
+    ////// TESTING ///////
+    std::cout<<"!!! TESTING !!!\n";
+    std::cout<<"get wind at 10, 20 internally (x component):\n";
+    std::cout<<vField.grid[10][20].x<<"\n";
+
+    std::cout<<"get wind at 10, 20 externally (x component):\n";
+    std::cout<<vField.get_vec( (size_t)10, (size_t)20 )->x<<"\n";
+
+    std::cout<<"get latitude at 10 20 internally:\n";
+    std::cout<<vField.lat_valuator[10]<<"\n";
+    std::cout<<"get longitude at 10 20 externally:\n";
+    std::cout<<vField.get_node( (size_t)10, (size_t)20 ).lon<<"\n";
+
+    std::cout<<"get wind by lat-lon 65, 50 (x component):\n";
+    std::cout<<vField.get_vec( 65., 50. )->x<<"\n\n";
+
+    std::cout<<"UBERCHECK:\n";
+    double XX = vField.get_vec( (size_t)ind1, (size_t)ind2 )->x;
+    double YY = vField.get_vec( (size_t)ind1, (size_t)ind2 )->y;
+    double ZZ = vField.get_vec( (size_t)ind1, (size_t)ind2 )->z;
+    std::cout<<UBERCHECK<<" must be equal to "<<
+    		sqrt(XX*XX + YY*YY + ZZ*ZZ)<<"\n\n";
+    ////// \TESTING ///////
+
+	return success;
+}
+
 
 //---------------------------------------------------------------------
 //               CALL BACK FUNCTIONS INTERFACE
@@ -948,17 +1084,15 @@ bool Sikupy::read_quat( PyObject* pquat, quat& q )
 }
 
 //! \brief reading double/float number
-bool Sikupy::read_double( PyObject* pfloat, double& x )
+bool Sikupy::read_double(PyObject* pfloat, double& x)
 {
+	// check if pquat is the correct type
+	if ( ! ( PyFloat_Check(pfloat) or PyLong_Check(pfloat) ) )
+		return false;
 
-  // check if pquat is the correct type
-  if ( ! ( PyFloat_Check( pfloat ) or
-           PyLong_Check( pfloat) ) )
-    return false;
+	x = PyFloat_AsDouble(pfloat);
 
-  x = PyFloat_AsDouble( pfloat );
-
-  return true;
+	return true;
 }
 
 //! \brief reading long int number
@@ -1108,108 +1242,4 @@ bool Sikupy::read_time( PyObject* pobj,
   return true;
 }
 
-//---------------------------------------------------------------------
-//-------------------- vecfield reader function -----------------------
-//---------------------------------------------------------------------
-
-int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
-{
-	int success = 1;
-
-	// currently we do nothing
-	PyObject *pSiku_wind;
-	pSiku_wind = PyObject_GetAttrString(pSiku, "wind"); // NEW!!
-	assert(pSiku_wind);
-
-	/*
-	 * TODO: check while pSiku_wind is really the NMCSurfaceVField
-	 */
-
-	//////////////////////////// TESTING STRINGS ////////////////////////////
-	std::cout << "show import pathes:\n";
-	PyRun_SimpleString("import sys; print(sys.path)");
-	std::cout << "\nshow current working directory:\n";
-	PyRun_SimpleString("import os; print(os.getcwd())");
-	std::cout << "\n";
-	//////////////////////
-	PyObject* pTemp;
-
-	PyObject* Lat = PyObject_GetAttrString(pSiku_wind, "lat"); //new
-	size_t lat_s = PyList_Size(Lat);
-
-	PyObject* Lon = PyObject_GetAttrString(pSiku_wind, "lon"); //new
-	size_t lon_s = PyList_Size(Lon);
-
-	vField.init_grid( lat_s, lon_s );
-
-	for( size_t i=0; i < lat_s; ++i )
-	{
-		pTemp = PyList_GetItem( Lat, i); //borrowed
-		double cur_lat = PyFloat_AsDouble( pTemp );
-		vField.lat_indexer[ cur_lat ] = i;
-		vField.lat_valuator[ i ] = cur_lat;
-	}
-
-	for( size_t i=0; i < lon_s; ++i )
-	{
-		pTemp = PyList_GetItem( Lon, i); //borrowed
-		double cur_lon = PyFloat_AsDouble( pTemp );
-		vField.lon_indexer[ cur_lon ] = i;
-		vField.lon_valuator[ i ] = cur_lon;
-	}
-
-    pTemp = PyObject_GetAttrString( pSiku_wind, "vec" ); //new
-    PyObject* pTuple;
-    for( size_t i=0; i < lat_s; ++i )
-    {
-        PyObject* pLine  = PyList_GetItem( pTemp, i ); //borrowed
-        /*
-         * TODO: as soon as wnd.py is shanged into (x, y, z)-value grid:
-         * replace next 'for' cycle with following fuction call:
-         */
-    	//read_vec3d_vector( pLine, vField.grid[i] );
-
-        for( size_t j=0; j < lon_s; ++j )
-        {
-            pTuple = PyList_GetItem( pLine, j ); //borrowed
-
-            double ew = PyFloat_AsDouble( PyTuple_GetItem( pTuple, 0 ) );
-            double nw = PyFloat_AsDouble( PyTuple_GetItem( pTuple, 1 ) );
-
-//            double cur_lat = PyFloat_AsDouble( PyList_GetItem( Lat, i) );
-//            double cur_lon = PyFloat_AsDouble( PyList_GetItem( Lon, j) );
-//
-//            GridNode<UVWind> tempW( cur_lat, cur_lon, UVWind( ew, nw ) );
-//            set_node( tempW, i,  j );
-
-            // !!! DANGER !!!
-            // Yet while convertions from eastwind-northwind into
-            // (x,y,z)-wind_on_sphere is not discussed - wind is stored as
-            // (east_w, north_w, 0) - vec3d
-            // !!! AaAAAH !!!
-            vField.set_vec( vec3d( ew, nw, 0.), i, j );
-        }
-    }
-
-	Py_DECREF( Lat );
-	Py_DECREF( Lon );
-    Py_DECREF( pTemp );
-
-    std::cout<<"!!! TESTING !!!\n";
-    std::cout<<"get wind at 10, 20 internally (x component):\n";
-    std::cout<<vField.grid[10][20].x<<"\n";
-
-    std::cout<<"get wind at 10, 20 externally (x component):\n";
-    std::cout<<vField.get_vec( (size_t)10, (size_t)20 )->x<<"\n";
-
-    std::cout<<"get latitude at 10 20 internally:\n";
-    std::cout<<vField.lat_valuator[10]<<"\n";
-    std::cout<<"get longitude at 10 20 externally:\n";
-    std::cout<<vField.get_node( (size_t)10, (size_t)20 ).lon<<"\n";
-
-    std::cout<<"get wind by lat-lon 65, 50 (x component):\n";
-    std::cout<<vField.get_vec( 65., 50. )->x<<"\n\n";
-
-	return success;
-}
 

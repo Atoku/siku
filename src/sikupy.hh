@@ -73,7 +73,7 @@ public:
   //! \param[in] siku main global variables container
   //! \param[in] i index of the element we call the function for
   //! \param[in] fname function name to call
-  int fcall_monitor( const Globals& siku, 
+  int fcall_monitor( const Globals& siku,
                      const size_t i,
                      const char* fname );
 
@@ -151,6 +151,11 @@ private:
   //! \breif Reading how to diagnose winds 
   int read_diagnostics_winds( Diagnostics& diag );
 
+
+  // -----------------------------------------------------------------
+  //! \brief Reading NMC wind grid with/from wnd.py
+  int read_nmc_vecfield( NMCVecfield& vField );
+
   // -----------------------------------------------------------------
   // local methods to simplify access to some data types
   // -----------------------------------------------------------------  
@@ -213,12 +218,6 @@ private:
   //! \brief Flag value saying that initialize was called. The flag is
   //! dropped in finalize member.
   static const unsigned int FLAG_INITIALIZED    { 0x2 };
-
-  // -----------------------------------------------------------------
-  // -------------- loader for NMC-python vecfields ------------------
-  // -----------------------------------------------------------------
-
-  int read_nmc_vecfield( NMCVecfield& vField );
 
 };
 

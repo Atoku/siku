@@ -4,18 +4,25 @@ module: wnd
 Contains classes for wind grid storaging and methods for translation wind
 speed data into Cartesian coordinates array.
 '''
-### AAAAHH!!! Dis dependencies are killin me!
-## For proper importing all dependencies in case, when module is being ran
-## from outer directories we have to manually change current working dir and
-## append importing pathes!!!
-## This problem MUST be discussed and solved.
-import sys
-#sys.path.append('/home/gleb/Documents/wrkdir/siku (copy)/python/siku')
-import os
-#os.chdir('/home/gleb/Documents/wrkdir/siku (copy)/python/siku/')
 
-from siku import geocoords
-from siku import nmc
+import os
+import sys
+
+### AAAAHH!!! Dis dependencies are killin me!
+##from siku import geocoords
+##from siku import nmc
+
+## I think this is better solution (at least it allows running scripts from
+## another scripts, without any C++ 'siku' importing).
+try:
+    import nmc
+    import geocoords
+except ImportError:
+    print('import error: trying internal directory')
+    os.chdir('./../python/siku/')
+    sys.path.append(os.getcwd())
+    import nmc
+    import geocoords
 
 NMC = nmc.NMC
 

@@ -83,11 +83,13 @@ vec3d* NMCVecfield::get_vec( const double& lat, const double& lon )
 		return nullptr;
 	}
 }
-NMCVecfield::GridNode NMCVecfield::get_node( const size_t& lat_i, const size_t& lon_i )
+NMCVecfield::GridNode NMCVecfield::get_node( const size_t& lat_i,
+		const size_t& lon_i )
 {
 	try
 	{
-		return NMCVecfield::GridNode( lat_valuator.at( lat_i ), lon_valuator.at( lon_i ), grid.at( lat_i ).at( lon_i ) );
+		return NMCVecfield::GridNode( lat_valuator.at( lat_i ),
+				lon_valuator.at( lon_i ), grid.at( lat_i ).at( lon_i ) );
 	}
 	catch(const std::out_of_range& oor)
 	{
@@ -95,11 +97,13 @@ NMCVecfield::GridNode NMCVecfield::get_node( const size_t& lat_i, const size_t& 
 		//return nullptr;
 	}
 }
-NMCVecfield::GridNode NMCVecfield::get_node( const double& lat, const double& lon )
+NMCVecfield::GridNode NMCVecfield::get_node( const double& lat,
+		const double& lon )
 {
 	try
 	{
-		return NMCVecfield::GridNode( lat, lon, grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) ) );
+		return NMCVecfield::GridNode( lat, lon,
+				grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) ) );
 	}
 	catch(const std::out_of_range& oor)
 	{
@@ -108,7 +112,8 @@ NMCVecfield::GridNode NMCVecfield::get_node( const double& lat, const double& lo
 	}
 }
 
-void NMCVecfield::set_vec( const vec3d& value, const size_t& lat_i, const size_t& lon_i )
+void NMCVecfield::set_vec( const vec3d& value, const size_t& lat_i,
+		const size_t& lon_i )
 {
 	try
 	{
@@ -120,7 +125,8 @@ void NMCVecfield::set_vec( const vec3d& value, const size_t& lat_i, const size_t
 		throw(oor);
 	}
 }
-void NMCVecfield::set_vec( const vec3d& value, const double& lat, const double& lon )
+void NMCVecfield::set_vec( const vec3d& value, const double& lat,
+		const double& lon )
 {
 	try
 	{
@@ -128,11 +134,13 @@ void NMCVecfield::set_vec( const vec3d& value, const double& lat, const double& 
 	}
 	catch(const std::out_of_range& oor)
 	{
+		cout<<"dkjfghdfhg";
 		//error: "bad argument: no such coordinates"
 		throw(oor);
 	}
 }
-void NMCVecfield::set_node( const GridNode& GN, const size_t& lat_i, const size_t& lon_i )
+void NMCVecfield::set_node( const GridNode& GN, const size_t& lat_i,
+		const size_t& lon_i )
 {
 	try
 	{

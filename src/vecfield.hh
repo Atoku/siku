@@ -85,9 +85,12 @@ public:
 	GridNode get_node( const size_t& lat_i, const size_t& lon_i );
 	GridNode get_node( const double& lat, const double& lon );
 
-	void set_vec( const vec3d& value, const size_t& lat_i, const size_t& lon_i );
-	void set_vec( const vec3d& value, const double& lat, const double& lon );
-	void set_node( const GridNode& GN, const size_t& lat_i, const size_t& lon_i );
+	void set_vec( const vec3d& value, const size_t& lat_i,
+			const size_t& lon_i );
+	void set_vec( const vec3d& value, const double& lat,
+			const double& lon );
+	void set_node( const GridNode& GN, const size_t& lat_i,
+			const size_t& lon_i );
 
 	void init_grid( const size_t& lat_s, const size_t& lon_s );
 	void clear();
