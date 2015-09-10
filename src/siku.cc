@@ -98,6 +98,9 @@ int main( int argc, char* argv[] )
     {
       double dt = siku.time.get_dt();
 
+      // --- pretimestep
+      (void) sikupy.fcall_pretimestep( siku );
+
       // --- Recovering mass, moments of inertia, other parameters if
       // --- necessary
       mproperties( siku );

@@ -15,8 +15,8 @@ import sys
 ## I think this is better solution (at least it allows running scripts from
 ## another scripts, without any C++ 'siku' importing).
 try:
-    import nmc
-    import geocoords
+    from siku import nmc
+    from siku import geocoords
 except ImportError:
     print('import error: trying internal directory')
     os.chdir('./../python/siku/')

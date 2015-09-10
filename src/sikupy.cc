@@ -849,6 +849,64 @@ int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
 //               CALL BACK FUNCTIONS INTERFACE
 //---------------------------------------------------------------------
 
+int Sikupy::fcall_pretimestep( Globals& siku )
+{
+  int status = FCALL_OK;
+
+   // reading siku.callback.pretimestep
+  PyObject* pFunc;
+
+  pFunc = PyObject_GetAttrString( pSiku_callback, "pretimestep" ); // new
+  assert( pFunc );
+  if ( ! PyCallable_Check( pFunc ) ) return FCALL_ERROR_NO_FUNCTION;
+
+  // preparing paramaters to pass (we send model time and dt) as
+  // datetime object
+  const size_t n  = siku.time.get_n();
+  const size_t ns = siku.time.get_ns();
+
+  // creating datetime object
+  PyObject* pCurTime;
+  long microseconds =
+    siku.time.get_total_microseconds() -
+    1000000 * siku.time.get_total_seconds();
+
+  pCurTime = PyDateTime_FromDateAndTime( siku.time.get_year(), // new
+                                         siku.time.get_month(),
+                                         siku.time.get_day(),
+                                         (int) siku.time.get_hours(),
+                                         (int) siku.time.get_minutes(),
+                                         (int) siku.time.get_seconds(),
+                                         (int) microseconds );
+  assert( pCurTime );
+
+  PyObject* pargs;
+  pargs = Py_BuildValue( "(O,i,i)", pCurTime, n, ns ); // new
+  assert( pargs );
+
+  // calling the object
+  PyObject* pReturn_value;
+  pReturn_value = PyObject_CallObject( pFunc, pargs ); // new
+
+  // if not returned a string, then it is a wrong presave
+  if ( !PyUnicode_Check( pReturn_value ) )
+    return FCALL_ERROR_PRESAVE_NOSTRING;
+
+  read_string( pReturn_value, siku.savefile );
+
+  // do not need arguments and value anymore
+  Py_DECREF( pCurTime );
+
+  Py_DECREF( pargs );
+  Py_DECREF( pReturn_value );
+  Py_DECREF( pFunc );
+
+  return status;
+}
+
+
+//---------------------------------------------------------------------
+
 int Sikupy::fcall_presave( Globals& siku )
 {
   int status = FCALL_OK;

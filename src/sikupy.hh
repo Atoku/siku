@@ -66,6 +66,9 @@ public:
 
   // -- Function to call call backs
 
+  //! \brief call pretimestep
+  int fcall_pretimestep( Globals& siku );
+
   //! \brief call presave (updates siku.savefile)
   int fcall_presave( Globals& siku );
 
