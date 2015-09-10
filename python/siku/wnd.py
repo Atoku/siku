@@ -9,23 +9,23 @@ import os
 import sys
 
 ### AAAAHH!!! Dis dependencies are killin me!
-##from siku import geocoords
-##from siku import nmc
+from siku import geocoords
+from siku import nmc
 
 ## I think this is better solution (at least it allows running scripts from
 ## another scripts, without any C++ 'siku' importing).
-try:
-    import nmc
-    import geocoords
-except ImportError:
-    print('import error: trying internal directory')
-    os.chdir('./../python/siku/')
-    sys.path.append(os.getcwd())
-    import nmc
-    import geocoords
+##try:
+##    import nmc
+##    import geocoords
+##except ImportError:
+##    print('import error: trying internal directory')
+##    os.chdir('./../python/siku/')
+##    sys.path.append(os.getcwd())
+##    import nmc
+##    import geocoords
 
 NMC = nmc.NMC
-
+print('wow')
 #------------------------------------------------------------------------------
 # VARIABLE STORAGING (IN LATITUDE-LONGITUDE COORDINATES)
 #------------------------------------------------------------------------------

@@ -21,12 +21,13 @@ extern "C" {
 #include "auxutils.hh"
 
 #include "coordinates.hh"
+using namespace Coordinates;
 
 ////// TESTING ///////
 #include <cmath>
 double UBERCHECK=0.;
-int ind1 = 15;
-int ind2 = 25;
+int ind1 = 36;
+int ind2 = 35;
 ////// \TESTING ///////
 
 //---------------------------------------------------------------------
@@ -88,46 +89,53 @@ Sikupy::Sikupy( string filename )
 }
 
 //---------------------------------------------------------------------
-void Sikupy::initialize( Globals &siku )
+void Sikupy::initialize(Globals &siku)
 {
-  int success {0};                // success code
-
-  success = read_info      ( siku.info );     assert ( success );
-  success = read_planet    ( siku.planet );   assert ( success );
-  success = read_modeltime ( siku.time );     assert ( success );
-  success = read_materials ( siku.ms );       assert ( success );
-  success = read_elements  ( siku.es );       assert ( success );
-  success = read_diagnostics ( siku.diagnostics );
-  assert ( success );
-
-  /// vecfield testing
-  success = read_nmc_vecfield ( siku.windgrid );
-  assert ( success );
-
-  if ( success == 0 ) fatal( 1, "Something wrong went on initialization" );
+	int success
+	{ 0 };                // success code
+	
+	success = read_info(siku.info);
+	assert(success);
+	success = read_planet(siku.planet);
+	assert(success);
+	success = read_modeltime(siku.time);
+	assert(success);
+	success = read_materials(siku.ms);
+	assert(success);
+	success = read_elements(siku.es);
+	assert(success);
+	success = read_diagnostics(siku.diagnostics);
+	assert(success);
+	
+	/// vecfield testing
+	success = read_nmc_vecfield(siku.windgrid);
+	assert(success);
+	
+	if (success == 0)
+		fatal(1, "Something wrong went on initialization");
 }
 
 /*
-  TODO: It is better to be able to initialize from files located in
-  different directories. For this, the path and the filename should be
-  separated. The path should be added to sys.path, the filename should
-  be stripped from .py as it is done already.
+ TODO: It is better to be able to initialize from files located in
+ different directories. For this, the path and the filename should be
+ separated. The path should be added to sys.path, the filename should
+ be stripped from .py as it is done already.
  */
 
 //---------------------------------------------------------------------
-
 void Sikupy::finalize()
 {
-  Py_DECREF( pSiku_callback );
-  Py_DECREF( pSiku_diagnostics );
-  for ( auto pfunc: pSiku_funcs ) Py_DECREF( pfunc );
-  Py_DECREF( pSiku );
-  Py_DECREF( pModule );
-
-  flag = flag & (~FLAG_INITIALIZED);
-
-  // Finish the Python Interpreter
-  Py_Finalize();
+	Py_DECREF (pSiku_callback);
+	Py_DECREF (pSiku_diagnostics);
+	for (auto pfunc : pSiku_funcs)
+		Py_DECREF(pfunc);
+	Py_DECREF (pSiku);
+	Py_DECREF (pModule);
+	
+	flag = flag & (~FLAG_INITIALIZED);
+	
+	// Finish the Python Interpreter
+	Py_Finalize();
 }
 
 //---------------------------------------------------------------------
@@ -772,9 +780,6 @@ int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
 
     double ew, nw; // temporal variables for next loop
 
-    // I wish it was a namespace, NOT a class
-    Coordinates Co;
-
     for( size_t i=0; i < lat_s; ++i )
     {
         PyObject* pLine  = PyList_GetItem( pTemp, i ); //borrowed
@@ -804,9 +809,9 @@ int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
             ////// \TESTING ///////
 
             // seems to be working
-            vec3d velo = Co.geo_to_cart_surf_velo(
-            		Co.deg_to_rad( vField.lat_valuator[i] ) ,
-            		Co.deg_to_rad( vField.lon_valuator[j] ),
+            vec3d velo = geo_to_cart_surf_velo(
+            		deg_to_rad( vField.lat_valuator[i] ) ,
+            		deg_to_rad( vField.lon_valuator[j] ),
             		ew, nw );
 
             vField.set_vec( velo, i, j );
@@ -839,6 +844,7 @@ int Sikupy::read_nmc_vecfield( NMCVecfield& vField )
     double ZZ = vField.get_vec( (size_t)ind1, (size_t)ind2 )->z;
     std::cout<<UBERCHECK<<" must be equal to "<<
     		sqrt(XX*XX + YY*YY + ZZ*ZZ)<<"\n\n";
+    std::cout<<XX<<"\t"<<YY<<"\t"<<ZZ<<"\n\n";
     ////// \TESTING ///////
 
 	return success;
@@ -1086,6 +1092,16 @@ bool Sikupy::read_quat( PyObject* pquat, quat& q )
 //! \brief reading double/float number
 bool Sikupy::read_double(PyObject* pfloat, double& x)
 {
+
+//	// !!! ALTERNATIVE !!!
+//	PyErr_Clear();
+//
+//	x = PyFloat_AsDouble(pfloat);
+//
+//	if( PyErr_Occured() ) // Returns borrowed ref, so no var needed
+//		return false;
+//	return true;
+
 	// check if pquat is the correct type
 	if ( ! ( PyFloat_Check(pfloat) or PyLong_Check(pfloat) ) )
 		return false;
