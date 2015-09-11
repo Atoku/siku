@@ -1,4 +1,3 @@
-
 /*
  * Siku: Discrete element method sea-ice model: sikupy.hh
  *       Siku Python interface class
@@ -24,16 +23,17 @@
 
 /*!
 
-  \file sikupy.hh
+ \file sikupy.hh
 
-  \brief Siku Python interface class
+ \brief Siku Python interface class
 
-*/
+ */
 
 #ifndef SIKUPY_HH
 #define SIKUPY_HH
 
-extern "C" {
+extern "C"
+{
 #include <Python.h>
 #undef tolower                  // fuck this practice by python
 #include "config.h"
@@ -55,47 +55,63 @@ class Sikupy
 public:
 
   //! \brief Start python, declare the variable
-  Sikupy( string filename );
+  Sikupy (string filename);
 
   //! \brief Do all initialization and open conf file
-  void initialize( Globals& siku );
+  void
+  initialize (Globals& siku);
 
   //! \brief Finalize (technically should be called only from
   //! destructor, however it is left public in case session should be
   //! restarted).
-  void finalize();
+  void
+  finalize ();
 
   // -- Function to call call backs
 
   //! \brief call pretimestep
-  int fcall_pretimestep( Globals& siku );
+  int
+  fcall_pretimestep (Globals& siku);
 
   //! \brief call presave (updates siku.savefile)
-  int fcall_presave( Globals& siku );
+  int
+  fcall_presave (Globals& siku);
 
   //! \brief call monitor function
   //! \param[in] siku main global variables container
   //! \param[in] i index of the element we call the function for
   //! \param[in] fname function name to call
-  int fcall_monitor( const Globals& siku,
-                     const size_t i,
-                     const char* fname );
+  int
+  fcall_monitor (const Globals& siku, const size_t i, const char* fname);
 
   //! \brief call diagnostics function for vector field
   //! \param[in] siku main global variables container
   //! \param[in] i index of diagnostics function to call
   //! \param[in] data data to output
-  int fcall_diagnostics_vec3d( const Globals& siku,
-                               const size_t i,
-                               const vector<vec3d>& data );
+  int
+  fcall_diagnostics_vec3d (const Globals& siku, const size_t i,
+                           const vector<vec3d>& data);
 
   //! \brief Release all owened PyObjs
-  ~Sikupy();
+  ~Sikupy ();
 
   // Constants
-  static const unsigned int FCALL_OK                     { 0x0 };
-  static const unsigned int FCALL_ERROR_NO_FUNCTION      { 0x1 };
-  static const unsigned int FCALL_ERROR_PRESAVE_NOSTRING { 0x2 };
+  static const unsigned int FCALL_OK
+    { 0x0 };
+  static const unsigned int FCALL_ERROR_NO_FUNCTION
+    { 0x1 };
+  static const unsigned int FCALL_ERROR_PRESAVE_NOSTRING
+    { 0x2 };
+
+  enum
+    : unsigned long
+      {
+        STATUS_NONE = 0x0,
+    STATUS_SAVE = 0x1,
+    STATUS_WINDS = 0x2,
+    STATUS_CURRENTS = 0x4,
+    STATUS_EXIT = 0x80 // aka 128
+  };
 
   //---------------------------------------------------------------------
   //                       PRIVATE METHODS
@@ -111,7 +127,7 @@ private:
 
   //! \brief Access to the siku name space with all the initialization
   //! data (incremented)
-  PyObject *pSiku;             
+  PyObject *pSiku;
 
   //! \brief Access to siku.callback object to reach callback functions
   //! (incremented)
@@ -125,40 +141,52 @@ private:
   //! functions)
   vector<PyObject*> pSiku_funcs;
 
-  unsigned int flag {0};   //!< different states for the class
+  unsigned int flag
+    { 0 };   //!< different states for the class
+
+  unsigned long callback_status
+    { STATUS_NONE };
 
   // -----------------------------------------------------------------
   // local methods to structurize initialize method in sections mostly
   // -----------------------------------------------------------------  
 
   //! \brief Reading info data
-  int read_info( Info& info );
+  int
+  read_info (Info& info);
 
   //! \brief Reading Planet data like R, omega. 
-  int read_planet( Planet& planet );
+  int
+  read_planet (Planet& planet);
 
   //! \brief Reading model time parameters
-  int read_modeltime( ModelTime& time );
+  int
+  read_modeltime (ModelTime& time);
 
   //! \brief Reading materials
-  int read_materials( vector<Material>& ms );
+  int
+  read_materials (vector<Material>& ms);
 
   //! \brief Reading elements
-  int read_elements( vector<Element>& es );
+  int
+  read_elements (vector<Element>& es);
 
   //! \brief Reading diagnostics class if it exists
-  int read_diagnostics( Diagnostics& diag );
+  int
+  read_diagnostics (Diagnostics& diag);
 
   //! \brief Reading diagnostics meshes
-  int read_diagnostics_meshes( Diagnostics& diag );
+  int
+  read_diagnostics_meshes (Diagnostics& diag);
 
   //! \breif Reading how to diagnose winds 
-  int read_diagnostics_winds( Diagnostics& diag );
-
+  int
+  read_diagnostics_winds (Diagnostics& diag);
 
   // -----------------------------------------------------------------
   //! \brief Reading NMC wind grid with/from wnd.py
-  int read_nmc_vecfield( NMCVecfield& vField );
+  int
+  read_nmc_vecfield (NMCVecfield& vField);
 
   // -----------------------------------------------------------------
   // local methods to simplify access to some data types
@@ -169,59 +197,73 @@ private:
   //! to read quaternion from
   //! \param q quaternion to read the data to
   //! \return true on success, false on fail
-  bool read_quat( PyObject* pquat, quat& q );
+  bool
+  read_quat (PyObject* pquat, quat& q);
 
+  //! \brief Reads usigned long
+  //! \param pLong a number to read from
+  //! \param x ref. to where it is read
+  //! \return true on success, false if any errors occurred
+  bool
+  read_ulong (PyObject* pLong, unsigned long& x);
 
   //! \brief Reads float
   //! \param pfloat a number to read from
   //! \param x ref. to where it is read
   //! \return true on success, false on fail
-  bool read_double( PyObject* pfloat, double& x );
+  bool
+  read_double (PyObject* pfloat, double& x);
 
   //! \brief Reads int
   //! \param pint a number to read from
   //! \param x a value to read to
   //! \return true on success, false on fail
-  bool read_long( PyObject* pint, long& x );
+  bool
+  read_long (PyObject* pint, long& x);
 
   //! \brief Reads string
   //! \param pstr an Python object to read from
   //! \param str where to read to
   //! \return true on success, false on fail
-  bool read_string( PyObject* pstr, string& str );
+  bool
+  read_string (PyObject* pstr, string& str);
 
   //! \brief Reads vector of doubles from a list
   //! \param plist an Python object to read from
   //! \param xs where to read to
   //! \return true on success, false on fail
-  bool read_double_vector( PyObject* plist, vector<double>& xs );
+  bool
+  read_double_vector (PyObject* plist, vector<double>& xs);
 
   //! \brief Reads vector of vec3d from a list of 3 element lists
   //! \param plist an Python object to read from
   //! \param vs where to read to
   //! \return true on success, false on fail
-  bool read_vec3d_vector( PyObject* plist, vector<vec3d>& vs );
+  bool
+  read_vec3d_vector (PyObject* plist, vector<vec3d>& vs);
 
   //! \brief reading time_duration object
   //! \param[in] pobj a Python object to read from
   //! \param[out] dt time duration object read
   //! \return true on success, false on fail
-  bool read_dt( PyObject* pobj, 
-                boost::posix_time::time_duration& dt );
+  bool
+  read_dt (PyObject* pobj, boost::posix_time::time_duration& dt);
 
   //! \brief reading posix time object
   //! \param[in] pobj a Python object to read from
   //! \param[out] t time object read
   //! \return true on success, false on fail
-  bool read_time( PyObject* pobj, 
-                  boost::posix_time::ptime& t );
+  bool
+  read_time (PyObject* pobj, boost::posix_time::ptime& t);
 
   //! \brief Flag value saying that Py_Initialize was called
-  static const unsigned int FLAG_PY_INITIALIZED { 0x1 };
-  
+  static const unsigned int FLAG_PY_INITIALIZED
+    { 0x1 };
+
   //! \brief Flag value saying that initialize was called. The flag is
   //! dropped in finalize member.
-  static const unsigned int FLAG_INITIALIZED    { 0x2 };
+  static const unsigned int FLAG_INITIALIZED
+    { 0x2 };
 
 };
 

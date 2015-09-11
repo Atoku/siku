@@ -47,16 +47,34 @@ def main():
     matnames = {
         'ice': 0,
     }
+    
+    # ---------------------------------------------------------------------
+    #  Wind initializations
+    # ---------------------------------------------------------------------
+
+    ###### TESTING!
+    try:
+        siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
+        siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
+        siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+        siku.time.start = siku.uw.times[1]
+        siku.time.last = siku.uw.times[1]
+        siku.time.finish = siku.uw.times[5]
+        siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
+    except:
+        print('wnd works bad')
 
     # ---------------------------------------------------------------------
     # date/time settings
     # ---------------------------------------------------------------------
 
-    siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
+    ## time inits are temporary moved to 'wind' section
+    #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     #siku.time.finish   = datetime.datetime  ( 2012, 3, 13 )
-    siku.time.finish   = datetime.datetime  ( 2012, 3, 12, 00, 00, 10 )
-    siku.time.dt       = datetime.timedelta ( seconds = 1 )
+    #siku.time.finish   = datetime.datetime  ( 2012, 3, 12, 00, 00, 10 )
+    #siku.time.dt       = datetime.timedelta ( seconds = 1 )
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
+    #siku.time.last = siku.time.start
     
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -110,12 +128,6 @@ def main():
     siku.diagnostics.meshes.append( mesh_01 )
     siku.diagnostics.wind.append( 
         ( winds_diag, 0, siku.time.start, 2*siku.time.dt ) )
-
-    ###### TESTING!
-    uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
-    vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
-    siku.wind = wnd.NMCSurfaceVField( uw, vw, -1 ) 
-
 
     return 0
 
@@ -171,6 +183,8 @@ def winds_diag( t, winds ):
 # velocity field settings: sources for velocities, where to get 
 # ---------------------------------------------------------------------
 
+
+
 # ---------------------------------------------------------------------
 # Calling main function at the end
 # ---------------------------------------------------------------------
@@ -178,5 +192,4 @@ def winds_diag( t, winds ):
 siku.main = main()
 
 if __name__ == '__main__':
-    #sys.exit( main() )
     sys.exit( siku.main )
