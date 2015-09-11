@@ -11,15 +11,10 @@
 
 #include "siku.hh"
 
-
-// found no pi in <cmath>
-// should it really be like this?
-#define PI 3.1415926535897932384626433832795
-
 //! \brief coordinate transformations  
-class Coordinates
+namespace Coordinates
 {
-public:
+//public:
 
   //! \brief getting latitude and longitude of center of mass by
   //!  quaternion
@@ -35,10 +30,10 @@ public:
   vec3d geo_to_cart_surf_velo( const double& lat, const double& lon,
 		  const double& e_velo, const double& n_velo );
 
-  inline double deg_to_rad( const double& deg ){ return deg / 180 * PI; }
+  inline double deg_to_rad( const double& deg ){ return deg / 180 * M_PI; }
 
-  inline double rad_to_deg( const double& rad ){ return rad / PI * 180; }
+  inline double rad_to_deg( const double& rad ){ return rad / M_PI * 180; }
 
-};
+}
 
 #endif      /* COORDINATES_HH */
