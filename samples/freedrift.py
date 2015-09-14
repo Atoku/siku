@@ -132,6 +132,25 @@ def main():
     return 0
 
 # --------------------------------------------------------------------------
+def pretimestep( t, n, ns ):
+    status = siku.MASK['NONE']
+    # !!! some valid checks should be placed.
+    # NMC time comparation is not clear.
+    if t > ( siku.time.last + siku.time.dt ):
+        status = MASK['WINDS']
+
+    # and change the winds here
+
+    # and save the current time in a structure
+    
+    # test:
+    print ( "We are in pretimestep" )
+
+    return status
+
+siku.callback.pretimestep = pretimestep
+
+# --------------------------------------------------------------------------
 
 def drift_monitor( t, Q, Ps ):
 

@@ -878,11 +878,10 @@ Sikupy::fcall_pretimestep (Globals& siku)
 //  if (!PyCallable_Check (pFunc))
 //    return FCALL_ERROR_NO_FUNCTION;
 
-  //////////// What was that for at all?
-//  // preparing paramaters to pass (we send model time and dt) as
-//  // datetime object
-//  const size_t n = siku.time.get_n ();
-//  const size_t ns = siku.time.get_ns ();
+ // preparing paramaters to pass (we send model time and dt) as
+ // datetime object
+ const size_t n = siku.time.get_n ();
+ const size_t ns = siku.time.get_ns ();
 
   // creating datetime object
   long microseconds = siku.time.get_total_microseconds ()
@@ -896,8 +895,15 @@ Sikupy::fcall_pretimestep (Globals& siku)
   assert(pCurTime);
 
   ///////// optimized call: less pointers to init and decref
-  PyObject* pReturn_value = PyObject_CallMethod (pSiku_callback, "pretimestep",
-                                                 "(OO)", pSiku, pCurTime); //new
+
+  // PyObject* pargs;
+  // pargs = Py_BuildValue ("(O,i,i)", pCurTime, n, ns); // new
+  // assert(pargs);
+
+  PyObject* pReturn_value = PyObject_CallMethod ( pSiku_callback, 
+                                                  "pretimestep",
+                                                  "(O,i,i)", 
+                                                  pCurTime, n, ns ); //new
 
   // should return long. If I`m not wrong- there is no 'int' methods nor values.
   if (!PyLong_Check(pReturn_value))

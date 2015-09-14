@@ -80,17 +80,10 @@ def presave( t, n, ns ):
     fname = 'siku-' + t.strftime("%Y-%m-%d-%H:%M:%S") + '.h5'
     return fname
 
-    return ""
-
 callback.presave = presave
 
 def pretimestep( t, n, ns ):
-    status = MASK['NONE']
-    # !!! some valid checks should be placed.
-    # NMC time comparation is not clear.
-    if t > ( siku.time.last + siku.time.dt ):
-        status += MASK['WINDS']
-        siku.time.last = t
+    status  = MASK['NONE']
     return status
 
 callback.pretimestep = pretimestep
