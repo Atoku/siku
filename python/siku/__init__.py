@@ -64,7 +64,11 @@ def presave( t, n, ns ):
     fname = 'siku-' + t.strftime("%Y-%m-%d-%H:%M:%S") + '.h5'
     return fname
 
+def pretimestep( t, n, ns ):
+    return ""
+
 callback.presave = presave
+callback.pretimestep = pretimestep
 
 # ---------------------------------------------------------------------
 # Diagnostics
