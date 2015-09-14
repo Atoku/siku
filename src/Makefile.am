@@ -23,6 +23,7 @@ siku_SOURCES = siku.cc siku.hh \
 	modeltime.hh modeltime.cc \
 	mproperties.hh mproperties.cc \
 	monitoring.hh monitoring.cc \
+	nmc_reader.hh nmc_reader.cc \
 	options.cc options.hh \
 	planet.hh \
 	position.hh position.cc \

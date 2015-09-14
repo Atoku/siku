@@ -20,6 +20,15 @@
 #include "vecfield.hh"
 #include "diagnostics.hh"
 
+enum : unsigned long
+{
+  STATUS_NONE = 0x0,
+  STATUS_SAVE = 0x1,
+  STATUS_WINDS = 0x2,
+  STATUS_CURRENTS = 0x4,
+  STATUS_EXIT = 0x80 // aka 128
+};
+
 //! \brief Structure to keep all "global" data here. This namespace
 //! (will have the name siku) contains all the variables being
 //! initialized from the config file and computed or re-computed.
@@ -49,9 +58,13 @@ struct Globals
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
 
-  //-----------------------------------
-  //! NMC vecfield
-  NMCVecfield windgrid;
+  //! Callback-returned status (masked)
+  unsigned long callback_status
+    { STATUS_NONE };
+
+//  //-----------------------------------
+//  //! NMC vecfield
+//  NMCVecfield windgrid;
 };
 
 #endif      /* GLOBALS_HH */

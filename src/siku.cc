@@ -62,6 +62,7 @@ extern "C"
 
 //const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
 
+
 //--------------------------------------------------------------------
 //! \brief main function
 int
@@ -108,6 +109,7 @@ main (int argc, char* argv[])
       mproperties (siku);
 
       // --- Updating external forcing fields if necessary
+      sikupy.fcall_winds (siku);
 
       // --- Broad Phase Contact Detection if necessary
 

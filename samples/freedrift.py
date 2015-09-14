@@ -49,33 +49,29 @@ def main():
     }
     
     # ---------------------------------------------------------------------
-    #  Wind initializations
+    #  Wind initializations (NMC grid example)
     # ---------------------------------------------------------------------
 
-    ###### TESTING!
-    try:
-        siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
-        siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
-        siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
-        siku.time.start = siku.uw.times[1]
-        siku.time.last = siku.uw.times[1]
-        siku.time.finish = siku.uw.times[5]
-        siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
-    except:
-        print('wnd works bad')
-
+    siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
+    siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
+    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+   
     # ---------------------------------------------------------------------
     # date/time settings
     # ---------------------------------------------------------------------
 
-    ## time inits are temporary moved to 'wind' section
     #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     #siku.time.finish   = datetime.datetime  ( 2012, 3, 13 )
     #siku.time.finish   = datetime.datetime  ( 2012, 3, 12, 00, 00, 10 )
     #siku.time.dt       = datetime.timedelta ( seconds = 1 )
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     #siku.time.last = siku.time.start
-    
+
+    siku.time.start = siku.uw.times[1]
+    siku.time.last = siku.uw.times[1]
+    siku.time.finish = siku.uw.times[5]
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
+
     # ---------------------------------------------------------------------
     # Polygon initialization
     # ---------------------------------------------------------------------
@@ -129,27 +125,30 @@ def main():
     siku.diagnostics.wind.append( 
         ( winds_diag, 0, siku.time.start, 2*siku.time.dt ) )
 
+    # ---------------------------------------------------------------------
+    #  Callback flag-mask generator
+    # ---------------------------------------------------------------------
+
+    siku.callback.pretimestep = pretimestep
+
     return 0
 
 # --------------------------------------------------------------------------
+
 def pretimestep( t, n, ns ):
     status = siku.MASK['NONE']
-    # !!! some valid checks should be placed.
-    # NMC time comparison is not clear.
+    # some specific checks should be placed.
+
     if t > ( siku.time.last + siku.time.dt ):
-        print( "Time comparison" )
-        status = siku.MASK['WINDS']
+        status += siku.MASK['WINDS']
+        siku.time.last = t
 
     # and change the winds here
+    # ~!wind is changed with another call
 
     # and save the current time in a structure
-    
-    # test:
-    print ( "We are in pretimestep, time:", t, status )
-
+    # ~!current time is saved in siku.time.last
     return status
-
-siku.callback.pretimestep = pretimestep
 
 # --------------------------------------------------------------------------
 

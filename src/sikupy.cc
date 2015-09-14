@@ -24,12 +24,6 @@ extern "C"
 #include "coordinates.hh"
   using namespace Coordinates;
 
-//////// TESTING ///////
-//#include <cmath>
-//  double UBERCHECK=0.;
-//  int ind1 = 36;
-//  int ind2 = 35;
-//////// \TESTING ///////
 
 //---------------------------------------------------------------------
 
@@ -93,7 +87,7 @@ extern "C"
   void Sikupy::initialize(Globals &siku)
     {
       int success
-        { 0}; // success code
+        { 0 }; // success code
 
       success = read_info(siku.info);
       assert(success);
@@ -108,13 +102,17 @@ extern "C"
       success = read_diagnostics(siku.diagnostics);
       assert(success);
 
-      // vecf  ield test ing
-  success = read_nmc_vecfield (siku.windgrid);
-  assert(success);
 
-  if (success == 0)
-    fatal(1, "Something wrong went on initialization");
-}
+      success = siku.wind.load_wind( siku );
+      assert(success);
+
+      // vecfield testing
+      success = read_nmc_vecfield ( *siku.wind.NMCWind );
+      assert(success);
+
+      if (success == 0)
+        fatal(1, "Something wrong went on initialization");
+    }
 
 /*
  TODO: It is better to be ab
@@ -768,7 +766,7 @@ Sikupy::read_nmc_vecfield (NMCVecfield& vField)
   PyObject* Lon = PyObject_GetAttrString (pSiku_wind, "lon"); //new
   size_t lon_s = PyList_Size (Lon);
 
-  vField.init_grid (lat_s, lon_s);
+  vField.init_grid ( lat_s, lon_s );
 
   double dtemp; // temporal double
 
@@ -800,29 +798,18 @@ Sikupy::read_nmc_vecfield (NMCVecfield& vField)
   for (size_t i = 0; i < lat_s; ++i)
     {
       PyObject* pLine = PyList_GetItem (pTemp, i); //borrowed
-      /*
-       * TODO: as soon as wnd.py is shanged into (x, y, z)-value grid:
-       * replace next 'for' cycle with following fuction call:
-       */
-      //read_vec3d_vector( pLine, vField.grid[i] );
+
       for (size_t j = 0; j < lon_s; ++j)
         {
           pTuple = PyList_GetItem (pLine, j); //borrowed
 
-          //ew = PyFloat_AsDouble (PyTuple_GetItem (pTuple, 0));
-          //nw = PyFloat_AsDouble (PyTuple_GetItem (pTuple, 1));
-
           read_double (PyTuple_GetItem (pTuple, 0), ew);
           read_double (PyTuple_GetItem (pTuple, 1), nw);
 
-//          ////// TESTING ///////
-//          if (i == ind1 && j == ind2)
-//            UBERCHECK = sqrt (ew * ew + nw * nw);
-//          ////// \TESTING ///////
-
           vField.set_vec (
               geo_to_cart_surf_velo (deg_to_rad (vField.lat_valuator[i]),
-                                     deg_to_rad (vField.lon_valuator[j]), ew,
+                                     deg_to_rad (vField.lon_valuator[j]),
+                                     ew,
                                      nw),
               i, j);
         }
@@ -832,31 +819,6 @@ Sikupy::read_nmc_vecfield (NMCVecfield& vField)
   Py_DECREF(Lon);
   Py_DECREF(pTemp);
   Py_DECREF(pSiku_wind);
-
-//  ////// TESTING ///////
-//  std::cout << "!!! TESTING !!!\n";
-//  std::cout << "get wind at 10, 20 internally (x component):\n";
-//  std::cout << vField.grid[10][20].x << "\n";
-//
-//  std::cout << "get wind at 10, 20 externally (x component):\n";
-//  std::cout << vField.get_vec ((size_t) 10, (size_t) 20)->x << "\n";
-//
-//  std::cout << "get latitude at 10 20 internally:\n";
-//  std::cout << vField.lat_valuator[10] << "\n";
-//  std::cout << "get longitude at 10 20 externally:\n";
-//  std::cout << vField.get_node ((size_t) 10, (size_t) 20).lon << "\n";
-//
-//  std::cout << "get wind by lat-lon 65, 50 (x component):\n";
-//  std::cout << vField.get_vec (65., 50.)->x << "\n\n";
-//
-//  std::cout << "UBERCHECK:\n";
-//  double XX = vField.get_vec ((size_t) ind1, (size_t) ind2)->x;
-//  double YY = vField.get_vec ((size_t) ind1, (size_t) ind2)->y;
-//  double ZZ = vField.get_vec ((size_t) ind1, (size_t) ind2)->z;
-//  std::cout << UBERCHECK << " must be equal to "
-//      << sqrt (XX * XX + YY * YY + ZZ * ZZ) << "\n\n";
-//  std::cout << XX << "\t" << YY << "\t" << ZZ << "\n\n";
-//  ////// \TESTING ///////
 
   return success;
 }
@@ -878,10 +840,10 @@ Sikupy::fcall_pretimestep (Globals& siku)
 //  if (!PyCallable_Check (pFunc))
 //    return FCALL_ERROR_NO_FUNCTION;
 
- // preparing paramaters to pass (we send model time and dt) as
- // datetime object
- const size_t n = siku.time.get_n ();
- const size_t ns = siku.time.get_ns ();
+  // preparing paramaters to pass (we send model time and dt) as
+  // datetime object
+  const size_t n = siku.time.get_n ();
+  const size_t ns = siku.time.get_ns ();
 
   // creating datetime object
   long microseconds = siku.time.get_total_microseconds ()
@@ -894,41 +856,83 @@ Sikupy::fcall_pretimestep (Globals& siku)
       (int ) siku.time.get_seconds (), (int ) microseconds);
   assert(pCurTime);
 
-  ///////// optimized call: less pointers to init and decref
-
-  // PyObject* pargs;
-  // pargs = Py_BuildValue ("(O,i,i)", pCurTime, n, ns); // new
-  // assert(pargs);
-
-  PyObject* pReturn_value = PyObject_CallMethod ( pSiku_callback, 
-                                                  "pretimestep",
-                                                  "(O,i,i)", 
-                                                  pCurTime, n, ns ); //new
+  // calling python 'pretiestep' method
+  PyObject* pReturn_value = PyObject_CallMethod ( pSiku_callback,
+                                                 "pretimestep",
+                                                 "(O,i,i)",
+                                                 pCurTime, n, ns ); //new
 
   // should return long. If I`m not wrong- there is no 'int' methods nor values.
-  if (!PyLong_Check(pReturn_value))
-    return FCALL_ERROR_PRESAVE_NOSTRING;
+  if ( !PyLong_Check( pReturn_value ) )
+    return FCALL_ERROR_PRETIMESTEP_NOLONG;
 
-  read_ulong (pReturn_value, callback_status);
+  read_ulong (pReturn_value, siku.callback_status);
 
-  /////////// NEXT SECTION WILL BE EXTRACTED AS INDEPENDENT METHOD //////////
-  if (callback_status & STATUS_WINDS)
-    {
-      cout << "Test: trying to update windgrid.\nNew date is:  \n";
-
-      PyObject* pTemp;
-      pTemp = PyObject_CallMethod (pSiku_callback, "updatewind", "(OO)", pSiku,
-                                   pCurTime); //new
-      Py_DECREF(pTemp);
-
-      read_nmc_vecfield (siku.windgrid);
-    }
-  //////////////////////////////////////////////////////////////////
+//  /////////// NEXT SECTION WILL BE EXTRACTED AS INDEPENDENT METHOD //////////
+//  if (siku.callback_status & STATUS_WINDS)
+//    {
+//      cout<<"Updating wind. New time is: \n";
+//
+//      PyObject* pTemp;
+//      pTemp = PyObject_CallMethod (pSiku_callback, "updatewind", "(O)",
+//                                   pCurTime); //new
+//      Py_DECREF(pTemp);
+//
+//      read_nmc_vecfield (siku.windgrid);
+//    }
+//  //////////////////////////////////////////////////////////////////
 
   Py_DECREF(pCurTime);
   Py_DECREF(pReturn_value);
 
   return status;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_update_nmc_wind (Globals& siku)
+{
+  int status = FCALL_OK;
+
+  // creating datetime object
+    long microseconds = siku.time.get_total_microseconds ()
+        - 1000000 * siku.time.get_total_seconds ();
+
+    PyObject* pCurTime = PyDateTime_FromDateAndTime(
+        siku.time.get_year (), // new
+        siku.time.get_month(), siku.time.get_day (),
+        (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
+        (int ) siku.time.get_seconds (), (int ) microseconds);
+    assert(pCurTime);
+
+
+    cout<<"Updating wind. New time is: \n";
+
+    PyObject* pTemp = PyObject_CallMethod (pSiku_callback, "updatewind", "(O)",
+                                           pCurTime); //new
+    Py_DECREF(pTemp);
+    Py_DECREF(pCurTime);
+
+    read_nmc_vecfield ( *siku.wind.NMCWind );
+
+
+  return status;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_winds (Globals& siku)
+{
+  if( ! (siku.callback_status & STATUS_WINDS))
+    return 1;
+
+  if( !fcall_update_nmc_wind ( siku ) )
+    return 2;
+
+  siku.callback_status &= ~STATUS_WINDS;
+  return 0;
 }
 
 //---------------------------------------------------------------------

@@ -8,18 +8,65 @@
 
 #include "vecfield.hh"
 #include "errors.hh"
+#include "sikupy.hh"
+
+//---------------------------------------------------------------------
+//---------------- UTIL FUNCTIONS FOR INTERPOLATION -------------------
+//---------------------------------------------------------------------
+
+inline vec3d proport( const vec3d& d1, const vec3d& d2, const double& t )
+{
+  return d1 + ( d2 - d1 )*t;
+}
+
+inline double norm_lat( double lat )
+{
+  while( lat > M_PI/2. )
+    lat -= M_PI;
+  while( lat < -M_PI/2. )
+    lat += M_PI;
+  return lat;
+}
+
+inline double norm_lon( double lon )
+{
+  while( lon > 2.*M_PI )
+    lon -= 2.*M_PI;
+  while( lon < 0. )
+    lon += 2.*M_PI;
+  return lon;
+}
+
+
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+
+Vecfield::Vecfield(const unsigned int& SOURCE_TYPE) :
+FIELD_SOURCE_TYPE( SOURCE_TYPE )
+{
+  mode = MODE_VEC_STD_FIELD1;
+  NMCWind = new NMCVecfield;
+}
 
 //---------------------------------------------------------------------
 
 Vecfield::Vecfield()
 {
+  NMCWind = new NMCVecfield;
   mode = MODE_VEC_STD_FIELD1;
 }
 
 //---------------------------------------------------------------------
 
-void Vecfield::get_at_xy( const vec3d& x,
-                          vec3d* pv )
+Vecfield::~Vecfield()
+{
+  delete NMCWind;
+}
+
+//---------------------------------------------------------------------
+
+void Vecfield::get_at_xy( const vec3d& x, vec3d* pv )
 {
   switch ( mode )
     {
@@ -31,6 +78,55 @@ void Vecfield::get_at_xy( const vec3d& x,
         fatal( 1, "Not standard wind field is not implemented yet" );
         break;
     }
+}
+
+//---------------------------------------------------------------------
+
+int Vecfield::load_wind( Globals& siku )
+{
+  switch( FIELD_SOURCE_TYPE )
+  {
+    case FIELD_NMC:
+/////////// IMPOSSIBLE COZ OF PROJECT HIERARCHY //////////////
+      break;
+
+    default:
+      fatal( 1, "No source specified" );
+      break;
+  }
+  return 0;
+}
+
+//---------------------------------------------------------------------
+
+vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
+{
+  //draft: the simplest interpolation
+  lat = norm_lat ( lat );
+  lon = norm_lon ( lon );
+
+  size_t lat_ind = size_t ( lat / nmc_grid_step );
+  if( lat = M_PI/2. )
+    lat_ind -= 1;
+
+  size_t lon_ind = size_t ( lon / nmc_grid_step );
+  if( lon = 2.*M_PI )
+    lon_ind = 0;
+
+  double left = lon_ind * nmc_grid_step;
+  double right = (lon_ind + 1) * nmc_grid_step;
+  double bottom = lat_ind * nmc_grid_step;
+  double top = (lat_ind + 1) * nmc_grid_step;
+
+  vec3d LB = *NMCWind->get_vec( lat_ind, lon_ind );
+  vec3d LT = *NMCWind->get_vec( lat_ind + 1, lon_ind );
+  vec3d RB = *NMCWind->get_vec( lat_ind, norm_lon_ind( lon_ind + 1 ) );
+  vec3d RT = *NMCWind->get_vec( lat_ind + 1, norm_lon_ind( lon_ind + 1 ) );
+
+  vec3d top_v = proport( LT, RT, (lon - left)/(right - left) );
+  vec3d bot_v = proport( LB, RB, (lon - left)/(right - left) );
+
+  return proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
 }
 
 //---------------------------------------------------------------------
@@ -57,111 +153,111 @@ void Vecfield::field1( const vec3d& x,
   *pv = glm::cross( x, dpsi );
 }
 
-//----------------------------------------------------------------------------
-//--------------------------- NMC Vec Field ----------------------------------
-//----------------------------------------------------------------------------
-
-vec3d* NMCVecfield::get_vec( const size_t& lat_i, const size_t& lon_i )
-{
-	try
-	{
-		return &grid.at( lat_i ).at( lon_i );
-	}
-	catch(const std::out_of_range& oor)
-	{
-		return nullptr;
-	}
-}
-vec3d* NMCVecfield::get_vec( const double& lat, const double& lon )
-{
-	try
-	{
-		return &grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) );
-	}
-	catch(const std::out_of_range& oor)
-	{
-		return nullptr;
-	}
-}
-NMCVecfield::GridNode NMCVecfield::get_node( const size_t& lat_i, const size_t& lon_i )
-{
-	try
-	{
-		return NMCVecfield::GridNode( lat_valuator.at( lat_i ), lon_valuator.at( lon_i ), grid.at( lat_i ).at( lon_i ) );
-	}
-	catch(const std::out_of_range& oor)
-	{
-		throw(oor);
-		//return nullptr;
-	}
-}
-NMCVecfield::GridNode NMCVecfield::get_node( const double& lat, const double& lon )
-{
-	try
-	{
-		return NMCVecfield::GridNode( lat, lon, grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) ) );
-	}
-	catch(const std::out_of_range& oor)
-	{
-		throw(oor);
-		//return nullptr;
-	}
-}
-
-void NMCVecfield::set_vec( const vec3d& value, const size_t& lat_i, const size_t& lon_i )
-{
-	try
-	{
-		grid.at( lat_i ).at( lon_i ) = value;
-	}
-	catch(const std::out_of_range& oor)
-	{
-		//error: "illegal index"
-		throw(oor);
-	}
-}
-void NMCVecfield::set_vec( const vec3d& value, const double& lat, const double& lon )
-{
-	try
-	{
-		grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) ) = value;
-	}
-	catch(const std::out_of_range& oor)
-	{
-		cout<<"dkjfghdfhg";
-		//error: "bad argument: no such coordinates"
-		throw(oor);
-	}
-}
-void NMCVecfield::set_node( const GridNode& GN, const size_t& lat_i, const size_t& lon_i )
-{
-	try
-	{
-		grid.at( lat_i ).at( lon_i ) = GN.value;
-		lat_indexer[ GN.lat ] = lat_i;
-		lon_indexer[ GN.lon ] = lon_i;
-		lat_valuator[ lat_i ] = GN.lat;
-		lon_valuator[ lon_i ] = GN.lon;
-	}
-	catch(const std::out_of_range& oor)
-	{
-		//error: "illegal index"
-		throw(oor);
-	}
-}
-
-void NMCVecfield::init_grid( const size_t& lat_s, const size_t& lon_s )
-{
-	clear();
-	grid.resize( lat_s, std::vector< vec3d > ( lon_s ) );
-}
-void NMCVecfield::clear()
-{
-	for( size_t i=0; i < grid.size(); ++i)
-		grid[i].clear();
-	grid.clear();
-	lat_indexer.clear();
-	lon_indexer.clear();
-	lat_valuator.clear();
-	lon_valuator.clear();
-}
+////----------------------------------------------------------------------------
+////--------------------------- NMC Vec Field ----------------------------------
+////----------------------------------------------------------------------------
+//
+//vec3d* NMCVecfield::get_vec( const size_t& lat_i, const size_t& lon_i )
+//{
+//	try
+//	{
+//		return &grid.at( lat_i ).at( lon_i );
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		return nullptr;
+//	}
+//}
+//vec3d* NMCVecfield::get_vec( const double& lat, const double& lon )
+//{
+//	try
+//	{
+//		return &grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) );
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		return nullptr;
+//	}
+//}
+//NMCVecfield::GridNode NMCVecfield::get_node( const size_t& lat_i, const size_t& lon_i )
+//{
+//	try
+//	{
+//		return NMCVecfield::GridNode( lat_valuator.at( lat_i ), lon_valuator.at( lon_i ), grid.at( lat_i ).at( lon_i ) );
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		throw(oor);
+//		//return nullptr;
+//	}
+//}
+//NMCVecfield::GridNode NMCVecfield::get_node( const double& lat, const double& lon )
+//{
+//	try
+//	{
+//		return NMCVecfield::GridNode( lat, lon, grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) ) );
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		throw(oor);
+//		//return nullptr;
+//	}
+//}
+//
+//void NMCVecfield::set_vec( const vec3d& value, const size_t& lat_i, const size_t& lon_i )
+//{
+//	try
+//	{
+//		grid.at( lat_i ).at( lon_i ) = value;
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		//error: "illegal index"
+//		throw(oor);
+//	}
+//}
+//void NMCVecfield::set_vec( const vec3d& value, const double& lat, const double& lon )
+//{
+//	try
+//	{
+//		grid.at( lat_indexer.at( lat ) ).at( lon_indexer.at( lon ) ) = value;
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		cout<<"dkjfghdfhg";
+//		//error: "bad argument: no such coordinates"
+//		throw(oor);
+//	}
+//}
+//void NMCVecfield::set_node( const GridNode& GN, const size_t& lat_i, const size_t& lon_i )
+//{
+//	try
+//	{
+//		grid.at( lat_i ).at( lon_i ) = GN.value;
+//		lat_indexer[ GN.lat ] = lat_i;
+//		lon_indexer[ GN.lon ] = lon_i;
+//		lat_valuator[ lat_i ] = GN.lat;
+//		lon_valuator[ lon_i ] = GN.lon;
+//	}
+//	catch(const std::out_of_range& oor)
+//	{
+//		//error: "illegal index"
+//		throw(oor);
+//	}
+//}
+//
+//void NMCVecfield::init_grid( const size_t& lat_s, const size_t& lon_s )
+//{
+//	clear();
+//	grid.resize( lat_s, std::vector< vec3d > ( lon_s ) );
+//}
+//void NMCVecfield::clear()
+//{
+//	for( size_t i=0; i < grid.size(); ++i)
+//		grid[i].clear();
+//	grid.clear();
+//	lat_indexer.clear();
+//	lon_indexer.clear();
+//	lat_valuator.clear();
+//	lon_valuator.clear();
+//}

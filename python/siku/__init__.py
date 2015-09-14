@@ -82,27 +82,31 @@ def presave( t, n, ns ):
 
 callback.presave = presave
 
-def pretimestep( t, n, ns ):
-    status  = MASK['NONE']
-    return status
+## ### moved to freedrift.py
+##def pretimestep( t, n, ns):
+##    status = MASK['NONE']
+##    print('test')
+##    # some specific checks should be placed.
+##    if t > ( time.last + time.dt ):
+##        status += MASK['WINDS']
+##        time.last = t
+##
+##    return status
+##
+##callback.pretimestep = pretimestep
 
-callback.pretimestep = pretimestep
-
-def updatewind( siku, t ):
-    for i in range(len(siku.uw.times)):
-        if t < siku.uw.times[i] and i < ( len(siku.uw.times) - 1 ):
+def updatewind( t ):
+    for i in range(len(uw.times)):
+        if t < uw.times[i] and i < ( len(uw.times) - 1 ):
             #i +=1
             break
-        
-    #print('TEST OUTPUT (PYTHON): updating wind grid')
-    
-    #this print is synchronized with siku.cc print
-    print( str( siku.uw.times[i] ) + '\n' )
 
-    
-    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, i )
-    #print('TEST OUTPUT (PYTHON): updated')
+    #this print is synchronized with siku.cc print
+    print( str( uw.times[i] ) + '\n' )
+  
+    wind = wnd.NMCSurfaceVField( uw, vw, i )
     pass
+
 callback.updatewind = updatewind
 
 # ---------------------------------------------------------------------

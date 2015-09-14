@@ -92,6 +92,16 @@ public:
   fcall_diagnostics_vec3d (const Globals& siku, const size_t i,
                            const vector<vec3d>& data);
 
+  //! \brief Update wind from NMC source
+  //! \param[in] siku main global variables container
+  int
+  fcall_update_nmc_wind (Globals& siku);
+
+  //! \brief Check and perform winds update
+  //! \param[in] siku main global variables container
+  int
+  fcall_winds (Globals& siku);
+
   //! \brief Release all owened PyObjs
   ~Sikupy ();
 
@@ -102,16 +112,9 @@ public:
     { 0x1 };
   static const unsigned int FCALL_ERROR_PRESAVE_NOSTRING
     { 0x2 };
+  static const unsigned int FCALL_ERROR_PRETIMESTEP_NOLONG
+    { 0x4 };
 
-  enum
-    : unsigned long
-      {
-        STATUS_NONE = 0x0,
-    STATUS_SAVE = 0x1,
-    STATUS_WINDS = 0x2,
-    STATUS_CURRENTS = 0x4,
-    STATUS_EXIT = 0x80 // aka 128
-  };
 
   //---------------------------------------------------------------------
   //                       PRIVATE METHODS
@@ -143,9 +146,6 @@ private:
 
   unsigned int flag
     { 0 };   //!< different states for the class
-
-  unsigned long callback_status
-    { STATUS_NONE };
 
   // -----------------------------------------------------------------
   // local methods to structurize initialize method in sections mostly
