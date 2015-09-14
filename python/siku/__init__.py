@@ -4,10 +4,26 @@
       scenario file
 
 '''
-
-from . import bootstrap_config
-from . import earth
+try:
+    from . import bootstrap_config
+    from . import earth
+except:
+    import bootstrap_config
+    import earth
 #import wnd
+
+# ---------------------------------------------------------------------
+# return status masks
+# ---------------------------------------------------------------------
+
+MASK = {
+    'NONE' : 0,
+    'SAVE' : 1,
+    'WINDS' : 2,
+    'CURRENTS' : 4,
+
+    'EXIT' : 128
+    }
 
 # ---------------------------------------------------------------------
 # main function: by default it is None
@@ -69,6 +85,34 @@ def pretimestep( t, n, ns ):
 
 callback.presave = presave
 callback.pretimestep = pretimestep
+
+def pretimestep( siku, t):
+    status = MASK['NONE']
+    # !!! some valid checks should be placed.
+    # NMC time comparation is not clear.
+    if t > ( siku.time.last + siku.time.dt ):
+        status += MASK['WINDS']
+        siku.time.last = t
+    return status
+
+callback.pretimestep = pretimestep
+
+def updatewind( siku, t ):
+    for i in range(len(siku.uw.times)):
+        if t < siku.uw.times[i] and i < ( len(siku.uw.times) - 1 ):
+            #i +=1
+            break
+        
+    #print('TEST OUTPUT (PYTHON): updating wind grid')
+    
+    #this print is synchronized with siku.cc print
+    print( str( siku.uw.times[i] ) + '\n' )
+
+    
+    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, i )
+    #print('TEST OUTPUT (PYTHON): updated')
+    pass
+callback.updatewind = updatewind
 
 # ---------------------------------------------------------------------
 # Diagnostics
