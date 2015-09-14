@@ -135,16 +135,17 @@ def main():
 def pretimestep( t, n, ns ):
     status = siku.MASK['NONE']
     # !!! some valid checks should be placed.
-    # NMC time comparation is not clear.
+    # NMC time comparison is not clear.
     if t > ( siku.time.last + siku.time.dt ):
-        status = MASK['WINDS']
+        print( "Time comparison" )
+        status = siku.MASK['WINDS']
 
     # and change the winds here
 
     # and save the current time in a structure
     
     # test:
-    print ( "We are in pretimestep" )
+    print ( "We are in pretimestep, time:", t, status )
 
     return status
 
