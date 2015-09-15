@@ -1,12 +1,12 @@
 /*!
 
-  \file vecfield.hh
+ \file vecfield.hh
 
-  \brief Vector field class. A basic class that contains air wind and
-  sea streams vector fields, produces interpolation and provides
-  values of the vector field at particular points.
+ \brief Vector field class. A basic class to contains air wind and
+ sea streams vector fields, produce interpolation and provide values
+ of the vector field in particular points.
 
-*/
+ */
 
 #ifndef VECFIELD_HH
 #define VECFIELD_HH
@@ -17,8 +17,8 @@
 //#include <stdexcept>
 
 #include "siku.hh"
-#include "globals.hh"
 #include "nmc_reader.hh"
+#include "coordinates.hh"
 
 #include <cmath>
 
@@ -30,53 +30,78 @@ enum : unsigned int
 
 class Vecfield
 {
- public:
+public:
   //! \brief Flag for vecfield source type
-  unsigned int FIELD_SOURCE_TYPE {1};
+  unsigned int FIELD_SOURCE_TYPE
+    { 1 };
 
   //! \brief Flag points to standard field from Fuselier paper
-  static const int MODE_VEC_STD_FIELD1 {1};
+  static const int MODE_VEC_STD_FIELD1
+    { 1 };
 
   NMCVecfield* NMCWind;
 
-  Vecfield();
-  Vecfield(const unsigned int& SOURCE_TYPE);
-  ~Vecfield();
+  Vecfield ();
+  Vecfield ( const unsigned int& SOURCE_TYPE );
+  ~Vecfield ();
 
   //! \brief sets the vector field model (standard, specific
   //! interpolation model etc.: see MODE_VEC_ constants
-  void set_model( int model )
-  { mode = model; }
+  void
+  set_model ( int model )
+  {
+    mode = model;
+  }
 
   //! \brief Returns vector (3D) global coordinates at extrinsic
   //! coordinates (x,y).
-  void get_at_xy( const vec3d& x,
-                  vec3d* pv );
+  void
+  get_at_xy ( const vec3d& x, vec3d* pv );
 
-  int load_wind( Globals& siku );
-  vec3d get_at_lat_lon_rad( double lat, double lon) ;
+  inline vec3d
+  get_at_lat_lon_deg ( double lat, double lon )
+  {
+    return get_at_lat_lon_rad( Coordinates::deg_to_rad( lat ),
+                               Coordinates::deg_to_rad( lon ) );
+  }
 
- private:
+  vec3d
+  get_at_lat_lon_rad ( double lat, double lon );
 
+private:
   // DANGER: HARDCODED CONSTANT FOR NMC
-  const double nmc_grid_step{ 2.5 / 180 * M_PI };
+  const double nmc_grid_step
+    { 2.5 / 180 * M_PI };
 
   int mode;
 
   //! \brief Implementation of filed1 from Fuselier, Edward J and
   //! Wright, Grady B article.
-  void field1( const vec3d& x, vec3d* pv );
+  void
+  field1 ( const vec3d& x, vec3d* pv );
 
   //-------------------------------------------------------------------------
 
-  inline size_t norm_lon_ind( size_t lon_i )
+  inline size_t
+  norm_lon_ind ( int lon_i )
   {
-    size_t size = NMCWind->get_lon_size();
-    while( lon_i > size )
+    size_t size = NMCWind->get_lon_size ();
+    while ( lon_i >= size )
       lon_i -= size;
-    while( lon_i < size )
+    while ( lon_i < 0 )
       lon_i += size;
     return lon_i;
+  }
+
+  inline size_t
+  norm_lat_ind ( int lat_i )
+  {
+    size_t size = NMCWind->get_lat_size ();
+    while ( lat_i >= size )
+      lat_i -= size;
+    while ( lat_i < 0 )
+      lat_i += size;
+    return lat_i;
   }
 
 };

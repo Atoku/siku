@@ -12,10 +12,28 @@
 
 #include "dynamics.hh"
 
+///////////
+#include "coordinates.hh"
+#include <iostream>
+
 void dynamics( Globals& siku, const double dt )
 {
   for ( auto & e: siku.es )
     {
+      //////// TESTING ///////
+
+      double lat, lon;
+      Coordinates::sph_by_quat( e.q, &lat, &lon );
+      //std::cout<<lat<<"\t"<<lon<<"\n";
+
+      vec3d V = siku.wind.get_at_lat_lon_rad( Coordinates::norm_lat(lat), Coordinates::norm_lon(lon) );
+      //std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
+
+      e.F = 0.0016 * sqrt( V.x*V.x + V.y*V.y + V.z*V.z ) * V * e.A;
+
+      //std::cout<<e.F.x<<"\t"<<e.F.y<<"\t"<<e.F.z<<"\n";
+      ////////////////////////
+
       // first we create a vector of Super-Torque
       vec3d sT ( - e.F[1] / ( siku.planet.R * e.m ),
                    e.F[0] / ( siku.planet.R * e.m ),

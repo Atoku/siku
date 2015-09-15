@@ -67,10 +67,11 @@ def main():
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     #siku.time.last = siku.time.start
 
-    siku.time.start = siku.uw.times[1]
-    siku.time.last = siku.uw.times[1]
-    siku.time.finish = siku.uw.times[5]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
+    siku.time.start = siku.uw.times[0]
+    siku.time.last = siku.uw.times[0]
+    siku.time.last_update = siku.uw.times[0]
+    siku.time.finish = siku.uw.times[1]
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 3
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -139,7 +140,13 @@ def pretimestep( t, n, ns ):
     status = siku.MASK['NONE']
     # some specific checks should be placed.
 
-    if t > ( siku.time.last + siku.time.dt ):
+    # primitive time stepping
+##    if t > ( siku.time.last + siku.time.dt ):
+##        status += siku.MASK['WINDS']
+##        siku.time.last = t
+
+    # step by NMC own time step
+    if t >= siku.uw.times[siku.time.update_index + 1]:
         status += siku.MASK['WINDS']
         siku.time.last = t
 

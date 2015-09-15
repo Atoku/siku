@@ -34,6 +34,26 @@ namespace Coordinates
 
   inline double rad_to_deg( const double& rad ){ return rad / M_PI * 180; }
 
+
+  inline double norm_lat( double lat )
+  {
+    while( lat > M_PI/2. )
+      lat -= M_PI;
+    while( lat < -M_PI/2. )
+      lat += M_PI;
+    return lat;
+  }
+
+  inline double norm_lon( double lon )
+  {
+    while( lon > 2.*M_PI )
+      lon -= 2.*M_PI;
+    while( lon < 0. )
+      lon += 2.*M_PI;
+    return lon;
+  }
+
+
 }
 
 #endif      /* COORDINATES_HH */

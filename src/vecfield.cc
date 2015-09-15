@@ -10,6 +10,10 @@
 #include "errors.hh"
 #include "sikupy.hh"
 
+using namespace Coordinates;
+
+#include <iostream>
+
 //---------------------------------------------------------------------
 //---------------- UTIL FUNCTIONS FOR INTERPOLATION -------------------
 //---------------------------------------------------------------------
@@ -18,25 +22,6 @@ inline vec3d proport( const vec3d& d1, const vec3d& d2, const double& t )
 {
   return d1 + ( d2 - d1 )*t;
 }
-
-inline double norm_lat( double lat )
-{
-  while( lat > M_PI/2. )
-    lat -= M_PI;
-  while( lat < -M_PI/2. )
-    lat += M_PI;
-  return lat;
-}
-
-inline double norm_lon( double lon )
-{
-  while( lon > 2.*M_PI )
-    lon -= 2.*M_PI;
-  while( lon < 0. )
-    lon += 2.*M_PI;
-  return lon;
-}
-
 
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
@@ -82,49 +67,51 @@ void Vecfield::get_at_xy( const vec3d& x, vec3d* pv )
 
 //---------------------------------------------------------------------
 
-int Vecfield::load_wind( Globals& siku )
-{
-  switch( FIELD_SOURCE_TYPE )
-  {
-    case FIELD_NMC:
-/////////// IMPOSSIBLE COZ OF PROJECT HIERARCHY //////////////
-      break;
-
-    default:
-      fatal( 1, "No source specified" );
-      break;
-  }
-  return 0;
-}
-
-//---------------------------------------------------------------------
-
 vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 {
   //draft: the simplest interpolation
+
   lat = norm_lat ( lat );
   lon = norm_lon ( lon );
 
-  size_t lat_ind = size_t ( lat / nmc_grid_step );
-  if( lat = M_PI/2. )
+  std::cout<<lat<<"\n";
+
+  size_t lat_ind = norm_lat_ind ( lat / nmc_grid_step );
+  if( lat == M_PI/2. )
     lat_ind -= 1;
 
-  size_t lon_ind = size_t ( lon / nmc_grid_step );
-  if( lon = 2.*M_PI )
+  size_t lon_ind = norm_lon_ind ( lon / nmc_grid_step );
+  if( lon == 2.*M_PI )
     lon_ind = 0;
 
-  double left = lon_ind * nmc_grid_step;
-  double right = (lon_ind + 1) * nmc_grid_step;
-  double bottom = lat_ind * nmc_grid_step;
-  double top = (lat_ind + 1) * nmc_grid_step;
+//  std::cout<<lat_ind<<'\n';
 
-  vec3d LB = *NMCWind->get_vec( lat_ind, lon_ind );
-  vec3d LT = *NMCWind->get_vec( lat_ind + 1, lon_ind );
-  vec3d RB = *NMCWind->get_vec( lat_ind, norm_lon_ind( lon_ind + 1 ) );
-  vec3d RT = *NMCWind->get_vec( lat_ind + 1, norm_lon_ind( lon_ind + 1 ) );
+  double left = lon_ind * nmc_grid_step;
+  double right = norm_lon_ind( lon_ind + 1 ) * nmc_grid_step;
+  double bottom = lat_ind * nmc_grid_step - M_PI/2.;
+  double top = norm_lon_ind( lat_ind + 1 ) * nmc_grid_step - M_PI/2.;
+
+  vec3d LB = NMCWind->get_vec( lat_ind, lon_ind );
+  vec3d LT = NMCWind->get_vec( lat_ind + 1, lon_ind );
+  vec3d RB = NMCWind->get_vec( lat_ind, lon_ind + 1 );
+  vec3d RT = NMCWind->get_vec( lat_ind + 1, lon_ind + 1 );
+
+  std::cout<<left<<"\t"<<right<<"\t"<<top<<"\t"<<bottom<<"\t"<<"\n";
 
   vec3d top_v = proport( LT, RT, (lon - left)/(right - left) );
   vec3d bot_v = proport( LB, RB, (lon - left)/(right - left) );
+
+  std::cout<<LB.x<<"\t"<<LB.y<<"\t"<<LB.z<<"\n";
+  std::cout<<LT.x<<"\t"<<LT.y<<"\t"<<LT.z<<"\n";
+  std::cout<<RB.x<<"\t"<<RB.y<<"\t"<<RB.z<<"\n";
+  std::cout<<RT.x<<"\t"<<RT.y<<"\t"<<RT.z<<"\n";
+
+  std::cout<<top_v.x<<"\t"<<top_v.y<<"\t"<<top_v.z<<"\n";
+  std::cout<<bot_v.x<<"\t"<<bot_v.y<<"\t"<<bot_v.z<<"\n";
+
+  vec3d V = proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
+
+  std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
 
   return proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
 }

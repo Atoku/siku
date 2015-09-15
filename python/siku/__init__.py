@@ -60,6 +60,7 @@ class ModelTime:
     pass
 
 time = ModelTime()
+time.update_index = 0
 
 # ---------------------------------------------------------------------
 # material list
@@ -95,16 +96,18 @@ callback.presave = presave
 ##
 ##callback.pretimestep = pretimestep
 
-def updatewind( t ):
+def updatewind( siku, t ):
     for i in range(len(uw.times)):
-        if t < uw.times[i] and i < ( len(uw.times) - 1 ):
-            #i +=1
+        if t < uw.times[i] and i > 0:
+            i -=1
             break
 
     #this print is synchronized with siku.cc print
     print( str( uw.times[i] ) + '\n' )
-  
-    wind = wnd.NMCSurfaceVField( uw, vw, i )
+    
+    time.last_update = uw.times[i]
+    time.update_index = i
+    siku.wind = wnd.NMCSurfaceVField( uw, vw, i )
     pass
 
 callback.updatewind = updatewind

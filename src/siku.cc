@@ -60,20 +60,21 @@ extern "C"
 //#include  "nmc_reader.hh"
 #include "vecfield.hh"
 
-//const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
+using namespace Coordinates;
 
+
+//const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
 
 //--------------------------------------------------------------------
 //! \brief main function
 int
-main (int argc, char* argv[])
+main ( int argc, char* argv[] )
 {
-
   // Reading and populating program options
-  Options options (argc, argv);
+  Options options ( argc, argv );
 
   // Info
-  if (options.is_verbose ())
+  if ( options.is_verbose () )
     std::cout << "Reading config: " << options.get_pythonfname () << std::endl;
 
   // Coordinate transforms
@@ -87,46 +88,52 @@ main (int argc, char* argv[])
 
   // Loading the config file as a module and getting PyObject* to siku
   // namespace
-  Sikupy sikupy (options.get_pythonfname ());
+  Sikupy sikupy ( options.get_pythonfname () );
 
   // Initializing all global variables from config file.
-  sikupy.initialize (siku);
-  if (options.is_verbose ())
+  sikupy.initialize ( siku );
+  if ( options.is_verbose () )
     std::cout << "End of reading config file" << std::endl;
 
   siku.time.print ();
 
   // Main Time Loop
-  while (!siku.time.is_done ())
+  while ( !siku.time.is_done () )
     {
       double dt = siku.time.get_dt ();
 
       // --- pretimestep
-      (void) sikupy.fcall_pretimestep (siku);
+      (void) sikupy.fcall_pretimestep ( siku );
 
       // --- Recovering mass, moments of inertia, other parameters if
       // --- necessary
-      mproperties (siku);
+      mproperties ( siku );
 
       // --- Updating external forcing fields if necessary
-      sikupy.fcall_winds (siku);
+      //sikupy.fcall_winds ( siku ); //<- GONE to _pretimestep
 
       // --- Broad Phase Contact Detection if necessary
+
+
+//      // --- interpolation testing
+//      // wind somewhere in beaufort sea: (lat,lon) = (74,134)
+//      vec3d V = siku.wind.get_at_lat_lon_deg( 74, 134 );
+//      std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
 
       // --- Contact Forces assignement
 
       // --- Mass Forces assignement (Drivers, Coriolis)
 
       // --- Dynamics solution
-      dynamics (siku, dt);
+      dynamics ( siku, dt );
 
       // --- Position update
-      position (siku, dt);
+      position ( siku, dt );
 
       // ---- Saving ---
-      if (siku.time.is_savetime ())
+      if ( siku.time.is_savetime () )
         {
-          (void) sikupy.fcall_presave (siku); // no function = no action
+          (void) sikupy.fcall_presave ( siku ); // no function = no action
 
           // highio.save( siku );
 
@@ -134,17 +141,19 @@ main (int argc, char* argv[])
         }
 
       // --- Monitoring functions
-      monitoring (siku, sikupy);
+      monitoring ( siku, sikupy );
 
       // -- Diagnostics functions
-      diagnosting (siku, sikupy);
+      diagnosting ( siku, sikupy );
 
       // --- Concluding call back functions
+
+     // std::cout<<siku.es[0].q.w<<"\n";
+      std::cout<<endl;
 
       // --- END OF LOOP ---
       siku.time.increment ();
     }
-
   return 0;
 }
 

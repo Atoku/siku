@@ -1,14 +1,14 @@
 /*!
 
-  \file nmc_reader.hh
+ \file nmc_reader.hh
 
-  \brief Several classes for generic and specific reading of
-  NCEP/NCAR Reanalysis grids.
-  Base class provides datagrid template and interaction with python nmc
-  modules.
-  Derived classes provide specific value reading.
+ \brief Several classes for generic and specific reading of
+ NCEP/NCAR Reanalysis grids.
+ Base class provides datagrid template and interaction with python nmc
+ modules.
+ Derived classes provide specific value reading.
 
-*/
+ */
 
 #ifndef NMC_READER_HH
 #define NMC_READER_HH
@@ -30,50 +30,77 @@
 class NMCVecfield
 {
 protected:
-    friend class Sikupy;
+  friend class Sikupy;
 
-    struct GridNode // Just for smart packing
+  struct GridNode // Just for smart packing
+  {
+  public:
+    double lat;
+    double lon;
+    vec3d value;
+
+    GridNode () :
+        lat ( 0 ), lon ( 0 )
     {
-    public:
-        double lat;
-        double lon;
-        vec3d value;
+    }
+    GridNode ( const double& la, const double& lo, const vec3d& val ) :
+        lat ( la ), lon ( lo ), value ( val )
+    {
+    }
 
-        GridNode(): lat(0), lon(0){}
-        GridNode(const double& la, const double& lo, const vec3d& val):
-            lat( la ), lon( lo ), value( val ) {}
+  };
 
-    };
+  std::vector < std::vector < vec3d > > grid;
+  std::map < double, size_t > lat_indexer;
+  std::map < double, size_t > lon_indexer;
+  std::map < size_t, double > lat_valuator;
+  std::map < size_t, double > lon_valuator;
 
-    std::vector< std::vector< vec3d > > grid;
-    std::map< double, size_t > lat_indexer;
-    std::map< double, size_t > lon_indexer;
-    std::map< size_t, double > lat_valuator;
-    std::map< size_t, double > lon_valuator;
-
-    //double lat_step{ 0. };
-    //double lon_step{ 0. };
+  //double lat_step{ 0. };
+  //double lon_step{ 0. };
 public:
 
-    NMCVecfield(){}
-    ~NMCVecfield(){ clear(); }
+  NMCVecfield ()
+  {
+  }
+  ~NMCVecfield ()
+  {
+    clear ();
+  }
 
-    vec3d* get_vec( const size_t& lat_i, const size_t& lon_i );
-    vec3d* get_vec( const double& lat, const double& lon );
-    GridNode get_node( const size_t& lat_i, const size_t& lon_i );
-    GridNode get_node( const double& lat, const double& lon );
+  vec3d
+  get_vec ( const size_t& lat_i, const size_t& lon_i );
+  vec3d
+  get_vec ( const double& lat, const double& lon );
+  GridNode
+  get_node ( const size_t& lat_i, const size_t& lon_i );
+  GridNode
+  get_node ( const double& lat, const double& lon );
 
-    //inline double get_lat_step(){ return lat_step; }
-    //inline double get_lon_step(){ return lon_step; }
-    inline size_t get_lat_size(){ return grid.size(); }
-    inline size_t get_lon_size(){ return grid[0].size(); }
+  //inline double get_lat_step(){ return lat_step; }
+  //inline double get_lon_step(){ return lon_step; }
+  inline size_t
+  get_lat_size ()
+  {
+    return grid.size ();
+  }
+  inline size_t
+  get_lon_size ()
+  {
+    return grid[0].size ();
+  }
 
-    void set_vec( const vec3d& value, const size_t& lat_i, const size_t& lon_i );
-    void set_vec( const vec3d& value, const double& lat, const double& lon );
-    void set_node( const GridNode& GN, const size_t& lat_i, const size_t& lon_i );
+  void
+  set_vec ( const vec3d& value, const size_t& lat_i, const size_t& lon_i );
+  void
+  set_vec ( const vec3d& value, const double& lat, const double& lon );
+  void
+  set_node ( const GridNode& GN, const size_t& lat_i, const size_t& lon_i );
 
-    void init_grid( const size_t& lat_s, const size_t& lon_s );
-    void clear();
+  void
+  init_grid ( const size_t& lat_s, const size_t& lon_s );
+  void
+  clear ();
 };
 
 ////REMOVE AFTER AUXUTILS INCLUDE!!!!
