@@ -2,9 +2,9 @@
 
   \file vecfield.hh
 
-  \brief Vector field class. A basic class to contains air wind and
-  sea streams vector fields, produce interpolation and provide values
-  of the vector field in particular points.
+  \brief Vector field class. A basic class that contains air wind and
+  sea streams vector fields, produces interpolation and provides
+  values of the vector field at particular points.
 
 */
 
@@ -17,11 +17,10 @@
 //#include <stdexcept>
 
 #include "siku.hh"
+#include "globals.hh"
 #include "nmc_reader.hh"
 
 #include <cmath>
-
-struct Globals;
 
 enum : unsigned int
 {
