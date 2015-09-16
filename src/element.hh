@@ -56,8 +56,8 @@ public:
   // --------------- Not changing handling parameters ----------------
 
   unsigned int flag;            //!< state flag
-  char* monitor {NULL};         //!< monitor function name (0-term)
-  char* control {NULL};         //!< control function name (0-term)
+  char* monitor {nullptr};         //!< monitor function name (0-term)
+  char* control {nullptr};         //!< control function name (0-term)
 
   // --------------- Not changing state parameters -------------------
   

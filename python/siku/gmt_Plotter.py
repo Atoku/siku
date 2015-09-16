@@ -11,31 +11,6 @@ import rand_vec
 from hpgrid import DEGREES,RADIANS
 from geocoords import norm_delta
 
-#template string for further fulfilling
-draw_config_string = \
-'''#this is config file fog GMT_Drawer
-#next line is header with output_file name
-{pic_file_name}\n
-#draw configuration
-#Region and projection
-{view} -G{ground_colr} -P\n
-#Coasts
-{coasts}
-#winds
-{inter_wind}{inter_scale}/1/1
-{grid_wind}{grid_scale}/1/1
-
-#other overlays\n'''
-
-#dafault values dictionary for template string completion
-default_config = {
-    'vector_scaling' : 1.0,
-    'coasts' : 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
--I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 ',
-    'inter_wind' : 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
--A3.0p+e+gblue -Se',
-    'grid_wind' : 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
-    }
 
 ##-----------------------------------------------------------------------------
 ##-------------------------------- THE PLOTTER --------------------------------
@@ -48,6 +23,33 @@ class GMT_Plotter:
 
     Creates draw_config.txt files that are executed by GMT_Drawer
     '''
+    
+    #template string for further fulfilling
+    draw_conf_str = \
+'''#this is config file fog GMT_Drawer
+#next line is header with output_file name
+{pic_file_name}\n
+#draw configuration
+#Region and projection
+{view} -G{ground_colr} -P -V{verb}\n
+#Coasts
+{coasts} -V{verb}
+#winds
+{inter_wind}{inter_scale}/1/1 -V{verb}
+{grid_wind}{grid_scale}/1/1 -V{verb}
+
+#other overlays\n'''
+
+    #dafault values dictionary for template string completion
+    deft_conf = {
+        'vector_scaling' : 1.0,
+        'coasts' : 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
+-I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 ',
+        'inter_wind' : 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
+-A3.0p+e+gblue -Se',
+        'grid_wind' : 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
+    }
+
     def __init__( self, configFile ):
         '''Init, try to load config file
         '''
@@ -62,12 +64,22 @@ class GMT_Plotter:
 ##--------------------------------- PLOTTING ----------------------------------
 ##-----------------------------------------------------------------------------
     
-    def plot( self ):
+    def plot( self, out_file = 'map.eps', time = None ):
         '''Main function:
         performs plotting by loading inut, generating random positions grid,
         calling interpolation, preparing draw_config.txt and finaly executing
         DMT_Drawer
         '''
+        if out_file:
+            self.config['out_pic_name'] = out_file
+
+        if time:
+            self.config['time_index'] = time
+            
+        verbose = 'q'
+        if self.config['verbose'] == True:
+             verbose = 'd'
+        
         if self.config.get('verbose'):
             print( 'plotter start plotting' )
         UW = wnd.NMCVar( self.config.get( 'uwind_file', 'uwnd.nc' ), 'uwnd' )
@@ -85,7 +97,6 @@ class GMT_Plotter:
         RV = rand_vec.RandVecGenerator( domain[0], \
             domain[1], 90 + domain[2], 90 + domain[3] )
             #domain[1], 90 - domain[3], 90 - domain[2] )
-        dphi = domain[1] - domain[0]
         RV.hp_generate( self.config.get( 'inter_density', 2.5 ), \
                         DEGREES, self.config.get( 'verbose' ) )
         vecs = RV.Grid.points_angular
@@ -110,25 +121,30 @@ class GMT_Plotter:
 
         if self.config.get('verbose'):
             print('preparing draw_config')
+            
         #scaling factor for vectors on picture
+        dphi = domain[1] - domain[0]
+        dtheta = domain[3] - domain[2]
+        width = sqrt ( dphi*dtheta )
         psi = self.config['inter_density'] * \
                 self.config.get( 'vector_scaling', \
-                default_config['vector_scaling'] )
+                self.deft_conf['vector_scaling'] )
 ##        if dphi > 90:
 ##            psi /=4
         with open('draw_config.txt','w') as dc:
             
-            dc.write( draw_config_string.format( \
+            dc.write( self.draw_conf_str.format( \
                 pic_file_name = self.config.get( 'out_pic_name', 'map.eps' ),
                 view = self.config.get( 'view', '-Rg -JG350/20/6i -Bag30 ' ),
                 ground_colr = self.config.get( 'ground_colr', '255/226/164' ),
-                coasts = self.config.get( 'coasts', default_config['coasts'] ),
+                coasts = self.config.get( 'coasts', self.deft_conf['coasts'] ),
                 inter_wind = self.config.get( 'inter_wind', \
-                                              default_config['coasts'] ),
-                inter_scale = str( (psi * 40) / (max_wind * dphi) ),
+                                              self.deft_conf['coasts'] ),
+                inter_scale = str( (psi * 40) / (max_wind * width) ),
                 grid_wind = self.config.get( 'grid_wind', \
-                                             default_config['grid_wind'] ),
-                grid_scale = str( (psi * 40) / (max_wind * dphi) )
+                                             self.deft_conf['grid_wind'] ),
+                grid_scale = str( (psi * 40) / (max_wind * width) ),
+                verb = verbose
                 ))
             
             for line in self.config.get( 'overlays', None ):
@@ -144,7 +160,7 @@ class GMT_Plotter:
     pass
 
 def main():
-    G = GMT_Plotter ( 'plot_config.py')
+    G = GMT_Plotter ( 'plot_config.py' )
     G.plot()
 
 if __name__ == '__main__':

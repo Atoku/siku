@@ -1,11 +1,11 @@
 /*!
 
-  \file globals.hh
+ \file globals.hh
 
-  \brief Global variables are united in a structure for easy pass to
-  initialization and saving functions
+ \brief Global variables are united in a structure for easy pass to
+ initialization and saving functions
 
-*/
+ */
 
 #ifndef GLOBALS_HH
 #define GLOBALS_HH
@@ -41,10 +41,10 @@ struct Globals
   Planet planet;
 
   //! Materials
-  std::vector<Material> ms;
+  std::vector < Material > ms;
 
   //! Elements data
-  std::vector<Element> es;
+  std::vector < Element > es;
 
   //! model time 
   ModelTime time;
@@ -53,7 +53,8 @@ struct Globals
   Vecfield wind;
 
   //! Current filename to save to
-  string savefile { "siku_output.h5" };
+  string savefile
+    { "siku_output.h5" };
 
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
@@ -62,9 +63,6 @@ struct Globals
   unsigned long callback_status
     { STATUS_NONE };
 
-//  //-----------------------------------
-//  //! NMC vecfield
-//  NMCVecfield windgrid;
 };
 
 #endif      /* GLOBALS_HH */

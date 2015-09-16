@@ -19,18 +19,19 @@ namespace Coordinates
 
   //////////////////// TESTING!!! //////////////////
 
+  /// there is some bug down here, supposedly Z is wrong
   void
   sph_by_quat ( quat& q, double* plat, double* plon )
   {
     //std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<"\n";
 
-    vec3d V( 2*(q.x*q.z + q.w*q.y), q.y*q.z - q.w*q.x,
-             q.w*q.w - q.x*q.x -q.y*q.y + q.z*q.z );
+    vec3d V( 2.*(q.x*q.z + q.w*q.y), 2.*(q.y*q.z - q.w*q.x),
+             1. - 2.*(q.x*q.x + q.y*q.y) );
 
-   // std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
+    //std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
 
-    *plat = M_PI/2. - atan2( sqrt( V.x*V.x + V.y*V.y ), V.z );
-    *plon = atan2( V.y, V.x );
+    *plat = (M_PI/2. - atan2( sqrt( V.x*V.x + V.y*V.y ), V.z ));
+    *plon = norm_lon( atan2( V.y, V.x ) );
 
     //std::cout<<*plat<<"\t"<<*plon<<"\n";
 

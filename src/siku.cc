@@ -62,7 +62,6 @@ extern "C"
 
 using namespace Coordinates;
 
-
 //const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
 
 //--------------------------------------------------------------------
@@ -114,12 +113,6 @@ main ( int argc, char* argv[] )
 
       // --- Broad Phase Contact Detection if necessary
 
-
-//      // --- interpolation testing
-//      // wind somewhere in beaufort sea: (lat,lon) = (74,134)
-//      vec3d V = siku.wind.get_at_lat_lon_deg( 74, 134 );
-//      std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
-
       // --- Contact Forces assignement
 
       // --- Mass Forces assignement (Drivers, Coriolis)
@@ -148,8 +141,9 @@ main ( int argc, char* argv[] )
 
       // --- Concluding call back functions
 
-     // std::cout<<siku.es[0].q.w<<"\n";
-      std::cout<<endl;
+//      std::cout<<siku.es[0].q.w<<"\t"<<siku.es[0].q.x<<"\t"
+//          <<siku.es[0].q.y<<"\t"<<siku.es[0].q.z<<"\n";
+//      //std::cout<<endl;
 
       // --- END OF LOOP ---
       siku.time.increment ();

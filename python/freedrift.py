@@ -16,6 +16,15 @@
 
 '''
 
+import sys
+import os
+try:
+    os.chdir('./python/siku/')
+    sys.path.append(os.getcwd())
+    os.chdir('./../../')
+except:
+    pass
+
 import math
 import sys
 import datetime
@@ -28,6 +37,10 @@ from   siku import element
 from   siku import material
 from   siku import geocoords
 from   siku import regrid
+
+######
+from siku import gmt_Plotter
+from gmt_Plotter import GMT_Plotter
 
 from   siku import wnd
  
@@ -69,8 +82,8 @@ def main():
 
     siku.time.start = siku.uw.times[0]
     siku.time.last = siku.uw.times[0]
-    siku.time.last_update = siku.uw.times[0]
-    siku.time.finish = siku.uw.times[1]
+    siku.time.last_update = siku.time.last
+    siku.time.finish = siku.uw.times[3]
     siku.time.dt = ( siku.time.finish - siku.time.start ) / 3
 
     # ---------------------------------------------------------------------
@@ -97,6 +110,10 @@ def main():
                (190.00, 71.7) ]
     
     P.update( coords )
+
+#####
+    cc = geocoords.lonlat_deg( P.C )
+    siku.deltas = [ ( c[0]-cc[0], c[1]-cc[1] ) for c in coords ]
     
     # Element declaration
     E = element.Element( polygon = P, imat = matnames['ice'] )
@@ -112,7 +129,11 @@ def main():
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
+#####
+    siku.plotter = GMT_Plotter( 'plot_config.py' )
+
     siku.drift_monitor = drift_monitor
+    siku.diagnostics.monitor_count = 0
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds
@@ -170,6 +191,19 @@ def drift_monitor( t, Q, Ps ):
     c = R * C
     lon, lat = geocoords.lonlat_deg( c )
 
+    pic_name = 'drift%02d.eps' % (siku.diagnostics.monitor_count)
+    print('drawing drift%02d.eps' % (siku.diagnostics.monitor_count) )
+    
+    poly = open( 'Poly.txt', 'w' )
+
+    for s in siku.deltas:
+        poly.write( str( s[0] + lon )+'\t'+str( s[1] + lat )+'\n' )
+
+    poly.close()
+
+    siku.plotter.plot( pic_name, siku.time.update_index )
+
+    siku.diagnostics.monitor_count += 1
 #    print( lon, lat )
 
 #    for p in Ps:
@@ -184,23 +218,24 @@ def winds_diag( t, winds ):
     mesh = siku.diagnostics.meshes[0]
     ez = mathutils.Vector( (0,0,1) )
 
-    fp = open( 'winds-%02d.txt' % (siku.diagnostics.wind_counter), 'w' )
-
-    for i, w in enumerate( winds ):
-        x = mathutils.Vector( mesh[i] )
-        u = mathutils.Vector( w )
-        uval = u.length
-        lon, lat = geocoords.lonlat_deg( x )
-        a = ez - x
-        
-        mdl = a.length * uval
-        if ( mdl != 0 ):
-            azimuth = 180 * math.acos( (a*u) / mdl ) / math.pi
-            fp.write( "%f %f %f %f %f\n" % \
-                      ( lon, lat, 0.25*uval, azimuth, 0.7*uval ) )
-            
-
-    fp.close()
+##    Commented to stop that file breeding while other modules are being tested
+##    fp = open( 'winds-%02d.txt' % (siku.diagnostics.wind_counter), 'w' )
+##
+##    for i, w in enumerate( winds ):
+##        x = mathutils.Vector( mesh[i] )
+##        u = mathutils.Vector( w )
+##        uval = u.length
+##        lon, lat = geocoords.lonlat_deg( x )
+##        a = ez - x
+##        
+##        mdl = a.length * uval
+##        if ( mdl != 0 ):
+##            azimuth = 180 * math.acos( (a*u) / mdl ) / math.pi
+##            fp.write( "%f %f %f %f %f\n" % \
+##                      ( lon, lat, 0.25*uval, azimuth, 0.7*uval ) )
+##            
+##
+##    fp.close()
     siku.diagnostics.wind_counter += 1
 
     return

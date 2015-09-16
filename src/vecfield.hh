@@ -39,7 +39,9 @@ public:
   static const int MODE_VEC_STD_FIELD1
     { 1 };
 
-  NMCVecfield* NMCWind;
+  //! \brief NMC wind grid pointer. If the source is NMC wind - object
+  //! will be initialized in constructor.
+  NMCVecfield* NMCWind {nullptr};
 
   Vecfield ();
   Vecfield ( const unsigned int& SOURCE_TYPE );
@@ -58,6 +60,8 @@ public:
   void
   get_at_xy ( const vec3d& x, vec3d* pv );
 
+  //! \brief Returns wind in (x, y, z) representation at specified
+  //! lat-lon coords in degrees
   inline vec3d
   get_at_lat_lon_deg ( double lat, double lon )
   {
@@ -65,6 +69,8 @@ public:
                                Coordinates::deg_to_rad( lon ) );
   }
 
+  //! \brief Returns wind in (x, y, z) representation at specified
+  //! lat-lon coords in radians
   vec3d
   get_at_lat_lon_rad ( double lat, double lon );
 
@@ -82,6 +88,7 @@ private:
 
   //-------------------------------------------------------------------------
 
+  //! \brief Normalizing longitude index
   inline size_t
   norm_lon_ind ( int lon_i )
   {
@@ -93,6 +100,7 @@ private:
     return lon_i;
   }
 
+  //! \brief Normalizing latitude index
   inline size_t
   norm_lat_ind ( int lat_i )
   {

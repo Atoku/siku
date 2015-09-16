@@ -69,9 +69,16 @@ public:
 
   // -- Function to call call backs
 
-  //! \brief call pretimestep
+  //! \brief Perform precalculations of each time step with internal call
+  //! of the pretimestep method in python scenario file
+  //! \param[in] siku main global variables container
   int
   fcall_pretimestep ( Globals& siku );
+
+  //! \brief Perform aftercalculations of each time step
+  //! \param[in] siku main global variables container
+  int
+  fcall_aftertimestep ( Globals& siku );
 
   //! \brief call presave (updates siku.savefile)
   int
@@ -96,7 +103,7 @@ public:
   //! \param[in] siku main global variables container
   //! \param[in] reference to current time (borrowing)
   int
-  fcall_update_nmc_wind ( Globals& siku, PyObject* pCurTime );
+  fcall_update_nmc_wind ( Globals& siku );
 
   //! \brief Check and perform winds update
   //! \param[in] siku main global variables container
@@ -106,16 +113,16 @@ public:
   //! \brief Release all owened PyObjs
   ~Sikupy ();
 
-  // Constants
-  static const unsigned int FCALL_OK
+  // Fast call return status constants
+  static const int FCALL_OK
     { 0x0 };
-  static const unsigned int FCALL_ERROR_NO_FUNCTION
+  static const int FCALL_ERROR_NO_FUNCTION
     { 0x1 };
-  static const unsigned int FCALL_ERROR_PRESAVE_NOSTRING
+  static const int FCALL_ERROR_PRESAVE_NOSTRING
     { 0x2 };
-  static const unsigned int FCALL_ERROR_PRETIMESTEP_NOLONG
+  static const int FCALL_ERROR_PRETIMESTEP_NOLONG
     { 0x4 };
-  static const unsigned int FCALL_ERROR_NOWINDS
+  static const int FCALL_ERROR_NOWINDS
     { 0x8 };
 
   //---------------------------------------------------------------------
@@ -145,6 +152,11 @@ private:
   //! \brief List of functions to call (common list for all general
   //! functions)
   vector < PyObject* > pSiku_funcs;
+
+  //! \brief Current time, generated at the beginning of each time step
+  //! in fcall_pretimestep and cleared at the end in
+  PyObject* pCurTime
+    { nullptr };
 
   unsigned int flag
     { 0 };   //!< different states for the class

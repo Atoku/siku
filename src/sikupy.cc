@@ -16,12 +16,13 @@ extern "C"
 #include <stdio.h>
 #include <datetime.h>           // python module to get datetime objs
 }
+
 #include "errors.hh"
 #include "sikupy.hh"
 #include "auxutils.hh"
 
 #include "coordinates.hh"
-using namespace Coordinates;
+  using namespace Coordinates;
 
 //---------------------------------------------------------------------
 
@@ -84,38 +85,39 @@ Sikupy::Sikupy( string filename )
 //---------------------------------------------------------------------
 
 void Sikupy::initialize(Globals &siku)
-{
-  int success
-    { 0 }; // success code
+  {
+    int success
+      { 0}; // success code
 
-  success = read_info(siku.info);
-  assert(success);
-  success = read_planet(siku.planet);
-  assert(success);
-  success = read_modeltime(siku.time);
-  assert(success);
-  success = read_materials(siku.ms);
-  assert(success);
-  success = read_elements(siku.es);
-  assert(success);
-  success = read_diagnostics(siku.diagnostics);
-  assert(success);
+    success = read_info(siku.info);
+    assert(success);
+    success = read_planet(siku.planet);
+    assert(success);
+    success = read_modeltime(siku.time);
+    assert(success);
+    success = read_materials(siku.ms);
+    assert(success);
+    success = read_elements(siku.es);
+    assert(success);
+    success = read_diagnostics(siku.diagnostics);
+    assert(success);
 
-  // vecfield testing
-  success = read_nmc_vecfield ( *siku.wind.NMCWind );
-  assert( success );
+    // vecfield testing
+    success = read_nmc_vecfield ( *siku.wind.NMCWind );
+    assert( success );
 
-  if ( success == 0 )
-  fatal( 1, "Something  wrong went on initialization" );
-}
+    if ( success == 0 )
+    fatal( 1, "Something  wrong went on initialization" );
+  }
 
 /*
- TODO: It is better to be ab
- le to initialize from files located in
- different directories. For this, the path and the filename should be
- separated. The path should be added to sys.path, the filename should
- be stripped from .py as it is done already.
- */
+  TODO: It is better to be ab
+  le to initialize from files located in
+  different directories. For this, the path and the filename should be
+  separated. The path should be added to sys.path, the file
+  name should
+  be stripped from .py as it is done already.
+*/
 
 //---------------------------------------------------------------------
 void
@@ -844,7 +846,7 @@ Sikupy::fcall_pretimestep ( Globals& siku )
   long microseconds = siku.time.get_total_microseconds ()
       - 1000000 * siku.time.get_total_seconds ();
 
-  PyObject* pCurTime = PyDateTime_FromDateAndTime(
+  pCurTime = PyDateTime_FromDateAndTime(
       siku.time.get_year (), // new
       siku.time.get_month(), siku.time.get_day (),
       (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
@@ -863,12 +865,9 @@ Sikupy::fcall_pretimestep ( Globals& siku )
 
   read_ulong ( pReturn_value, siku.callback_status );
 
-
   // Calls for inner methods. Mask is being checked inside each of them
-  status |= fcall_update_nmc_wind( siku, pCurTime );
+  status |= fcall_update_nmc_wind ( siku );
 
-
-  Py_DECREF( pCurTime );
   Py_DECREF( pReturn_value );
 
   return status;
@@ -877,7 +876,16 @@ Sikupy::fcall_pretimestep ( Globals& siku )
 //---------------------------------------------------------------------
 
 int
-Sikupy::fcall_update_nmc_wind ( Globals& siku, PyObject* pCurTime )
+Sikupy::fcall_aftertimestep ( Globals& siku )
+{
+
+  Py_DECREF( pCurTime );
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_update_nmc_wind ( Globals& siku )
 {
   if ( !( siku.callback_status & STATUS_WINDS ) )
     return FCALL_OK;
@@ -885,26 +893,27 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku, PyObject* pCurTime )
   // temporal reference. Static coz only one update call is possible at a time.
   static PyObject* pTemp;
 
-  switch( siku.wind.FIELD_SOURCE_TYPE )
+  switch (siku.wind.FIELD_SOURCE_TYPE)
     {
-      case FIELD_NMC:
-        cout << "Updating wind. New time is: \n";
+    case FIELD_NMC:
+      cout << "Updating wind. New time is: \n";
 
-        pTemp = PyObject_CallMethod ( pSiku_callback, "updatewind", "(O,O)",
-                                      pSiku, pCurTime ); //new
+      pTemp = PyObject_CallMethod ( pSiku_callback, "updatewind", "(O,O)",
+                                    pSiku, pCurTime ); //new
 
-        if( !pTemp )
-          return FCALL_ERROR_NO_FUNCTION;
+      if ( !pTemp )
+        return FCALL_ERROR_NO_FUNCTION;
 
-        Py_DECREF( pTemp );
+      Py_DECREF( pTemp );
 
-        if( !read_nmc_vecfield ( *siku.wind.NMCWind ) )
-           return FCALL_ERROR_NOWINDS;
-        break;
+      if ( !read_nmc_vecfield ( *siku.wind.NMCWind ) )
+        return FCALL_ERROR_NOWINDS;
+      break;
 
-      default:
-        fatal( 1, "No source specified" );
-        break;
+    default:
+      fatal( 1, "No source specified" )
+      ;
+      break;
     }
 
   siku.callback_status &= ~STATUS_WINDS;
@@ -931,18 +940,6 @@ Sikupy::fcall_presave ( Globals& siku )
   const size_t n = siku.time.get_n ();
   const size_t ns = siku.time.get_ns ();
 
-  // creating datetime object
-  PyObject* pCurTime;
-  long microseconds = siku.time.get_total_microseconds ()
-      - 1000000 * siku.time.get_total_seconds ();
-
-  pCurTime = PyDateTime_FromDateAndTime(
-      siku.time.get_year (), // new
-      siku.time.get_month(), siku.time.get_day (),
-      (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
-      (int ) siku.time.get_seconds (), (int ) microseconds );
-  assert( pCurTime );
-
   PyObject* pargs;
   pargs = Py_BuildValue ( "(O,i,i)", pCurTime, n, ns ); // new
   assert( pargs );
@@ -958,8 +955,6 @@ Sikupy::fcall_presave ( Globals& siku )
   read_string ( pReturn_value, siku.savefile );
 
   // do not need arguments and value anymore
-  Py_DECREF( pCurTime );
-
   Py_DECREF( pargs );
   Py_DECREF( pReturn_value );
   Py_DECREF( pFunc );
@@ -970,8 +965,7 @@ Sikupy::fcall_presave ( Globals& siku )
 //---------------------------------------------------------------------
 
 int
-Sikupy::fcall_monitor ( const Globals& siku, const size_t i, const char* fname )
-
+Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 {
   int status = FCALL_OK;
 
@@ -979,24 +973,11 @@ Sikupy::fcall_monitor ( const Globals& siku, const size_t i, const char* fname )
   const Element* pe = &siku.es[i];
 
   // get function object if available
-
   PyObject* pFunc;
   pFunc = PyObject_GetAttrString ( pSiku, fname ); // new
   assert( pFunc );
   if ( !PyCallable_Check ( pFunc ) )
     return FCALL_ERROR_NO_FUNCTION;
-
-  // creating datetime object
-  PyObject* pCurTime;
-  long microseconds = siku.time.get_total_microseconds ()
-      - 1000000 * siku.time.get_total_seconds ();
-
-  pCurTime = PyDateTime_FromDateAndTime(
-      siku.time.get_year (), // new
-      siku.time.get_month(), siku.time.get_day (),
-      (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
-      (int ) siku.time.get_seconds (), (int ) microseconds );
-  assert( pCurTime );
 
   // creating quaternion object
   PyObject* pQTuple;             // quaternion as a tuple
@@ -1044,7 +1025,6 @@ Sikupy::fcall_monitor ( const Globals& siku, const size_t i, const char* fname )
 
   if ( pReturnValue )
     Py_DECREF( pReturnValue );
-  Py_DECREF( pCurTime );
   Py_DECREF( pQTuple );
   Py_DECREF( pPiList );
   Py_DECREF( pFunc );
@@ -1061,20 +1041,6 @@ Sikupy::fcall_diagnostics_vec3d ( const Globals& siku, const size_t i,
 
   // get direct pointer to function object
   PyObject* pFunc = pSiku_funcs[i];
-
-  // creating datetime object
-  PyObject* pCurTime;
-  long microseconds = siku.time.get_total_microseconds ()
-      - 1000000 * siku.time.get_total_seconds ();
-
-  pCurTime = PyDateTime_FromDateAndTime(
-      siku.time.get_year (), // new
-      siku.time.get_month(), siku.time.get_day (),
-      (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
-      (int ) siku.time.get_seconds (), (int ) microseconds );
-  if ( !pCurTime )
-    PyErr_Print ();
-  assert( pCurTime );
 
   // creating the list of tuples3 with data
 
@@ -1112,8 +1078,6 @@ Sikupy::fcall_diagnostics_vec3d ( const Globals& siku, const size_t i,
 
   if ( pReturnValue )
     Py_DECREF( pReturnValue );
-  if ( pCurTime )
-    Py_DECREF( pCurTime );
   if ( pDataList )
     Py_DECREF( pDataList );
 
