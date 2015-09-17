@@ -7,7 +7,7 @@ everything is on a sphere.
 
 '''
 
-from   math import sin,cos,acos,atan,pi,atan2
+from   math import sin,cos,acos,atan,pi,atan2,sqrt
 import mathutils
 
 ratio180 = pi / 180.0        # antidegree constant
@@ -114,7 +114,8 @@ def lonlat_rad( u ):
     
     '''
     r = u.length
-    
+
+    #theta = atan2( sqrt( u.x*u.x + u.y*u.y ), u.z )
     theta = acos( u.z / r )
     phi = atan2( u.y, u.x ) # atan2 is a special function that
     # always works, see python math

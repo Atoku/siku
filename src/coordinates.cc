@@ -18,29 +18,22 @@ namespace Coordinates
 //---------------------------------------------------------------------
 
   //////////////////// TESTING!!! //////////////////
-
-  /// there is some bug down here, supposedly Z is wrong
   void
   sph_by_quat ( quat& q, double* plat, double* plon )
   {
-    //std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<"\n";
-
+    // hardcoded result of multiplication of rotation matrix and (0, 0, 1)^T
     vec3d V( 2.*(q.x*q.z + q.w*q.y), 2.*(q.y*q.z - q.w*q.x),
              1. - 2.*(q.x*q.x + q.y*q.y) );
 
-    //std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
-
-    *plat = (M_PI/2. - atan2( sqrt( V.x*V.x + V.y*V.y ), V.z ));
+    // acquiring of geographical latitude and longitude
+    *plat = M_PI/2. - atan2( sqrt( V.x*V.x + V.y*V.y ), V.z );
     *plon = norm_lon( atan2( V.y, V.x ) );
-
-    //std::cout<<*plat<<"\t"<<*plon<<"\n";
 
     return;
   }
 
 //---------------------------------------------------------------------
 
-// May be deleted if there is same method in any used algorythm libs
   vec3d
   sph_to_cart ( const double& r, const double& theta, const double& phi )
   {
@@ -56,16 +49,17 @@ namespace Coordinates
 
 //---------------------------------------------------------------------
 
-// !!! SHOULD BE OPTIMIZED !!!
   vec3d
   geo_to_cart_surf_velo ( const double& lat, const double& lon,
                           const double& e_velo, const double& n_velo )
   {
-    // east velo in cart
+    // east velo in cart representation
     vec3d ev = sph_to_cart ( e_velo, M_PI / 2, lon + M_PI / 2 );
-    // north velo in cart
+    // north velo in cart representation
     vec3d nv = sph_to_cart ( n_velo, -lat, lon );
 
     return ev + nv;
   }
+
+//---------------------------------------------------------------------
 }

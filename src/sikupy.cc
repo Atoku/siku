@@ -102,7 +102,7 @@ void Sikupy::initialize(Globals &siku)
     success = read_diagnostics(siku.diagnostics);
     assert(success);
 
-    // vecfield testing
+    // vecfield preloading
     success = read_nmc_vecfield ( *siku.wind.NMCWind );
     assert( success );
 
@@ -748,6 +748,7 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
 {
   int success = 1;
 
+  // getting 'wind' attribute
   PyObject *pSiku_wind;
   pSiku_wind = PyObject_GetAttrString ( pSiku, "wind" ); // NEW!!
   assert( pSiku_wind );
@@ -756,6 +757,7 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
    * TODO: check while pSiku_wind is really the NMCSurfaceVField
    */
 
+  // preparing grid
   PyObject* pTemp;
 
   PyObject* Lat = PyObject_GetAttrString ( pSiku_wind, "lat" ); //new
@@ -766,6 +768,7 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
 
   vField.init_grid ( lat_s, lon_s );
 
+  // reading gride nodes` coordinates
   double dtemp; // temporal double
 
   for ( size_t i = 0; i < lat_s; ++i )
@@ -773,7 +776,6 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
       pTemp = PyList_GetItem ( Lat, i ); //borrowed
 
       read_double ( pTemp, dtemp );
-      //dtemp = PyFloat_AsDouble (pTemp);
       vField.lat_indexer[dtemp] = i;
       vField.lat_valuator[i] = dtemp;
     }
@@ -783,11 +785,11 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
       pTemp = PyList_GetItem ( Lon, i ); //borrowed
 
       read_double ( pTemp, dtemp );
-      //dtemp = PyFloat_AsDouble (pTemp);
       vField.lon_indexer[dtemp] = i;
       vField.lon_valuator[i] = dtemp;
     }
 
+  // reading the vector values in grid
   pTemp = PyObject_GetAttrString ( pSiku_wind, "vec" ); //new
   PyObject* pTuple;
 
@@ -812,6 +814,7 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
         }
     }
 
+  // cleaning the mess
   Py_DECREF( Lat );
   Py_DECREF( Lon );
   Py_DECREF( pTemp );
@@ -878,7 +881,6 @@ Sikupy::fcall_pretimestep ( Globals& siku )
 int
 Sikupy::fcall_aftertimestep ( Globals& siku )
 {
-
   Py_DECREF( pCurTime );
 }
 
@@ -893,9 +895,11 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
   // temporal reference. Static coz only one update call is possible at a time.
   static PyObject* pTemp;
 
+  // updating grid with specification of source type
   switch (siku.wind.FIELD_SOURCE_TYPE)
     {
     case FIELD_NMC:
+      // update itself
       cout << "Updating wind. New time is: \n";
 
       pTemp = PyObject_CallMethod ( pSiku_callback, "updatewind", "(O,O)",
@@ -1123,7 +1127,7 @@ Sikupy::read_ulong ( PyObject* pLong, unsigned long& x )
 
   x = PyLong_AsUnsignedLong ( pLong );
 
-  if ( PyErr_Occurred () ) // Returns borrowed ref, so no var needed
+  if ( PyErr_Occurred () ) // Returns borrowed ref, so no pointer is needed
     return false;
   return true;
 }
@@ -1137,7 +1141,7 @@ Sikupy::read_double ( PyObject* pfloat, double& x )
 
   x = PyFloat_AsDouble ( pfloat );
 
-  if ( PyErr_Occurred () ) // Returns borrowed ref, so no var needed
+  if ( PyErr_Occurred () ) // Returns borrowed ref, so no pointer is needed
     return false;
   return true;
 

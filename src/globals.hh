@@ -59,7 +59,7 @@ struct Globals
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
 
-  //! Callback-returned status (masked)
+  //! Callback-returned status (masked flags)
   unsigned long callback_status
     { STATUS_NONE };
 

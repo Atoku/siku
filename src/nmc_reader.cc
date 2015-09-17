@@ -21,10 +21,16 @@ NMCVecfield::get_vec ( const size_t& lat_i, const size_t& lon_i )
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       throw( oor );
       //return nullptr;
     }
 }
+
+//-------------------------------------------------------------------
+
 vec3d
 NMCVecfield::get_vec ( const double& lat, const double& lon )
 {
@@ -34,10 +40,16 @@ NMCVecfield::get_vec ( const double& lat, const double& lon )
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       throw( oor );
       //return nullptr;
     }
 }
+
+//-------------------------------------------------------------------
+
 NMCVecfield::GridNode
 NMCVecfield::get_node ( const size_t& lat_i, const size_t& lon_i )
 {
@@ -49,10 +61,16 @@ NMCVecfield::get_node ( const size_t& lat_i, const size_t& lon_i )
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       throw( oor );
       //return nullptr;
     }
 }
+
+//-------------------------------------------------------------------
+
 NMCVecfield::GridNode
 NMCVecfield::get_node ( const double& lat, const double& lon )
 {
@@ -64,10 +82,15 @@ NMCVecfield::get_node ( const double& lat, const double& lon )
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       throw( oor );
       //return nullptr;
     }
 }
+
+//-------------------------------------------------------------------
 
 void
 NMCVecfield::set_vec ( const vec3d& value, const size_t& lat_i,
@@ -79,10 +102,16 @@ NMCVecfield::set_vec ( const vec3d& value, const size_t& lat_i,
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       //error: "illegal index"
       throw( oor );
     }
 }
+
+//-------------------------------------------------------------------
+
 void
 NMCVecfield::set_vec ( const vec3d& value, const double& lat,
                        const double& lon )
@@ -93,10 +122,16 @@ NMCVecfield::set_vec ( const vec3d& value, const double& lat,
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       //error: "bad argument: no such coordinates"
       throw( oor );
     }
 }
+
+//-------------------------------------------------------------------
+
 void
 NMCVecfield::set_node ( const GridNode& GN, const size_t& lat_i,
                         const size_t& lon_i )
@@ -111,10 +146,15 @@ NMCVecfield::set_node ( const GridNode& GN, const size_t& lat_i,
     }
   catch ( const std::out_of_range& oor )
     {
+      /*
+       * TODO: exception handling must be added
+       */
       //error: "illegal index"
       throw( oor );
     }
 }
+
+//-------------------------------------------------------------------
 
 void
 NMCVecfield::init_grid ( const size_t& lat_s, const size_t& lon_s )
@@ -124,6 +164,9 @@ NMCVecfield::init_grid ( const size_t& lat_s, const size_t& lon_s )
   //lat_step = la_step;
   //lon_step = lo_step;
 }
+
+//-------------------------------------------------------------------
+
 void
 NMCVecfield::clear ()
 {

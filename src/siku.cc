@@ -140,10 +140,7 @@ main ( int argc, char* argv[] )
       diagnosting ( siku, sikupy );
 
       // --- Concluding call back functions
-
-//      std::cout<<siku.es[0].q.w<<"\t"<<siku.es[0].q.x<<"\t"
-//          <<siku.es[0].q.y<<"\t"<<siku.es[0].q.z<<"\n";
-//      //std::cout<<endl;
+      (void) sikupy.fcall_aftertimestep ( siku );
 
       // --- END OF LOOP ---
       siku.time.increment ();

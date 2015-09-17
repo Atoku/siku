@@ -9,10 +9,19 @@ Voronoi tesselations with appropriate resolutions.
 from    math   import sin,cos,pow,ceil,floor,pi,sqrt,acos, atan2
 import random
 
-import geocoords
-from geocoords import ratio180,ratioPI,norm_lat,norm_lon,norm_delta,\
-     norm_lat_rad,norm_lon_rad
-
+from siku import geocoords
+try:
+    from geocoords import ratio180,ratioPI,norm_lat,norm_lon,norm_delta,\
+         norm_lat_rad,norm_lon_rad
+except:
+    ratio180 = geocoords.ratio180
+    ratioPI = geocoords.ratioPI
+    norm_lat = geocoords.norm_lat
+    norm_lon = geocoords.norm_lon
+    norm_delta = geocoords.norm_delta
+    norm_lat_rad = geocoords.norm_lat_rad
+    norm_lon_rad = geocoords.norm_lon_rad
+    
 # --------------------------------------------------------------------
 # --------------------------------------------------------------------
 

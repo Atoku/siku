@@ -7,8 +7,10 @@ Can use own methed or hpgrid generation
 import random
 import math
 
-import hpgrid
-from hpgrid import DEGREES,RADIANS
+from siku import hpgrid
+DEGREES = hpgrid.DEGREES
+RADIANS = hpgrid.RADIANS
+#from hpgrid import DEGREES,RADIANS
 
 class RandVecGenerator:
     '''Class for generating random 2d vectors'''

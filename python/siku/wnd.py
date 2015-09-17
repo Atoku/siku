@@ -4,23 +4,10 @@ module: wnd
 Contains classes for wind grid storaging and methods for translation wind
 speed data into Cartesian coordinates array.
 '''
-
-import os
-import sys
-
-### AAAAHH!!! Dis dependencies are killin me!
-##from siku import geocoords
-##from siku import nmc
-
-## I think this is better solution (at least it allows running scripts from
-## another scripts, without any C++ 'siku' importing).
 try:
     from siku import geocoords
     from siku import nmc
 except ImportError:
-    print('import error: trying internal directory')
-##    os.chdir('./../python/siku/')
-##    sys.path.append(os.getcwd())
     import nmc
     import geocoords
 

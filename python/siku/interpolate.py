@@ -3,10 +3,17 @@ uses NMCWind as a datasource
 '''
 import math
 
-import geocoords
-from geocoords import norm_lat,norm_lon,norm_delta,norm_delta_rad
-import nmc
-import wnd
+from siku import geocoords
+
+try:
+    from geocoords import norm_lat,norm_lon,norm_delta,norm_delta_rad
+except:
+    norm_lat = geocoords.norm_lat
+    norm_lon = geocoords.norm_lon
+    norm_delta = geocoords.norm_delta
+    norm_delta_rad = geocoords.norm_delta_rad
+from siku import nmc
+from siku import wnd
 
 class Interpolator:
     '''Class interpolator provides several methods for simple interpolation

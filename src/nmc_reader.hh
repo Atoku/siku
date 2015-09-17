@@ -32,6 +32,7 @@ class NMCVecfield
 protected:
   friend class Sikupy;
 
+  //! \brief inner structure (POD) for simple returns
   struct GridNode // Just for smart packing
   {
   public:
@@ -39,18 +40,17 @@ protected:
     double lon;
     vec3d value;
 
-    GridNode () :
-        lat ( 0 ), lon ( 0 )
-    {
-    }
+    GridNode () : lat ( 0 ), lon ( 0 ) {}
     GridNode ( const double& la, const double& lo, const vec3d& val ) :
         lat ( la ), lon ( lo ), value ( val )
-    {
-    }
-
+    {}
   };
 
+  //! \brief the wind velocity value itself (storaged as vec3d)
   std::vector < std::vector < vec3d > > grid;
+
+  //! \brief maps for converting geographical lat-lon values into grid
+  //! indexes and vice versa
   std::map < double, size_t > lat_indexer;
   std::map < double, size_t > lon_indexer;
   std::map < size_t, double > lat_valuator;
@@ -60,45 +60,56 @@ protected:
   //double lon_step{ 0. };
 public:
 
-  NMCVecfield ()
-  {
-  }
+  NMCVecfield () { }
   ~NMCVecfield ()
   {
     clear ();
   }
 
+  //! \brief Returns the value by specified indexes
   vec3d
   get_vec ( const size_t& lat_i, const size_t& lon_i );
+
+  //! \brief Returns the value by specified coordinates
+  //! (may couse precision errors!!)
   vec3d
   get_vec ( const double& lat, const double& lon );
+
+  //! \brief Returns entire node by specified indexes
   GridNode
   get_node ( const size_t& lat_i, const size_t& lon_i );
+
+  //! \brief Returns entire node by specified coordinates
+  //! (may couse precision errors!!)
   GridNode
   get_node ( const double& lat, const double& lon );
 
   //inline double get_lat_step(){ return lat_step; }
   //inline double get_lon_step(){ return lon_step; }
-  inline size_t
-  get_lat_size ()
-  {
-    return grid.size ();
-  }
-  inline size_t
-  get_lon_size ()
-  {
-    return grid[0].size ();
-  }
 
+  //! \brief Returns amount of latitude indexes
+  inline size_t  get_lat_size ()  { return grid.size (); }
+
+  //! \brief Returns amount of longitude indexes
+  inline size_t  get_lon_size ()  { return grid[0].size (); }
+
+  //! \brief Sets the value at specified indexes
   void
   set_vec ( const vec3d& value, const size_t& lat_i, const size_t& lon_i );
+
+  //! \brief Sets the value at specified coordinates
   void
   set_vec ( const vec3d& value, const double& lat, const double& lon );
+
+  //! \brief Sets entire node at specified indexes
   void
   set_node ( const GridNode& GN, const size_t& lat_i, const size_t& lon_i );
 
+  //! \brief Constructs the grid of required size
   void
   init_grid ( const size_t& lat_s, const size_t& lon_s );
+
+  //! \brief Clears the grid
   void
   clear ();
 };

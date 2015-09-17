@@ -48,6 +48,9 @@ using namespace std;
 
 #include "vecfield.hh"
 
+////////////
+#include <iostream>
+
 //! \brief Python interface wrapper
 class Sikupy
 {
@@ -101,7 +104,6 @@ public:
 
   //! \brief Update wind from NMC source
   //! \param[in] siku main global variables container
-  //! \param[in] reference to current time (borrowing)
   int
   fcall_update_nmc_wind ( Globals& siku );
 
@@ -154,7 +156,8 @@ private:
   vector < PyObject* > pSiku_funcs;
 
   //! \brief Current time, generated at the beginning of each time step
-  //! in fcall_pretimestep and cleared at the end in
+  //! in fcall_pretimestep and cleared at the end in dcall_aftertimestep
+  //! !! NOT in constructor and destructor!
   PyObject* pCurTime
     { nullptr };
 

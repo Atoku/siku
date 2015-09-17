@@ -16,14 +16,14 @@
 
 '''
 
-import sys
-import os
-try:
-    os.chdir('./python/siku/')
-    sys.path.append(os.getcwd())
-    os.chdir('./../../')
-except:
-    pass
+##import sys
+##import os
+##try:
+##    os.chdir('./python/siku/')
+##    sys.path.append(os.getcwd())
+##    os.chdir('./../../')
+##except:
+##    pass
 
 import math
 import sys
@@ -40,7 +40,11 @@ from   siku import regrid
 
 ######
 from siku import gmt_Plotter
-from gmt_Plotter import GMT_Plotter
+try:
+    from gmt_Plotter import GMT_Plotter
+except:
+    GMT_Plotter = gmt_Plotter.GMT_Plotter
+
 
 from   siku import wnd
  
@@ -80,6 +84,7 @@ def main():
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     #siku.time.last = siku.time.start
 
+    ## time inits by NMC grid times
     siku.time.start = siku.uw.times[0]
     siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
@@ -110,11 +115,7 @@ def main():
                (190.00, 71.7) ]
     
     P.update( coords )
-
-#####
-    cc = geocoords.lonlat_deg( P.C )
-    siku.deltas = [ ( c[0]-cc[0], c[1]-cc[1] ) for c in coords ]
-    
+ 
     # Element declaration
     E = element.Element( polygon = P, imat = matnames['ice'] )
     E.monitor = "drift_monitor"
@@ -129,7 +130,7 @@ def main():
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
-#####
+    ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
 
     siku.drift_monitor = drift_monitor
@@ -189,17 +190,17 @@ def drift_monitor( t, Q, Ps ):
     # get latitude and longitude of center of mass (0,0,1)
     R = q.to_matrix()
     c = R * C
-    lon, lat = geocoords.lonlat_deg( c )
 
+    ## plotting current frame into .eps picture
     pic_name = 'drift%02d.eps' % (siku.diagnostics.monitor_count)
-    print('drawing drift%02d.eps' % (siku.diagnostics.monitor_count) )
+    print('drawing ' + str( pic_name ) )
+
+    Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
+    vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
     
-    poly = open( 'Poly.txt', 'w' )
-
-    for s in siku.deltas:
-        poly.write( str( s[0] + lon )+'\t'+str( s[1] + lat )+'\n' )
-
-    poly.close()
+    with open( 'Poly.txt', 'w' ) as poly:
+        for v in vert:
+            poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
 
     siku.plotter.plot( pic_name, siku.time.update_index )
 
@@ -218,7 +219,7 @@ def winds_diag( t, winds ):
     mesh = siku.diagnostics.meshes[0]
     ez = mathutils.Vector( (0,0,1) )
 
-##    Commented to stop that file breeding while other modules are being tested
+## Commented to stop that file breeding while other modules are being tested
 ##    fp = open( 'winds-%02d.txt' % (siku.diagnostics.wind_counter), 'w' )
 ##
 ##    for i, w in enumerate( winds ):

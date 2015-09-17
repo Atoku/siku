@@ -92,10 +92,10 @@ class Polygon:
         '''Calculates the actual center of mass (cm) in assumption of flat
         polygon as well as total area and geometric moment of inertia.
 
-        Returns: A, I, P, Q, poly_xyz, poly_xyz_loc
+        Returns: A, I, C, Q, poly_xyz, poly_xyz_loc
         A (float) -- Area of polygon
         I (float) -- Geom. moment of inertia (e.g. div by mass: I/m)
-        P (mathutils.Vector) -- Cartesian coordinates of center of mass
+        C (mathutils.Vector) -- Cartesian coordinates of center of mass
         Q (mathutils.Quaternion) -- rotation quaternion for polygon
         poly_xyz (list of mathutils.Vector) -- global Cartesian
                                                coordinates

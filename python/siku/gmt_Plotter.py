@@ -3,14 +3,24 @@ Right now it`s plotting random generated test data plot.
 '''
 from math import sqrt
 
-from gmt_Drawer import GMT_Drawer
-import wnd
-from  interpolate import Interpolator
-import rand_vec
-#from Dict import Dictionary
-from hpgrid import DEGREES,RADIANS
-from geocoords import norm_delta
+from siku import gmt_Drawer
+from siku import wnd
+from siku import interpolate
+from siku import rand_vec
+from siku import hpgrid
+from siku import geocoords
 
+try:
+    from gmt_Drawer import GMT_Drawer
+    from  interpolate import Interpolator
+    from hpgrid import DEGREES,RADIANS
+    from geocoords import norm_delta
+except:
+    GMT_Drawer = gmt_Drawer.GMT_Drawer
+    Interpolator = interpolate.Interpolator
+    DEGREES = hpgrid.DEGREES
+    RADIANS = hpgrid.RADIANS
+    norm_delta = geocoords.norm_delta
 
 ##-----------------------------------------------------------------------------
 ##-------------------------------- THE PLOTTER --------------------------------
@@ -34,6 +44,7 @@ class GMT_Plotter:
 {view} -G{ground_colr} -P -V{verb}\n
 #Coasts
 {coasts} -V{verb}
+
 #winds
 {inter_wind}{inter_scale}/1/1 -V{verb}
 {grid_wind}{grid_scale}/1/1 -V{verb}

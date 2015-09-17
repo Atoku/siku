@@ -62,6 +62,7 @@ public:
 
   //! \brief Returns wind in (x, y, z) representation at specified
   //! lat-lon coords in degrees
+  //! !! inner approximation
   inline vec3d
   get_at_lat_lon_deg ( double lat, double lon )
   {
@@ -71,11 +72,12 @@ public:
 
   //! \brief Returns wind in (x, y, z) representation at specified
   //! lat-lon coords in radians
+  //! !! inner approximation
   vec3d
   get_at_lat_lon_rad ( double lat, double lon );
 
 private:
-  // DANGER: HARDCODED CONSTANT FOR NMC
+  // DANGER: HARDCODED CONSTANT FOR NMC GRID
   const double nmc_grid_step
     { 2.5 / 180 * M_PI };
 
@@ -92,7 +94,7 @@ private:
   inline size_t
   norm_lon_ind ( int lon_i )
   {
-    size_t size = NMCWind->get_lon_size ();
+    int size = NMCWind->get_lon_size ();
     while ( lon_i >= size )
       lon_i -= size;
     while ( lon_i < 0 )
@@ -104,7 +106,7 @@ private:
   inline size_t
   norm_lat_ind ( int lat_i )
   {
-    size_t size = NMCWind->get_lat_size ();
+    int size = NMCWind->get_lat_size ();
     while ( lat_i >= size )
       lat_i -= size;
     while ( lat_i < 0 )
