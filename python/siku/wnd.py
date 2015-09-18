@@ -162,4 +162,5 @@ def main():
     #carw.grid_save_('test.txt')
 
 if __name__ == '__main__':
-    main()
+    #main()
+    pass

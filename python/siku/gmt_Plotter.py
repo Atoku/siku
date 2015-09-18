@@ -35,8 +35,8 @@ class GMT_Plotter:
     '''
     
     #template string for further fulfilling
-    draw_conf_str = \
-'''#this is config file fog GMT_Drawer
+    draw_prep_str = \
+'''#this is config file for GMT_Drawer
 #next line is header with output_file name
 {pic_file_name}\n
 #draw configuration
@@ -45,11 +45,15 @@ class GMT_Plotter:
 #Coasts
 {coasts} -V{verb}
 
-#winds
+#Underlays\n'''
+    #template string for further fulfilling
+    draw_wind_str = \
+'''
+#Winds
 {inter_wind}{inter_scale}/1/1 -V{verb}
 {grid_wind}{grid_scale}/1/1 -V{verb}
 
-#other overlays\n'''
+#Other overlays\n'''
 
     #dafault values dictionary for template string completion
     deft_conf = {
@@ -144,11 +148,18 @@ class GMT_Plotter:
 ##            psi /=4
         with open('draw_config.txt','w') as dc:
             
-            dc.write( self.draw_conf_str.format( \
+            dc.write( self.draw_prep_str.format( \
                 pic_file_name = self.config.get( 'out_pic_name', 'map.eps' ),
                 view = self.config.get( 'view', '-Rg -JG350/20/6i -Bag30 ' ),
                 ground_colr = self.config.get( 'ground_colr', '255/226/164' ),
                 coasts = self.config.get( 'coasts', self.deft_conf['coasts'] ),
+                verb = verbose
+                ))
+            
+            for line in self.config.get( 'underlays', None ):
+                dc.write( line + '\n' )
+
+            dc.write( self.draw_wind_str.format(
                 inter_wind = self.config.get( 'inter_wind', \
                                               self.deft_conf['coasts'] ),
                 inter_scale = str( (psi * 40) / (max_wind * width) ),
@@ -156,7 +167,7 @@ class GMT_Plotter:
                                              self.deft_conf['grid_wind'] ),
                 grid_scale = str( (psi * 40) / (max_wind * width) ),
                 verb = verbose
-                ))
+                ) )
             
             for line in self.config.get( 'overlays', None ):
                 dc.write( line + '\n' )

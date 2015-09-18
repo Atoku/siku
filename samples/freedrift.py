@@ -88,8 +88,8 @@ def main():
     siku.time.start = siku.uw.times[0]
     siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[6]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 3
+    siku.time.finish = siku.uw.times[30]
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 16
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -132,7 +132,8 @@ def main():
 
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
-
+    
+    siku.diagnostics.monitor_freq = 5
     siku.drift_monitor = drift_monitor
     siku.diagnostics.monitor_count = 0
 
@@ -191,18 +192,20 @@ def drift_monitor( t, Q, Ps ):
     R = q.to_matrix()
     c = R * C
 
-    ## plotting current frame into .eps picture
-    pic_name = 'drift%02d.eps' % (siku.diagnostics.monitor_count)
-    print('drawing ' + str( pic_name ) )
+    ## plotting current frame (not each one) into .eps picture
+    if siku.diagnostics.monitor_count % siku.diagnostics.monitor_freq == 0:
+        pic_name = 'drift%02d.eps' % \
+            (siku.diagnostics.monitor_count / siku.diagnostics.monitor_freq)
+        print('drawing ' + str( pic_name ) )
 
-    Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
-    vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
-    
-    with open( 'Poly.txt', 'w' ) as poly:
-        for v in vert:
-            poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
+        Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
+        vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
+        
+        with open( 'Poly.txt', 'w' ) as poly:
+            for v in vert:
+                poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
 
-    siku.plotter.plot( pic_name, siku.time.update_index )
+        siku.plotter.plot( pic_name, siku.time.update_index )
 
     siku.diagnostics.monitor_count += 1
 #    print( lon, lat )

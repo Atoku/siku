@@ -52,6 +52,9 @@ struct Globals
   //! atmospheric wind data
   Vecfield wind;
 
+  //! water currents data (parametrical constructor call)
+  Vecfield flows = Vecfield( FIELD_NONE );
+
   //! Current filename to save to
   string savefile
     { "siku_output.h5" };

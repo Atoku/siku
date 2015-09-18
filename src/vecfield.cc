@@ -12,8 +12,6 @@
 
 using namespace Coordinates;
 
-#include <iostream>
-
 //---------------------------------------------------------------------
 //---------------- UTIL FUNCTIONS FOR INTERPOLATION -------------------
 //---------------------------------------------------------------------
@@ -31,14 +29,14 @@ Vecfield::Vecfield(const unsigned int& SOURCE_TYPE) :
 FIELD_SOURCE_TYPE( SOURCE_TYPE )
 {
   mode = MODE_VEC_STD_FIELD1;
-  NMCWind = new NMCVecfield;
+  if( FIELD_SOURCE_TYPE == FIELD_NMC )  NMCVec = new NMCVecfield;
 }
 
 //---------------------------------------------------------------------
 
 Vecfield::Vecfield()
 {
-  NMCWind = new NMCVecfield;
+  NMCVec = new NMCVecfield;
   mode = MODE_VEC_STD_FIELD1;
 }
 
@@ -46,7 +44,7 @@ Vecfield::Vecfield()
 
 Vecfield::~Vecfield()
 {
-  if( NMCWind )  delete NMCWind; // safe deletion
+  if( NMCVec ) delete NMCVec; // safe deletion
 }
 
 //---------------------------------------------------------------------
@@ -71,11 +69,15 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 {
   //draft: the simplest interpolation
 
+  // default return
+  if( ! NMCVec )  return vec3d(0., 0., 0.);
+
   // normalizing latitude in range [0, Pi],
   // longitude in range [0, 2Pi] (for proper indexing)
   lat = norm_lat ( lat ) + M_PI/2.;
   lon = norm_lon ( lon );
 
+  // calculating current cell indexes
   size_t lat_ind = size_t( lat / nmc_grid_step );
   if( lat == M_PI/2. )
     lat_ind -= 1;
@@ -84,16 +86,19 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   if( lon == 2.*M_PI )
     lon_ind = 0;
 
+  // calculating cell` borders
   double left = lon_ind * nmc_grid_step;
   double right = ( lon_ind + 1 ) * nmc_grid_step;
   double bottom = lat_ind * nmc_grid_step;
   double top = ( lat_ind + 1 ) * nmc_grid_step;
 
-  vec3d LB = NMCWind->get_vec( lat_ind, lon_ind );
-  vec3d LT = NMCWind->get_vec( lat_ind + 1, lon_ind );
-  vec3d RB = NMCWind->get_vec( lat_ind, lon_ind + 1 );
-  vec3d RT = NMCWind->get_vec( lat_ind + 1, lon_ind + 1 );
+  // extracting corner vectors
+  vec3d LB = NMCVec->get_vec( lat_ind, lon_ind );
+  vec3d LT = NMCVec->get_vec( lat_ind + 1, lon_ind );
+  vec3d RB = NMCVec->get_vec( lat_ind, lon_ind + 1 );
+  vec3d RT = NMCVec->get_vec( lat_ind + 1, lon_ind + 1 );
 
+  // interpolating with proportion
   vec3d top_v = proport( LT, RT, (lon - left)/(right - left) );
   vec3d bot_v = proport( LB, RB, (lon - left)/(right - left) );
 

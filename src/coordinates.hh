@@ -33,7 +33,7 @@ namespace Coordinates
   inline vec3d
   glob_to_loc ( quat& q, const vec3d& v )
   {
-    return glm::mat3_cast ( glm::conjugate ( q ) ) * v;
+    return glm::mat3_cast ( glm::inverse ( q ) ) * v;
   }
 
   //! \brief Returns global (x, y, z) representation of local (x, y, z) with
