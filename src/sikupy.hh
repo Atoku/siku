@@ -201,9 +201,9 @@ private:
   read_diagnostics_winds ( Diagnostics& diag );
 
   // -----------------------------------------------------------------
-  //! \brief Reading NMC wind grid with/from wnd.py
+  //! \brief Reading NMC vector grid with/from wnd.py
   int
-  read_nmc_vecfield ( NMCVecfield& vField );
+  read_nmc_vecfield ( NMCVecfield& vField, const char* vName );
 
   // -----------------------------------------------------------------
   // local methods to simplify access to some data types

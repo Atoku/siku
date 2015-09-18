@@ -103,7 +103,7 @@ void Sikupy::initialize(Globals &siku)
     assert(success);
 
     // vecfield preloading
-    success = read_nmc_vecfield ( *siku.wind.NMCWind );
+    success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
     assert( success );
 
     if ( success == 0 )
@@ -744,13 +744,13 @@ Sikupy::read_diagnostics_winds ( Diagnostics& diag )
 //---------------------------------------------------------------------
 
 int
-Sikupy::read_nmc_vecfield ( NMCVecfield& vField )
+Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
 {
   int success = 1;
 
   // getting 'wind' attribute
   PyObject *pSiku_wind;
-  pSiku_wind = PyObject_GetAttrString ( pSiku, "wind" ); // NEW!!
+  pSiku_wind = PyObject_GetAttrString ( pSiku, vName ); // NEW!!
   assert( pSiku_wind );
 
   /*
@@ -910,7 +910,7 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
 
       Py_DECREF( pTemp );
 
-      if ( !read_nmc_vecfield ( *siku.wind.NMCWind ) )
+      if ( !read_nmc_vecfield ( *siku.wind.NMCVec, "wind" ) )
         return FCALL_ERROR_NOWINDS;
       break;
 

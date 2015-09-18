@@ -22,6 +22,9 @@
 
 #include <cmath>
 
+////////////////
+#include <iostream>
+
 enum : unsigned int
 {
   FIELD_NONE = 0,
@@ -33,7 +36,7 @@ class Vecfield
 public:
   //! \brief Flag for vecfield source type
   unsigned int FIELD_SOURCE_TYPE
-    { 1 };
+    { FIELD_NMC };
 
   //! \brief Flag points to standard field from Fuselier paper
   static const int MODE_VEC_STD_FIELD1
@@ -41,7 +44,7 @@ public:
 
   //! \brief NMC wind grid pointer. If the source is NMC wind - object
   //! will be initialized in constructor.
-  NMCVecfield* NMCWind {nullptr};
+  NMCVecfield* NMCVec {nullptr};
 
   Vecfield ();
   Vecfield ( const unsigned int& SOURCE_TYPE );
@@ -94,7 +97,7 @@ private:
   inline size_t
   norm_lon_ind ( int lon_i )
   {
-    int size = NMCWind->get_lon_size ();
+    int size = NMCVec->get_lon_size ();
     while ( lon_i >= size )
       lon_i -= size;
     while ( lon_i < 0 )
@@ -106,7 +109,7 @@ private:
   inline size_t
   norm_lat_ind ( int lat_i )
   {
-    int size = NMCWind->get_lat_size ();
+    int size = NMCVec->get_lat_size ();
     while ( lat_i >= size )
       lat_i -= size;
     while ( lat_i < 0 )
