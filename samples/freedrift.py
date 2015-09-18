@@ -88,7 +88,7 @@ def main():
     siku.time.start = siku.uw.times[0]
     siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[3]
+    siku.time.finish = siku.uw.times[6]
     siku.time.dt = ( siku.time.finish - siku.time.start ) / 3
 
     # ---------------------------------------------------------------------
