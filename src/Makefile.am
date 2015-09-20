@@ -16,6 +16,7 @@ siku_SOURCES = siku.cc siku.hh \
 	dynamics.hh dynamics.cc \
 	element.hh element.cc \
 	errors.hh \
+	forces_mass.hh forces_mass.cc \
 	highio.hh highio.cc \
 	info.hh \
 	lowio.hh lowio.cc \

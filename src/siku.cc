@@ -48,6 +48,7 @@ extern "C"
 
 #include "modeltime.hh"         // model time
 
+#include "forces_mass.hh"
 #include "dynamics.hh"
 #include "position.hh"
 #include "coordinates.hh"
@@ -113,9 +114,10 @@ main ( int argc, char* argv[] )
 
       // --- Broad Phase Contact Detection if necessary
 
-      // --- Contact Forces assignement
-
       // --- Mass Forces assignement (Drivers, Coriolis)
+      forces_mass( siku );
+
+      // --- Contact Forces assignement
 
       // --- Dynamics solution
       dynamics ( siku, dt );
