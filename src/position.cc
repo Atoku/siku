@@ -8,6 +8,9 @@
 
 #include "position.hh"
 
+#include <iostream>
+using namespace std;
+
 void
 position ( Globals& siku, const double dt )
 {
@@ -17,7 +20,13 @@ position ( Globals& siku, const double dt )
   for ( auto & e : siku.es )
     {
       double S = glm::dot ( e.W, e.W ) * dt * C;
-      p = quat ( 1 - S, 0.5 * dt * e.W );
-      e.q = glm::cross ( e.q, p ) / ( 1 + S );
+      p = quat ( 1 - S, 0.5 * dt * e.W )  / ( 1 + S );
+      e.q = glm::cross ( e.q, p );
+
+      // cout << S << " " << e.W[0] << " " << e.W[1] << " " << e.W[2] << endl;
+      // cout << glm::length( p ) << endl;
+      // cout << glm::length( e.q ) << endl << endl;
+
+      e.q = glm::normalize( e.q );
     }
 }

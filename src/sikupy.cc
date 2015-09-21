@@ -882,6 +882,7 @@ int
 Sikupy::fcall_aftertimestep ( Globals& siku )
 {
   Py_DECREF( pCurTime );
+  return FCALL_OK;
 }
 
 //---------------------------------------------------------------------
