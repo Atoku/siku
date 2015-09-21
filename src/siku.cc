@@ -61,6 +61,13 @@ extern "C"
 //#include  "nmc_reader.hh"
 #include "vecfield.hh"
 
+
+/////////
+void outVec( const vec3d& vec)
+{
+  std::cout<<vec.x<<"\t"<<vec.y<<"\t"<<vec.z<<"\n";
+}
+
 using namespace Coordinates;
 
 //const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
@@ -92,14 +99,16 @@ main ( int argc, char* argv[] )
 
   // Initializing all global variables from config file.
   sikupy.initialize ( siku );
+
   if ( options.is_verbose () )
     std::cout << "End of reading config file" << std::endl;
 
-  siku.time.print ();
+  //siku.time.print ();
 
   // Main Time Loop
   while ( !siku.time.is_done () )
     {
+
       double dt = siku.time.get_dt ();
 
       // --- pretimestep
@@ -146,7 +155,16 @@ main ( int argc, char* argv[] )
 
       // --- END OF LOOP ---
       siku.time.increment ();
+
+//      double lon, lat;
+//      Coordinates::sph_by_quat( siku.es[0].q, &lat, &lon );
+//      cout << Coordinates::rad_to_deg ( lat ) << "\t"
+//          << Coordinates::rad_to_deg ( lon ) << "\n";
     }
+
+  sikupy.fcall_conclusions( siku );
+
+  cout<<"\nDONE!\n";
   return 0;
 }
 

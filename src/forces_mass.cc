@@ -8,6 +8,10 @@
 
 #include "forces_mass.hh"
 
+//////testing
+#include <iostream>
+
+
 void forces_mass( Globals& siku )
 {
   for ( auto & e: siku.es )
@@ -18,17 +22,15 @@ void forces_mass( Globals& siku )
       double lat, lon;
       Coordinates::sph_by_quat ( e.q, &lat, &lon );
       
-      // interpolating wind speed near element`s mass centre
+      // interpolating wind speed near element`s mass center
       vec3d V = siku.wind.get_at_lat_lon_rad ( Coordinates::norm_lat ( lat ),
                                                Coordinates::norm_lon ( lon ) );
+
       // transforming to local coordinates
       V = Coordinates::glob_to_loc( e.q, V );
 
       // calculating local Force (draft)
-      //e.F = 0.0016 * sqrt ( V.x * V.x + V.y * V.y + V.z * V.z ) * V * e.A;
       e.F = 0.0016 * V.length() * V * e.A;
-
-      //std::cout<<"\t"<<e.F.x<<"\t"<<e.F.y<<"\t"<<e.F.z<<endl;
 
       //-------- WATER (STEADY) ----------
       // calculating element`s speed in local coords
@@ -46,9 +48,9 @@ void forces_mass( Globals& siku )
       // applying water forces
       e.F += 0.0045 * W.length() * W * e.A;
 
-      //std::cout<<"\t"<<e.F.x<<"\t"<<e.F.y<<"\t"<<e.F.z<<endl;
       // element trace
-      std::cout<<lat<<"\t"<<lon<<endl<<endl;
+//      std::cout<<"trace: "<<Coordinates::rad_to_deg((lat))
+//      <<"\t"<<Coordinates::rad_to_deg((lon))<<endl;
 
       ////////////////////////
 

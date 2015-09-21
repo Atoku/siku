@@ -69,6 +69,13 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 {
   //draft: the simplest interpolation
 
+  // inner testing
+  if( FIELD_SOURCE_TYPE == FIELD_TEST )
+    {
+      return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 0. );
+      //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );
+    }
+
   // default return
   if( ! NMCVec )  return vec3d(0., 0., 0.);
 
@@ -79,7 +86,7 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 
   // calculating current cell indexes
   size_t lat_ind = size_t( lat / nmc_grid_step );
-  if( lat == M_PI/2. )
+  if( lat == M_PI )
     lat_ind -= 1;
 
   size_t lon_ind = size_t ( lon / nmc_grid_step );

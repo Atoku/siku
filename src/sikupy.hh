@@ -107,10 +107,15 @@ public:
   int
   fcall_update_nmc_wind ( Globals& siku );
 
-  //! \brief Check and perform winds update
+//  //! \brief Check and perform winds update
+//  //! \param[in] siku main global variables container
+//  int
+//  fcall_winds ( Globals& siku );
+
+  //! \brief Perform python conclusive actions (before program exits)
   //! \param[in] siku main global variables container
   int
-  fcall_winds ( Globals& siku );
+  fcall_conclusions ( Globals& siku );
 
   //! \brief Release all owened PyObjs
   ~Sikupy ();

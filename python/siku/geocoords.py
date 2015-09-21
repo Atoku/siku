@@ -153,8 +153,15 @@ def quat0( u ):
                                  u to ez.
 
     '''
+
     theta = acos( u.z / u.length )
     ez = mathutils.Vector( (0.0,0.0,1.0) )
-
+    uu=u.cross(ez).normalized()
+##    print( 'geoquat ' + str( theta ) + ' ' + str( uu.x ) + ' ' + \
+##           str( uu.y ) + ' ' + str( uu.z ) )
+##    Q = mathutils.Quaternion( uu, theta )
+##    print( 'geoquat ' + str( Q.w ) + ' ' + str( Q.x ) + ' ' + \
+##               str( Q.y ) + ' ' + str( Q.z ) )
+    
     # normalization of the axis is necessary: checked!
-    return mathutils.Quaternion( u.cross(ez).normalized(), - theta )
+    return mathutils.Quaternion( uu, - theta )

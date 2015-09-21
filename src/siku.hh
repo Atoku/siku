@@ -58,4 +58,11 @@ typedef glm::fmat3 mat3d;
 typedef glm::dmat3 mat3d;
 #endif
 
+//////////// FOR TESTING /////////////
+#include <iostream>
+
+void outVec( const vec3d& vec);
+
+///////////////////////////
+
 #endif  // SIKU_HH

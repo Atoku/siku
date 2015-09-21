@@ -25,6 +25,7 @@
 ##except:
 ##    pass
 
+import os
 import math
 import sys
 import datetime
@@ -72,6 +73,9 @@ def main():
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+##    w.make_test_field()
+##    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -89,7 +93,7 @@ def main():
     siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
     siku.time.finish = siku.uw.times[30]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 16
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 36
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -154,8 +158,15 @@ def main():
     # ---------------------------------------------------------------------
 
     siku.callback.pretimestep = pretimestep
+    siku.callback.conclusions = conclusions
 
     return 0
+
+# --------------------------------------------------------------------------
+
+def conclusions( siku, t ):
+    print('creating .gif')
+    os.system("convert -density 100 -delay 60 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 
@@ -169,9 +180,9 @@ def pretimestep( t, n, ns ):
 ##        siku.time.last = t
 
     # step by NMC own time step
-    if t >= siku.uw.times[siku.time.update_index + 1]:
-        status += siku.MASK['WINDS']
-        siku.time.last = t
+##    if t >= siku.uw.times[siku.time.update_index + 1]:
+##        status += siku.MASK['WINDS']
+##        siku.time.last = t
 
     # and change the winds here
     # ~!wind is changed with another call

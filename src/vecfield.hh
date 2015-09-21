@@ -28,7 +28,8 @@
 enum : unsigned int
 {
   FIELD_NONE = 0,
-  FIELD_NMC = 1
+  FIELD_TEST = 1,
+  FIELD_NMC = 2
 };
 
 class Vecfield

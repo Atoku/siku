@@ -50,7 +50,7 @@ struct Globals
   ModelTime time;
 
   //! atmospheric wind data
-  Vecfield wind;
+  Vecfield wind;// = Vecfield( FIELD_TEST );
 
   //! water currents data (parametrical constructor call)
   Vecfield flows = Vecfield( FIELD_NONE );

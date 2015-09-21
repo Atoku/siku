@@ -11,6 +11,7 @@
 
 #include "siku.hh"
 
+///// is it necessary?
 #include <iostream>
 using namespace std;
 
@@ -36,7 +37,7 @@ namespace Coordinates
   inline vec3d
   glob_to_loc ( quat& q, const vec3d& v )
   {
-    return glm::mat3_cast ( glm::conjugate ( q ) ) * v;
+    return glm::mat3_cast( glm::conjugate ( q ) ) * v;
   }
 
   //! \brief Returns global (x, y, z) representation of local (x, y, z) with
@@ -54,15 +55,15 @@ namespace Coordinates
   //! coordinates
   //!
   //! \param[in] r spherical radius
-  //! \param[in] theta spherical angle 'theta'
-  //! \param[in] phi spherical angle 'phi'
+  //! \param[in] theta spherical angle 'theta' (in radians)
+  //! \param[in] phi spherical angle 'phi' (in radians)
   vec3d sph_to_cart( const double& r, const double& theta, const double& phi);
 
   //! \brief Returns surface velocity (at the specific point on sphere)
   //! transformed from (east, north) representation to (x, y, z).
   //!
-  //! \param[in] lat geographical latitude of velocity position
-  //! \param[in] lon geographical longitude of velocity position
+  //! \param[in] lat geographical latitude of velocity position (in radians)
+  //! \param[in] lon geographical longitude of velocity position (in radians)
   //! \param[in] e_velo east amplitute of velocisy
   //! \param[in] n_velo north amplitute of velocisy
   vec3d geo_to_cart_surf_velo( const double& lat, const double& lon,

@@ -149,6 +149,9 @@ class Polygon:
 
         # Calculate the initial quaternion for the position
         Q = geocoords.quat0( C )
+##        #print(Q)
+##        print( 'polyquat ' + str( Q.w ) + ' ' + str( Q.x ) + ' ' + \
+##               str( Q.y ) + ' ' + str( Q.z ) )
 
         # Calculate local Cartesian unit coordinates
         qconj = Q.conjugated()

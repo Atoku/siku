@@ -42,9 +42,13 @@ inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
 -A3.0p+e+gblue -Se'
 grid_wind = 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
 
+#any underlays (right after coasts, befor winds)
+underlays = [
+        'psxy Poly.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
+    ]
+
 #any additional overlays
 overlays = [
-        'psxy Poly.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
 #'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 '
 #'psvelo int_res2 -R -J -W0.25p,10/180/10  -L -A3.0p+e+g10/180/10 -Se0.04/1/1'
 ##'psvelo int_res1 -R -J -W0.25p,red  -L -A3.0p+e+gred -Se0.04/1/1'

@@ -114,7 +114,6 @@ class NMCSurfaceVField:
         '''
         self.vec = [[(ucomp.val[time][la][lo], vcomp.val[time][la][lo]) \
                 for lo in range(len(self.lon))] for la in range(len(self.lat))]
-
         return
 
     def make_cartesian_( self ):
@@ -132,6 +131,12 @@ class NMCSurfaceVField:
                     geocoords.xyz_geographic(self.lon[lo],self.lat[la]))
                 self.cart_vec.append(self.vec[la][lo])
         
+        return
+
+    def make_test_field( self, v_vec=1, n_vec=0 ):
+        '''Replace all field nodes with input values'''
+        self.vec = [[( v_vec, n_vec ) for lo in range(len(self.lon))] \
+                    for la in range(len(self.lat))]
         return
     
     def grid_save_( self, filename ):

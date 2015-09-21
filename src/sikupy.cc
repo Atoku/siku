@@ -87,7 +87,7 @@ Sikupy::Sikupy( string filename )
 void Sikupy::initialize(Globals &siku)
   {
     int success
-      { 0}; // success code
+      { 0 }; // success code
 
     success = read_info(siku.info);
     assert(success);
@@ -103,8 +103,11 @@ void Sikupy::initialize(Globals &siku)
     assert(success);
 
     // vecfield preloading
-    success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
+    //success = !fcall_update_nmc_wind( siku );
+    if( siku.wind.FIELD_SOURCE_TYPE == FIELD_NMC )
+      success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
     assert( success );
+
 
     if ( success == 0 )
     fatal( 1, "Something  wrong went on initialization" );
@@ -505,6 +508,10 @@ Sikupy::read_elements ( vector < Element >& es )
       success = read_quat ( pobj, es[i].q );
       assert( success );
 
+//      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//      std::cout << "sikuquat " << es[i].q.w << "\t" << es[i].q.x << "\t"
+//          << es[i].q.y << "\t" << es[i].q.z << "\n";
+
       Py_DECREF( pobj );
 
       // reading g(h) - ice thickness distribution for the element
@@ -881,8 +888,11 @@ Sikupy::fcall_pretimestep ( Globals& siku )
 int
 Sikupy::fcall_aftertimestep ( Globals& siku )
 {
+  int status = FCALL_OK;
+
   Py_DECREF( pCurTime );
-  return FCALL_OK;
+
+  return status;
 }
 
 //---------------------------------------------------------------------
@@ -915,14 +925,49 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
         return FCALL_ERROR_NOWINDS;
       break;
 
+    case FIELD_TEST:
+      cout<<"Test wind field: no need to update\n";
+      break;
+
     default:
-      fatal( 1, "No source specified" )
-      ;
+      fatal( 1, "No source specified" );
+
       break;
     }
 
   siku.callback_status &= ~STATUS_WINDS;
   return FCALL_OK;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_conclusions ( Globals& siku )
+{
+  int status = FCALL_OK;
+
+  // creating datetime object
+  long microseconds = siku.time.get_total_microseconds ()
+      - 1000000 * siku.time.get_total_seconds ();
+
+  pCurTime = PyDateTime_FromDateAndTime(
+      siku.time.get_year (), // new
+      siku.time.get_month(), siku.time.get_day (),
+      (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
+      (int ) siku.time.get_seconds (), (int ) microseconds );
+  assert( pCurTime );
+
+  // conslusions call
+  PyObject* pTemp = PyObject_CallMethod ( pSiku_callback, "conclusions",
+                                          "(O,O)", pSiku, pCurTime ); //new
+
+  if ( !pTemp )
+    status = FCALL_ERROR_NO_FUNCTION;
+
+  Py_DECREF( pCurTime );
+  Py_DECREF( pTemp );
+
+  return status;
 }
 
 //---------------------------------------------------------------------
@@ -991,7 +1036,9 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
   for ( Py_ssize_t k = 0; k < 4; ++k )
     {
       PyObject* pNum;                // number to fill into the tuple
-      pNum = PyFloat_FromDouble ( pe->q[k] ); // new
+      /////////// ERROR SIMILAR TO 'READ_QUAT'
+      pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] ); // new
+      //pNum = PyFloat_FromDouble ( pe->q[k] ); // new
       PyTuple_SET_ITEM( pQTuple, k, pNum );  // steals pNum
     }
 
@@ -1109,12 +1156,19 @@ Sikupy::read_quat ( PyObject* pquat, quat& q )
 
   for ( Py_ssize_t k = 0; k < K; ++k )
     {
+      ///////////////ERROR WAS HERE!!!!
+      // mathutil.quat has wrong indexes order: ( (vec), scal )
+
       PyObject* pitem;
       pitem = PyList_GetItem ( pquat, k ); // borrowed
       if ( !PyFloat_Check( pitem ) )
         return false;
-      q[k] = PyFloat_AS_DOUBLE( pitem );
+
+      // fixing indexes
+      q[ (k+3)%K ] = PyFloat_AS_DOUBLE( pitem );
+      //q[k] = PyFloat_AS_DOUBLE( pitem );
     }
+    cout<<endl;
 
   return true;
 }
