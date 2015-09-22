@@ -34,6 +34,17 @@ enum : unsigned long
 //! initialized from the config file and computed or re-computed.
 struct Globals
 {
+  //! \brief Inner structure for holding interaction pairs metadata
+  struct InterPair
+  {
+    size_t i1 {0};
+    size_t i2 {0};
+    int step{0};
+    InterPair(){}
+    InterPair(const size_t& i1_, const size_t& i2_, const int& s ):
+      i1(i1_), i2(i2_), step(s) {}
+  };
+
   //! General information about the model
   Info info;
 
@@ -61,6 +72,9 @@ struct Globals
 
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
+
+  //! Interaction pairs pool
+  std::vector < InterPair > interacts;
 
   //! Callback-returned status (masked flags)
   unsigned long callback_status

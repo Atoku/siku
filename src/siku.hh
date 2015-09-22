@@ -65,4 +65,9 @@ void outVec( const vec3d& vec);
 
 ///////////////////////////
 
+inline double vec_len( const vec3d& vec)
+{
+  return sqrt( vec.x*vec.x + vec.y*vec.y + vec.z*vec.z );
+}
+
 #endif  // SIKU_HH

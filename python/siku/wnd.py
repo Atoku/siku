@@ -133,9 +133,9 @@ class NMCSurfaceVField:
         
         return
 
-    def make_test_field( self, v_vec=1, n_vec=0 ):
+    def make_test_field( self, e_vec=1, n_vec=0 ):
         '''Replace all field nodes with input values'''
-        self.vec = [[( v_vec, n_vec ) for lo in range(len(self.lon))] \
+        self.vec = [[( e_vec, n_vec ) for lo in range(len(self.lon))] \
                     for la in range(len(self.lat))]
         return
     

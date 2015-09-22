@@ -18,6 +18,9 @@ using namespace Coordinates;
 
 inline vec3d proport( const vec3d& d1, const vec3d& d2, const double& t )
 {
+//  return vec3d( d1.x + (d2.x - d1.x)*t,
+//                d1.y + (d2.y - d1.y)*t,
+//                d1.z + (d2.z - d1.z)*t );
   return d1 + ( d2 - d1 )*t;
 }
 
@@ -72,7 +75,7 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   // inner testing
   if( FIELD_SOURCE_TYPE == FIELD_TEST )
     {
-      return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 0. );
+      return Coordinates::geo_to_cart_surf_velo ( lat, lon, 0., -1. );
       //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );
     }
 
@@ -93,11 +96,15 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   if( lon == 2.*M_PI )
     lon_ind = 0;
 
+//  cout<<"## "<<lat_ind<<" "<<lon_ind<<" $$ "<<rad_to_deg(lat)<<" "<<rad_to_deg(lon)<<"\n";
+
   // calculating cell` borders
   double left = lon_ind * nmc_grid_step;
   double right = ( lon_ind + 1 ) * nmc_grid_step;
   double bottom = lat_ind * nmc_grid_step;
   double top = ( lat_ind + 1 ) * nmc_grid_step;
+
+//  cout<<"@@ "<<rad_to_deg(bottom)<<" "<<rad_to_deg(top)<<" "<<rad_to_deg(left)<<" "<<rad_to_deg(right)<<"\n\n";
 
   // extracting corner vectors
   vec3d LB = NMCVec->get_vec( lat_ind, lon_ind );
@@ -121,6 +128,16 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 //  vec3d V = proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
 //
 //  std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
+//
+//  if( (lon - left)/(right - left) > 1. ||
+//      (lat - bottom)/(top - bottom) > 1. ||
+//      (lon - left)/(right - left) < 0. ||
+//      (lat - bottom)/(top - bottom) < 0.
+//      )
+//    {
+//      cout<<"WOUWOU\n";
+//      cin.get();
+//    }
 
   return proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
 }

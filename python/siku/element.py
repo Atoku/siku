@@ -23,6 +23,7 @@ class Element:
         # copy all necessary data from polygon
         self.A = polygon.A
         self.i = polygon.i
+        self.sbb_rmin = polygon.sbb_rmin
         self.q = [ polygon.q[0],  polygon.q[1],  
                    polygon.q[2],  polygon.q[3] ]
 

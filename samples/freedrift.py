@@ -74,7 +74,7 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
 ##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
-##    w.make_test_field()
+##    w.make_test_field( 0, -1 )
 ##    siku.wind = w
    
     # ---------------------------------------------------------------------
@@ -92,8 +92,8 @@ def main():
     siku.time.start = siku.uw.times[0]
     siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[30]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 36
+    siku.time.finish = siku.uw.times[120]
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 156
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -111,24 +111,35 @@ def main():
     #            (12.50, 41.90),
     #            (32.86, 39.93),
     #            (48.04, 46.32) ]
-    
-    coords = [ (190.00, 70.7),      # lon, lat convention
+
+    coords = []
+    siku.elements = []
+    coords.append( [ (190.00, 70.7),      # lon, lat convention
                (195.00, 71.0),
                (196.00, 72.7),
                (192.00, 72.5),
-               (190.00, 71.7) ]
-    
-    P.update( coords )
+               (190.00, 71.7) ] )
+    coords.append( [ (190.00, 78.3),      # lon, lat convention
+               (192.00, 77.0),
+               (190.00, 75.7),
+               (188.00, 77.0) ] )
+    coords.append( [ (226.3, 73.3),      # lon, lat convention
+               (226.3, 70.7),
+               (223.7, 70.7),
+               (223.7, 73.3) ] )
  
-    # Element declaration
-    E = element.Element( polygon = P, imat = matnames['ice'] )
-    E.monitor = "drift_monitor"
-    gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
-           0.0, 0.0, 0.0, 0.0, 0.0 ]
-    E.set_gh( gh, ice )
-    
-    # all elements in the list
-    siku.elements = [ E ]
+    for c in coords:
+        P.update( c )
+     
+        # Element declaration
+        E = element.Element( polygon = P, imat = matnames['ice'] )
+        E.monitor = "drift_monitor"
+        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
+               0.0, 0.0, 0.0, 0.0, 0.0 ]
+        E.set_gh( gh, ice )
+        
+        # all elements in the list
+        siku.elements.append( E )
     
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -139,7 +150,7 @@ def main():
     
     siku.diagnostics.monitor_freq = 5
     siku.drift_monitor = drift_monitor
-    siku.diagnostics.monitor_count = 0
+    siku.diagnostics.step_count = 0
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds
@@ -158,6 +169,7 @@ def main():
     # ---------------------------------------------------------------------
 
     siku.callback.pretimestep = pretimestep
+    siku.callback.aftertimestep = aftertimestep
     siku.callback.conclusions = conclusions
 
     return 0
@@ -166,12 +178,13 @@ def main():
 
 def conclusions( siku, t ):
     print('creating .gif')
-    os.system("convert -density 100 -delay 60 drift*.eps drift.gif")
+    os.system("convert -density 100 -delay 30 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 
 def pretimestep( t, n, ns ):
     status = siku.MASK['NONE']
+    siku.diagnostics.step_count = n
     # some specific checks should be placed.
 
     # primitive time stepping
@@ -193,8 +206,18 @@ def pretimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps ):
+def aftertimestep( t, n, ns ):
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_freq == 0:
+        pic_name = 'drift%02d.eps' % \
+            (siku.diagnostics.step_count / siku.diagnostics.monitor_freq)
+        print('drawing ' + str( pic_name ) )
+        
+        siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
+    return 0
 
+# --------------------------------------------------------------------------
+
+def drift_monitor( t, Q, Ps, i ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -204,21 +227,15 @@ def drift_monitor( t, Q, Ps ):
     c = R * C
 
     ## plotting current frame (not each one) into .eps picture
-    if siku.diagnostics.monitor_count % siku.diagnostics.monitor_freq == 0:
-        pic_name = 'drift%02d.eps' % \
-            (siku.diagnostics.monitor_count / siku.diagnostics.monitor_freq)
-        print('drawing ' + str( pic_name ) )
-
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_freq == 0:
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
-        
-        with open( 'Poly.txt', 'w' ) as poly:
+
+        poly_name = 'Poly{n}.txt'.format( n = i )
+        with open( poly_name , 'w' ) as poly:
             for v in vert:
                 poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
 
-        siku.plotter.plot( pic_name, siku.time.update_index )
-
-    siku.diagnostics.monitor_count += 1
 #    print( lon, lat )
 
 #    for p in Ps:

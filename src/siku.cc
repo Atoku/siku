@@ -57,6 +57,8 @@ extern "C"
 #include "monitoring.hh"
 #include "mproperties.hh"
 
+#include "interactions.hh"
+
 ////////////////
 //#include  "nmc_reader.hh"
 #include "vecfield.hh"
@@ -117,6 +119,9 @@ main ( int argc, char* argv[] )
       // --- Recovering mass, moments of inertia, other parameters if
       // --- necessary
       mproperties ( siku );
+
+      // --- Searching for interaction pairs
+      Interactor::find_pairs( siku );
 
       // --- Updating external forcing fields if necessary
       //sikupy.fcall_winds ( siku ); //<- GONE to _pretimestep

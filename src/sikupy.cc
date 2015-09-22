@@ -508,10 +508,6 @@ Sikupy::read_elements ( vector < Element >& es )
       success = read_quat ( pobj, es[i].q );
       assert( success );
 
-//      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//      std::cout << "sikuquat " << es[i].q.w << "\t" << es[i].q.x << "\t"
-//          << es[i].q.y << "\t" << es[i].q.z << "\n";
-
       Py_DECREF( pobj );
 
       // reading g(h) - ice thickness distribution for the element
@@ -522,6 +518,16 @@ Sikupy::read_elements ( vector < Element >& es )
       success = read_double_vector ( pobj, es[i].gh );
       if ( !success )
         fatal( 2, "g(h) is not set of element %lu", i );
+
+      Py_DECREF( pobj );
+
+      // reading sphere radius
+
+      pobj = PyObject_GetAttrString ( pitem, "sbb_rmin" ); // new
+      assert( pobj );
+
+      success = read_double ( pobj, es[i].sbb_rmin );
+      assert( success );
 
       Py_DECREF( pobj );
 
@@ -780,7 +786,9 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
 
   for ( size_t i = 0; i < lat_s; ++i )
     {
-      pTemp = PyList_GetItem ( Lat, i ); //borrowed
+      // reversed indexsation in NMC structures: lat[0] = 90, lat[size] = -90
+      //pTemp = PyList_GetItem ( Lat, lat_s ); //borrowed
+      pTemp = PyList_GetItem ( Lat, lat_s - i - 1 ); //borrowed
 
       read_double ( pTemp, dtemp );
       vField.lat_indexer[dtemp] = i;
@@ -804,7 +812,9 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
 
   for ( size_t i = 0; i < lat_s; ++i )
     {
-      PyObject* pLine = PyList_GetItem ( pTemp, i ); //borrowed
+      // reversed indexsation in NMC structures: lat[0] = 90, lat[size] = -90
+      PyObject* pLine = PyList_GetItem ( pTemp, lat_s - i - 1 ); //borrowed
+      //PyObject* pLine = PyList_GetItem ( pTemp, i ); //borrowed
 
       for ( size_t j = 0; j < lon_s; ++j )
         {
@@ -815,8 +825,8 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
 
           vField.set_vec (
               geo_to_cart_surf_velo ( deg_to_rad ( vField.lat_valuator[i] ),
-                                      deg_to_rad ( vField.lon_valuator[j] ), ew,
-                                      nw ),
+                                      deg_to_rad ( vField.lon_valuator[j] ),
+                                      ew, nw ),
               i, j );
         }
     }
@@ -890,6 +900,16 @@ Sikupy::fcall_aftertimestep ( Globals& siku )
 {
   int status = FCALL_OK;
 
+  // preparing current step numbers
+  const size_t n = siku.time.get_n ();
+  const size_t ns = siku.time.get_ns ();
+
+  // calling python 'aftertimestep' method
+  PyObject* pReturn_value = PyObject_CallMethod ( pSiku_callback,
+                                                  "aftertimestep", "(O,i,i)",
+                                                  pCurTime, n, ns ); //new
+
+  Py_DECREF( pReturn_value );
   Py_DECREF( pCurTime );
 
   return status;
@@ -1065,7 +1085,7 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // assigning arguments
   PyObject* pargs;
-  pargs = Py_BuildValue ( "(O,O,O)", pCurTime, pQTuple, pPiList ); // new
+  pargs = Py_BuildValue ( "(O,O,O,i)", pCurTime, pQTuple, pPiList, i ); // new
   assert( pargs );
 
   // calling the object

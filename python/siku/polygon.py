@@ -46,13 +46,15 @@ class Polygon:
         Updates the state:
         self.A (float) -- Area of polygon
         self.I (float) -- Geom. moment of inertia
-        self.P (mathutils.Vector) -- Cartesian coordinates of CM
+        self.C (mathutils.Vector) -- Cartesian coordinates of CM
         self.q (mathutils.Quaternion) -- Quaternion representing
                                          transformation from local
                                          frame to global frame.
         self.poly_xyz (list of mathutils.Vector) -- Cartesian
                                                     coordinates of all
                                                     vertices
+        self.sphere_r (float) -- Bounding sphere radius for interactions
+                                 detection
 
         self.poly_xyz_loc (list of mathutils.Vector) -- Cartesian
                                                         local
@@ -66,6 +68,7 @@ class Polygon:
             self.C, \
             self.q, \
             self.poly_xyz, \
+            self.sbb_rmin, \
             self.poly_xyz_loc, \
             = self.parameters_calculation()
 
@@ -133,6 +136,13 @@ class Polygon:
         for i in range( len(Pi) ):
             C += Ai[i] * Ci[i]
         C /= ( 3 * A )
+
+        # Bound sphere radius (excess 10%)
+        Rad = 0
+        for r in poly_xyz:
+            if ( r - C ).length > Rad:
+                Rad = ( r - C ).length
+        Rad *= 1.1
         
         # and moment of inertia
         # (http://en.wikipedia.org/wiki/List_of_moments_of_inertia)
@@ -149,15 +159,12 @@ class Polygon:
 
         # Calculate the initial quaternion for the position
         Q = geocoords.quat0( C )
-##        #print(Q)
-##        print( 'polyquat ' + str( Q.w ) + ' ' + str( Q.x ) + ' ' + \
-##               str( Q.y ) + ' ' + str( Q.z ) )
 
         # Calculate local Cartesian unit coordinates
         qconj = Q.conjugated()
         R = qconj.to_matrix()
         poly_local_xyz = [ R * poly for poly in poly_xyz ]
 
-        return A, I, C, Q, poly_xyz, poly_local_xyz
+        return A, I, C, Q, poly_xyz, Rad, poly_local_xyz
 
     pass

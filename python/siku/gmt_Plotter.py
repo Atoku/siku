@@ -79,7 +79,7 @@ class GMT_Plotter:
 ##--------------------------------- PLOTTING ----------------------------------
 ##-----------------------------------------------------------------------------
     
-    def plot( self, out_file = 'map.eps', time = None ):
+    def plot( self, out_file = 'map.eps', time = None, nmc_grid = None ):
         '''Main function:
         performs plotting by loading inut, generating random positions grid,
         calling interpolation, preparing draw_config.txt and finaly executing
@@ -97,9 +97,11 @@ class GMT_Plotter:
         
         if self.config.get('verbose'):
             print( 'plotter start plotting' )
-        UW = wnd.NMCVar( self.config.get( 'uwind_file', 'uwnd.nc' ), 'uwnd' )
-        VW = wnd.NMCVar( self.config.get( 'vwind_file', 'vwnd.nc' ), 'vwnd' )
-        W = wnd.NMCSurfaceVField( UW, VW, self.config.get( 'time_index', -1 ) )
+        W = nmc_grid
+        if not W:
+            UW = wnd.NMCVar( self.config.get( 'uwind_file', 'uwnd.nc' ), 'uwnd' )
+            VW = wnd.NMCVar( self.config.get( 'vwind_file', 'vwnd.nc' ), 'vwnd' )
+            W = wnd.NMCSurfaceVField( UW, VW, self.config.get( 'time_index', -1 ) )
         Inter = Interpolator( W, self.config.get( 'grid_step_lat', 2.5 ),\
                               self.config.get( 'grid_step_lon', 2.5 ) )
         W.grid_save_( 'grid.txt' ) #saving base gird

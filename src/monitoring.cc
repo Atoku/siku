@@ -19,6 +19,7 @@ void monitoring( Globals& siku, Sikupy& sikupy )
   // Monitoring the elements
 
   for ( size_t i = 0; i < siku.es.size(); ++i )
+    {
     if ( siku.es[i].flag & Element::F_MONITORED )
       {
         int status =
@@ -29,9 +30,11 @@ void monitoring( Globals& siku, Sikupy& sikupy )
           case Sikupy::FCALL_ERROR_NO_FUNCTION:
             fatal( 2, "No monitor function named  %s  found",
                    siku.es[i].monitor );
+            break;
           }
       }
 
+    }
 }
 
 //---------------------------------------------------------------------

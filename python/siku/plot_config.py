@@ -7,7 +7,7 @@ time_index = -1 #time index to read
 grid_step_lat = 2.5 #grid step in latitude degrees
 grid_step_lon = 2.5 #grid step in longitude degrees
 out_pic_name = 'outDraw.eps' #output picture name
-verbose = True
+verbose = False
 
 #interpolation domain in degrees
 #inter_domain = ( 0, 360, 75, 90 )  #north pole
@@ -15,7 +15,7 @@ inter_domain = ( 150, 250, 65, 85 )  #beaufot-chukchi
 #inter_domain = ( 0, 360, -90, 90 )
 #inter_domain = ( 330, 350, 50, 60 )
 #inter_domain = ( -10, 10, -10, 10 )
-inter_density = 2.525 #interpolation grid resolution in degrees (average)
+inter_density = 1.525 #interpolation grid resolution in degrees (average)
 
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -44,7 +44,7 @@ grid_wind = 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
 
 #any underlays (right after coasts, befor winds)
 underlays = [
-        'psxy Poly.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
+        'psxy Poly*.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
     ]
 
 #any additional overlays

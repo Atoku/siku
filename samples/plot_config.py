@@ -15,7 +15,7 @@ inter_domain = ( 150, 250, 65, 85 )  #beaufot-chukchi
 #inter_domain = ( 0, 360, -90, 90 )
 #inter_domain = ( 330, 350, 50, 60 )
 #inter_domain = ( -10, 10, -10, 10 )
-inter_density = 0.525 #interpolation grid resolution in degrees (average)
+inter_density = 1.525 #interpolation grid resolution in degrees (average)
 
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -44,7 +44,7 @@ grid_wind = 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
 
 #any underlays (right after coasts, befor winds)
 underlays = [
-        'psxy Poly.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
+        'psxy Poly*.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
     ]
 
 #any additional overlays
