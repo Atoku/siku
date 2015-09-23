@@ -25,6 +25,7 @@
 ////////////////
 #include <iostream>
 
+// source types
 enum : unsigned int
 {
   FIELD_NONE = 0,
@@ -85,6 +86,12 @@ private:
   const double nmc_grid_step
     { 2.5 / 180 * M_PI };
 
+  //! \brief Number of longitudes
+  int lon_size{0};
+
+  //! \brief Number of latitudes
+  int lat_size{0};
+
   int mode;
 
   //! \brief Implementation of filed1 from Fuselier, Edward J and
@@ -95,26 +102,24 @@ private:
   //-------------------------------------------------------------------------
 
   //! \brief Normalizing longitude index
-  inline size_t
+  inline int
   norm_lon_ind ( int lon_i )
   {
-    int size = NMCVec->get_lon_size ();
-    while ( lon_i >= size )
-      lon_i -= size;
+    while ( lon_i >= lon_size )
+      lon_i -= lon_size;
     while ( lon_i < 0 )
-      lon_i += size;
+      lon_i += lon_size;
     return lon_i;
   }
 
   //! \brief Normalizing latitude index
-  inline size_t
+  inline int
   norm_lat_ind ( int lat_i )
   {
-    int size = NMCVec->get_lat_size ();
-    while ( lat_i >= size )
-      lat_i -= size;
+    while ( lat_i >= lat_size )
+      lat_i -= lat_size;
     while ( lat_i < 0 )
-      lat_i += size;
+      lat_i += lat_size;
     return lat_i;
   }
 

@@ -11,6 +11,7 @@ AM_LDFLAGS  = $(BOOST_PROGRAM_OPTIONS_LIB) $(PYTHON_LDFLAGS) ${BOOST_LDFLAGS} ${
 bin_PROGRAMS = siku
 siku_SOURCES = siku.cc siku.hh \
 	auxutils.hh auxutils.cc \
+	contact_detect.hh contact_detect.cc \
 	coordinates.hh coordinates.cc \
 	diagnostics.hh diagnostics.cc \
 	dynamics.hh dynamics.cc \
@@ -18,7 +19,6 @@ siku_SOURCES = siku.cc siku.hh \
 	errors.hh \
 	forces_mass.hh forces_mass.cc \
 	highio.hh highio.cc \
-	interactions.hh interactions.cc \
 	info.hh \
 	lowio.hh lowio.cc \
 	mesh.hh mesh.cc \

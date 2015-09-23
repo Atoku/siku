@@ -147,8 +147,8 @@ private:
   boost::posix_time::time_duration dt; //!< time step
   boost::posix_time::time_duration dts;//!< saving time step
 
-  size_t n;                     //!< number of steps
-  size_t ns;                    //!< number of savings
+  size_t n {0};                     //!< number of steps
+  size_t ns {0};                    //!< number of savings
 
   // ---------------- private methods ---------------
 

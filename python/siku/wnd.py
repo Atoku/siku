@@ -133,10 +133,19 @@ class NMCSurfaceVField:
         
         return
 
-    def make_test_field( self, e_vec=1, n_vec=0 ):
+    def make_test_field( self, e_vec=None, n_vec=None ):
         '''Replace all field nodes with input values'''
-        self.vec = [[( e_vec, n_vec ) for lo in range(len(self.lon))] \
-                    for la in range(len(self.lat))]
+        if not e_vec and not n_vec :
+            lp = 135
+            rp = 300
+            bt = 0
+            tt = 90
+            self.vec = [[
+                ( 10 - 20*( (la-bt)/(tt-bt) ), -10 + 20*( (lo-lp)/(rp-lp) ) )
+                for lo in self.lon ] for la in self.lat ]
+        else:
+            self.vec = [[( e_vec, n_vec ) for lo in range(len(self.lon))] \
+                        for la in range(len(self.lat))]
         return
     
     def grid_save_( self, filename ):

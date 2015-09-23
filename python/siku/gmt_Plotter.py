@@ -97,6 +97,9 @@ class GMT_Plotter:
         
         if self.config.get('verbose'):
             print( 'plotter start plotting' )
+
+        psi = self.config['inter_density']
+                
         W = nmc_grid
         if not W:
             UW = wnd.NMCVar( self.config.get( 'uwind_file', 'uwnd.nc' ), 'uwnd' )
@@ -114,24 +117,27 @@ class GMT_Plotter:
         RV = rand_vec.RandVecGenerator( domain[0], \
             domain[1], 90 + domain[2], 90 + domain[3] )
             #domain[1], 90 - domain[3], 90 - domain[2] )
-        RV.hp_generate( self.config.get( 'inter_density', 2.5 ), \
-                        DEGREES, self.config.get( 'verbose' ) )
-        vecs = RV.Grid.points_angular
+        if psi == 0:
+            max_wind = 1
+            psi = 1
+        else:
+            RV.hp_generate( psi, DEGREES, self.config.get( 'verbose' ) )
+            vecs = RV.Grid.points_angular
 
 ##-------------------------- making interpolations ----------------------
 
-        if self.config.get('verbose'):
-            print('interpolating')
-        max_wind = 0
-        with open('interpolated_vectors.txt','w') as outp:
-            for v in vecs:
-                temp = Inter.interpolate_simple( v[1], v[0] )
-                
-                if sqrt( temp[0]*temp[0] + temp[1]*temp[1]) > max_wind:
-                    max_wind = sqrt( temp[0]*temp[0] + temp[1]*temp[1])
+            if self.config.get('verbose'):
+                print('interpolating')
+            max_wind = 0
+            with open('interpolated_vectors.txt','w') as outp:
+                for v in vecs:
+                    temp = Inter.interpolate_simple( v[1], v[0] )
                     
-                outp.write(str(v[0])+' '+str(v[1])+' '+ \
-                           str(temp[0])+' '+str(temp[1])+' 0 0 0 \n')
+                    if sqrt( temp[0]*temp[0] + temp[1]*temp[1]) > max_wind:
+                        max_wind = sqrt( temp[0]*temp[0] + temp[1]*temp[1])
+                        
+                    outp.write(str(v[0])+' '+str(v[1])+' '+ \
+                               str(temp[0])+' '+str(temp[1])+' 0 0 0 \n')
 
 
 ##------------------------- preparing draw_config.txt -------------------------
@@ -143,8 +149,7 @@ class GMT_Plotter:
         dphi = domain[1] - domain[0]
         dtheta = domain[3] - domain[2]
         width = sqrt ( dphi*dtheta )
-        psi = self.config['inter_density'] * \
-                self.config.get( 'vector_scaling', \
+        psi *= self.config.get( 'vector_scaling', \
                 self.deft_conf['vector_scaling'] )
 ##        if dphi > 90:
 ##            psi /=4

@@ -57,7 +57,7 @@ extern "C"
 #include "monitoring.hh"
 #include "mproperties.hh"
 
-#include "interactions.hh"
+#include "contact_detect.hh"
 
 ////////////////
 //#include  "nmc_reader.hh"
@@ -87,7 +87,7 @@ main ( int argc, char* argv[] )
     std::cout << "Reading config: " << options.get_pythonfname () << std::endl;
 
   // Coordinate transforms
-  //Coordinates coords;
+  // Coordinates coords;
 
   // Variables!
   Globals siku;
@@ -105,13 +105,14 @@ main ( int argc, char* argv[] )
   if ( options.is_verbose () )
     std::cout << "End of reading config file" << std::endl;
 
-  //siku.time.print ();
+  // siku.time.print ();
 
   // Main Time Loop
   while ( !siku.time.is_done () )
     {
-
       double dt = siku.time.get_dt ();
+
+      cout<<"\n Step: "<<siku.time.get_n()<<endl;
 
       // --- pretimestep
       (void) sikupy.fcall_pretimestep ( siku );
@@ -121,7 +122,7 @@ main ( int argc, char* argv[] )
       mproperties ( siku );
 
       // --- Searching for interaction pairs
-      Interactor::find_pairs( siku );
+      siku.ConDet.detect( siku );
 
       // --- Updating external forcing fields if necessary
       //sikupy.fcall_winds ( siku ); //<- GONE to _pretimestep
@@ -161,10 +162,6 @@ main ( int argc, char* argv[] )
       // --- END OF LOOP ---
       siku.time.increment ();
 
-//      double lon, lat;
-//      Coordinates::sph_by_quat( siku.es[0].q, &lat, &lon );
-//      cout << Coordinates::rad_to_deg ( lat ) << "\t"
-//          << Coordinates::rad_to_deg ( lon ) << "\n";
     }
 
   sikupy.fcall_conclusions( siku );

@@ -26,8 +26,17 @@ MASK = {
     }
 
 # ---------------------------------------------------------------------
+# misc enums
+# ---------------------------------------------------------------------
+
+CONTACT_METHODS = {
+    'n2' : 0
+    }
+
+# ---------------------------------------------------------------------
 # main function: by default it is None
 # ---------------------------------------------------------------------
+
 main = None
 
 # ---------------------------------------------------------------------
@@ -45,6 +54,18 @@ info = {
     'email':     bootstrap_config.EMAIL,
     'author':    bootstrap_config.AUTHOR,
     'copyright': bootstrap_config.COPYRIGHT }
+
+# ---------------------------------------------------------------------
+# miscellanous default parameters
+# ---------------------------------------------------------------------
+
+class Defaults:
+    pass
+
+defaults = Defaults()
+
+# contact detection default method
+defaults.contact_method = CONTACT_METHODS['n2']
 
 # ---------------------------------------------------------------------
 # planet default parameters

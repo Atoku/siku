@@ -82,29 +82,36 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   // default return
   if( ! NMCVec )  return vec3d(0., 0., 0.);
 
+  // input params check
+  if( lat != lat || lon != lon )
+    {
+      cout<<"\nERROR: NaN lat or/and lon!\n"<<lat<<" "<<lon<<"\n\n";
+      fatal( 1, "interpolation args are NaN!");
+    }
+
   // normalizing latitude in range [0, Pi],
   // longitude in range [0, 2Pi] (for proper indexing)
   lat = norm_lat ( lat ) + M_PI/2.;
   lon = norm_lon ( lon );
 
+  // refreshing grid sizes
+  lon_size = NMCVec->get_lon_size ();
+  lat_size = NMCVec->get_lat_size ();
+
   // calculating current cell indexes
-  size_t lat_ind = size_t( lat / nmc_grid_step );
-  if( lat == M_PI )
-    lat_ind -= 1;
+  int lat_ind = norm_lat_ind( ((double)lat / nmc_grid_step) );
+  if ( lat_ind == (lat_size - 1) )
+    --lat_ind;
 
-  size_t lon_ind = size_t ( lon / nmc_grid_step );
-  if( lon == 2.*M_PI )
+  int lon_ind = norm_lon_ind ( ((double)lon / nmc_grid_step) );
+  if ( lon_ind == (lon_size - 1) )
     lon_ind = 0;
-
-//  cout<<"## "<<lat_ind<<" "<<lon_ind<<" $$ "<<rad_to_deg(lat)<<" "<<rad_to_deg(lon)<<"\n";
 
   // calculating cell` borders
   double left = lon_ind * nmc_grid_step;
   double right = ( lon_ind + 1 ) * nmc_grid_step;
   double bottom = lat_ind * nmc_grid_step;
   double top = ( lat_ind + 1 ) * nmc_grid_step;
-
-//  cout<<"@@ "<<rad_to_deg(bottom)<<" "<<rad_to_deg(top)<<" "<<rad_to_deg(left)<<" "<<rad_to_deg(right)<<"\n\n";
 
   // extracting corner vectors
   vec3d LB = NMCVec->get_vec( lat_ind, lon_ind );

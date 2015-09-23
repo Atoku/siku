@@ -27,5 +27,12 @@ dynamics ( Globals& siku, const double dt )
 
       // and increment the angular velocity using it
       e.W += sT * dt;
+
+      ///////// Spin test: different angle velocities for tester`s choice
+      //e.W.z = 0.00001;
+      ///// for comparison try also"
+      //e.W.z = 0.001;
+      //e.W.z = 0.0000001;
+
     }
 }

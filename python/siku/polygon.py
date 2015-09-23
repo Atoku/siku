@@ -137,12 +137,12 @@ class Polygon:
             C += Ai[i] * Ci[i]
         C /= ( 3 * A )
 
-        # Bound sphere radius (excess 10%)
+        # Bound sphere radius (excess 5%)
         Rad = 0
         for r in poly_xyz:
             if ( r - C ).length > Rad:
                 Rad = ( r - C ).length
-        Rad *= 1.1
+        Rad *= 1.05
         
         # and moment of inertia
         # (http://en.wikipedia.org/wiki/List_of_moments_of_inertia)

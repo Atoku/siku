@@ -173,6 +173,10 @@ private:
   // local methods to structurize initialize method in sections mostly
   // -----------------------------------------------------------------  
 
+  //! \brief Reading default values and settings
+  int
+  read_default ( Globals& siku );
+
   //! \brief Reading info data
   int
   read_info ( Info& info );

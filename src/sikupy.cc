@@ -89,6 +89,8 @@ void Sikupy::initialize(Globals &siku)
     int success
       { 0 }; // success code
 
+    success = read_default( siku );
+    assert(success);
     success = read_info(siku.info);
     assert(success);
     success = read_planet(siku.planet);
@@ -155,6 +157,34 @@ Sikupy::~Sikupy ()
 //---------------------------------------------------------------------
 
 int
+Sikupy::read_default( Globals& siku )
+{
+  int success = 1;
+
+  // temporal object for reading
+  PyObject* pTemp;
+
+  // Defaults handler
+  PyObject* pDef;
+  pDef = PyObject_GetAttrString ( pSiku, "defaults" );
+  assert( pDef );
+
+  // read contact detection method
+  pTemp = PyObject_GetAttrString ( pDef, "contact_method" );
+  assert( pTemp );
+
+  success = read_ulong( pTemp, siku.ConDet.det_meth );
+
+  // cleaning
+  Py_DECREF( pTemp );
+  Py_DECREF( pDef );
+
+  return success;
+}
+
+//---------------------------------------------------------------------
+
+int
 Sikupy::read_info ( Info& info )
 {
   int success = 1;
@@ -210,6 +240,7 @@ Sikupy::read_info ( Info& info )
 }
 
 //---------------------------------------------------------------------
+
 int
 Sikupy::read_planet ( Planet& planet )
 {

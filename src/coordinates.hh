@@ -19,6 +19,8 @@ using namespace std;
 namespace Coordinates
 {
 //public:
+  //! brief Vector (0, 0, 1)
+  static const vec3d NORTH( 0., 0., 1. );
 
   //! \brief getting latitude and longitude of center of mass by
   //!  quaternion

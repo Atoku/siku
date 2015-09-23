@@ -20,31 +20,40 @@
  *
  */
 
-#include "interactions.hh"
+#include "globals.hh"
+
+#include "contact_detect.hh"
 using namespace Coordinates;
 
-
-const vec3d Interactor::NORTH( 0., 0., 1. );
 //---------------------------------------------------------------------
 
-void Interactor::find_pairs( Globals& siku )
+void ContactDetector::find_pairs( Globals& siku )
 {
-  siku.interacts.clear();
+  cont.clear();
 
   for ( size_t i = 0; i < siku.es.size () - 1; ++i )
     {
       for ( size_t j = i + 1; j < siku.es.size (); ++j )
         {
-          if ( vec_len (
-              loc_to_glob ( siku.es[i].q, NORTH )
-                  - loc_to_glob ( siku.es[j].q, NORTH ) )
-              < ( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
+          if ( vec_len ( siku.es[i].Glob - siku.es[j].Glob ) <
+              ( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
             {
-              siku.interacts.push_back (
-                  Globals::InterPair ( i, j, siku.time.get_n () ) );
+              cont.push_back ( Contact ( i, j, siku.time.get_n () ) );
               cout << "PAIR " << i << "-" << j << "  step: "
                   << siku.time.get_n()<<endl;
             }
         }
     }
+}
+
+//---------------------------------------------------------------------
+
+void  ContactDetector::detect( Globals& siku )
+{
+  switch( det_meth )
+  {
+    case CONTACTS_N2:
+      find_pairs( siku );
+      break;
+  }
 }

@@ -13,20 +13,17 @@
 
 namespace Coordinates
 {
-//---------------------------------------------------------------------
-
-  //////////////////// TESTING!!! //////////////////
   void
   sph_by_quat ( quat& q, double* plat, double* plon )
   {
 //    // hardcoded result of multiplication of rotation matrix and (0, 0, 1)^T
 //    vec3d V( 2.*(q.x*q.z + q.w*q.y), 2.*(q.y*q.z - q.w*q.x),
 //             1. - 2.*(q.x*q.x + q.y*q.y) );
-    vec3d V = glm::mat3_cast( q ) * vec3d( 0., 0., 1. );
+    vec3d V = glm::mat3_cast( q ) * NORTH;
 
     // acquiring of geographical latitude and longitude
     *plat = M_PI/2. - atan2( sqrt( V.x*V.x + V.y*V.y ), V.z );
-    *plon = norm_lon( atan2( V.y, V.x ) );
+    *plon = atan2( V.y, V.x );
 
     return;
   }

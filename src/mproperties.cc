@@ -23,5 +23,8 @@ void mproperties( Globals& siku )
 
       e.m = e.A * m;
       e.I = e.m * e.i;          // moment of inertia update
+
+      // current global position update
+      e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
     }
 }

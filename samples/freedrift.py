@@ -73,9 +73,9 @@ def main():
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
-##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
-##    w.make_test_field( 0, -1 )
-##    siku.wind = w
+    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+    w.make_test_field()
+    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -92,8 +92,8 @@ def main():
     siku.time.start = siku.uw.times[0]
     siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[120]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 156
+    siku.time.finish = siku.uw.times[220]
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 256
 
     # ---------------------------------------------------------------------
     # Polygon initialization

@@ -19,6 +19,7 @@
 #include "material.hh"
 #include "vecfield.hh"
 #include "diagnostics.hh"
+#include "contact_detect.hh"
 
 enum : unsigned long
 {
@@ -34,17 +35,6 @@ enum : unsigned long
 //! initialized from the config file and computed or re-computed.
 struct Globals
 {
-  //! \brief Inner structure for holding interaction pairs metadata
-  struct InterPair
-  {
-    size_t i1 {0};
-    size_t i2 {0};
-    int step{0};
-    InterPair(){}
-    InterPair(const size_t& i1_, const size_t& i2_, const int& s ):
-      i1(i1_), i2(i2_), step(s) {}
-  };
-
   //! General information about the model
   Info info;
 
@@ -61,7 +51,7 @@ struct Globals
   ModelTime time;
 
   //! atmospheric wind data
-  Vecfield wind;// = Vecfield( FIELD_TEST );
+  Vecfield wind;// = Vecfield( FIELD_TEST );//<-- constructor for testing
 
   //! water currents data (parametrical constructor call)
   Vecfield flows = Vecfield( FIELD_NONE );
@@ -73,8 +63,8 @@ struct Globals
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
 
-  //! Interaction pairs pool
-  std::vector < InterPair > interacts;
+  //! Contact detector and store
+  ContactDetector ConDet;
 
   //! Callback-returned status (masked flags)
   unsigned long callback_status

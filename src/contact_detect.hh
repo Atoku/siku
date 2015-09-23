@@ -25,17 +25,48 @@
 #define INTERACTION_HH
 
 #include "siku.hh"
-#include "globals.hh"
 #include "element.hh"
 #include "coordinates.hh"
 
-class Interactor
+#include <vector>
+
+// predeclaration due to circled includes
+struct Globals;
+
+// contact detection methods classification
+enum : unsigned long
 {
-  static const vec3d NORTH;
+  CONTACTS_N2 = 0
+};
 
+//! \brief Functions class: provides several methods for contact detection,
+//! storage and history access
+class ContactDetector
+{
 public:
+  //! \brief Inner structure for holding interaction pairs metadata
+  struct Contact
+  {
+    size_t i1 {0};
+    size_t i2 {0};
+    int step{0};
+    Contact(){}
+    Contact(const size_t& i1_, const size_t& i2_, const int& s ):
+      i1(i1_), i2(i2_), step(s) {}
+  };
 
-  static void find_pairs( Globals& siku );
+  //! \brief Method specifier (ye, i know what 'meth' means...)
+  unsigned long det_meth{ CONTACTS_N2 };
+
+  // contacts pool
+  std::vector < Contact > cont;
+
+  //! \brief Method for calling contacts detection
+  void detect( Globals& siku );
+
+private:
+  //! \brief simple method for contacts detection. N^2 complexity.
+  void find_pairs( Globals& siku );
 
 };
 

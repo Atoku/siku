@@ -76,6 +76,8 @@ public:
   //! element on a sphere
   quat q;
 
+  vec3d Glob;                   //!< global position in (x, y, z)
+
   double m;                     //!< kg, mass
   double I;                     //!< moment of inertia
 
