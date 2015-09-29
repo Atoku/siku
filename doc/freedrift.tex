@@ -1,0 +1,249 @@
+%%% File: freedrift.tex
+
+\chapter{Drift testing}
+
+%----------------------------------------------------------------------
+
+\section{Introduction}
+
+It is obvious that our program should contain basic tests with easily 
+observable results. These tests can either confirm that all calculations
+are correct or show up that there are some miscalculations or phisical
+laws which are not taken into account.
+
+For proper testing we provide several simple tests, which could be ran
+directly from 'freedrift.py', and some more complicated hardcoded tests, 
+which require rebuilding the C++ core, that should not be made by users. 
+More detailed description will be given below.
+
+%----------------------------------------------------------------------
+
+\section{User-restricted tests}
+
+\subsection{Hardcoded winds}
+
+In order to remove any possibilities to make a mistake while passing 
+wind data from file to python and from python to core - a simple windfield 
+has been hardcoded into C++ modules.
+
+That field gives wind velocity by default equal to (-10, 1) in convention 
+(east-velo, north-velo) in current velocity units all around the globe.
+The values of components can be changed in module 'vecfield.cc' in method
+'get\_at\_lat\_lon\_rad. This test can be turned on in module 'globals.hh':
+one should uncomment testing constructor (next to atmospheric wind data 
+declaration), and by default is turned off.
+
+As the result - all elements on the globe should behave according to 
+hardcoded wind. \textbf{NOTICE: hardcoded wind will not be outlined as
+it is not connected with python!}
+
+\subsection{Hardcoded spins}
+
+In early stages, while interaction between elements is not properly 
+defined, the most basic spin test has been hardcoded. The test is naive 
+constant angular velocity of all elements. This velocity is brutally 
+embedded inside 'dynamics.cc' module. The values are chosen for different
+elements` behavior (and equal to zero by default). 
+
+When angular velocity is small - elements behave like 'leaves on the wind',
+simply drifting in direction of wind velocity, but slower in the reason 
+of water. 
+In the case of medium angular velocity - elements begin to turn aside from
+wind direction while they are mowing. This effect is caused by some 
+kind of inner model gyro forces.
+When angular velocity is too high - elements behave more like spinning top:
+they are moving slowly with fluctuations or not moving at all.
+\textbf{NOTICE: angular velocity and as the result elements behavior 
+depends on time scaling of current computing session!}
+
+%----------------------------------------------------------------------
+
+\section{Generic python tests}
+
+\subsection{Output settings}
+
+Befor starting the test itself, one should set a proper output for results.
+In order to observe the results we provide besic GMT picturing called from 
+python modules.
+
+All preruntime picture settings are located in 'plot\_config.py' file and 
+are optional.Most values have several samples and described below:
+\begin{itemize}
+\item 'uwind\_file' and 'vwind\_file' - string that contains the name of 
+ .nc files with uwind and vwind variables. 'gmt\_plotter.py' automaticly
+ prints wind grid from that files.
+\item time\_index - integer, that specifies the time from .nc files for
+ selecting the wind grid.
+ \textbf{Totally optional: runtime setting provided}
+\item 'grid\_step\_lat' and 'grid\_step\_lon' - grid steps in .nc files for 
+ proper interpoaltion and plotting.
+\item 'out\_pic\_name' - name of file for GMT output.
+ \textbf{Totally optional: runtime setting provided}
+\item 'verbose' - verbosity state
+\item 'inter\_domain' - the domain for gmt\_plotter inner interpolation.
+ Is being given in convention (minlon, maxlon, minlat, maxlat) in degrees.
+ Several main domains are provided and commented out.
+\item 'inter\_density' - average density of additional interpolated vectors
+ in degrees. 0 - for canceling additional interpolation.
+\item 'view' - \textbf{Important!} main option! Contains information about
+ map projection, oriantation and other minor gmt settings.
+ Various views are provided and commented out.
+\item 'ground\_colr' - color of ground.
+\item 'coasts' - \textbf{Important!} second main option, but generally
+ optional as it has good dafault value.
+ Contains gmt command string for printing coast lines.
+\item 'vector\_scaling' - additional scaling for wind vectors.
+ For most maps dafeult value suits well, but when entire globe is being 
+ printed - vectors can cover all other output, so should be resized 
+ manually.
+\item 'inter\_wind' - gmt command line for printing interpolated winds. File
+ name is synchronized with interpolation module.
+\item 'grid\_wind' - gmt command line for printing grid winds. File
+ name is synchronized with interpolation module.
+\item 'underlays' and 'overlays' - lists of optional underlays and overlays
+ (accordingly), such as monitoring output, additional grids or objects.
+\end{itemize}
+
+\subsection{Testing scenarios}
+
+Same to all other scenarios - these are being set inside user scenario 
+python files that are given as an argument to core binary (siku) on 
+execution.
+
+Current testing scenario settings are being contained in 'freedrift.py', 
+and are described below.
+
+\subsection{Materials}
+
+Each element has various properties. A lot of them can be simply described
+the material, which element is made of. 
+
+Default material for model is ice.  Material`s parameters can be changed in 
+'material.py'. Inside the scenario file all materials are being loaded into 
+table in 'Define material' section.
+
+\subsection{Wind initializations}
+
+Befor anything can move one should define a wind grid for inner processing.
+Yet only NMC reanalysis data is supported. 
+
+Grid loading ang preprocessing examples are being located in 
+'Wind initializations' section of 'freedrift.py'.
+First of all one should load siku.wind field as a proper NMCSurfaceVField
+object, that depends on two NMCVar objects for two wind components 
+(described in 'wnd,py' and 'nmc.py' accordingly).
+After the loading one can additionaly make some changes in that wind grid 
+(such as setting all values equal to test values by 'make\_test\_field' 
+method. It also can be applied after each loading or updating wind grid).
+
+The 'make\_test\_field' method simply sets all values of wind velocity equal 
+to that, which are given as arguments (in terms (east-velo, north-velo)).
+If arguments are empty - the winds all over the glob will be set as huge 
+cyclones. That is very usefull for checking global drift and spin either 
+with or without detection land collisions. 
+
+\subsection{Date/time}
+
+As the model describes the dynamics - another inevitable setting is time.
+
+Several time examples are being located in 'date/time settings' section 
+in 'freedrift.py'. Generally time should be set by exact values, but
+as every NMC file contains it`s own set of times, one can easily choose 
+some elements from that set.
+
+There are several time variables, that should be set:
+\begin{itemize}
+ \item siku.time.start - starting time of modelling
+ \item siku.time.finish - finish time (modelling shall end after reaching 
+ that time)
+ \item siku.time.last - the time of last calculation step
+ \item siku.time.last\_update - the time of last wind update (used by 
+ wind updating methods)
+ \item siku.time.dts - outer cumputation time limit. Program shall exit 
+ after it would have been working for that amount of time.
+ \item siku.time.dt - \textbf{Important!} time step of the model. This 
+ value has huge influence on computing process (mostly by dynamics).
+\end{itemize}
+
+\subsection{Poligons}
+
+All elements are being represented as geometric poligons with different 
+properties. Most general methods (such as loading) are being provided by 
+'Polygon' class. The object of that class is being initialized in 
+'Polygon initialization' siction.
+
+\subsection{Elements}
+
+The most basic example of several simple elements is being located in 
+'elements' section. 
+
+Firstly one shoud set a list of vertices for each element.
+Secondly one have to init each element as an object of 'Element' class
+using 'Polygon' object, matching material and set of thicknesses specifying 
+monitoring functions.
+In the third place one should append these elements to the list of elements.
+
+\subsection{Monitoring function}
+
+The variables and methods in section 'Monitor function for the polygon'
+are being used for monitoring (such as picturing) some (or all) of the 
+elements. 
+
+Currently there are next objects:
+\begin{itemize}
+ \item siku.plotter - an object of GMT\_Plotter class for picturing frames
+ with GMT.
+ \item diagnostics.monitor\_freq - testing variable, defines frequency
+ (actually period) of making frames in units of timestem, thus it is integer.
+ \item siki.drift\_monitor - monitor function for elements.
+ \item siku.diagnostics.step\_count - counter of diagnostics steps.
+\end{itemize}
+
+\subsection{Diagnostics}
+
+The vatiables and methods for diagnostics are being located in 'Diagnostics 
+function for the winds' section.
+
+\textbf{Currently not used}
+
+\subsection{Callback}
+
+All python methods are being called from C++ core as a call-back functions.
+Therefore this methods has been declared in 'Callback flag-mask generator'
+section and defined afterward.
+
+These functions are:
+\begin{itemize}
+ \item siku.callback.pretimestep - functions, that is called befor main 
+ camputations. Contains different preprocessings, such as wind updating.
+ 
+ Currently updating is turned off because time step is too large and couse 
+ unwanted updates spoiling results.
+ \item siku.callback.aftertimestep - function, that is called after main
+ computations. 
+ 
+ Currently contains picturing of elements and winds.
+ \item conclusions - function, that is called only once - befor program 
+ exits. 
+ 
+ Currently contains command for creating a .gif animation from all frames.
+\end{itemize}
+
+\subsection{Current testings}
+
+Current version of freedrift.py contains scenario for testing global 
+movement and spinning. Running the model with that scenario should make
+255 time steps covering 55 days, create 51 .eps file with the locations of 
+three poligons and finally make .gif animationt of their movement. 
+
+Expected work time is about 30-60 seconds (mostly spent for picturing).
+
+For drift testing with real winds one should comment out last 3 lines in 
+'Wind initializations' section in 'freedrift.py'. That will set testing 
+wind grid with povided .nc files.
+
+For changing projection one should comment out current 'view' variable 
+in 'plot\_config.py' and uncomment that view, which one wants to see 
+(or define his own).
+
+%----------------------------------------------------------------------

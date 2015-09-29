@@ -15,8 +15,10 @@ inter_domain = ( 150, 250, 65, 85 )  #beaufot-chukchi
 #inter_domain = ( 0, 360, -90, 90 )
 #inter_domain = ( 330, 350, 50, 60 )
 #inter_domain = ( -10, 10, -10, 10 )
-inter_density = 0#5.525 #interpolation grid resolution in degrees (average)
 
+#interpolation grid resolution in degrees (average).
+#Zero means 'no additional interpolation for output'
+inter_density = 0 #5.525
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
