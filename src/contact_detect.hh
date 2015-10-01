@@ -36,7 +36,8 @@ struct Globals;
 // contact detection methods classification
 enum : unsigned long
 {
-  CONTACTS_N2 = 0
+  CONTACTS_N2 = 0,
+  SWEEP_N_PRUNE = 1
 };
 
 //! \brief Functions class: provides several methods for contact detection,
@@ -67,6 +68,9 @@ public:
 private:
   //! \brief simple method for contacts detection. N^2 complexity.
   void find_pairs( Globals& siku );
+
+  //! \brief sweep and prune method for contacts detection.
+  void sweep_n_prune( Globals& siku );
 
 };
 

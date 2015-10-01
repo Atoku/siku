@@ -22,8 +22,8 @@ inter_density = 0 #5.525
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
-##view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
-view = '-Rg -JA205/71/15 -Bag30 '
+view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
+##view = '-Rg -JA205/71/15 -Bag30 '
 
 #Polar Stereographic (hope that is really stereo)
 #view = '-R315/70/135/70r -JS0/90/6i -Bag30 ' #north pole

@@ -56,8 +56,10 @@ public:
   // --------------- Not changing handling parameters ----------------
 
   unsigned int flag;            //!< state flag
-  char* monitor {nullptr};         //!< monitor function name (0-term)
-  char* control {nullptr};         //!< control function name (0-term)
+//  char* monitor {nullptr};         //!< monitor function name (0-term)
+//  char* control {nullptr};         //!< control function name (0-term)
+  std::string monitor;         //!< monitor function name (0-term)
+  std::string control;         //!< control function name (0-term)
 
   // --------------- Not changing state parameters -------------------
   
@@ -92,10 +94,9 @@ public:
   //! Destructor takes care about monitor and control functions
   ~Element()
   {
-    if ( monitor ) delete monitor;
-    if ( control ) delete control;
+    //if ( monitor ) delete monitor;
+    //if ( control ) delete control;
   }
 };
-
 
 #endif

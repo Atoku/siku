@@ -25,6 +25,48 @@
 #include "contact_detect.hh"
 using namespace Coordinates;
 
+// we need some sorting!
+#include <algorithm>
+
+//---------------------------------------------------------------------
+
+// For sorting watch https://s-media-cache-ak0.pinimg.com/originals/5f/fc/42/5ffc4224b938d1fb0abee887e4add84b.jpg
+// Yet simple 'sort' from <algorithm> is used.
+
+// for optimization xmin and xmax could be stored inside Element
+inline bool elements_x_compare( const Element& e1, const Element& e2 )
+{
+  return (e1.Glob.x - e1.sbb_rmin) < (e2.Glob.x - e2.sbb_rmin);
+}
+
+void ContactDetector::sweep_n_prune( Globals& siku )
+{
+  // sorting
+  std::sort( siku.es.begin(), siku.es.end(), elements_x_compare );
+
+  // contact search
+  cont.clear();
+
+  for ( size_t i = 0; i < siku.es.size () - 1; ++i )
+    {
+      for ( size_t j = i + 1; j < siku.es.size (); ++j )
+        {
+          if ( sq_dist( siku.es[i].Glob, siku.es[j].Glob ) <
+              square_( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
+            {
+              cont.push_back ( Contact ( i, j, siku.time.get_n () ) );
+              cout << "SWEEP PAIR " << i << "-" << j << "  step: "
+                  << siku.time.get_n()<<endl;
+            }
+          if ( (siku.es[i].Glob.x + siku.es[i].sbb_rmin) <
+              (siku.es[j].Glob.x - siku.es[j].sbb_rmin) )
+
+              break;
+
+        }
+    }
+}
+
 //---------------------------------------------------------------------
 
 void ContactDetector::find_pairs( Globals& siku )
@@ -35,8 +77,8 @@ void ContactDetector::find_pairs( Globals& siku )
     {
       for ( size_t j = i + 1; j < siku.es.size (); ++j )
         {
-          if ( vec_len ( siku.es[i].Glob - siku.es[j].Glob ) <
-              ( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
+          if ( sq_dist( siku.es[i].Glob, siku.es[j].Glob ) <
+              square_( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
             {
               cont.push_back ( Contact ( i, j, siku.time.get_n () ) );
               cout << "PAIR " << i << "-" << j << "  step: "
@@ -54,6 +96,9 @@ void  ContactDetector::detect( Globals& siku )
   {
     case CONTACTS_N2:
       find_pairs( siku );
+      break;
+    case SWEEP_N_PRUNE:
+      sweep_n_prune( siku );
       break;
   }
 }

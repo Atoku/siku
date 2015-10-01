@@ -603,7 +603,7 @@ Sikupy::read_elements ( vector < Element >& es )
 
       if ( read_string ( pobj, stmp ) )
         {
-          es[i].monitor = strdup ( stmp.c_str () );
+          es[i].monitor = string( stmp.c_str() ); //strdup ( stmp.c_str () );
           assert( es[i].monitor );
           // we also need to set a flag for this element
           es[i].flag |= Element::F_MONITORED;

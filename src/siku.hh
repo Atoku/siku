@@ -64,6 +64,21 @@ typedef glm::dmat3 mat3d;
 void outVec( const vec3d& vec);
 
 ///////////////////////////
+
+//! \brief inlined dot product for vec3d
+inline double dot_prod ( const vec3d& v1, const vec3d& v2 )
+{
+  return v1.x*v2.x + v1.y*v2.y +v1.z*v2.z;
+}
+
+//! \brief inlined method for getting square modulus of vecs` difference
+inline double sq_dist( const vec3d& v1, const vec3d& v2 )
+{
+  return dot_prod( v2 - v1, v2 - v1 );
+}
+
+inline double square_( const double& x) { return x*x; }
+
 inline double vec_len( const vec3d& vec)
 {
   return sqrt( vec.x*vec.x + vec.y*vec.y + vec.z*vec.z );

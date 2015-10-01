@@ -73,9 +73,9 @@ def main():
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
-    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
-    w.make_test_field()
-    siku.wind = w
+##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+##    w.make_test_field()
+##    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -103,7 +103,7 @@ def main():
                              # elements will be initialized using polygons
     
     # ---------------------------------------------------------------------
-    # elements. In our case a single polygon
+    # elements
     # ---------------------------------------------------------------------
 
     # coords = [ (37.61, 55.75),      # lon, lat convention
@@ -151,6 +151,8 @@ def main():
     siku.diagnostics.monitor_freq = 5
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
+
+    siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds

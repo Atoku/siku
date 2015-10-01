@@ -23,13 +23,13 @@ void monitoring( Globals& siku, Sikupy& sikupy )
     if ( siku.es[i].flag & Element::F_MONITORED )
       {
         int status =
-          sikupy.fcall_monitor( siku, i, siku.es[i].monitor );
+          sikupy.fcall_monitor( siku, i, siku.es[i].monitor.c_str() );
 
         switch ( status )
           {
           case Sikupy::FCALL_ERROR_NO_FUNCTION:
             fatal( 2, "No monitor function named  %s  found",
-                   siku.es[i].monitor );
+                   siku.es[i].monitor.c_str() );
             break;
           }
       }

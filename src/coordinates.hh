@@ -90,7 +90,7 @@ namespace Coordinates
   //! normalizing longitude in range [0, 2Pi]
   inline double norm_lon( double lon )
   {
-    while( lon > 2.*M_PI )
+    while( lon >= 2.*M_PI )
       lon -= 2.*M_PI;
     while( lon < 0. )
       lon += 2.*M_PI;

@@ -75,7 +75,7 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   // inner testing
   if( FIELD_SOURCE_TYPE == FIELD_TEST )
     {
-      return Coordinates::geo_to_cart_surf_velo ( lat, lon, 0., -1. );
+      return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 1. );
       //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );
     }
 
