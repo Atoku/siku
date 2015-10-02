@@ -39,7 +39,7 @@ ground_colr = '255/226/164' #ground color
 coasts = 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 '
 
-vector_scaling = 0.02
+#vector_scaling = 0.01
 #vector_scaling = 5.5
 
 inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\

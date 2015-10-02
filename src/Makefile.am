@@ -12,6 +12,7 @@ bin_PROGRAMS = siku
 siku_SOURCES = siku.cc siku.hh \
 	auxutils.hh auxutils.cc \
 	contact_detect.hh contact_detect.cc \
+	contact_force.hh contact_force.cc \
 	coordinates.hh coordinates.cc \
 	diagnostics.hh diagnostics.cc \
 	dynamics.hh dynamics.cc \

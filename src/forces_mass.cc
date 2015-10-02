@@ -47,7 +47,7 @@ void forces_mass( Globals& siku )
 
       // calculating local Force (draft)
       // V.lenght() always equals to 3 - it`s amount of components!!!
-      e.F = 0.0016 * vec_len( V ) * V * e.A;
+      e.F += 0.0016 * vec_len( V ) * V * e.A;
       //e.F = 0.0016 * sqrt( V.x*V.x + V.y*V.y + V.z*V.z ) * V * e.A;
 
       //-------- WATER (STEADY) ----------

@@ -87,7 +87,7 @@ public:
                                 //!coord.
   vec3d F;                      //!< N, net force vector in local
                                 //!frame
-  double N {0};                 //!< mN, torque value in local frame
+  double N {0};                 //!< N*m, torque value in local frame
 
   // ------------------- METHODS: -------------------------------------
 

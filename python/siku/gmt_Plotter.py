@@ -118,7 +118,7 @@ class GMT_Plotter:
             domain[1], 90 + domain[2], 90 + domain[3] )
             #domain[1], 90 - domain[3], 90 - domain[2] )
         if psi == 0:
-            max_wind = 1
+            max_wind = 10
             psi = 1
         else:
             RV.hp_generate( psi, DEGREES, self.config.get( 'verbose' ) )

@@ -42,6 +42,9 @@ typedef glm::fvec3 vec3d;
 typedef glm::dvec3 vec3d;
 #endif
 
+// zero-vector for fast cleaning
+const vec3d nullvec = vec3d( 0., 0., 0. );
+
 //! Main quaternion types
 #include <glm/gtc/quaternion.hpp>
 #ifdef SIKU_QUATF
@@ -58,12 +61,34 @@ typedef glm::fmat3 mat3d;
 typedef glm::dmat3 mat3d;
 #endif
 
-//////////// FOR TESTING /////////////
+////////////////////////// FOR TESTING ////////////////////////////
 #include <iostream>
+inline void outVec( const vec3d& vec)
+{
+  std::cout<<vec.x<<"\t"<<vec.y<<"\t"<<vec.z<<"\n";
+}
 
-void outVec( const vec3d& vec);
+// --------------------------------------------------------------------------
+// boost geometry for Polygon processing (should be as slow as russian cars)
+// --------------------------------------------------------------------------
 
-///////////////////////////
+//! General boost includes
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+
+//! Boost point 2D (double)
+typedef boost::geometry::model::d2::point_xy<double> point2d;
+
+//! Boost polygon 2D (double)
+typedef boost::geometry::model::polygon< point2d > polygon2d;
+
+//! boost::geometry namespace shortcut
+namespace BG = boost::geometry;
+
+// --------------------------------------------------------------------------
+// TEMPORAL implementation of some vector algebra for testing and alike.
+// --------------------------------------------------------------------------
 
 //! \brief inlined dot product for vec3d
 inline double dot_prod ( const vec3d& v1, const vec3d& v2 )

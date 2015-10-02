@@ -37,7 +37,7 @@ namespace Coordinates
   //! \param[in] q position quaternion
   //! \param[in] global (x, y, z)
   inline vec3d
-  glob_to_loc ( quat& q, const vec3d& v )
+  glob_to_loc ( const quat& q, const vec3d& v )
   {
     return glm::mat3_cast( glm::conjugate ( q ) ) * v;
   }
@@ -48,9 +48,37 @@ namespace Coordinates
   //! \param[in] q position quaternion
   //! \param[in] local (x, y, z)
   inline vec3d
-  loc_to_glob ( quat& q, const vec3d& v )
+  loc_to_glob ( const quat& q, const vec3d& v )
   {
     return glm::mat3_cast( q ) * v;
+  }
+
+  //! \brief Returns rotation matrix for converting vectors (x, y, z) from
+  //! local 'qs' coords to local 'qd' coords
+  //!
+  //! \param[in] qd destination position quaternion
+  //! \param[in] qs source position quaternion
+  inline mat3d
+  loc_to_loc_mat ( const quat& qd, const quat& qs )
+  {
+    // I hope crossprod of quats is good for adding rotations
+    return glm::mat3_cast( glm::cross( glm::conjugate ( qd ), qs ) );
+    //return glm::mat3_cast( glm::conjugate ( qd ) ) * glm::mat3_cast( qs );
+    //return glm::mat3_cast( qs ) * glm::mat3_cast( glm::conjugate ( qd ) );
+  }
+
+  //! \brief Returns vector (x, y, z) in local coords, described by qd,
+  //! converted from another vector (x, y, z) in other local, described by qs,
+  //! coordinates
+  //!
+  //! \param[in] qd destination position quaternion
+  //! \param[in] qs source position quaternion
+  //! \param[in] v vector (x, y, z) in 'qs' local coords
+  inline vec3d
+  loc_to_loc ( const quat& qd, const quat& qs, const vec3d& v )
+  {
+    // I hope crossprod of quats is good for adding rotations
+    return loc_to_loc_mat( qd, qs ) * v;
   }
 
   //! \brief Returns (x, y, z) vector, created from spherical (r, theta, phi)

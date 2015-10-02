@@ -12,6 +12,7 @@
 
 #include "dynamics.hh"
 #include "coordinates.hh"
+#include "contact_force.hh"
 
 ///////////
 #include <iostream>
@@ -19,6 +20,9 @@
 void
 dynamics ( Globals& siku, const double dt )
 {
+  for ( auto& c : siku.ConDet.cont )
+    contact_push( siku.es[ c.i1 ], siku.es[ c.i2 ], siku );
+
   for ( auto & e : siku.es )
     {
       // first we create a vector of Super-Torque

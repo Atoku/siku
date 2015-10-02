@@ -63,14 +63,8 @@ extern "C"
 //#include  "nmc_reader.hh"
 #include "vecfield.hh"
 
-
-/////////
-void outVec( const vec3d& vec)
-{
-  std::cout<<vec.x<<"\t"<<vec.y<<"\t"<<vec.z<<"\n";
-}
-
 using namespace Coordinates;
+//nullvec = vec3d( 0., 0., 0. );
 
 //const char* coastline = "/Users/kulchits/Documents/center/active/siku/data/gshhg-shp-2.2.2/GSHHS_shp/c/GSHHS_c_L1.shp";
 

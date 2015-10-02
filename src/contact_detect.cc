@@ -33,9 +33,12 @@ using namespace Coordinates;
 // For sorting watch https://s-media-cache-ak0.pinimg.com/originals/5f/fc/42/5ffc4224b938d1fb0abee887e4add84b.jpg
 // Yet simple 'sort' from <algorithm> is used.
 
-// for optimization xmin and xmax could be stored inside Element
 inline bool elements_x_compare( const Element& e1, const Element& e2 )
 {
+  /*
+   * TODO: i think we should calculate xmin and xmax on update phase and store
+   * inside each element, rather then calculate several times in one check!
+   */
   return (e1.Glob.x - e1.sbb_rmin) < (e2.Glob.x - e2.sbb_rmin);
 }
 
