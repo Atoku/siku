@@ -31,8 +31,8 @@
 #include "coordinates.hh"
 
 // Coefficient of restitution
-#define k_rest 0.0001
-#define k_torq 0.0000001
+#define k_rest 1.
+#define k_torq 0.000000001
 
 // some polygon intersections: http://www.angusj.com/delphi/clipper.php
 // http://geomalgorithms.com/

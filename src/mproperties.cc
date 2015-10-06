@@ -27,7 +27,8 @@ void mproperties( Globals& siku )
       // current global position update
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
 
-      // clearing the force
+      // clearing the force and the torque
       e.F = nullvec;
+      e.N = 0;
     }
 }

@@ -70,13 +70,10 @@ def main():
     #  Wind initializations (NMC grid example)
     # ---------------------------------------------------------------------
 
-    #start time index
-    st_t_ind = 1
-    
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
-    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
+##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, -1 )
 ##    w.make_test_field()
 ##    siku.wind = w
    
@@ -92,11 +89,11 @@ def main():
     #siku.time.last = siku.time.start
 
     ## time inits by NMC grid times
-    siku.time.start = siku.uw.times[st_t_ind]
-    siku.time.last = siku.uw.times[st_t_ind]
+    siku.time.start = siku.uw.times[0]
+    siku.time.last = siku.uw.times[0]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind+1]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 51
+    siku.time.finish = siku.uw.times[220]
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 256
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -117,22 +114,19 @@ def main():
 
     coords = []
     siku.elements = []
-    #fan
     coords.append( [ (190.00, 70.7),      # lon, lat convention
                (195.00, 71.0),
                (196.00, 72.7),
                (192.00, 72.5),
                (190.00, 71.7) ] )
-    #~rhomb
-    coords.append( [ (190.00, 70.7),      # lon, lat convention
-               (194.0, 70.0),
-               (198.0, 70.0),
-               (195.00, 71.0) ] )
-    #~rect
-    coords.append( [ (195.00, 71.0),      # lon, lat convention
-               (198.0, 70.0),
-               (198.3, 72.7),
-               (196.0, 72.7) ] )
+    coords.append( [ (190.00, 78.3),      # lon, lat convention
+               (192.00, 77.0),
+               (190.00, 75.7),
+               (188.00, 77.0) ] )
+    coords.append( [ (226.3, 73.3),      # lon, lat convention
+               (226.3, 70.7),
+               (223.7, 70.7),
+               (223.7, 73.3) ] )
  
     for c in coords:
         P.update( c )

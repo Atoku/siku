@@ -80,11 +80,24 @@ inline void outVec( const vec3d& vec)
 //! Boost point 2D (double)
 typedef boost::geometry::model::d2::point_xy<double> point2d;
 
-//! Boost polygon 2D (double)
-typedef boost::geometry::model::polygon< point2d > polygon2d;
+//! Boost polygon 2D (double). false for 'clockwise'
+typedef boost::geometry::model::polygon< point2d, false, false > polygon2d;
 
 //! boost::geometry namespace shortcut
 namespace BG = boost::geometry;
+
+// converting scale
+const double BOOST_POINT_SCALE = 1.;
+
+// two ways transforming
+inline vec3d point_to_vec( const point2d& p2 )
+{
+  return vec3d( p2.x() / BOOST_POINT_SCALE, p2.y() / BOOST_POINT_SCALE, 0. );
+}
+inline point2d vec_to_point( const vec3d& v3 )
+{
+  return point2d( v3.x * BOOST_POINT_SCALE , v3.y * BOOST_POINT_SCALE );
+}
 
 // --------------------------------------------------------------------------
 // TEMPORAL implementation of some vector algebra for testing and alike.

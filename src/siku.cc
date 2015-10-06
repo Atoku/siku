@@ -100,6 +100,8 @@ main ( int argc, char* argv[] )
     std::cout << "End of reading config file" << std::endl;
 
   // siku.time.print ();
+/////////////////////
+  //siku.es[0].W = vec3d(0.00000,0.,0.00001);
 
   // Main Time Loop
   while ( !siku.time.is_done () )

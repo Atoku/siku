@@ -31,6 +31,14 @@ dynamics ( Globals& siku, const double dt )
 
       // and increment the angular velocity using it
       e.W += sT * dt;
+//
+//      for( auto p : e.P )
+//        {
+//          double lat, lon;
+//          Coordinates:: Coordinates::loc_to_glob(e.q,p);
+//          cout<<p.x<<"\t"<<p.y<<endl;
+//        }
+//      cout<<endl;
 
       ///////// Spin test: different angle velocities for tester`s choice
       //e.W.z = 0.00001;
