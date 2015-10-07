@@ -31,6 +31,18 @@
 using namespace BG;
 using namespace Coordinates;
 
+
+////////////for testing
+void print(const point2d& p)
+{
+  cout<<p.x()<<"\t"<<p.y()<<endl;
+}
+void print(const vec3d& p)
+{
+  cout<<p.x<<"\t"<<p.y<<"\t"<<p.z<<endl;
+}
+
+
 // -----------------------------------------------------------------------
 
 void contact_push( Element& e1, Element& e2, Globals& siku )
@@ -75,52 +87,63 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
   // calculating center of intersection
   if( poly_res.size() )
     {
+      // searching for aim point (force application)
       centroid( poly_res[0], center );
-cout<<"##################################\n";
-//      double force = sqrt( area( poly_res[0] ) ); // !static
-//
-//      //////////////// THIS SHOULD BE OVERCHECKED!!! /////////////////////////
-//      tv = src_to_dest * NORTH;
-//      double td = 1./sqrt( tv.x*tv.x + tv.y*tv.y ); // !static
-//      // ort from e1 center to e2 center equals to e2 center in e1 local coords
-//      point2d ort( tv.x * td, tv.y * td ); // !static
-//
-//      // distance from point to line http://algolist.manual.ru/maths/geom/distance/pointline.php
-//      // force displacement (for torque) if calculated like mod(cross( c1c, c1c2 ))
-//      // that equals  c1c.x*c1c2.y - c1c.y*c1c2.x
-//      td = ( ort.x()*center.y() - ort.y()*center.x() ) * force;
-//      vec3d force_v( ort.x() * force, ort.y() * force, 0. ); // !static
-//
-//      e1.F -= force_v * k_rest;
-//      e1.N -= td * k_torq;
-//
-//      e2.F += dest_to_src * force_v * k_rest;
-//      e2.N += td * k_torq;
+//cout<<"##################################\n";
 
-      double force = pow( area( poly_res[0] ), 0.25 );
+      double force  = 1.* pow( area( poly_res[0] ), 0.25 );
 
+      // point from e1 center to e2 center
       tv = src_to_dest * NORTH;
       point2d r12 ( tv.x, tv.y );
-      point2d r2 ( center.x()- r12.x(), center.y()- r12.y() );
+      // and its ort
+      point2d ort ( r12 );
+      divide_value( ort, sqrt( tv.x*tv.x + tv.y*tv.y ) );
 
-      tv = src_to_dest * vec3d( e2.W.y*PLANET_R_DEAFAULT,
-                               -e2.W.x*PLANET_R_DEAFAULT, 0. );
+      // point drom e2 center to aim
+      point2d r2 ( center.x()-r12.x(), center.y()-r12.y() );
 
-      point2d v2_1 ( tv.x, tv.y );
+      // e2 aim velocity reasoned by spin
+      point2d r2_ ( center.y() - r12.y(), r12.x() - center.x() );
+      multiply_value( r2_, e2.W.z );
 
-      point2d v1 ( e1.W.z*center.y(), -e1.W.z*center.x() );
-      point2d v2 ( v2_1.x() + e2.W.z*r2.y(), v2_1.y() - e2.W.z*r2.x() );
+      // e2 speed in e1 local coords
+      tv = src_to_dest * e2.V;
+      point2d V2( tv.x, tv.y );
+      // e1 aim speed (coz of spin)
+      point2d v1 = point2d( center.y(), -center.x() );
+      multiply_value( v1, e1.W.z );
+      // e2 aim speed (spin + propagation)
+      point2d v2 ( V2 );
+      add_point( v2, r2_ );
 
-      point2d v ( v1.x()-v2.x(), v1.y()-v2.y() );
+      // velocity difference at aim point
+      point2d v12 ( v1.x()-v2.x(), v1.y()-v2.y() );
 
-      static double kv = 1.;
-      static double kw = 1.;
+      // force and torques components coefficients (fitted manually and wrong)
+      // should depend from dt, ice properties, earth radius and so on...
+      static double kv = 0.001;
+      static double kr = 0.05;
+      static double kwv = 0.0000000001;
+      static double kwr = 0.0000000000001;
 
-//      e1.F += force * kv * vec3d( v.x(), v.y(), 0. );
-//      e1.N += force * kw * ( center.x()*v.y() - v.x()*center.y() );
-//
-//      e2.F -= force * kv * vec3d( v.x(), v.y(), 0. );
-//      e2.N -= force * kw * ( r2.x()*v.y() - v.x()*r2.y() );
+      // total force consists of velo-component and overlap component
+      vec3d Force = kv * point_to_vec( v12 ) +
+                    kr * force * point_to_vec( ort );
+
+      // same as torques (calculated like [r x v] )
+      double torque1 = kwv * ( center.x()*v12.y() - center.y()*v12.x() ) +
+          kwr * force * ( center.x()*ort.y() - center.y()*ort.x() );
+      double torque2 = kwv * ( r2.x()*v12.y() - r2.y()*v12.x() ) +
+          kwr * force * ( r2.x()*ort.y() - r2.y()*ort.x() );
+      // distance from point to line http://algolist.manual.ru/maths/geom/distance/pointline.php
+
+      // signs are fitted manually
+      e1.F -= Force;
+      e1.N += torque1;
+
+      e2.F += dest_to_src * Force;
+      e2.N -= torque2;
 
     }
   //P1.clear();

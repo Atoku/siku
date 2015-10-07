@@ -30,10 +30,6 @@
 #include "contact_detect.hh"
 #include "coordinates.hh"
 
-// Coefficient of restitution
-#define k_rest 1.
-#define k_torq 0.000000001
-
 // some polygon intersections: http://www.angusj.com/delphi/clipper.php
 // http://geomalgorithms.com/
 // http://geomalgorithms.com/a09-_intersect-3.html

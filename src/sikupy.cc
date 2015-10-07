@@ -612,10 +612,13 @@ Sikupy::read_elements ( vector < Element >& es )
       Py_DECREF( pobj );
 
       // Additional initialization without reading
-      vec3d vnull ( 0, 0, 0 );
-      es[i].W = vnull;
-      es[i].F = vnull;
 
+      es[i].V = nullvec;
+      // 'vnull'->'nullvec' and moved to siku.hh
+      //vec3d vnull ( 0, 0, 0 );
+      es[i].W = nullvec;
+      //F is being cleared at the beginning of each step
+      //es[i].F = nullvec;
     }
 
   Py_DECREF( pSiku_elements );

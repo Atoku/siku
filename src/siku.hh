@@ -99,6 +99,9 @@ inline point2d vec_to_point( const vec3d& v3 )
   return point2d( v3.x * BOOST_POINT_SCALE , v3.y * BOOST_POINT_SCALE );
 }
 
+// zero-point2d for fast cleaning
+const point2d nullpnt = point2d( 0., 0. );
+
 // --------------------------------------------------------------------------
 // TEMPORAL implementation of some vector algebra for testing and alike.
 // --------------------------------------------------------------------------

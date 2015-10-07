@@ -135,7 +135,7 @@ class NMCSurfaceVField:
 
     def make_test_field( self, e_vec=None, n_vec=None ):
         '''Replace all field nodes with input values'''
-        if not e_vec and not n_vec :
+        if e_vec == None or n_vec == None :
             lp = 135
             rp = 300
             bt = 0
