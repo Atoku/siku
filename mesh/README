@@ -1,0 +1,5 @@
+Directroy: mesh
+
+Generation of point set and saving them in .xyz file to use later in
+Voronoi tesselation procedure (see voronoi directory). The generation
+method is described in developer documentation.
