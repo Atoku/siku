@@ -1,0 +1,28 @@
+# -*- makefile-gmake -*-
+
+FC     = gfortran
+FCFLAGS =
+LDFLAGS =
+
+RM = rm
+
+PROGRAM = sphere_voronoi
+OBJS    = stripack
+
+all: $(PROGRAM)
+
+$(PROGRAM): $(PROGRAM).o $(addsuffix .o, $(OBJS))
+	$(FC) $^ -o $(PROGRAM)
+
+%.o: %.f90
+	$(FC) -c $<
+
+.Phony: clean purge
+
+clean:
+	$(RM) -f $(PROGRAM)
+	$(RM) -f $(addsuffix .o, $(OBJS)) $(addsuffix .o, $(PROGRAM))
+
+purge: clean
+	$(RM) -f *~
+
