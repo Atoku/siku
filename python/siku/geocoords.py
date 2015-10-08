@@ -138,6 +138,22 @@ def lonlat_deg( u ):
     lon_rad, lat_rad = lonlat_rad( u )
     return ratioPI * lon_rad, ratioPI * lat_rad
 
+def lonlat_deg_norm( u ):
+    '''Restores longitude and latitude by x,y,z coordinates in degrees
+    with imbeded normalization
+    
+    Arguments:
+
+    u (mathutils.Vector) -- Decart coordinates on a sphere
+    
+    Returns: lon,lat
+
+    lon, lat -- Longitude and latitude in degrees
+    
+    '''
+    lon_rad, lat_rad = lonlat_rad( u )
+    return norm_lon( ratioPI * lon_rad ), norm_lat( ratioPI * lat_rad )
+
 def quat0( u ):
     '''Calculates the quaternion-0 for a point relative to the North
     pole. As there are the whole set of possible quaternions, the

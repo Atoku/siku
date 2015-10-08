@@ -395,7 +395,9 @@ def main():
     f = open ( 'mytest.xyz', 'w' )
 
     S0 = sph_domain()
-    S1 = sph_domain( phi = (0,pi/3), theta = (pi/2, 2*pi/3 ) )
+    #S1 = sph_domain( phi = (0,pi/3), theta = (pi/2, 2*pi/3 ) )
+    #beaufort-chukchi domain
+    S1 = sph_domain( phi = (2.62, 4.36), theta = (0.09, 0.44) )
     S2 = sph_domain( theta = (0, pi/6.0 ) )
 
     lst1 = S0.make_points_random2( 5.0 )

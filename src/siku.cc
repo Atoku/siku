@@ -101,7 +101,9 @@ main ( int argc, char* argv[] )
 
   // siku.time.print ();
 /////////////////////
-  //siku.es[0].W = vec3d(0.00000,0.,0.00001);
+  siku.es[0].W = vec3d(0.,0., -0.00005);
+  //siku.es[0].W = vec3d(0.000001,0., 0.);
+  cout<<siku.es.size()<<endl;
 
   // Main Time Loop
   while ( !siku.time.is_done () )

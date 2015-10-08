@@ -100,8 +100,9 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       point2d ort ( r12 );
       divide_value( ort, sqrt( tv.x*tv.x + tv.y*tv.y ) );
 
-      // point drom e2 center to aim
+      // point from e2 center to aim
       point2d r2 ( center.x()-r12.x(), center.y()-r12.y() );
+      //point2d r2 ( center.y() - r12.y(), r12.x() - center.x() );
 
       // e2 aim velocity reasoned by spin
       point2d r2_ ( center.y() - r12.y(), r12.x() - center.x() );
@@ -110,9 +111,11 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       // e2 speed in e1 local coords
       tv = src_to_dest * e2.V;
       point2d V2( tv.x, tv.y );
+
       // e1 aim speed (coz of spin)
       point2d v1 = point2d( center.y(), -center.x() );
       multiply_value( v1, e1.W.z );
+
       // e2 aim speed (spin + propagation)
       point2d v2 ( V2 );
       add_point( v2, r2_ );
@@ -124,8 +127,10 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       // should depend from dt, ice properties, earth radius and so on...
       static double kv = 0.001;
       static double kr = 0.05;
-      static double kwv = 0.0000000001;
-      static double kwr = 0.0000000000001;
+      static double kwv = 0.00000000001;
+      static double kwr = 0.000000001;
+
+//      static double kw = 0.000000001;
 
       // total force consists of velo-component and overlap component
       vec3d Force = kv * point_to_vec( v12 ) +
@@ -135,15 +140,17 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       double torque1 = kwv * ( center.x()*v12.y() - center.y()*v12.x() ) +
           kwr * force * ( center.x()*ort.y() - center.y()*ort.x() );
       double torque2 = kwv * ( r2.x()*v12.y() - r2.y()*v12.x() ) +
-          kwr * force * ( r2.x()*ort.y() - r2.y()*ort.x() );
+          kwr * force * ( center.x()*ort.y() - center.y()*ort.x() );
+//      double torque1 = kw * ( center.x()*Force.y - center.y()*Force.x );
+//      double torque2 = kw * ( r2.x()*Force.y - r2.y()*Force.x );
       // distance from point to line http://algolist.manual.ru/maths/geom/distance/pointline.php
 
       // signs are fitted manually
       e1.F -= Force;
-      e1.N += torque1;
+      e1.N -= torque1;
 
       e2.F += dest_to_src * Force;
-      e2.N -= torque2;
+      e2.N += torque2;
 
     }
   //P1.clear();

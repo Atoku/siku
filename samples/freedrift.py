@@ -38,14 +38,10 @@ from   siku import element
 from   siku import material
 from   siku import geocoords
 from   siku import regrid
-
-######
-from siku import gmt_Plotter
-try:
-    from gmt_Plotter import GMT_Plotter
-except:
-    GMT_Plotter = gmt_Plotter.GMT_Plotter
-
+from   siku import gmt_Plotter
+GMT_Plotter = gmt_Plotter.GMT_Plotter
+from   siku import poly_voronoi
+PolyVor = poly_voronoi.PolyVor
 
 from   siku import wnd
  
@@ -71,14 +67,14 @@ def main():
     # ---------------------------------------------------------------------
 
     #start time index
-    st_t_ind = 1
+    st_t_ind = -2
     
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w.make_test_field( 0.,0. )
-    siku.wind = w
+##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+##    w.make_test_field( 0.,0. )
+##    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -90,13 +86,14 @@ def main():
     #siku.time.dt       = datetime.timedelta ( seconds = 1 )
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     #siku.time.last = siku.time.start
+    hour = datetime.timedelta ( minutes = 60 )
 
     ## time inits by NMC grid times
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind+2]
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 101
+    siku.time.finish = siku.uw.times[st_t_ind] + 1.5 * hour
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -111,23 +108,43 @@ def main():
     
     coords = []
     siku.elements = []
-    #fan
-    coords.append( [ (190.00, 70.7),      # lon, lat convention
-               (195.70, 70.5),#
-               #(195.0, 71.0),#
-               (196.00, 72.7),
-               (192.00, 72.5),
-               (190.00, 71.7) ] )
-    #~rhomb
-    coords.append( [ (190.00, 70.7),      # lon, lat convention
-               (194.0, 70.0),
-               (198.0, 70.0),
-               (195.00, 71.0) ] )
-    #~rect
-    coords.append( [ (195.00, 71.0),      # lon, lat convention
-               (198.0, 70.0),
-               (198.3, 72.7),
-               (196.0, 72.7) ] )
+##############
+##    #fan
+##    coords.append( [ (190.00, 70.7),      # lon, lat convention
+####               #(195.70, 70.5),#
+####               (195.0, 71.0),#
+####               (196.00, 72.7),
+##                (194.50, 71.0),
+##               (195.50, 72.7),
+##               (192.00, 72.5),
+##               (190.00, 71.7) ] )
+####    #~rhomb
+####    coords.append( [ (190.00, 70.7),      # lon, lat convention
+####               (194.0, 70.0),
+####               (198.0, 70.0),
+####               (195.00, 71.0) ] )
+##    #~rect
+##    coords.append( [ (195.00, 71.0),      # lon, lat convention
+##               (198.0, 70.0),
+##               (198.3, 72.7),
+##               (196.0, 72.7) ] )
+
+##    #~rhomb2
+##    coords.append( [ (183.00, 71.5),      # lon, lat convention
+##               (187.0, 70.5),
+##               (193.0, 71.5),
+##               (187.90, 71.5) ] )
+##    #~rhomb
+##    coords.append( [ (190.00, 70.7),      # lon, lat convention
+##               (194.0, 70.0),
+##               (198.0, 70.0),
+##               (195.00, 71.0) ] )
+
+##############
+    # ---------------------- voronoi initialization ------------------------
+    PV = PolyVor( 'mytest.voronoi.xyz', 'mytest.voronoi.xyzf' )
+    PV.filter( 150, 250, 65, 85 )
+    coords = PV.coords
  
     for c in coords:
         P.update( c )
@@ -149,7 +166,7 @@ def main():
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
     
-    siku.diagnostics.monitor_freq = 5
+    siku.diagnostics.monitor_freq = 1
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 

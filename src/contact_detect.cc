@@ -58,8 +58,8 @@ void ContactDetector::sweep_n_prune( Globals& siku )
               square_( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
             {
               cont.push_back ( Contact ( i, j, siku.time.get_n () ) );
-              cout << "SWEEP PAIR " << i << "-" << j << "  step: "
-                  << siku.time.get_n()<<endl;
+//              cout << "SWEEP PAIR " << i << "-" << j << "  step: "
+//                  << siku.time.get_n()<<endl;
             }
           if ( (siku.es[i].Glob.x + siku.es[i].sbb_rmin) <
               (siku.es[j].Glob.x - siku.es[j].sbb_rmin) )
@@ -84,8 +84,8 @@ void ContactDetector::find_pairs( Globals& siku )
               square_( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
             {
               cont.push_back ( Contact ( i, j, siku.time.get_n () ) );
-              cout << "PAIR " << i << "-" << j << "  step: "
-                  << siku.time.get_n()<<endl;
+//              cout << "PAIR " << i << "-" << j << "  step: "
+//                  << siku.time.get_n()<<endl;
             }
         }
     }
