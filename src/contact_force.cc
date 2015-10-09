@@ -31,18 +31,6 @@
 using namespace BG;
 using namespace Coordinates;
 
-
-////////////for testing
-void print(const point2d& p)
-{
-  cout<<p.x()<<"\t"<<p.y()<<endl;
-}
-void print(const vec3d& p)
-{
-  cout<<p.x<<"\t"<<p.y<<"\t"<<p.z<<endl;
-}
-
-
 // -----------------------------------------------------------------------
 
 void contact_push( Element& e1, Element& e2, Globals& siku )
@@ -87,62 +75,65 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
   // calculating center of intersection
   if( poly_res.size() )
     {
+      //!!!! further point2d algebra operators ('+', '-', ...) are my selfmade
+
       // searching for aim point (force application)
       centroid( poly_res[0], center );
+      // center is the same as r1, because local origin stays in e1 mass center
 //cout<<"##################################\n";
 
-      double force  = 1.* pow( area( poly_res[0] ), 0.25 );
+      double area =  BG::area( poly_res[0] );
+      double A = 2 * area / ( e1.A + e2.A );
+      double force  = pow( area, 0.25 ) * siku.planet.R2;
 
       // point from e1 center to e2 center
       tv = src_to_dest * NORTH;
       point2d r12 ( tv.x, tv.y );
+
       // and its ort
       point2d ort ( r12 );
       divide_value( ort, sqrt( tv.x*tv.x + tv.y*tv.y ) );
 
       // point from e2 center to aim
-      point2d r2 ( center.x()-r12.x(), center.y()-r12.y() );
-      //point2d r2 ( center.y() - r12.y(), r12.x() - center.x() );
+      //point2d r2 ( center.x()-r12.x(), center.y()-r12.y() );
+      point2d r2 ( center - r12 );
 
       // e2 aim velocity reasoned by spin
-      point2d r2_ ( center.y() - r12.y(), r12.x() - center.x() );
+      //point2d r2_ ( center.y() - r12.y(), r12.x() - center.x() );
+      point2d r2_ ( rot_90_cw( center - r12 ) );
       multiply_value( r2_, e2.W.z );
 
       // e2 speed in e1 local coords
       tv = src_to_dest * e2.V;
       point2d V2( tv.x, tv.y );
 
-      // e1 aim speed (coz of spin)
-      point2d v1 = point2d( center.y(), -center.x() );
+      // e1 aim speed (coz of spin + propagation)
+      //point2d v1 ( center.y(), -center.x() );
+      point2d v1 ( rot_90_cw( center ) );
       multiply_value( v1, e1.W.z );
+      add_point( v1, vec_to_point( e1.V ) );
 
       // e2 aim speed (spin + propagation)
       point2d v2 ( V2 );
       add_point( v2, r2_ );
 
       // velocity difference at aim point
-      point2d v12 ( v1.x()-v2.x(), v1.y()-v2.y() );
+      point2d v12 ( v1 - v2 );
 
       // force and torques components coefficients (fitted manually and wrong)
       // should depend from dt, ice properties, earth radius and so on...
-      static double kv = 0.001;
-      static double kr = 0.05;
-      static double kwv = 0.00000000001;
-      static double kwr = 0.000000001;
+      static double kv = 0.2;
+      static double kr = 0.5;
 
-//      static double kw = 0.000000001;
+      static double kw = 0.4;
 
       // total force consists of velo-component and overlap component
-      vec3d Force = kv * point_to_vec( v12 ) +
+      vec3d Force = ( kv * e1.m * A ) * point_to_vec( v12 ) +
                     kr * force * point_to_vec( ort );
 
-      // same as torques (calculated like [r x v] )
-      double torque1 = kwv * ( center.x()*v12.y() - center.y()*v12.x() ) +
-          kwr * force * ( center.x()*ort.y() - center.y()*ort.x() );
-      double torque2 = kwv * ( r2.x()*v12.y() - r2.y()*v12.x() ) +
-          kwr * force * ( center.x()*ort.y() - center.y()*ort.x() );
-//      double torque1 = kw * ( center.x()*Force.y - center.y()*Force.x );
-//      double torque2 = kw * ( r2.x()*Force.y - r2.y()*Force.x );
+      // same as torques ( calculated like [r x v] )
+      double torque1 = kw * siku.planet.R_rec * cross( center, vec_to_point( Force ) );
+      double torque2 = kw * siku.planet.R_rec * cross( r2, vec_to_point( Force ) );
       // distance from point to line http://algolist.manual.ru/maths/geom/distance/pointline.php
 
       // signs are fitted manually

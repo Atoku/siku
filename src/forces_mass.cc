@@ -12,6 +12,7 @@
 //////testing
 #include <iostream>
 
+double test_adjuster = 1.;
 
 void forces_mass( Globals& siku )
 {
@@ -47,14 +48,15 @@ void forces_mass( Globals& siku )
 
       // calculating local Force (draft)
       // V.lenght() always equals to 3 - it`s amount of components!!!
-      e.F += 0.0016 * vec_len( V ) * V * e.A;
+      e.F += 0.0016 * vec_len( V ) * V * e.A * siku.planet.R2 *test_adjuster;
       //e.F = 0.0016 * sqrt( V.x*V.x + V.y*V.y + V.z*V.z ) * V * e.A;
 
       //-------- WATER (STEADY) ----------
       // calculating element`s speed in local coords
-      V = vec3d( e.W.y * siku.planet.R, -e.W.x * siku.planet.R, 0. );
+      V = e.V;
 
       // interpolating currents speed
+      // !!check for earth.R scaling
       vec3d W = siku.flows.get_at_lat_lon_rad ( Coordinates::norm_lat ( lat ),
                                          Coordinates::norm_lon ( lon ) );
       // transforming currents into local coords
@@ -65,7 +67,7 @@ void forces_mass( Globals& siku )
 
  //     cout<<W.x<<"\t"<<W.y<<"\t"<<W.z<<"\n\n";
       // applying water forces
-      e.F += 0.0045 * vec_len( W ) * W * e.A;
+      e.F += 0.0045 * vec_len( W ) * W * e.A * siku.planet.R2 *test_adjuster;
 
       // element trace
 //      std::cout<<"trace: "<<Coordinates::rad_to_deg((lat))

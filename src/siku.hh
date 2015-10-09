@@ -102,6 +102,26 @@ inline point2d vec_to_point( const vec3d& v3 )
 // zero-point2d for fast cleaning
 const point2d nullpnt = point2d( 0., 0. );
 
+inline point2d rot_90_cw( const point2d& p )
+{
+  return point2d( p.y(), -p.x() );
+}
+
+inline double cross( const point2d& p1, const point2d& p2 )
+{
+  return p1.x()*p2.y() - p1.y()*p2.x();
+}
+
+inline point2d operator+ ( const point2d& p1, const point2d& p2 )
+{
+  return point2d( p1.x()+p2.x(), p1.y()+p2.y() );
+}
+
+inline point2d operator- ( const point2d& p1, const point2d& p2 )
+{
+  return point2d( p1.x()-p2.x(), p1.y()-p2.y() );
+}
+
 // --------------------------------------------------------------------------
 // TEMPORAL implementation of some vector algebra for testing and alike.
 // --------------------------------------------------------------------------
@@ -123,6 +143,16 @@ inline double square_( const double& x) { return x*x; }
 inline double vec_len( const vec3d& vec)
 {
   return sqrt( vec.x*vec.x + vec.y*vec.y + vec.z*vec.z );
+}
+
+
+inline void print(const point2d& p)
+{
+  std::cout<<p.x()<<"\t"<<p.y()<<std::endl;
+}
+inline void print(const vec3d& p)
+{
+  std::cout<<p.x<<"\t"<<p.y<<"\t"<<p.z<<std::endl;
 }
 
 #endif  // SIKU_HH

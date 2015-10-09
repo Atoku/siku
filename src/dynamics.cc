@@ -29,8 +29,6 @@ dynamics ( Globals& siku, const double dt )
       //cout<<"%%% "<<e.m<<endl;
 
 
-
-
       // first we create a vector of Super-Torque
       vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
                  e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );

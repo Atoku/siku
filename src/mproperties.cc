@@ -24,6 +24,14 @@ void mproperties( Globals& siku )
       e.m = e.A * m;
       e.I = e.m * e.i;          // moment of inertia update
 
+      ///////////// AAAAH!! Area and i has been calculated for UNIT SPHERE!
+      ///////////// So they are scaled manually down here
+      ///////////// And this should be removed (fixed, moved somewhere else...)
+      e.m *= siku.planet.R2;
+      e.I *= siku.planet.R2;
+
+//cout<<e.m<<"\t"<<e.I<<"\t"<<e.A*siku.planet.R2<<endl;
+//cin.get();
       // current global position update
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
 

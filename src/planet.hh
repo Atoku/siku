@@ -19,6 +19,11 @@ struct Planet
   double R { PLANET_R_DEAFAULT };
   //! \brief Reciprocal of radius
   double R_rec { 1.0 / PLANET_R_DEAFAULT };
+
+  //! \brief Radius squared
+  double R2 { PLANET_R_DEAFAULT * PLANET_R_DEAFAULT };
+  //! \brief Reciprocal of  squared radius
+  double R2_rec { 1.0 / ( PLANET_R_DEAFAULT * PLANET_R_DEAFAULT ) };
 };
 
 #endif      /* PLANET_HH */

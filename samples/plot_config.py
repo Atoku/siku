@@ -44,7 +44,7 @@ coasts = 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 
 inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
 -A3.0p+e+gblue -Se'
-grid_wind = 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
+grid_wind = 'psvelo grid.txt -R -J -W0.5p,cyan -L -A3.0p+e+gwhite -Se'
 
 #any underlays (right after coasts, befor winds)
 underlays = [

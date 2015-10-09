@@ -92,7 +92,7 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 1.5 * hour
+    siku.time.finish = siku.uw.times[st_t_ind] + 0.5 * hour
     siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
 
     # ---------------------------------------------------------------------
@@ -109,20 +109,20 @@ def main():
     coords = []
     siku.elements = []
 ##############
-##    #fan
+    #fan
 ##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-####               #(195.70, 70.5),#
-####               (195.0, 71.0),#
+####               (195.70, 70.5),#
+##               #(195.0, 71.0),#
 ####               (196.00, 72.7),
-##                (194.50, 71.0),
+##               (194.50, 71.0),
 ##               (195.50, 72.7),
 ##               (192.00, 72.5),
 ##               (190.00, 71.7) ] )
-####    #~rhomb
-####    coords.append( [ (190.00, 70.7),      # lon, lat convention
-####               (194.0, 70.0),
-####               (198.0, 70.0),
-####               (195.00, 71.0) ] )
+##    #~rhomb
+##    coords.append( [ (190.00, 70.7),      # lon, lat convention
+##               (194.0, 70.0),
+##               (198.0, 70.0),
+##               (195.00, 71.0) ] )
 ##    #~rect
 ##    coords.append( [ (195.00, 71.0),      # lon, lat convention
 ##               (198.0, 70.0),
@@ -143,7 +143,8 @@ def main():
 ##############
     # ---------------------- voronoi initialization ------------------------
     PV = PolyVor( 'mytest.voronoi.xyz', 'mytest.voronoi.xyzf' )
-    PV.filter( 150, 250, 65, 85 )
+    PV.filter( 0, 360, 65, 90 )
+##    PV.filter( 150, 250, 65, 85 )
     coords = PV.coords
  
     for c in coords:
@@ -259,7 +260,7 @@ def drift_monitor( t, Q, Ps, i ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         with open( 'Polygons.txt', 'a' ) as poly:
-            poly.write( '> -Ggreen -W0.1p,white \n' )
+            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
             for v in vert:
                 poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
 ##        poly_name = 'Polygons.txt'.format( n = i )

@@ -52,7 +52,7 @@ class Polygon:
                                          frame to global frame.
         self.poly_xyz (list of mathutils.Vector) -- Cartesian
                                                     coordinates of all
-                                                    vertices
+                                                    vertices (on unit sphere)
         self.sphere_r (float) -- Bounding sphere radius for interactions
                                  detection
 
@@ -101,7 +101,7 @@ class Polygon:
         C (mathutils.Vector) -- Cartesian coordinates of center of mass
         Q (mathutils.Quaternion) -- rotation quaternion for polygon
         poly_xyz (list of mathutils.Vector) -- global Cartesian
-                                               coordinates
+                                               coordinates (on unit sphere)
         poly_xyz_loc (list of mathutils.Vector) -- local Cartesian
                                                    coordinates on unit
                                                    sphere

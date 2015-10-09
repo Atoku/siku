@@ -527,7 +527,8 @@ Sikupy::read_elements ( vector < Element >& es )
       success = read_double ( pobj, es[i].A );
       assert( success );
 
-      cout << "i = " << es[i].i << "; A = " << es[i].A << endl;
+      // banned for spamming
+      //cout << "i = " << es[i].i << "; A = " << es[i].A << endl;
 
       Py_DECREF( pobj );
 
@@ -1222,7 +1223,6 @@ Sikupy::read_quat ( PyObject* pquat, quat& q )
       q[ (k+3)%K ] = PyFloat_AS_DOUBLE( pitem );
       //q[k] = PyFloat_AS_DOUBLE( pitem );
     }
-    cout<<endl;
 
   return true;
 }
