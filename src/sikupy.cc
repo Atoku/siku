@@ -612,14 +612,19 @@ Sikupy::read_elements ( vector < Element >& es )
 
       Py_DECREF( pobj );
 
+      // reading inital velocity and rotation
+      //es[i].V = nullvec;
+
+      pobj = PyObject_GetAttrString ( pitem, "velo" );
+
+      read_vec3d( pobj, es[i].V );
+
+      Py_DECREF( pobj );
+
       // Additional initialization without reading
 
-      es[i].V = nullvec;
-      // 'vnull'->'nullvec' and moved to siku.hh
-      //vec3d vnull ( 0, 0, 0 );
-      es[i].W = nullvec;
-      //F is being cleared at the beginning of each step
-      //es[i].F = nullvec;
+      es[i].W = nullvec;  // could be inited in Globals.post_init() in main()
+
     }
 
   Py_DECREF( pSiku_elements );
@@ -1353,6 +1358,28 @@ Sikupy::read_vec3d_vector ( PyObject* plist, vector < vec3d >& vs )
     }
 
   return true;
+}
+
+bool
+Sikupy::read_vec3d ( PyObject* pVec, vec3d& v )
+{
+  bool success = true;
+  // check if it is a tuple of correct size
+  if ( !PyTuple_Check( pVec ) )
+    return false;
+
+  Py_ssize_t K = PyTuple_Size ( pVec );
+  if ( K != 3 )
+    return false; // must be 3D vector
+
+  // reading tuple items with errors detection
+  for ( Py_ssize_t k = 0; k < K; ++k )
+   {
+     PyObject* pItem = PyTuple_GetItem ( pVec, k ); // borrowed
+     success ^= read_double( pItem, v[k] );
+   }
+
+  return success;
 }
 
 //---------------------------------------------------------------------

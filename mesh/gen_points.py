@@ -403,14 +403,18 @@ def main():
     lst1 = S0.make_points_random2( 5.0 )
     nst1 = S0.filter_points( lst1, 4.0, key = arc_deg_to_distance )
 
-##    lst2 = S1.make_points_random2( 0.5 )
-##    nst2 = S1.filter_points( lst2, 0.9, key = arc_deg_to_distance  )
+#    lst2 = S1.make_points_random2( 0.5 )
+#    nst2 = S1.filter_points( lst2, 0.9, key = arc_deg_to_distance  )
 
-    lst3 = S2.make_points_random2( 0.2 )
-    nst3 = S2.filter_points( lst3, 0.25, key = arc_deg_to_distance  )
+##    lst3 = S2.make_points_random2( 0.2 )
+##    nst3 = S2.filter_points( lst3, 0.25, key = arc_deg_to_distance  )
+    lst3 = S2.make_points_random2( 0.5 )
+    nst3 = S2.filter_points( lst3, 0.9, key = arc_deg_to_distance  )
+
     
 ##    nst = nst1 + nst2 + nst3
     nst = nst1 + nst3
+##    nst = nst1 + nst2
 
     for l in nst:
         f.write( '%f %f %f\n' % l )

@@ -18,7 +18,7 @@ class Element:
     f_steady = 0x2
     f_static = 0x4
 
-    def __init__( self, polygon, imat ):
+    def __init__( self, polygon, imat, st_loc_velo = None ):
 
         # copy all necessary data from polygon
         self.A = polygon.A
@@ -42,6 +42,12 @@ class Element:
 
         # thickness distribution by layers
         self.gh = None
+
+        # default velocity and rotation in local coords ( vx, vy, rot )
+        if st_loc_velo:
+            self.velo = st_loc_velo
+        else:
+            self.velo = ( 0, 0, 0 )
 
         return
 

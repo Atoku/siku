@@ -261,6 +261,12 @@ private:
   bool
   read_double_vector ( PyObject* plist, vector < double >& xs );
 
+  //! \brief Reads vec3d from python tuple
+  //! \param pVec an Python object to read from
+  //! \param v where to read to
+  //! \return true on success, false on fail
+  bool read_vec3d ( PyObject* pVec, vec3d& v );
+
   //! \brief Reads vector of vec3d from a list of 3 element lists
   //! \param plist an Python object to read from
   //! \param vs where to read to

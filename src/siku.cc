@@ -99,11 +99,12 @@ main ( int argc, char* argv[] )
   if ( options.is_verbose () )
     std::cout << "End of reading config file" << std::endl;
 
+  // Post-initialization of globals
+  siku.post_init();
+
   // siku.time.print ();
-/////////////////////
-//siku.es[0].W = vec3d(0.,0., -0.1/siku.time.get_dt() );
-  //siku.es[0].W = vec3d(0.002/siku.time.get_dt(),-0.0000, 0.);
-  cout<<siku.es.size()<<endl;
+
+  cout<<"Elements: "<<siku.es.size()<<endl;
 
   // Main Time Loop
   while ( !siku.time.is_done () )
