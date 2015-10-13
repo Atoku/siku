@@ -22,7 +22,7 @@ NMCVecfield::get_vec ( const int& lat_i, const int& lon_i )
 {
   try
     {
-      return grid.at ( lat_i ).at ( lon_i );
+      return grid.at ( lat_i % grid.size() ).at ( lon_i % grid[0].size() );
     }
   catch ( const std::out_of_range& oor )
     {

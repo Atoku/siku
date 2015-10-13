@@ -102,6 +102,9 @@ main ( int argc, char* argv[] )
   // Post-initialization of globals
   siku.post_init();
 
+  // python custom initializations
+  sikupy.fcall_inits( siku );
+
   // siku.time.print ();
 
   cout<<"Elements: "<<siku.es.size()<<endl;

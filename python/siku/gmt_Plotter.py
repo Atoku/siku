@@ -148,7 +148,7 @@ class GMT_Plotter:
         #scaling factor for vectors on picture
         dphi = domain[1] - domain[0]
         dtheta = domain[3] - domain[2]
-        width = sqrt ( dphi*dtheta )
+        width = sqrt ( abs( dphi*dtheta ) )
         psi *= self.config.get( 'vector_scaling', \
                 self.deft_conf['vector_scaling'] )
 ##        if dphi > 90:

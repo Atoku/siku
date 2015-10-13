@@ -31,8 +31,12 @@ dynamics ( Globals& siku, const double dt )
       if ( e.flag & Element::F_STATIC ) continue;
 
       // first we create a vector of Super-Torque
+//      vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
+//                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );
+      //// manual drag added
+      double c = 0.002 / siku.time.get_dt(); //time scaling coz pseudoforce
       vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
-                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );
+                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I - c * e.W.z );
 
       // and increment the angular velocity using it (if not steady)
       if( ! ( e.flag & Element::F_STEADY ) )
