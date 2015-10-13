@@ -22,7 +22,7 @@ extern "C"
 #include "auxutils.hh"
 
 #include "coordinates.hh"
-  using namespace Coordinates;
+using namespace Coordinates;
 
 //---------------------------------------------------------------------
 
@@ -914,21 +914,21 @@ Sikupy::fcall_pretimestep ( Globals& siku )
   assert( pCurTime );
 
   // calling python 'pretiestep' method
-  PyObject* pReturn_value = PyObject_CallMethod ( pSiku_callback,
+  PyObject* pReturnValue = PyObject_CallMethod ( pSiku_callback,
                                                   "pretimestep",
                                                   "(O,i,i)",
                                                   pCurTime, n, ns ); //new
 
   // should return long. If I`m not wrong- there is no 'int' methods nor values.
-  if ( !PyLong_Check( pReturn_value ) )
+  if ( !PyLong_Check( pReturnValue ) )
     return FCALL_ERROR_PRETIMESTEP_NOLONG;
 
-  read_ulong ( pReturn_value, siku.callback_status );
+  read_ulong ( pReturnValue, siku.callback_status );
 
   // Calls for inner methods. Mask is being checked inside each of them
   status |= fcall_update_nmc_wind ( siku );
 
-  Py_DECREF( pReturn_value );
+  Py_DECREF( pReturnValue );
 
   return status;
 }
@@ -997,6 +997,37 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
 
   siku.callback_status &= ~STATUS_WINDS;
   return FCALL_OK;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_inits ( Globals& siku )
+{
+  int status = FCALL_OK;
+
+  // creating datetime object
+  long microseconds = siku.time.get_total_microseconds ()
+      - 1000000 * siku.time.get_total_seconds ();
+
+  pCurTime = PyDateTime_FromDateAndTime(
+      siku.time.get_year (), // new
+      siku.time.get_month(), siku.time.get_day (),
+      (int ) siku.time.get_hours (), (int ) siku.time.get_minutes (),
+      (int ) siku.time.get_seconds (), (int ) microseconds );
+  assert( pCurTime );
+
+  // conslusions call
+  PyObject* pTemp = PyObject_CallMethod ( pSiku_callback, "initializations",
+                                          "(O,O)", pSiku, pCurTime ); //new
+
+  if ( !pTemp )
+    status = FCALL_ERROR_NO_FUNCTION;
+
+  Py_DECREF( pCurTime );
+  Py_DECREF( pTemp );
+
+  return status;
 }
 
 //---------------------------------------------------------------------
@@ -1082,64 +1113,65 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
   // direct reference to the element to store
   const Element* pe = &siku.es[i];
 
-  // get function object if available
-  PyObject* pFunc;
-  pFunc = PyObject_GetAttrString ( pSiku, fname ); // new
-  assert( pFunc );
-  if ( !PyCallable_Check ( pFunc ) )
-    return FCALL_ERROR_NO_FUNCTION;
+//  // get function object if available
+//  PyObject* pFunc;
+//  pFunc = PyObject_GetAttrString ( pSiku, fname ); // new
+//  assert( pFunc );
+//  if ( !PyCallable_Check ( pFunc ) )
+//    return FCALL_ERROR_NO_FUNCTION;
 
   // creating quaternion object
-  PyObject* pQTuple;             // quaternion as a tuple
-  pQTuple = PyTuple_New ( 4 );    // len = 4
+  PyObject* pQTuple = PyTuple_New ( 4 ); // quaternion as a new tuple, len = 4
 
   for ( Py_ssize_t k = 0; k < 4; ++k )
     {
-      PyObject* pNum;                // number to fill into the tuple
       /////////// ERROR SIMILAR TO 'READ_QUAT'
-      pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] ); // new
-      //pNum = PyFloat_FromDouble ( pe->q[k] ); // new
+      PyObject* pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] );
+          // ^-number to fill into the tuple // new
+          //pNum = PyFloat_FromDouble ( pe->q[k] ); // new
       PyTuple_SET_ITEM( pQTuple, k, pNum );  // steals pNum
     }
 
   // creating list of tuples with vertices
-  PyObject* pPiList;
-  pPiList = PyList_New ( pe->P.size () );
+  PyObject* pPiList = PyList_New ( pe->P.size () ); // new
 
   for ( Py_ssize_t j = 0; j < Py_ssize_t ( pe->P.size () ); ++j )
     {
       // setting tuples
-      PyObject* pPTuple;
-
-      pPTuple = PyTuple_New ( 3 );
+      PyObject* pPTuple = PyTuple_New ( 3 ); // new
       for ( Py_ssize_t k = 0; k < 3; ++k )
         {
-          PyObject* pNum;           // number to fill into the tuple
-          pNum = PyFloat_FromDouble ( pe->P[j][k] ); // new
+          PyObject* pNum = PyFloat_FromDouble ( pe->P[j][k] );
+              // ^-number to fill into the tuple // new
           PyTuple_SET_ITEM( pPTuple, k, pNum );  // steals pNum
         }
-
       // inserting tuples
-      PyList_SET_ITEM( pPiList, j, pPTuple ); // steals pPTuple
+      //PyList_SET_ITEM( pPiList, j, pPTuple ); // steals pPTuple
+      PyList_SetItem( pPiList, j, pPTuple ); // steals pPTuple // discard previous value, if it existed
     }
 
-  // assigning arguments
-  PyObject* pargs;
-  pargs = Py_BuildValue ( "(O,O,O,i)", pCurTime, pQTuple, pPiList, i ); // new
-  assert( pargs );
+//  // assigning arguments
+//  PyObject* pargs;
+//  pargs = Py_BuildValue ( "(O,O,O,i)", pCurTime, pQTuple, pPiList, i ); // new
+//  assert( pargs );
+//
+//  // calling the object
+//  PyObject* pReturnValue;
+//  pReturnValue = PyObject_CallObject ( pFunc, pargs ); // new
+//  if ( !pReturnValue )
+//    PyErr_Print ();
+//  assert( pReturnValue );
 
-  // calling the object
-  PyObject* pReturnValue;
-  pReturnValue = PyObject_CallObject ( pFunc, pargs ); // new
+  PyObject* pReturnValue = PyObject_CallMethod ( pSiku, fname, "(O,O,O,i)",
+                                       pCurTime, pQTuple, pPiList, i ); //new
+
   if ( !pReturnValue )
     PyErr_Print ();
-  assert( pReturnValue );
-
-  if ( pReturnValue )
+  else
     Py_DECREF( pReturnValue );
   Py_DECREF( pQTuple );
   Py_DECREF( pPiList );
-  Py_DECREF( pFunc );
+//  Py_DECREF( pFunc );
   return status;
 }
 
@@ -1156,40 +1188,45 @@ Sikupy::fcall_diagnostics_vec3d ( const Globals& siku, const size_t i,
 
   // creating the list of tuples3 with data
 
-  PyObject* pDataList;
-  pDataList = PyList_New ( data.size () );
+  PyObject* pDataList = PyList_New ( data.size () ); // new
 
-  for ( Py_ssize_t j = 0; j < Py_ssize_t ( data.size () ); ++j )
+  for ( Py_ssize_t j = 0; j < Py_ssize_t ( data.size () ); ++j ) // <- this conversion scares me
     {
       // setting tuples
-      PyObject* pPTuple;
+      PyObject* pPTuple = PyTuple_New ( 3 ); // new
 
-      pPTuple = PyTuple_New ( 3 );
       for ( Py_ssize_t k = 0; k < 3; ++k )
         {
-          PyObject* pNum;           // number to fill into the tuple
-          pNum = PyFloat_FromDouble ( data[j][k] ); // new
+          PyObject* pNum = PyFloat_FromDouble ( data[j][k] );
+              // ^- number to fill into the tuple // new
           PyTuple_SET_ITEM( pPTuple, k, pNum );  // steals pNum
         }
 
       // inserting tuples
-      PyList_SET_ITEM( pDataList, j, pPTuple ); // steals pPTuple
+      //PyList_SET_ITEM( pDataList, j, pPTuple ); // steals pPTuple
+      PyList_SetItem( pDataList, j, pPTuple ); // steals pPTuple // discard previous value, if it existed
     }
 
-  // setting the arguments
-  PyObject* pargs;
-  pargs = Py_BuildValue ( "(O,O)", pCurTime, pDataList ); // new
-  assert( pargs );
+//  // setting the arguments
+//  PyObject* pargs;
+//  pargs = Py_BuildValue ( "(O,O)", pCurTime, pDataList ); // new
+//  assert( pargs );
+//
+//  // calling the object
+//  PyObject* pReturnValue;
+//  pReturnValue = PyObject_CallObject ( pFunc, pargs ); // new
+//  if ( !pReturnValue )
+//    PyErr_Print ();
+//  assert( pReturnValue );
 
-  // calling the object
-  PyObject* pReturnValue;
-  pReturnValue = PyObject_CallObject ( pFunc, pargs ); // new
+  PyObject* pReturnValue =
+      PyObject_CallFunction ( pFunc, "(O,O)", pCurTime, pDataList ); //new
+
   if ( !pReturnValue )
     PyErr_Print ();
-  assert( pReturnValue );
-
-  if ( pReturnValue )
+  else
     Py_DECREF( pReturnValue );
+
   if ( pDataList )
     Py_DECREF( pDataList );
 

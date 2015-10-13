@@ -154,5 +154,9 @@ inline void print(const vec3d& p)
 {
   std::cout<<p.x<<"\t"<<p.y<<"\t"<<p.z<<std::endl;
 }
+inline void print(const quat& q)
+{
+  std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
+}
 
 #endif  // SIKU_HH

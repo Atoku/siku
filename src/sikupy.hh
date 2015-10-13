@@ -117,6 +117,11 @@ public:
   int
   fcall_conclusions ( Globals& siku );
 
+  //! \brief Perform python custom initialization actions
+  //! \param[in] siku main global variables container
+  int
+  fcall_inits ( Globals& siku );
+
   //! \brief Release all owened PyObjs
   ~Sikupy ();
 

@@ -55,7 +55,7 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
 
   polygon2d poly1; // !static
   polygon2d poly2; // !static
-  vector<polygon2d> poly_res; // !static
+  std::vector<polygon2d> poly_res; // !static
 
   // creating polygons and calculating intersection
   append( poly1, P1 );
@@ -64,7 +64,7 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
   correct( poly2 );
   intersection( poly1, poly2, poly_res );
 
-  point2d center( 0, 0 ); // !static
+  static point2d center( 0, 0 ); // !static
 
   // calculating center of intersection
   if( poly_res.size() )
@@ -77,7 +77,7 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
 
       double area =  BG::area( poly_res[0] );
       double Area = area * siku.planet.R2;
-      double A = 2 * area / ( e1.A + e2.A );
+      //double A = 2 * area / ( e1.A + e2.A );
       double force  = pow( area, 0.25 ) * siku.planet.R2;
       double dt = siku.time.get_dt();
 
@@ -117,10 +117,10 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
 
       // force and torques components coefficients (fitted manually and wrong)
       // should depend from dt, ice properties, earth radius and so on...
-      static double kv = 0.005;
-      static double kr = 0.02;
+      static const double kv = 0.0005;
+      static const double kr = 0.002;
 
-      static double kw = 1.5;
+      static const double kw = 1.5;
 
       // total force consists of velo-component and overlap component
       vec3d Force =
@@ -140,9 +140,9 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       e2.N += torque2;
 
     }
-  //P1.clear();
-  //P2.clear();
-  //poly1.clear();
-  //poly2.clear();
-  //poly_res.clear();
+//  P1.clear();
+//  P2.clear();
+//  poly1.clear();
+//  poly2.clear();
+//  poly_res.clear();
 }

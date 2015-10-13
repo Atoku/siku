@@ -98,14 +98,17 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   lon_size = NMCVec->get_lon_size ();
   lat_size = NMCVec->get_lat_size ();
 
+  /*
+   * TODO: CHECK DIS F***N INDEXES!
+   */
   // calculating current cell indexes
   int lat_ind = norm_lat_ind( ((double)lat / nmc_grid_step) );
   if ( lat_ind == (lat_size - 1) )
     --lat_ind;
 
   int lon_ind = norm_lon_ind ( ((double)lon / nmc_grid_step) );
-  if ( lon_ind == (lon_size - 1) )
-    lon_ind = 0;
+  //if ( lon_ind == (lon_size - 1) )
+  //  cout<<lon_ind*nmc_grid_step<<endl ;
 
   // calculating cell` borders
   double left = lon_ind * nmc_grid_step;
@@ -143,6 +146,9 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 //      )
 //    {
 //      cout<<"WOUWOU\n";
+//      cout<<rad_to_deg(left)<<"\t"<<rad_to_deg(right)<<"\t"<<
+//            rad_to_deg(bottom)<<"\t"<<rad_to_deg(top)<<"\n";
+//      cout<<rad_to_deg(lon)<<"\t"<<rad_to_deg(lat)<<"\n";
 //      cin.get();
 //    }
 

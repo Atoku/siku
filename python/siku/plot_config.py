@@ -11,7 +11,7 @@ verbose = False
 
 #interpolation domain in degrees
 #inter_domain = ( 0, 360, 75, 90 )  #north pole
-inter_domain = ( 150, 250, 65, 85 )  #beaufot-chukchi
+#inter_domain = ( 150, 250, 65, 85 )  #beaufot-chukchi
 #inter_domain = ( 0, 360, -90, 90 )
 #inter_domain = ( 330, 350, 50, 60 )
 #inter_domain = ( -10, 10, -10, 10 )
@@ -22,13 +22,15 @@ inter_density = 0 #5.525
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
-view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
+##view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
 ##view = '-Rg -JA205/71/15 -Bag30 '
 
 #Polar Stereographic (hope that is really stereo)
 #view = '-R315/70/135/70r -JS0/90/6i -Bag30 ' #north pole
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+view = '-R340/0/20/20r -JA0/12/15 -Bag30 '
+inter_domain = ( 340, 20, 0, 20 )
 
 #view = '-R0/360/78/90 -JG0/90/6i -Bag30 ' #north pole
 #view = '-Rg -JG350/20/6i -Bag30 '  #view
@@ -44,7 +46,7 @@ coasts = 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 
 inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
 -A3.0p+e+gblue -Se'
-grid_wind = 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
+grid_wind = 'psvelo grid.txt -R -J -W0.5p,cyan -L -A3.0p+e+gwhite -Se'
 
 #any underlays (right after coasts, befor winds)
 underlays = [

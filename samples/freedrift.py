@@ -67,7 +67,7 @@ def main():
     # ---------------------------------------------------------------------
 
     #start time index
-    st_t_ind = -2
+    st_t_ind = 1
     
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
@@ -92,8 +92,8 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 12* hour 
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 80
+    siku.time.finish = siku.uw.times[st_t_ind] + 36* hour 
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 721
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -167,7 +167,7 @@ def main():
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
     
-    siku.diagnostics.monitor_freq = 4
+    siku.diagnostics.monitor_period = 12
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -192,8 +192,14 @@ def main():
     siku.callback.pretimestep = pretimestep
     siku.callback.aftertimestep = aftertimestep
     siku.callback.conclusions = conclusions
+    siku.callback.initializations = initializations
 
     return 0
+
+# --------------------------------------------------------------------------
+
+def initializations( siku, t ):
+    os.system("gmtset PS_MEDIA=Custom_24cx20c ")
 
 # --------------------------------------------------------------------------
 
@@ -221,9 +227,9 @@ def pretimestep( t, n, ns ):
 ##        siku.time.last = t
 
     # step by NMC own time step
-##    if t >= siku.uw.times[siku.time.update_index + 1]:
-##        status += siku.MASK['WINDS']
-##        siku.time.last = t
+    if t >= siku.uw.times[siku.time.update_index + 1]:
+        status += siku.MASK['WINDS']
+        siku.time.last = t
 
     # and change the winds here
     # ~!wind is changed with another call
@@ -235,9 +241,9 @@ def pretimestep( t, n, ns ):
 # --------------------------------------------------------------------------
 
 def aftertimestep( t, n, ns ):
-    if siku.diagnostics.step_count % siku.diagnostics.monitor_freq == 0:
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         pic_name = 'drift%02d.eps' % \
-            (siku.diagnostics.step_count / siku.diagnostics.monitor_freq)
+            (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
         print('drawing ' + str( pic_name ) )
         
         siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
@@ -255,7 +261,7 @@ def drift_monitor( t, Q, Ps, i ):
     c = R * C
 
     # appending vertices to plotting list
-    if siku.diagnostics.step_count % siku.diagnostics.monitor_freq == 0:
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
