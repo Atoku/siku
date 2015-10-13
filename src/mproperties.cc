@@ -24,6 +24,9 @@ void mproperties( Globals& siku )
       e.m = e.A * m;
       e.I = e.m * e.i;          // moment of inertia update
 
+      /*
+       * TODO: clear this mess with planet.R, planet.R2 all around the code
+       */
       ///////////// AAAAH!! Area and i has been calculated for UNIT SPHERE!
       ///////////// So they are scaled manually down here
       ///////////// And this should be removed (fixed, moved somewhere else...)

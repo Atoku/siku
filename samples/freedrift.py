@@ -92,8 +92,8 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 0.5 * hour
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 20
+    siku.time.finish = siku.uw.times[st_t_ind] + 12* hour 
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 80
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -167,7 +167,7 @@ def main():
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
     
-    siku.diagnostics.monitor_freq = 1
+    siku.diagnostics.monitor_freq = 4
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -199,7 +199,7 @@ def main():
 
 def conclusions( siku, t ):
     print('creating .gif')
-    os.system("convert -density 100 -delay 30 drift*.eps drift.gif")
+    os.system("convert -density 300 -delay 30 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 

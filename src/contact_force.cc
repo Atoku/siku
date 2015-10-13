@@ -44,21 +44,15 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
   for( auto& p : e1.P )
     {
       P1.push_back( vec_to_point( p ) );
-//cout<<p.x*100<<"\t"<<p.y*100<<endl;
     }
-  //P1.push_back( P1[0] );
 
-//cout<<endl;
   // localizing e2 vertices
   for( auto& p : e2.P )
     {
       tv = src_to_dest * p;
       P2.push_back( vec_to_point( tv ) );
-//cout<<tv.x*100<<"\t"<<tv.y*100<<endl;
     }
-  //P2.push_back( P2[0] );
 
-//cout<<"__"<<endl;
   polygon2d poly1; // !static
   polygon2d poly2; // !static
   vector<polygon2d> poly_res; // !static
@@ -80,11 +74,12 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       // searching for aim point (force application)
       centroid( poly_res[0], center );
       // center is the same as r1, because local origin stays in e1 mass center
-//cout<<"##################################\n";
 
       double area =  BG::area( poly_res[0] );
+      double Area = area * siku.planet.R2;
       double A = 2 * area / ( e1.A + e2.A );
       double force  = pow( area, 0.25 ) * siku.planet.R2;
+      double dt = siku.time.get_dt();
 
       // point from e1 center to e2 center
       tv = src_to_dest * NORTH;
@@ -101,7 +96,7 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       // e2 aim velocity reasoned by spin
       //point2d r2_ ( center.y() - r12.y(), r12.x() - center.x() );
       point2d r2_ ( rot_90_cw( center - r12 ) );
-      multiply_value( r2_, e2.W.z );
+      multiply_value( r2_, - e2.W.z * siku.planet.R );
 
       // e2 speed in e1 local coords
       tv = src_to_dest * e2.V;
@@ -110,7 +105,7 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
       // e1 aim speed (coz of spin + propagation)
       //point2d v1 ( center.y(), -center.x() );
       point2d v1 ( rot_90_cw( center ) );
-      multiply_value( v1, e1.W.z );
+      multiply_value( v1, - e1.W.z  * siku.planet.R );
       add_point( v1, vec_to_point( e1.V ) );
 
       // e2 aim speed (spin + propagation)
@@ -122,14 +117,15 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
 
       // force and torques components coefficients (fitted manually and wrong)
       // should depend from dt, ice properties, earth radius and so on...
-      static double kv = 0.2;
-      static double kr = 0.5;
+      static double kv = 0.005;
+      static double kr = 0.02;
 
-      static double kw = 0.4;
+      static double kw = 1.5;
 
       // total force consists of velo-component and overlap component
-      vec3d Force = ( kv * e1.m * A ) * point_to_vec( v12 ) +
-                    kr * force * point_to_vec( ort );
+      vec3d Force =
+          ( kv * Area * dt ) * point_to_vec( v12 ) + //( kv * e1.m * A ) * point_to_vec( v12 ) +
+          kr * force * point_to_vec( ort );
 
       // same as torques ( calculated like [r x v] )
       double torque1 = kw * siku.planet.R_rec * cross( center, vec_to_point( Force ) );

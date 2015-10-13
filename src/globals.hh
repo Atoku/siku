@@ -70,6 +70,11 @@ struct Globals
   unsigned long callback_status
     { STATUS_NONE };
 
+  //! Post-initialization (with loaded values)
+  void post_init();
+
 };
+
+
 
 #endif      /* GLOBALS_HH */

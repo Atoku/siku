@@ -22,8 +22,8 @@ inter_density = 0 #5.525
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
-view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
-##view = '-Rg -JA205/71/15 -Bag30 '
+##view = '-R172/62/263/75r -JA205/71/15 -Bag30 '
+view = '-Rg -JA205/71/15 -Bag30 '
 
 #Polar Stereographic (hope that is really stereo)
 #view = '-R315/70/135/70r -JS0/90/6i -Bag30 ' #north pole
@@ -39,7 +39,7 @@ ground_colr = '255/226/164' #ground color
 coasts = 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 '
 
-#vector_scaling = 0.01
+vector_scaling = 0.01
 #vector_scaling = 5.5
 
 inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
