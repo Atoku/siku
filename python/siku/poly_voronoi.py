@@ -6,13 +6,16 @@ scenario polygon initialization.
 '''
 try:
     from siku import geocoords
+    from siku import element
 except ImportError:
     import geocoords
+    import element
 
 import mathutils
 
 Vec = mathutils.Vector
 latlon = geocoords.lonlat_deg_norm
+norm = geocoords.norm_deg
 
 #------------------------------------------------------------------------------
 # Class Vert. Loads and contains vertices coords
@@ -111,6 +114,29 @@ class PolyVor:
                 
         self.coords = temp
         return
+
+    def mark_boarders( self, Els, file_b, minlon = 0, maxlon = 360, \
+                       minlat = -90, maxlat = 90 ):
+        '''Marks all elements in 'Els' which contain at least one point from
+        file_b as 'f_static'
+        '''
+        board = Vert( file_b )
+        verts = [ norm( geocoords.lonlat_deg( Vec( l ) ) ) \
+                  for l in board.coords ]
+
+        for v in verts:
+            if v[0] < minlon or v[0] > maxlon or \
+               v[1] < minlat or v[1] > maxlat:
+                verts.remove( v )
+
+        for e in Els:
+            for v in verts:
+                if e.does_contain( v ):
+                    e.flag_state = element.Element.f_static
+                    verts.remove( v )
+                    break
+        return 
+    
 
 if __name__=='__main__':
     PV = PolyVor( 'mytest.voronoi.xyz', 'mytest.voronoi.xyzf' )

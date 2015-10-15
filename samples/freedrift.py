@@ -109,41 +109,11 @@ def main():
     coords = []
     siku.elements = []
 ##############
-    #fan
-##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-####               (195.70, 70.5),#
-##               #(195.0, 71.0),#
-####               (196.00, 72.7),
-##               (194.50, 71.0),
-##               (195.50, 72.7),
-##               (192.00, 72.5),
-##               (190.00, 71.7) ] )
-##    #~rhomb
-##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-##               (194.0, 70.0),
-##               (198.0, 70.0),
-##               (195.00, 71.0) ] )
-##    #~rect
-##    coords.append( [ (195.00, 71.0),      # lon, lat convention
-##               (198.0, 70.0),
-##               (198.3, 72.7),
-##               (196.0, 72.7) ] )
-
-##    #~rhomb2
-##    coords.append( [ (183.00, 71.5),      # lon, lat convention
-##               (187.0, 70.5),
-##               (193.0, 71.5),
-##               (187.90, 71.5) ] )
-##    #~rhomb
-##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-##               (194.0, 70.0),
-##               (198.0, 70.0),
-##               (195.00, 71.0) ] )
 
 ##############
     # ---------------------- voronoi initialization ------------------------
-    PV = PolyVor( 'mytest.voronoi.xyz', 'mytest.voronoi.xyzf' )
-    PV.filter( 0, 360, 65, 90 )
+    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    PV.filter( 0, 360, 60, 90 )
 ##    PV.filter( 150, 250, 65, 85 )
     coords = PV.coords
  
@@ -159,6 +129,10 @@ def main():
         
         # all elements in the list
         siku.elements.append( E )
+
+    print("Preparing boarders")
+    PV.mark_boarders( siku.elements, 'boarders.txt', 0, 360, 60, 90 )
+    print("Poarders are ready\n\n")
     
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -205,7 +179,7 @@ def initializations( siku, t ):
 
 def conclusions( siku, t ):
     print('creating .gif')
-    os.system("convert -density 300 -delay 30 drift*.eps drift.gif")
+    os.system("convert -density 300 -delay 15 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 
@@ -251,7 +225,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, i ):
+def drift_monitor( t, Q, Ps, i, st ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -266,20 +240,14 @@ def drift_monitor( t, Q, Ps, i ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         with open( 'Polygons.txt', 'a' ) as poly:
-            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+            if st == element.Element.f_static:
+                poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+            elif st == element.Element.f_steady:
+                poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
+            else:
+                poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
             for v in vert:
                 poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
-##        poly_name = 'Polygons.txt'.format( n = i )
-##        with open( poly_name , 'w' ) as poly:
-##            for v in vert:
-##                poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
-        
-
-
-#    print( lon, lat )
-
-#    for p in Ps:
-#        print (p)
 
     return
 

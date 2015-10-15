@@ -1162,8 +1162,9 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 //    PyErr_Print ();
 //  assert( pReturnValue );
 
-  PyObject* pReturnValue = PyObject_CallMethod ( pSiku, fname, "(O,O,O,i)",
-                                       pCurTime, pQTuple, pPiList, i ); //new
+  PyObject* pReturnValue =
+      PyObject_CallMethod ( pSiku, fname, "(O,O,O,i,I)", pCurTime, pQTuple,
+                            pPiList, i, pe->flag & Element::F_MOVE_FLAG ); //new
 
   if ( !pReturnValue )
     PyErr_Print ();

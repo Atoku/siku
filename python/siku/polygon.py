@@ -6,6 +6,8 @@ parameters
 import mathutils                       # blender module
 from . import geocoords                # geocoordinates
 
+mV = mathutils.Vector
+
 class Polygon:
     '''Siku: Polygon class
 
@@ -28,6 +30,9 @@ class Polygon:
         '''Creates empty object Polygon and precomputes some important values
 
         '''
+        #signifies that vertices are not set
+        self.poly = None
+        
         return
 
     def update( self, poly ):
@@ -168,3 +173,5 @@ class Polygon:
         return A, I, C, Q, poly_xyz, Rad, poly_local_xyz
 
     pass
+
+

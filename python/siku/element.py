@@ -4,6 +4,14 @@
 
 import copy
 import sys
+import mathutils
+mV = mathutils.Vector
+import random
+
+try:
+    from siku import geocoords
+except ImportError:
+    import geocoords
 
 class Element:
     '''Siku: Element class contains all the information necessary to
@@ -72,5 +80,42 @@ class Element:
             sys.exit( 1 )
 
         self.gh = copy.deepcopy( gh )
+
+    def does_contain( self, point ):
+        '''Checks whether the 'point' (in geographic lon-lat terms) is inside
+        the polygon.
+
+        Uses 2D vector multiplication and comparing the result with zero.
+        '''
+        # calculate point in local coords
+        P = mathutils.Vector( geocoords.xyz_geographic( *point ) )
+        q = mathutils.Quaternion( self.q )
+        qc = q.conjugated()
+        R = qc.to_matrix()
+        p = R * P 
+        pv = mV( p )
+
+        l = len( self.verts_xyz_loc )
+        
+        # make edges list
+        EL = [ mV( self.verts_xyz_loc[ (i + 1) % l ] )
+               - mV( self.verts_xyz_loc[ i ] ) for i in range( l ) ]
+
+        # checking cross prod sign - if all are positive - must be inside
+        for i in range( len( self.verts_xyz_loc ) ):
+            if cross2d( EL[i], pv - mV( self.verts_xyz_loc[i] ) ) < 0:
+        
+                return False      
+        return True
     
     pass
+
+# ---------------------------------------------------------------------
+# external functions
+# ---------------------------------------------------------------------
+
+def cross2d( v1, v2 ):
+    '''Returns the result of cross product of two 2D vectors, those are
+    constructed like (v1.x, v1.y) and (v2.x, v2.y)
+    '''
+    return v1.x * v2.y - v2.x * v1.y

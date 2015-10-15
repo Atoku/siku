@@ -46,6 +46,8 @@ public:
   static const unsigned int F_STEADY {0x2};
   //! \brief flag state for static body element with always v=0, w=0
   static const unsigned int F_STATIC {0x4};
+  //! \brief flag state for all movement states (filtering all other flags)
+  static const unsigned int F_MOVE_FLAG {0x7};
   //! \brief flag state for controlled object that looks for control
   //! function to determine v and w
   static const unsigned int F_CONTROLLED {0x8};

@@ -61,6 +61,10 @@ def norm_lon_rad( lon ):
         lon += 2*pi
     return lon
 
+def norm_deg( tup ):
+    '''Normalizing both lon & lat '''
+    return norm_lon( tup[0] ), norm_lat( tup[1] )
+
 def xyz_geographic( lon, lat ):
     '''Cartesian extrinsic normalized coordinates calculated by geographic
     coordinates in degrees

@@ -29,7 +29,6 @@ view = '-Rg -JA205/71/15 -Bag30 '
 #view = '-R315/70/135/70r -JS0/90/6i -Bag30 ' #north pole
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
 #view = '-R0/360/78/90 -JG0/90/6i -Bag30 ' #north pole
 #view = '-Rg -JG350/20/6i -Bag30 '  #view
 #view = '-R330/350/50/60 -JB340/0/50/50/6i -Bag30 ' #view
