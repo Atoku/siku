@@ -92,8 +92,8 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 36* hour 
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 721
+    siku.time.finish = siku.uw.times[st_t_ind] + 72* hour 
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 480
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -109,11 +109,41 @@ def main():
     coords = []
     siku.elements = []
 ##############
+    #fan
+##    coords.append( [ (190.00, 70.7),      # lon, lat convention
+####               (195.70, 70.5),#
+##               #(195.0, 71.0),#
+####               (196.00, 72.7),
+##               (194.50, 71.0),
+##               (195.50, 72.7),
+##               (192.00, 72.5),
+##               (190.00, 71.7) ] )
+##    #~rhomb
+##    coords.append( [ (190.00, 70.7),      # lon, lat convention
+##               (194.0, 70.0),
+##               (198.0, 70.0),
+##               (195.00, 71.0) ] )
+##    #~rect
+##    coords.append( [ (195.00, 71.0),      # lon, lat convention
+##               (198.0, 70.0),
+##               (198.3, 72.7),
+##               (196.0, 72.7) ] )
+
+##    #~rhomb2
+##    coords.append( [ (183.00, 71.5),      # lon, lat convention
+##               (187.0, 70.5),
+##               (193.0, 71.5),
+##               (187.90, 71.5) ] )
+##    #~rhomb
+##    coords.append( [ (190.00, 70.7),      # lon, lat convention
+##               (194.0, 70.0),
+##               (198.0, 70.0),
+##               (195.00, 71.0) ] )
 
 ##############
     # ---------------------- voronoi initialization ------------------------
     PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-    PV.filter( 0, 360, 60, 90 )
+    PV.filter( 0, 360, 65, 90 )
 ##    PV.filter( 150, 250, 65, 85 )
     coords = PV.coords
  
@@ -130,9 +160,9 @@ def main():
         # all elements in the list
         siku.elements.append( E )
 
-    print("Preparing boarders")
+    print("preparing boarders")
     PV.mark_boarders( siku.elements, 'boarders.txt', 0, 360, 60, 90 )
-    print("Poarders are ready\n\n")
+    print("boarders are ready")
     
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -141,7 +171,7 @@ def main():
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
     
-    siku.diagnostics.monitor_period = 12
+    siku.diagnostics.monitor_period = 4
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -179,7 +209,7 @@ def initializations( siku, t ):
 
 def conclusions( siku, t ):
     print('creating .gif')
-    os.system("convert -density 300 -delay 15 drift*.eps drift.gif")
+    os.system("convert -density 300 -delay 10 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 
@@ -216,7 +246,7 @@ def pretimestep( t, n, ns ):
 
 def aftertimestep( t, n, ns ):
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
-        pic_name = 'drift%02d.eps' % \
+        pic_name = 'drift%03d.eps' % \
             (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
         print('drawing ' + str( pic_name ) )
         
@@ -247,7 +277,8 @@ def drift_monitor( t, Q, Ps, i, st ):
             else:
                 poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
             for v in vert:
-                poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+str( v[1] )+'\n' )
+                poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+                            str( v[1] )+'\n' )
 
     return
 
