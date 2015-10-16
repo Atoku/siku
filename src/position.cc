@@ -24,7 +24,6 @@ position ( Globals& siku, const double dt )
       double S = glm::dot ( e.W, e.W ) * dt * dt * C;
       p = quat ( 1 - S, 0.5 * dt * e.W )  / ( 1 + S );
       e.q = glm::cross ( e.q, p );
-
       e.q = glm::normalize( e.q );
     }
 }
