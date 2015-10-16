@@ -10,7 +10,7 @@
 #define PLANET_HH
 
 //! \brief Default is Earth'r radius in meters 
-const double PLANET_R_DEAFAULT = 6353000.0;
+const double PLANET_R_DEAFAULT = 6371000.0;//<- wiki says, 6353000.0;
 
 //! \brief Structure for constants related to Planet 
 struct Planet

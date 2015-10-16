@@ -115,6 +115,7 @@ main ( int argc, char* argv[] )
       double dt = siku.time.get_dt ();
 
       cout<<"\n Step: "<<siku.time.get_n()<<endl;
+      //cout<<"dt: "<<dt<<endl;
 
       // --- pretimestep
       (void) sikupy.fcall_pretimestep ( siku );
