@@ -28,11 +28,11 @@ inline vec3d proport( const vec3d& d1, const vec3d& d2, const double& t )
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
-Vecfield::Vecfield(const unsigned int& SOURCE_TYPE) :
+Vecfield::Vecfield(const Source_Type& SOURCE_TYPE) :
 FIELD_SOURCE_TYPE( SOURCE_TYPE )
 {
   mode = MODE_VEC_STD_FIELD1;
-  if( FIELD_SOURCE_TYPE == FIELD_NMC )  NMCVec = new NMCVecfield;
+  if( FIELD_SOURCE_TYPE == NMC )  NMCVec = new NMCVecfield;
 }
 
 //---------------------------------------------------------------------
@@ -73,7 +73,7 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   //draft: the simplest interpolation
 
   // inner testing
-  if( FIELD_SOURCE_TYPE == FIELD_TEST )
+  if( FIELD_SOURCE_TYPE == TEST )
     {
       return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 1. );
       //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );

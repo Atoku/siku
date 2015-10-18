@@ -1,10 +1,12 @@
 /*!
 
- \file vecfield.hh
-
- \brief Vector field class. A basic class to contains air wind and
- sea streams vector fields, produce interpolation and provide values
- of the vector field in particular points.
+  \file vecfield.hh
+  
+  \brief Vector field class. 
+  
+  A basic class to contains air wind and sea streams vector fields,
+  produce interpolation and provide values of the vector field in
+  particular points.
 
  */
 
@@ -25,31 +27,30 @@
 ////////////////
 #include <iostream>
 
-// source types
-enum : unsigned int
-{
-  FIELD_NONE = 0,
-  FIELD_TEST = 1,
-  FIELD_NMC = 2
-};
+/*! \brief Vector field to contain air wind and sea streams and
+    produce interpolation of the vector field in a particular point on
+    sphere.
 
+ */
 class Vecfield
 {
 public:
+
+  //! \brief Defines the source type for the vector field used
+  enum Source_Type { NONE, TEST, NMC };
+
   //! \brief Flag for vecfield source type
-  unsigned int FIELD_SOURCE_TYPE
-    { FIELD_NMC };
+  Source_Type FIELD_SOURCE_TYPE { NMC };
 
   //! \brief Flag points to standard field from Fuselier paper
-  static const int MODE_VEC_STD_FIELD1
-    { 1 };
+  static const int MODE_VEC_STD_FIELD1 { 1 };
 
   //! \brief NMC wind grid pointer. If the source is NMC wind - object
   //! will be initialized in constructor.
   NMCVecfield* NMCVec {nullptr};
 
   Vecfield ();
-  Vecfield ( const unsigned int& SOURCE_TYPE );
+  Vecfield ( const Source_Type& SOURCE_TYPE );
   ~Vecfield ();
 
   //! \brief sets the vector field model (standard, specific

@@ -54,7 +54,7 @@ struct Globals
   Vecfield wind;// = Vecfield( FIELD_TEST );//<-- constructor for testing
 
   //! water currents data (parametrical constructor call)
-  Vecfield flows = Vecfield( FIELD_NONE );
+  Vecfield flows = Vecfield( Vecfield::NONE );
 
   //! Current filename to save to
   string savefile

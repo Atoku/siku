@@ -106,7 +106,7 @@ void Sikupy::initialize(Globals &siku)
 
     // vecfield preloading
     //success = !fcall_update_nmc_wind( siku );
-    if( siku.wind.FIELD_SOURCE_TYPE == FIELD_NMC )
+    if( siku.wind.FIELD_SOURCE_TYPE == Vecfield::NMC )
       success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
     assert( success );
 
@@ -969,7 +969,7 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
   // updating grid with specification of source type
   switch (siku.wind.FIELD_SOURCE_TYPE)
     {
-    case FIELD_NMC:
+      case Vecfield::NMC:
       // update itself
       cout << "Updating wind. New time is: \n";
 
@@ -985,7 +985,7 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
         return FCALL_ERROR_NOWINDS;
       break;
 
-    case FIELD_TEST:
+      case Vecfield::TEST:
       cout<<"Test wind field: no need to update\n";
       break;
 
