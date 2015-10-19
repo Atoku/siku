@@ -40,24 +40,19 @@ def main():
     # duplicates deletion
     p1 = dupl_del( p1 )  
 
-    s2 = shapes[2]
-    p2 = s1.points
-    # duplicates deletion
-    p2 = dupl_del( p2 )
-    
-    s3 = shapes[3]
-    p3 = s1.points
-    # duplicates deletion
-    p3 = dupl_del( p3 )
-
-    s4 = shapes[4]
-    p4 = s1.points
-    # duplicates deletion
-    p4 = dupl_del( p4 )
-
     m1 = []
-    for p in p0 + p1 + p2 + p3 + p4:
+    for p in p0 + p1:
         m1.append( geocoords.xyz_geographic( *p ) )
+
+##    ## or
+##    P = shapes[0].points
+##    for s in shapes:
+##        P = dupl_del( P + s.points )
+##
+##    m1 = []
+##    for p in P:
+##        m1.append( geocoords.xyz_geographic( *p ) )
+        
 
     gridM = hpgrid.Grid()
     gridM.points = m1

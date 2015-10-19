@@ -61,7 +61,10 @@ protected:
   //double lon_step{ 0. };
 public:
 
-  NMCVecfield () { }
+  NMCVecfield ()
+  {
+    grid = std::vector < std::vector < vec3d > >(0);
+  }
   ~NMCVecfield ()
   {
     clear ();

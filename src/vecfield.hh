@@ -40,7 +40,7 @@ public:
   enum Source_Type { NONE, TEST, NMC };
 
   //! \brief Flag for vecfield source type
-  Source_Type FIELD_SOURCE_TYPE { NMC };
+  Source_Type FIELD_SOURCE_TYPE { NONE };
 
   //! \brief Flag points to standard field from Fuselier paper
   static const int MODE_VEC_STD_FIELD1 { 1 };
@@ -52,6 +52,10 @@ public:
   Vecfield ();
   Vecfield ( const Source_Type& SOURCE_TYPE );
   ~Vecfield ();
+
+  //! \brief Inits Vecfield with some source
+  //! \param source type
+  void init ( const Source_Type& SOURCE_TYPE );
 
   //! \brief sets the vector field model (standard, specific
   //! interpolation model etc.: see MODE_VEC_ constants
@@ -81,6 +85,13 @@ public:
   //! !! inner approximation
   vec3d
   get_at_lat_lon_rad ( double lat, double lon );
+
+  //! \brief Simple assignment operator
+  Vecfield& operator= (const Vecfield& VF )
+  {
+    FIELD_SOURCE_TYPE = VF.FIELD_SOURCE_TYPE;
+    NMCVec = VF.NMCVec;
+  }
 
 private:
   // DANGER: HARDCODED CONSTANT FOR NMC GRID

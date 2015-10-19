@@ -60,20 +60,22 @@ class GMT_Plotter:
         'vector_scaling' : 1.0,
         'coasts' : 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 -I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 ',
-        'inter_wind' : 'psvelo interpolated_vectors.txt -R -J -W0.25p,blue -L\
--A3.0p+e+gblue -Se',
-        'grid_wind' : 'psvelo grid.txt -R -J -W0.5p,white -L -A3.0p+e+gwhite -Se'
+        'inter_wind' : 'psvelo interpolated_vectors.txt -R -J \
+-W0.25p,lightGreen -L -A3.0p+e+glightGreen -Se',
+        'grid_wind' : 'psvelo grid.txt -R -J -W0.5p,blue -L -A3.0p+e+gblue -Se',
+        'underlays' : ['psxy Poly*.txt -R -J -B -Gred -L ']
     }
 
     def __init__( self, configFile ):
         '''Init, try to load config file
         '''
         self.config = {}
+        self.W = None
         self.import_config(configFile)
 
     def import_config( self, configFile ):
         '''Import configuration from specified file'''
-        exec(open(configFile).read(),globals(),self.config)
+        exec( open( configFile ).read(), globals(), self.config )
 
 ##-----------------------------------------------------------------------------
 ##--------------------------------- PLOTTING ----------------------------------
@@ -92,22 +94,25 @@ class GMT_Plotter:
             self.config['time_index'] = time
             
         verbose = 'q'
-        if self.config['verbose'] == True:
+        if self.config.get('verbose') == True:
              verbose = 'd'
         
         if self.config.get('verbose'):
             print( 'plotter start plotting' )
 
-        psi = self.config['inter_density']
-                
-        W = nmc_grid
-        if not W:
-            UW = wnd.NMCVar( self.config.get( 'uwind_file', 'uwnd.nc' ), 'uwnd' )
-            VW = wnd.NMCVar( self.config.get( 'vwind_file', 'vwnd.nc' ), 'vwnd' )
-            W = wnd.NMCSurfaceVField( UW, VW, self.config.get( 'time_index', -1 ) )
-        Inter = Interpolator( W, self.config.get( 'grid_step_lat', 2.5 ),\
+        psi = self.config.get( 'inter_density', 0 )
+
+        if nmc_grid:
+            self.W = nmc_grid
+        if not self.W:
+            UW = wnd.NMCVar( self.config.get( 'uwind_file','uwnd.nc' ), 'uwnd' )
+            VW = wnd.NMCVar( self.config.get( 'vwind_file','vwnd.nc' ), 'vwnd' )
+            self.W = wnd.NMCSurfaceVField( UW, VW,
+                                      self.config.get( 'time_index', -1 ) )
+            
+        Inter = Interpolator( self.W, self.config.get( 'grid_step_lat', 2.5 ),\
                               self.config.get( 'grid_step_lon', 2.5 ) )
-        W.grid_save_( 'grid.txt' ) #saving base gird
+        self.W.grid_save_( 'grid.txt' ) #saving base gird
 
 ##----------------------- generating interpolation grid -----------------------
 
@@ -163,7 +168,8 @@ class GMT_Plotter:
                 verb = verbose
                 ))
             
-            for line in self.config.get( 'underlays', None ):
+            for line in self.config.get( 'underlays',
+                                         self.deft_conf['underlays'] ):
                 dc.write( line + '\n' )
 
             dc.write( self.draw_wind_str.format(
@@ -176,7 +182,7 @@ class GMT_Plotter:
                 verb = verbose
                 ) )
             
-            for line in self.config.get( 'overlays', None ):
+            for line in self.config.get( 'overlays', [] ):
                 dc.write( line + '\n' )
             
 ##-------------------------------- drawing ------------------------------

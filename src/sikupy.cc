@@ -105,10 +105,9 @@ void Sikupy::initialize(Globals &siku)
     assert(success);
 
     // vecfield preloading
-    //success = !fcall_update_nmc_wind( siku );
-    if( siku.wind.FIELD_SOURCE_TYPE == Vecfield::NMC )
-      success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
-    assert( success );
+//    if( siku.wind.FIELD_SOURCE_TYPE == Vecfield::NMC )
+//      success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
+//    assert( success );
 
 
     if ( success == 0 )
@@ -163,6 +162,7 @@ Sikupy::read_default( Globals& siku )
 
   // temporal object for reading
   PyObject* pTemp;
+  unsigned long int i;
 
   // Defaults handler
   PyObject* pDef;
@@ -173,7 +173,15 @@ Sikupy::read_default( Globals& siku )
   pTemp = PyObject_GetAttrString ( pDef, "contact_method" );
   assert( pTemp );
 
-  success = read_ulong( pTemp, siku.ConDet.det_meth );
+  success &= read_ulong( pTemp, siku.ConDet.det_meth );
+  Py_DECREF( pTemp );
+
+  // read wind source
+  pTemp = PyObject_GetAttrString ( pDef, "wind_source" );
+  assert( pTemp );
+
+  success &= read_ulong( pTemp, i );
+  siku.wind.FIELD_SOURCE_TYPE = Vecfield::Source_Type( i );
 
   // cleaning
   Py_DECREF( pTemp );
@@ -983,6 +991,7 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
 
       if ( !read_nmc_vecfield ( *siku.wind.NMCVec, "wind" ) )
         return FCALL_ERROR_NOWINDS;
+
       break;
 
       case Vecfield::TEST:

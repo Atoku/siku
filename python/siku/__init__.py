@@ -4,13 +4,15 @@
       scenario file
 
 '''
+
+import datetime
+
 try:
     from . import bootstrap_config
     from . import earth
 except:
     import bootstrap_config
     import earth
-#import wnd
 
 # ---------------------------------------------------------------------
 # return status masks
@@ -32,6 +34,12 @@ MASK = {
 CONTACT_METHODS = {
     'n2' : 0,
     'sweep' : 1
+    }
+
+WIND_SOURCES = {
+    'NONE' : 0,
+    'TEST' : 1,
+    'NMC' : 2
     }
 
 # ---------------------------------------------------------------------
@@ -66,7 +74,8 @@ class Defaults:
 defaults = Defaults()
 
 # contact detection default method
-defaults.contact_method = CONTACT_METHODS['n2']
+defaults.contact_method = CONTACT_METHODS['sweep']
+defaults.wind_source = WIND_SOURCES['TEST']
 
 # ---------------------------------------------------------------------
 # planet default parameters
@@ -103,36 +112,33 @@ def presave( t, n, ns ):
     fname = 'siku-' + t.strftime("%Y-%m-%d-%H:%M:%S") + '.h5'
     return fname
 
-callback.presave = presave
+def pretimestep( t, n, ns):
+    status = MASK['NONE']
+    diagnostics.step_count = n
+    print("Step " + str( diagnostics.step_count ) + " has started")
 
-## ### moved to freedrift.py
-##def pretimestep( t, n, ns):
-##    status = MASK['NONE']
-##    print('test')
-##    # some specific checks should be placed.
-##    if t > ( time.last + time.dt ):
-##        status += MASK['WINDS']
-##        time.last = t
-##
-##    return status
-##
-##callback.pretimestep = pretimestep
+    return status
 
 def updatewind( siku, t ):
-    for i in range(len(uw.times)):
-        if t < uw.times[i] and i > 0:
-            i -=1
-            break
-
-    #this print is synchronized with siku.cc print
-    print( str( uw.times[i] ) + '\n' )
-    
-    time.last_update = uw.times[i]
-    time.update_index = i
-    siku.wind = wnd.NMCSurfaceVField( uw, vw, i )
+    print("Here must be wind update")
     pass
 
+def aftertimestep( t, n, ns ):
+    print("Step " + str( diagnostics.step_count ) + " has ended")
+    return 0
+
+def initializations( siku, t ):
+    print('Hello earth!')
+
+def conclusions( siku, t ):
+    print('Good buy!')
+
+callback.presave = presave
+callback.pretimestep = pretimestep
 callback.updatewind = updatewind
+callback.aftertimestep = aftertimestep
+callback.conclusions = conclusions
+callback.initializations = initializations
 
 # ---------------------------------------------------------------------
 # Diagnostics
@@ -142,6 +148,8 @@ class Diagnostics:
     pass
 
 diagnostics = Diagnostics()
+diagnostics.step_count = 0
+diagnostics.monitor_period = 1
 
 # registered meshes: to use in monitor functions
 diagnostics.meshes = []

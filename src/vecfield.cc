@@ -33,14 +33,25 @@ FIELD_SOURCE_TYPE( SOURCE_TYPE )
 {
   mode = MODE_VEC_STD_FIELD1;
   if( FIELD_SOURCE_TYPE == NMC )  NMCVec = new NMCVecfield;
+ // cout<<NMCVec<<" Vecfield!!!!! "<<SOURCE_TYPE<<endl;
 }
 
 //---------------------------------------------------------------------
 
 Vecfield::Vecfield()
 {
-  NMCVec = new NMCVecfield;
+  //NMCVec = new NMCVecfield;
   mode = MODE_VEC_STD_FIELD1;
+}
+
+//---------------------------------------------------------------------
+
+void Vecfield::init ( const Source_Type& SOURCE_TYPE )
+{
+  mode = MODE_VEC_STD_FIELD1;
+  FIELD_SOURCE_TYPE = SOURCE_TYPE;
+
+  if( FIELD_SOURCE_TYPE == NMC )  NMCVec = new NMCVecfield;
 }
 
 //---------------------------------------------------------------------
