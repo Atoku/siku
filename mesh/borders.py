@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 from math import pi
 import shapefile
 
@@ -18,7 +19,8 @@ def dupl_del( mlst ):
 
     for i, m in enumerate( m2lst[1:] ):
         if m[0] == pred[0] and m[1] == pred[1]:
-            print ( m, pred )
+            #print ( m, pred )
+            continue
         else:
             m3lst.append( m )
             pred = m
@@ -30,28 +32,28 @@ def main():
     sf = shapefile.Reader( '/home/gleb/Documents/GMT_DATA/gshhg-shp-2.3.4/GSHHS_shp/l/GSHHS_l_L1' )
     shapes = sf.shapes()
 
-    s0 = shapes[0]
-    p0 = s0.points
-    # duplicates deletion
-    p0 = dupl_del( p0 )    
-
-    s1 = shapes[1]
-    p1 = s1.points
-    # duplicates deletion
-    p1 = dupl_del( p1 )  
-
-    m1 = []
-    for p in p0 + p1:
-        m1.append( geocoords.xyz_geographic( *p ) )
-
-##    ## or
-##    P = shapes[0].points
-##    for s in shapes:
-##        P = dupl_del( P + s.points )
+##    s0 = shapes[0]
+##    p0 = s0.points
+##    # duplicates deletion
+##    p0 = dupl_del( p0 )    
+##
+##    s1 = shapes[1]
+##    p1 = s1.points
+##    # duplicates deletion
+##    p1 = dupl_del( p1 )  
 ##
 ##    m1 = []
-##    for p in P:
+##    for p in p0 + p1:
 ##        m1.append( geocoords.xyz_geographic( *p ) )
+
+    ## or
+    P = shapes[0].points
+    for s in shapes:
+        P = dupl_del( P + s.points )
+
+    m1 = []
+    for p in P:
+        m1.append( geocoords.xyz_geographic( *p ) )
         
 
     gridM = hpgrid.Grid()

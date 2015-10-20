@@ -25,6 +25,7 @@
 ##except:
 ##    pass
 
+import subprocess
 import os
 import math
 import sys
@@ -72,6 +73,8 @@ def main():
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+
+    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
 ##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 ##    w.make_test_field( 0.,0. )
 ##    siku.wind = w
@@ -92,8 +95,8 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 72* hour 
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 480
+    siku.time.finish = siku.uw.times[st_t_ind] + 1* hour 
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 24
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -190,6 +193,12 @@ def main():
         ( winds_diag, 0, siku.time.start, 2*siku.time.dt ) )
 
     # ---------------------------------------------------------------------
+    #  Defaults
+    # ---------------------------------------------------------------------
+
+#    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
+
+    # ---------------------------------------------------------------------
     #  Callback flag-mask generator
     # ---------------------------------------------------------------------
 
@@ -203,13 +212,16 @@ def main():
 # --------------------------------------------------------------------------
 
 def initializations( siku, t ):
-    os.system("gmtset PS_MEDIA=Custom_24cx20c ")
+    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+    #os.system("gmtset PS_MEDIA=Custom_24cx20c ")
 
 # --------------------------------------------------------------------------
 
 def conclusions( siku, t ):
     print('creating .gif')
-    os.system("convert -density 300 -delay 10 drift*.eps drift.gif")
+    subprocess.call( "convert -density 300 -delay 10 drift*.eps drift.gif", \
+                     shell=True )
+    #os.system("convert -density 300 -delay 10 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 

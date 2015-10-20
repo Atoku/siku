@@ -200,7 +200,7 @@ private:
 
   //! \brief Reading elements
   int
-  read_elements ( vector < Element >& es );
+  read_elements ( Globals& siku );
 
   //! \brief Reading diagnostics class if it exists
   int

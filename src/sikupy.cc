@@ -99,31 +99,24 @@ void Sikupy::initialize(Globals &siku)
     assert(success);
     success = read_materials(siku.ms);
     assert(success);
-    success = read_elements(siku.es);
+    success = read_elements(siku);
     assert(success);
     success = read_diagnostics(siku.diagnostics);
     assert(success);
-
-    // vecfield preloading
-//    if( siku.wind.FIELD_SOURCE_TYPE == Vecfield::NMC )
-//      success = read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
-//    assert( success );
-
 
     if ( success == 0 )
     fatal( 1, "Something  wrong went on initialization" );
   }
 
 /*
-  TODO: It is better to be ab
-  le to initialize from files located in
+  TODO: It is better to be able to initialize from files located in
   different directories. For this, the path and the filename should be
   separated. The path should be added to sys.path, the file
-  name should
-  be stripped from .py as it is done already.
+  name should be stripped from .py as it is done already.
 */
 
 //---------------------------------------------------------------------
+
 void
 Sikupy::finalize ()
 {
@@ -484,7 +477,7 @@ Sikupy::read_materials ( vector < Material >& ms )
 //---------------------------------------------------------------------
 
 int
-Sikupy::read_elements ( vector < Element >& es )
+Sikupy::read_elements ( Globals& siku )
 {
   int success = 1;
   long tmp = 0;                 // just a buffer
@@ -502,7 +495,7 @@ Sikupy::read_elements ( vector < Element >& es )
   Py_ssize_t nes = PyList_Size ( pSiku_elements );
 
   // array sets length
-  es.resize ( nes );
+  siku.es.resize ( nes );
 
   // reading all elements in this loop
   for ( Py_ssize_t i = 0; i < nes; ++i )
@@ -522,7 +515,7 @@ Sikupy::read_elements ( vector < Element >& es )
       pobj = PyObject_GetAttrString ( pitem, "i" ); // new
       assert( pobj );
 
-      success = read_double ( pobj, es[i].i );
+      success = read_double ( pobj, siku.es[i].i );
       assert( success );
 
       Py_DECREF( pobj );
@@ -532,7 +525,7 @@ Sikupy::read_elements ( vector < Element >& es )
       pobj = PyObject_GetAttrString ( pitem, "A" ); // new
       assert( pobj );
 
-      success = read_double ( pobj, es[i].A );
+      success = read_double ( pobj, siku.es[i].A );
       assert( success );
 
       // banned for spamming
@@ -545,7 +538,7 @@ Sikupy::read_elements ( vector < Element >& es )
       pobj = PyObject_GetAttrString ( pitem, "q" ); // new
       assert( pobj );
 
-      success = read_quat ( pobj, es[i].q );
+      success = read_quat ( pobj, siku.es[i].q );
       assert( success );
 
       Py_DECREF( pobj );
@@ -555,7 +548,7 @@ Sikupy::read_elements ( vector < Element >& es )
       pobj = PyObject_GetAttrString ( pitem, "gh" );
       assert( pobj );
 
-      success = read_double_vector ( pobj, es[i].gh );
+      success = read_double_vector ( pobj, siku.es[i].gh );
       if ( !success )
         fatal( 2, "g(h) is not set of element %lu", i );
 
@@ -566,7 +559,7 @@ Sikupy::read_elements ( vector < Element >& es )
       pobj = PyObject_GetAttrString ( pitem, "sbb_rmin" ); // new
       assert( pobj );
 
-      success = read_double ( pobj, es[i].sbb_rmin );
+      success = read_double ( pobj, siku.es[i].sbb_rmin );
       assert( success );
 
       Py_DECREF( pobj );
@@ -576,7 +569,7 @@ Sikupy::read_elements ( vector < Element >& es )
       pobj = PyObject_GetAttrString ( pitem, "verts_xyz_loc" );
       assert( pobj );
 
-      success = read_vec3d_vector ( pobj, es[i].P );
+      success = read_vec3d_vector ( pobj, siku.es[i].P );
       assert( success );
 
       Py_DECREF( pobj );
@@ -589,7 +582,7 @@ Sikupy::read_elements ( vector < Element >& es )
       success = read_long ( pobj, tmp );
       assert( success );
 
-      es[i].imat = (unsigned int) tmp;
+      siku.es[i].imat = (unsigned int) tmp;
 
       Py_DECREF( pobj );
 
@@ -601,7 +594,7 @@ Sikupy::read_elements ( vector < Element >& es )
       success = read_long ( pobj, tmp );
       assert( success );
 
-      es[i].flag = (unsigned int) tmp;
+      siku.es[i].flag = (unsigned int) tmp;
 
       Py_DECREF( pobj );
 
@@ -612,10 +605,11 @@ Sikupy::read_elements ( vector < Element >& es )
 
       if ( read_string ( pobj, stmp ) )
         {
-          es[i].monitor = string( stmp.c_str() ); //strdup ( stmp.c_str () );
-          assert( es[i].monitor );
+          siku.es[i].monitor = string( stmp.c_str() ); //strdup ( stmp.c_str () );
+          assert( siku.es[i].monitor );
+
           // we also need to set a flag for this element
-          es[i].flag |= Element::F_MONITORED;
+          siku.es[i].flag |= Element::F_MONITORED;
         }
 
       Py_DECREF( pobj );
@@ -625,13 +619,13 @@ Sikupy::read_elements ( vector < Element >& es )
 
       pobj = PyObject_GetAttrString ( pitem, "velo" );
 
-      read_vec3d( pobj, es[i].V );
+      read_vec3d( pobj, siku.es[i].V );
 
       Py_DECREF( pobj );
 
       // Additional initialization without reading
 
-      es[i].W = nullvec;  // could be inited in Globals.post_init() in main()
+      siku.es[i].W = nullvec;  // could be inited in Globals.post_init() in main()
 
     }
 
@@ -1122,22 +1116,14 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
   // direct reference to the element to store
   const Element* pe = &siku.es[i];
 
-//  // get function object if available
-//  PyObject* pFunc;
-//  pFunc = PyObject_GetAttrString ( pSiku, fname ); // new
-//  assert( pFunc );
-//  if ( !PyCallable_Check ( pFunc ) )
-//    return FCALL_ERROR_NO_FUNCTION;
-
   // creating quaternion object
   PyObject* pQTuple = PyTuple_New ( 4 ); // quaternion as a new tuple, len = 4
 
   for ( Py_ssize_t k = 0; k < 4; ++k )
     {
-      /////////// ERROR SIMILAR TO 'READ_QUAT'
       PyObject* pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] );
           // ^-number to fill into the tuple // new
-          //pNum = PyFloat_FromDouble ( pe->q[k] ); // new
+
       PyTuple_SET_ITEM( pQTuple, k, pNum );  // steals pNum
     }
 
@@ -1155,21 +1141,8 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
           PyTuple_SET_ITEM( pPTuple, k, pNum );  // steals pNum
         }
       // inserting tuples
-      //PyList_SET_ITEM( pPiList, j, pPTuple ); // steals pPTuple
       PyList_SetItem( pPiList, j, pPTuple ); // steals pPTuple // discard previous value, if it existed
     }
-
-//  // assigning arguments
-//  PyObject* pargs;
-//  pargs = Py_BuildValue ( "(O,O,O,i)", pCurTime, pQTuple, pPiList, i ); // new
-//  assert( pargs );
-//
-//  // calling the object
-//  PyObject* pReturnValue;
-//  pReturnValue = PyObject_CallObject ( pFunc, pargs ); // new
-//  if ( !pReturnValue )
-//    PyErr_Print ();
-//  assert( pReturnValue );
 
   PyObject* pReturnValue =
       PyObject_CallMethod ( pSiku, fname, "(O,O,O,i,I)", pCurTime, pQTuple,
@@ -1181,7 +1154,7 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
     Py_DECREF( pReturnValue );
   Py_DECREF( pQTuple );
   Py_DECREF( pPiList );
-//  Py_DECREF( pFunc );
+
   return status;
 }
 

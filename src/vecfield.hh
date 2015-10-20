@@ -86,12 +86,13 @@ public:
   vec3d
   get_at_lat_lon_rad ( double lat, double lon );
 
-  //! \brief Simple assignment operator
-  Vecfield& operator= (const Vecfield& VF )
-  {
-    FIELD_SOURCE_TYPE = VF.FIELD_SOURCE_TYPE;
-    NMCVec = VF.NMCVec;
-  }
+//  //! \brief Simple assignment operator
+//  Vecfield& operator= (const Vecfield& VF )
+//  {
+//    FIELD_SOURCE_TYPE = VF.FIELD_SOURCE_TYPE;
+//    NMCVec = VF.NMCVec;
+//    return *this;
+//  }
 
 private:
   // DANGER: HARDCODED CONSTANT FOR NMC GRID

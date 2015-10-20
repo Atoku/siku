@@ -10,9 +10,11 @@ import datetime
 try:
     from . import bootstrap_config
     from . import earth
+    from . import polygon
 except:
     import bootstrap_config
     import earth
+    import polygon
 
 # ---------------------------------------------------------------------
 # return status masks
@@ -77,11 +79,17 @@ defaults = Defaults()
 defaults.contact_method = CONTACT_METHODS['sweep']
 defaults.wind_source = WIND_SOURCES['TEST']
 
-# ---------------------------------------------------------------------
-# planet default parameters
-# ---------------------------------------------------------------------
-
 planet = earth.Earth()
+
+P = polygon.Polygon()    # need to be done only once for all polygons,
+                         # elements will be initialized using polygons
+
+elements = []
+
+class Local:
+    pass
+
+local = Local()
 
 # ---------------------------------------------------------------------
 # ModelTime class for setting model time and such
