@@ -137,17 +137,23 @@ def main():
 ##               (187.0, 70.5),
 ##               (193.0, 71.5),
 ##               (187.90, 71.5) ] )
-##    #~rhomb
-##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-##               (194.0, 70.0),
-##               (198.0, 70.0),
-##               (195.00, 71.0) ] )
+####    #~rhomb
+####    coords.append( [ (190.00, 70.7),      # lon, lat convention
+####               (194.0, 70.0),
+####               (198.0, 70.0),
+####               (195.00, 71.0) ] )
+    #anti~rohmb  CW
+##    coords.append( [ (195.00, 71.0),      # lon, lat convention
+##                (198.0, 70.0),
+##                (194.0, 70.0),
+##                (190.00, 70.7) ] )
 
 ##############
     # ---------------------- voronoi initialization ------------------------
     PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-    PV.filter( 0, 360, 65, 90 )
+    PV.filter( 0, 360, 60, 90 )
 ##    PV.filter( 150, 250, 65, 85 )
+    PV.clear_the_land()
     coords = PV.coords
  
     for c in coords:
@@ -164,7 +170,7 @@ def main():
         siku.elements.append( E )
 
     print("preparing boarders")
-    PV.mark_boarders( siku.elements, 'boarders.txt', 0, 360, 60, 90 )
+    PV.mark_boarders( siku.elements, 'boarders.ll', 0, 360, 60, 90 )
     print("boarders are ready")
     
     # ---------------------------------------------------------------------

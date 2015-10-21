@@ -4,12 +4,17 @@ module: poly_voronoi
 Contains classes for parsing .voronoi.* files into suitable list for
 scenario polygon initialization.
 '''
+import os
+import subprocess
+
 try:
     from siku import geocoords
     from siku import element
+    from siku import geofiles
 except ImportError:
     import geocoords
     import element
+    import geofiles
 
 import mathutils
 
@@ -27,7 +32,7 @@ class Vert:
     def __init__( self, file = None ):
         '''Init, try to load
         '''
-        self.coords = []
+        self.coords = [] #list of verts [x, y, z]
         if file:
             self.load( file )
         return
@@ -51,7 +56,7 @@ class Seq:
     def __init__( self, file = None ):
         '''Init, try to load
         '''
-        self.inds = []
+        self.inds = [] #list of lists of vertices` indexes
         if file:
             self.load( file )
         return
@@ -77,9 +82,9 @@ class PolyVor:
     def __init__( self, coords_f = None, seq_f = None ):
         '''Init, try to load files
         '''
-        self.coords = []
-        self.verts = Vert()
-        self.seq = Seq()
+        self.coords = [] #list of lists of verts` coord: [ [ (lon, lat) ] ]
+        self.verts = Vert() #list of vertices` coords (x, y, z)
+        self.seq = Seq() #list of lists of verts` indexes
         if coords_f and seq_f:
             self.load( coords_f, seq_f )
         return
@@ -98,7 +103,7 @@ class PolyVor:
 
     def filter( self, minlon, maxlon, minlat, maxlat ):
         '''Excludes all polygons, that have at least one vertex, located
-        outside specified refion.
+        outside specified region.
         '''
         temp = []
         
@@ -120,9 +125,8 @@ class PolyVor:
         '''Marks all elements in 'Els' which contain at least one point from
         file_b as 'f_static'
         '''
-        board = Vert( file_b )
-        verts = [ norm( geocoords.lonlat_deg( Vec( l ) ) ) \
-                  for l in board.coords ]
+        #board = Vert( file_b )
+        verts = geofiles.r_lonlat( file_b )
 
         for v in verts:
             if v[0] < minlon or v[0] > maxlon or \
@@ -135,8 +139,30 @@ class PolyVor:
                     e.flag_state = element.Element.f_static
                     verts.remove( v )
                     break
-        return 
+        return
+
+    def clear_the_land( self ):
+        '''Clears all polygons, that have no vertices located on vater'''
+        tc = []
+        for i in range( len ( self.coords ) ):
+            p = self.coords[i]
+            [ tc.append( [ v[0], v[1], i ] ) for v in p ]
+
+        geofiles.w_lonlati( 'temp.lli', tc )
+
+        subprocess.call( 'gmt gmtselect temp.lli -Dl -Nk/s/s/s/s > tempf.lli',\
+                        shell=True )
+                
+        tc = geofiles.r_lonlati( 'tempf.lli' )
+
+        I = { p[2]:p[2] for p in tc }
+
+        self.coords = [ self.coords[i] for i in I ]
+
+        os.remove( 'temp.lli' )
+        os.remove( 'tempf.lli' )
     
+# ------------------------------------------------------------------------
 
 if __name__=='__main__':
     PV = PolyVor( 'mytest.voronoi.xyz', 'mytest.voronoi.xyzf' )
