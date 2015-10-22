@@ -117,8 +117,8 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
 
       // force and torques components coefficients (fitted manually and wrong)
       // should depend from dt, ice properties, earth radius and so on...
-      static const double kv = 0.005;
-      static const double kr = 0.02;
+      static const double kv = 0.00005;
+      static const double kr = 0.0002;
 
       static const double kw = 1.5;
 

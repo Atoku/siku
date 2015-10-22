@@ -65,6 +65,15 @@ def norm_deg( tup ):
     '''Normalizing both lon & lat '''
     return norm_lon( tup[0] ), norm_lat( tup[1] )
 
+def deg_to_rad_ll( lon, lat ):
+    '''Converting lon and lat to radians with embedded normalization'''
+    tup = norm_deg( (lon, lat) )
+    return tup[0]*ratio180 , tup[1]*ratio180
+
+def rad_to_deg_ll( lon, lat ):
+    '''Converting lon and lat to degrees with embedded normalization'''
+    return norm_deg( lon*ratioPI , lat*ratioPI )
+
 def xyz_geographic( lon, lat ):
     '''Cartesian extrinsic normalized coordinates calculated by geographic
     coordinates in degrees

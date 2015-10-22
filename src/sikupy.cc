@@ -175,6 +175,20 @@ Sikupy::read_default( Globals& siku )
 
   success &= read_ulong( pTemp, i );
   siku.wind.FIELD_SOURCE_TYPE = Vecfield::Source_Type( i );
+  Py_DECREF( pTemp );
+
+  // read boarder marking mask
+  pTemp = PyObject_GetAttrString ( pDef, "boarder_mark" );
+  assert( pTemp );
+
+  success &= read_ulong( pTemp, siku.mark_boarders );
+  Py_DECREF( pTemp );
+
+  // read boarders file name
+  pTemp = PyObject_GetAttrString ( pDef, "boarders" );
+  assert( pTemp );
+
+  success &= read_string( pTemp, siku.board_file );
 
   // cleaning
   Py_DECREF( pTemp );

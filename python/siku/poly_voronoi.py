@@ -79,6 +79,11 @@ class PolyVor:
     '''A class for retrieving list of lists of polygon vertices from
     .voronoi.* files
     '''
+    #default filter for GMT boarders forming
+    default_filter = 'gmt gmtselect temp.lli -Dl -Nk/s/s/s/s > tempf.lli'
+    #default marker for GMT boarders marking
+    default_marker = 'gmt gmtselect mtemp.lli -Dl -Ns/k/k/k/k > mtempf.lli'
+    
     def __init__( self, coords_f = None, seq_f = None ):
         '''Init, try to load files
         '''
@@ -139,28 +144,66 @@ class PolyVor:
                     e.flag_state = element.Element.f_static
                     verts.remove( v )
                     break
-        return
+        return 
 
-    def clear_the_land( self ):
+    def get_border_by_gmt( self, gmt_marker=None, gmt_filter=None, \
+                           mvert_f='mtemp.lli', mfilt_vert_f='mtempf.lli', \
+                           vert_f='temp.lli', filt_vert_f='tempf.lli'):
+        '''Returns list of border polygon indexes with gmt'''
+
+        tc = []
+        for i in range( len ( self.coords ) ):
+            p = self.coords[i]
+            [ tc.append( [ v[0], v[1], i ] ) for v in p ]
+
+        geofiles.w_lonlati( mvert_f, tc )
+        geofiles.w_lonlati( vert_f, tc )
+
+        if gmt_marker == None:
+            gmt_marker = self.default_marker
+        subprocess.call( gmt_marker, shell=True )
+
+        if gmt_filter == None:
+            gmt_filter = self.default_filter
+        subprocess.call( gmt_filter, shell=True )
+                
+        tc = geofiles.r_lonlati( mfilt_vert_f )
+        I = { p[2]:p[2] for p in tc }
+
+        tc = geofiles.r_lonlati( filt_vert_f )
+        II = { p[2]:p[2] for p in tc }
+
+        S = [ i for i in I if i in II ]
+
+        os.remove( mvert_f )
+        os.remove( mfilt_vert_f )
+        os.remove( vert_f )
+        os.remove( filt_vert_f )
+        
+        return S
+
+    def clear_the_land( self, gmt_filter=None, \
+                        vert_f='temp.lli', filt_vert_f='tempf.lli' ):
         '''Clears all polygons, that have no vertices located on vater'''
         tc = []
         for i in range( len ( self.coords ) ):
             p = self.coords[i]
             [ tc.append( [ v[0], v[1], i ] ) for v in p ]
 
-        geofiles.w_lonlati( 'temp.lli', tc )
+        geofiles.w_lonlati( vert_f, tc )
 
-        subprocess.call( 'gmt gmtselect temp.lli -Dl -Nk/s/s/s/s > tempf.lli',\
-                        shell=True )
+        if gmt_filter == None:
+            gmt_filter = self.default_filter
+        subprocess.call( gmt_filter, shell=True )
                 
-        tc = geofiles.r_lonlati( 'tempf.lli' )
+        tc = geofiles.r_lonlati( filt_vert_f )
 
         I = { p[2]:p[2] for p in tc }
 
         self.coords = [ self.coords[i] for i in I ]
 
-        os.remove( 'temp.lli' )
-        os.remove( 'tempf.lli' )
+        os.remove( vert_f )
+        os.remove( filt_vert_f )
     
 # ------------------------------------------------------------------------
 

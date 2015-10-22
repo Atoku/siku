@@ -66,6 +66,12 @@ struct Globals
   //! Contact detector and store
   ContactDetector ConDet;
 
+  //! Flag for marking boarder polygons as 'static' or else
+  unsigned long mark_boarders;
+
+  //! Boarders` points file name
+  string board_file;
+
   //! Callback-returned status (masked flags)
   unsigned long callback_status
     { STATUS_NONE };

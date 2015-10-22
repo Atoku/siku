@@ -24,7 +24,34 @@
  *  \brief Implementation of ice element class (Element)
  */
 
+#include <cmath>
+
 #include "element.hh"
+#include "coordinates.hh"
+
+using namespace Coordinates;
+
+bool Element::contains( const vec3d& p )
+{
+  vec3d point = glob_to_loc( q, p );
+
+  vec3d PP = P[1]-P[0];
+  vec3d PO = point - P[0];
+  double res, prev = PP.x * PO.y - PP.y * PO.x;
+
+  for( int i = 1; i < P.size(); ++i )
+    {
+      vec3d PP = P[i+1]-P[i];
+      vec3d PO = point - P[i];
+      res = PP.x * PO.y - PP.y * PO.x;
+
+      if( res * prev < 0 ) // different signs check
+        return false;
+      prev = res;
+    }
+
+  return true;
+}
 
 //try to reload std::swap for sort((
 //#include <utility>

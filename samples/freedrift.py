@@ -96,7 +96,7 @@ def main():
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
     siku.time.finish = siku.uw.times[st_t_ind] + 1* hour 
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 24
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 2#24
 
     # ---------------------------------------------------------------------
     # Polygon initialization
@@ -150,11 +150,16 @@ def main():
 
 ##############
     # ---------------------- voronoi initialization ------------------------
+    print('loading polygons')
     PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
     PV.filter( 0, 360, 60, 90 )
-##    PV.filter( 150, 250, 65, 85 )
     PV.clear_the_land()
     coords = PV.coords
+    PC.filter( 179, 187, 54, 60 )
+    coords = coords + PC.coords
+    print('done\n')
+    
  
     for c in coords:
         P.update( c )
@@ -169,10 +174,12 @@ def main():
         # all elements in the list
         siku.elements.append( E )
 
-    print("preparing boarders")
-    PV.mark_boarders( siku.elements, 'boarders.ll', 0, 360, 60, 90 )
-    print("boarders are ready")
-    
+    #siku.defaults.boarder_mark = 1
+
+    bor = PV.get_border_by_gmt() + PC.get_border_by_gmt()
+    for b in bor:
+        siku.elements[ b ].flag_state = element.Element.f_static
+    print('done\n')
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
@@ -235,11 +242,7 @@ def pretimestep( t, n, ns ):
     status = siku.MASK['NONE']
     siku.diagnostics.step_count = n
 
-    # cleaning polygons file for further filling
-    try:
-        os.remove( 'Polygons.txt' )
-    except:
-        pass
+    siku.local.poly_f = open( 'Polygons.txt', 'a' )
 
     # some specific checks should be placed.
 
@@ -269,6 +272,8 @@ def aftertimestep( t, n, ns ):
         print('drawing ' + str( pic_name ) )
         
         siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
+        
+    siku.local.poly_f.close()
     return 0
 
 # --------------------------------------------------------------------------
@@ -287,16 +292,17 @@ def drift_monitor( t, Q, Ps, i, st ):
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
-        with open( 'Polygons.txt', 'a' ) as poly:
-            if st == element.Element.f_static:
-                poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
-            elif st == element.Element.f_steady:
-                poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
-            else:
-                poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
-            for v in vert:
-                poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
-                            str( v[1] )+'\n' )
+        poly = siku.local.poly_f
+        if st == element.Element.f_static:
+            #return
+            poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+        elif st == element.Element.f_steady:
+            poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
+        else:
+            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+        for v in vert:
+            poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+                        str( v[1] )+'\n' )
 
     return
 
