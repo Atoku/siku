@@ -130,7 +130,7 @@ def pretimestep( t, n, ns):
     return status
 
 def updatewind( siku, t ):
-    print("Here must be wind update")
+    print("Your advertisement could be here")
     pass
 
 def aftertimestep( t, n, ns ):

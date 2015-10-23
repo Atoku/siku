@@ -79,10 +79,9 @@ class PolyVor:
     '''A class for retrieving list of lists of polygon vertices from
     .voronoi.* files
     '''
-    #default filter for GMT boarders forming
-    default_filter = 'gmt gmtselect temp.lli -Dl -Nk/s/s/s/s > tempf.lli'
-    #default marker for GMT boarders marking
-    default_marker = 'gmt gmtselect mtemp.lli -Dl -Ns/k/k/k/k > mtempf.lli'
+    #default filters for GMT boarders forming
+    default_ocean = 'gmt gmtselect temp.lli -Dl -Nk/s/s/s/s > oceanf.lli'
+    default_land = 'gmt gmtselect temp.lli -Dl -Ns/k/k/k/k > landf.lli'
     
     def __init__( self, coords_f = None, seq_f = None ):
         '''Init, try to load files
@@ -106,7 +105,7 @@ class PolyVor:
                 )
         return
 
-    def filter( self, minlon, maxlon, minlat, maxlat ):
+    def filter_( self, minlon, maxlon, minlat, maxlat ):
         '''Excludes all polygons, that have at least one vertex, located
         outside specified region.
         '''
@@ -146,45 +145,46 @@ class PolyVor:
                     break
         return 
 
-    def get_border_by_gmt( self, gmt_marker=None, gmt_filter=None, \
-                           mvert_f='mtemp.lli', mfilt_vert_f='mtempf.lli', \
-                           vert_f='temp.lli', filt_vert_f='tempf.lli'):
-        '''Returns list of border polygon indexes with gmt'''
+    def get_boarder_by_gmt( self, land_filter=None, ocean_filter=None, \
+                            vert_f='temp.lli', oceanf='oceanf.lli', \
+                            landf='landf.lli' ):
+        '''Returns list of border polygon indexes. Uses GMT for searching
+        the polygons, those have both wet and dry vertices.
+        '''
 
         tc = []
         for i in range( len ( self.coords ) ):
             p = self.coords[i]
             [ tc.append( [ v[0], v[1], i ] ) for v in p ]
 
-        geofiles.w_lonlati( mvert_f, tc )
         geofiles.w_lonlati( vert_f, tc )
 
-        if gmt_marker == None:
-            gmt_marker = self.default_marker
-        subprocess.call( gmt_marker, shell=True )
+        if ocean_filter == None:
+            ocean_filter = self.default_ocean
+        subprocess.call( ocean_filter, shell=True )
 
-        if gmt_filter == None:
-            gmt_filter = self.default_filter
-        subprocess.call( gmt_filter, shell=True )
+        if land_filter == None:
+            land_filter = self.default_land
+        subprocess.call( land_filter, shell=True )
                 
-        tc = geofiles.r_lonlati( mfilt_vert_f )
+        tc = geofiles.r_lonlati( landf )
         I = { p[2]:p[2] for p in tc }
 
-        tc = geofiles.r_lonlati( filt_vert_f )
+        tc = geofiles.r_lonlati( landf )
         II = { p[2]:p[2] for p in tc }
 
         S = [ i for i in I if i in II ]
 
-        os.remove( mvert_f )
-        os.remove( mfilt_vert_f )
         os.remove( vert_f )
-        os.remove( filt_vert_f )
+        os.remove( oceanf )
+        os.remove( landf )
         
         return S
 
-    def clear_the_land( self, gmt_filter=None, \
-                        vert_f='temp.lli', filt_vert_f='tempf.lli' ):
-        '''Clears all polygons, that have no vertices located on vater'''
+    def clear_the_land( self, ocean_filter=None, \
+                        vert_f='temp.lli', filt_vert_f='oceanf.lli' ):
+        '''Clears all polygons, that have no vertices located on water'''
+        
         tc = []
         for i in range( len ( self.coords ) ):
             p = self.coords[i]
@@ -192,10 +192,10 @@ class PolyVor:
 
         geofiles.w_lonlati( vert_f, tc )
 
-        if gmt_filter == None:
-            gmt_filter = self.default_filter
-        subprocess.call( gmt_filter, shell=True )
-                
+        if ocean_filter == None:
+            ocean_filter = self.default_ocean
+        subprocess.call( ocean_filter, shell=True )
+ 
         tc = geofiles.r_lonlati( filt_vert_f )
 
         I = { p[2]:p[2] for p in tc }
@@ -204,6 +204,7 @@ class PolyVor:
 
         os.remove( vert_f )
         os.remove( filt_vert_f )
+        return
     
 # ------------------------------------------------------------------------
 

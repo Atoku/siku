@@ -18,6 +18,7 @@
 
 import subprocess
 import os
+import sys
 import datetime
 import mathutils
 

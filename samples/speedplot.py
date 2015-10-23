@@ -1,10 +1,9 @@
 #This is config file for plotting_test
-#It mast be created manualy
+#It must be created manualy
+#All options are optional)
+#Options marked like '!*' may be passed from scenario
+#Most importano option is 'view' - in defines projection and map region
 
-# nmc data files (Yet required for plotteing in gmt_Plotter)
-uwind_file = 'u2014.nc'
-vwind_file = 'v2014.nc'
+### This file may be almost empty
 
 view = '-R175/-7/215/35r -JA195/10/15 -Bag30 '
-
-

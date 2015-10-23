@@ -35,20 +35,36 @@ bool Element::contains( const vec3d& p )
 {
   vec3d point = glob_to_loc( q, p );
 
-  vec3d PP = P[1]-P[0];
-  vec3d PO = point - P[0];
-  double res, prev = PP.x * PO.y - PP.y * PO.x;
+  vec3d PP;// = P[1]-P[0];
+  vec3d PO;// = point - P[0];
+  vec3d OP;
+  double res;//, prev = PP.x * PO.y - PP.y * PO.x;
 
-  for( int i = 1; i < P.size(); ++i )
-    {
-      vec3d PP = P[i+1]-P[i];
-      vec3d PO = point - P[i];
-      res = PP.x * PO.y - PP.y * PO.x;
+//  int size = P.size();
+//  for( int i = 1; i < size; ++i )
+//    {
+//      vec3d PP = P[ (i+1)%size ]-P[i];
+//      vec3d PO = point - P[i];
+//      res = PP.x * PO.y - PP.y * PO.x;
+//
+//      if( res * prev < 0 ) // different signs check
+//        return false;
+//      prev = res;
+//    }
+  int size = P.size();
+  for( int i = 0; i < size; ++i )
+      {
+        PP = P[(i+1) % size]-P[i];
+        PO = point - P[i];
+        OP = P[(i+1) % size] - point;
+        res = PP.x * PO.y - PP.y * PO.x;
 
-      if( res * prev < 0 ) // different signs check
-        return false;
-      prev = res;
-    }
+        if( res < 0 ) // CCW rightwards check with approximation
+          if( vec_len( PO ) + vec_len( OP ) >
+              1.2 * vec_len( PP ) )
+            return false;
+      }
+
 
   return true;
 }

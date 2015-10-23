@@ -16,15 +16,6 @@
 
 '''
 
-##import sys
-##import os
-##try:
-##    os.chdir('./python/siku/')
-##    sys.path.append(os.getcwd())
-##    os.chdir('./../../')
-##except:
-##    pass
-
 import subprocess
 import os
 import math
@@ -95,77 +86,126 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 1* hour 
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 2#24
-
-    # ---------------------------------------------------------------------
-    # Polygon initialization
-    # ---------------------------------------------------------------------
-    
-    P = polygon.Polygon()    # need to be done only once for all polygons,
-                             # elements will be initialized using polygons
-    
+    siku.time.finish = siku.uw.times[st_t_ind] + 24* hour 
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 2
+   
     # ---------------------------------------------------------------------
     # elements
     # ---------------------------------------------------------------------
     
     coords = []
     siku.elements = []
-##############
-    #fan
-##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-####               (195.70, 70.5),#
-##               #(195.0, 71.0),#
-####               (196.00, 72.7),
-##               (194.50, 71.0),
-##               (195.50, 72.7),
-##               (192.00, 72.5),
-##               (190.00, 71.7) ] )
-##    #~rhomb
-##    coords.append( [ (190.00, 70.7),      # lon, lat convention
-##               (194.0, 70.0),
-##               (198.0, 70.0),
-##               (195.00, 71.0) ] )
-##    #~rect
-##    coords.append( [ (195.00, 71.0),      # lon, lat convention
-##               (198.0, 70.0),
-##               (198.3, 72.7),
-##               (196.0, 72.7) ] )
+#### custom testing polygons for caribbeans # lon, lat convention
+##   
+##    coords.append( [ (267.0, 12.0),      
+##                    (269.0, 12.0),
+##                    (269.0, 14.0),
+##                    (267.0, 14.0) ] )
+##    coords.append( [ (270.0, 12.0), #2
+##                     (272.0, 12.0),
+##                     (272.0, 14.0),
+##                     (270.0, 14.0) ] )
+##    
+##    coords.append( [ (265.0, 20.0), #3
+##                     (267.0, 18.0),
+##                     (269.0, 20.0),
+##                     (267.0, 22.0) ] )
+##    coords.append( [ (268.0, 18.0), #4
+##                     (270.0, 16.0),
+##                     (272.0, 18.0),
+##                     (270.0, 20.0) ] )
+##    
+##    coords.append( [ (265.0, 28.0), #5
+##                     (266.0, 26.5),
+##                     (267.0, 28.0),
+##                     (266.0, 29.5) ] )
+##    coords.append( [ (267.0, 25.5), #6
+##                     (268.0, 24.0),
+##                     (269.0, 25.5),
+##                     (268.0, 27.0) ] )
+##    # ---
+##    
+##    coords.append( [ (281.0, 10.0), #7
+##                     (282.0, 10.0),
+##                     (282.0, 16.0),
+##                     (281.0, 16.0) ] )
+##    coords.append( [ (282.5, 10.0), #8
+##                     (283.5, 10.0),
+##                     (283.5, 16.0),
+##                     (282.5, 16.0) ] )
+##    
+##    coords.append( [ (278.0, 19.5), #9
+##                     (282.0, 19.5),
+##                     (282.0, 20.5),
+##                     (278.0, 20.5) ] )
+##    coords.append( [ (281.0, 18.0), #10
+##                     (285.0, 18.0),
+##                     (285.0, 19.0),
+##                     (281.0, 19.0) ] )
+##    
+##    coords.append( [ (278.0, 24.0), #11
+##                     (280.0, 24.0),
+##                     (280.0, 28.0),
+##                     (278.0, 28.0) ] )
+##    coords.append( [ (282.0, 28.0), #12
+##                     (283.0, 26.0),
+##                     (285.0, 26.0),
+##                     (284.0, 28.0) ] )
+##    coords.append( [ (282.0, 24.0), #13
+##                     (284.0, 24.0),
+##                     (285.0, 26.0),
+##                     (283.0, 26.0) ] )
+##    # --- 
+##
+##    coords.append( [ (293.0, 12.0), #14
+##                     (294.0, 12.0),
+##                     (294.0, 13.0),
+##                     (293.0, 13.0) ] )
+##    coords.append( [ (295.0, 10.0), #15
+##                     (296.0, 10.0),
+##                     (296.0, 15.0),
+##                     (295.0, 15.0) ] )
+##    
+##    coords.append( [ (293.0, 21.0), #16
+##                     (294.0, 21.0),
+##                     (294.0, 22.0),
+##                     (293.0, 22.0) ] )
+##    coords.append( [ (295.0, 17.0), #17
+##                     (296.0, 17.0),
+##                     (296.0, 22.0),
+##                     (295.0, 22.0) ] )
+##    
+##    coords.append( [ (291.0, 24.0), #18
+##                     (292.0, 24.0),
+##                     (292.0, 29.0),
+##                     (291.0, 29.0) ] )
+##    coords.append( [ (293.0, 26.0), #19
+##                     (294.0, 26.0),
+##                     (294.0, 27.0),
+##                     (293.0, 27.0) ] )
 
-##    #~rhomb2
-##    coords.append( [ (183.00, 71.5),      # lon, lat convention
-##               (187.0, 70.5),
-##               (193.0, 71.5),
-##               (187.90, 71.5) ] )
-####    #~rhomb
-####    coords.append( [ (190.00, 70.7),      # lon, lat convention
-####               (194.0, 70.0),
-####               (198.0, 70.0),
-####               (195.00, 71.0) ] )
-    #anti~rohmb  CW
-##    coords.append( [ (195.00, 71.0),      # lon, lat convention
-##                (198.0, 70.0),
-##                (194.0, 70.0),
-##                (190.00, 70.7) ] )
-
-##############
     # ---------------------- voronoi initialization ------------------------
-    print('loading polygons')
+    print('\nLoading polygons')
+    ## North cap
     PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    ## Channel (handmade)
     PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-    PV.filter( 0, 360, 60, 90 )
-    PV.clear_the_land()
-    coords = PV.coords
-    PC.filter( 179, 187, 54, 60 )
-    coords = coords + PC.coords
-    print('done\n')
     
- 
+    PV.filter_( 0, 360, 60, 90 )
+    PC.filter_( 179, 187, 54, 60 )
+    
+    print('Deleting land polygons')
+    PV.clear_the_land()
+
+    coords = PV.coords
+    coords = coords + PC.coords
+
+    ### Initializing elements with polygon vertices
     for c in coords:
-        P.update( c )
+        siku.P.update( c )
      
         # Element declaration
-        E = element.Element( polygon = P, imat = matnames['ice'] )
+        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
         E.monitor = "drift_monitor"
         gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
                0.0, 0.0, 0.0, 0.0, 0.0 ]
@@ -174,19 +214,49 @@ def main():
         # all elements in the list
         siku.elements.append( E )
 
-    #siku.defaults.boarder_mark = 1
+    ## Core will mark polygons, those contain at leas one point from next
+    ## file as 'static'
+    siku.defaults.boarder_mark = 1
+    siku.defaults.boarders = 'canal.ll'
 
-    bor = PV.get_border_by_gmt() + PC.get_border_by_gmt()
+    print('Marking boarders with GMT')
+    bor = PV.get_boarder_by_gmt()
     for b in bor:
         siku.elements[ b ].flag_state = element.Element.f_static
-    print('done\n')
+    print('Done\n\n')
+
+    # ------------------------- speed sattings ----------------------------
+
+######    Works with caribbean polygons after initialization
+##    siku.elements[0].velo = ( 20, 0, 0 )
+####    siku.elements[1].flag_state = element.Element.f_static
+##    siku.elements[2].velo = ( 20, 0, 0 )
+####    siku.elements[3].flag_state = element.Element.f_static
+##    siku.elements[4].velo = ( 20, 0, 0 )
+####    siku.elements[5].flag_state = element.Element.f_static
+##
+##    siku.elements[6].velo = ( 0, 0, -0.0001 )
+####    siku.elements[7].flag_state = element.Element.f_static
+##    siku.elements[8].velo = ( 0, 0, -0.0001 )
+####    siku.elements[9].flag_state = element.Element.f_steady
+##    siku.elements[10].velo = ( 20, 4, 0 )
+####    siku.elements[11].flag_state = element.Element.f_steady
+##
+##    siku.elements[13].velo = ( 20, 7, 0 )
+####    siku.elements[14].flag_state = element.Element.f_steady
+##    siku.elements[15].velo = ( 20, 5, 0 )
+####    siku.elements[16].flag_state = element.Element.f_steady
+##    siku.elements[17].velo = ( 20, 6.5, 0 )
+####    siku.elements[18].flag_state = element.Element.f_steady
+    
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
-    
+
+    ### period of picturing
     siku.diagnostics.monitor_period = 4
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
@@ -197,19 +267,20 @@ def main():
     #  Diagnostics function for the winds
     # ---------------------------------------------------------------------
     
-    # We create a grid and append it to monitor grids
-    siku.diagnostics.wind_counter = 0
-    rg = regrid.Regrid()
-    mesh_01 = rg.globe_coverage( 5.0 )
-    siku.diagnostics.meshes.append( mesh_01 )
-    siku.diagnostics.wind.append( 
-        ( winds_diag, 0, siku.time.start, 2*siku.time.dt ) )
+##    # We create a grid and append it to monitor grids
+##    siku.diagnostics.wind_counter = 0
+##    rg = regrid.Regrid()
+##    mesh_01 = rg.globe_coverage( 5.0 )
+##    siku.diagnostics.meshes.append( mesh_01 )
+##    siku.diagnostics.wind.append( 
+##        ( winds_diag, 0, siku.time.start, 2*siku.time.dt ) )
 
     # ---------------------------------------------------------------------
     #  Defaults
     # ---------------------------------------------------------------------
 
-#    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
+##    # without this - no wind will be added to calculations
+##    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
@@ -226,6 +297,7 @@ def main():
 
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+    ###old version
     #os.system("gmtset PS_MEDIA=Custom_24cx20c ")
 
 # --------------------------------------------------------------------------
@@ -234,6 +306,7 @@ def conclusions( siku, t ):
     print('creating .gif')
     subprocess.call( "convert -density 300 -delay 10 drift*.eps drift.gif", \
                      shell=True )
+    ###old version
     #os.system("convert -density 300 -delay 10 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
@@ -242,7 +315,7 @@ def pretimestep( t, n, ns ):
     status = siku.MASK['NONE']
     siku.diagnostics.step_count = n
 
-    siku.local.poly_f = open( 'Polygons.txt', 'a' )
+    siku.local.poly_f = open( 'Polygons.txt', 'w' )
 
     # some specific checks should be placed.
 
@@ -266,6 +339,7 @@ def pretimestep( t, n, ns ):
 # --------------------------------------------------------------------------
 
 def aftertimestep( t, n, ns ):
+    siku.local.poly_f.close()
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         pic_name = 'drift%03d.eps' % \
             (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
@@ -273,12 +347,16 @@ def aftertimestep( t, n, ns ):
         
         siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
         
-    siku.local.poly_f.close()
+    #siku.local.poly_f.close()
     return 0
 
 # --------------------------------------------------------------------------
 
 def drift_monitor( t, Q, Ps, i, st ):
+##    #static polygons (generally shores) may be simply passed
+##    if st == element.Element.f_static:
+##        return
+    
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -294,12 +372,12 @@ def drift_monitor( t, Q, Ps, i, st ):
 
         poly = siku.local.poly_f
         if st == element.Element.f_static:
-            #return
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
         elif st == element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
             poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+            
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
                         str( v[1] )+'\n' )
@@ -334,12 +412,6 @@ def winds_diag( t, winds ):
     siku.diagnostics.wind_counter += 1
 
     return
-
-# ---------------------------------------------------------------------
-# velocity field settings: sources for velocities, where to get 
-# ---------------------------------------------------------------------
-
-
 
 # ---------------------------------------------------------------------
 # Calling main function at the end

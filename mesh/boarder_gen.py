@@ -47,19 +47,27 @@ class Boarder:
         self.shapes = self.sf.shapes()
         return
 
-    def make_contour( self, shapes = None ):
+    def make_shapes_contour( self, shapes = None, domain = None ):
         '''Try to make cotour from shapes. Self.shapes by default'''
         if shapes == None:
             shapes = self.shapes
 
         self.contour = []
-        self.add_shapes_contour( shapes )
+        self.add_shapes_contour( shapes, domain )
 
-    def add_shapes_contour( self, shapes ):
+    def add_shapes_contour( self, shapes, domain = None ):
         '''Add specific shapes list to self.contour'''
         for s in shapes:
             self.contour = self.contour + s.points
         self.contour = dupl_del( self.contour )
+        
+        contour = [ [ GC.norm_lon( c[0] ) , GC.norm_lat( c[1] ) ] \
+            for c in self.contour ]
+        self.contour = dupl_del( contour )
+
+        if domain:
+            self.contour = \
+                    [ p for p in self.contour[:] if is_inside( p, domain ) ]
 
     def add_contour( self, file ):
         '''Adds contour points from specific table file in (lon, lat) convension
@@ -72,8 +80,7 @@ class Boarder:
         '''Filters contour vertices (only inside domain, if one is given)
         for lowering resolution.'''
         verts = []
-##        contour = [ [ GC.norm_lon( c[0] ) , GC.norm_lat( c[1] ) ] \
-##            for c in self.contour ]
+
         if domain:
             for c in self.contour:
                 if is_inside( c, domain ):
@@ -107,21 +114,21 @@ class Boarder:
         self.verts = self.verts + grid.points
 
     def gener_boarders( self, thick, dens = None, domain = None, \
-                        file_b = 'boarders.ll', file_s = 'shapes' ):
-        '''Generates files:
-        -'file_b.ll' (lon-lat convension) list of points filtered by
-        optional 'dens' density (hpgrid method) and located whithin 'thick'
-        distance from ocean coasts (in kilometers) inside domain.
-        -'file_s[.ll,.xyz]' all inner vertices filtered by optional 'dens'
-        density.
-        -'contours[.ll,.xyz]' current contours inside domain.
-        '''
+                        file_b = 'boarders.ll' ):#, file_s = 'shapes' ):
+##        '''Generates files:
+##        -'file_b.ll' (lon-lat convension) list of points filtered by
+##        optional 'dens' density (hpgrid method) and located whithin 'thick'
+##        distance from ocean coasts (in kilometers) inside domain.
+##        -'file_s[.ll,.xyz]' all inner vertices filtered by optional 'dens'
+##        density.
+##        -'contours[.ll,.xyz]' current contours inside domain.
+##        '''
         contour = [ [ GC.norm_lon( c[0] ) , GC.norm_lat( c[1] ) ] \
                     for c in self.contour ]
 
         #selecting contour in domain
         if domain:
-            contour = [ c for c in contour if is_inside( c, domain ) ]
+            contour = [ c for c in contour[:] if is_inside( c, domain ) ]
 
         temp = geofiles.lonlat_to_xyz( contour )
 
@@ -130,13 +137,13 @@ class Boarder:
         geofiles.w_lonlat( 'contours.ll', contour )
 
         #merging contours and verts inside domain
+        points = geofiles.xyz_to_lonlat( self.verts )
         if domain:
-            contour = [ p for p in contour[:] if is_inside( p, domain ) ]
+            points = [ p for p in points[:] if is_inside( p, domain ) ]
         else:
             pass
-        points = contour + geofiles.xyz_to_lonlat( self.verts )
 
-        points = geofiles.lonlat_to_xyz( points )
+        points = geofiles.lonlat_to_xyz( points + contour )
 
         #filtering by 'dens'
         if dens:
@@ -145,16 +152,54 @@ class Boarder:
             tg.points_filter( dens )
             points = tg.points
 
-        #outputting shapes
-        geofiles.w_xyz( file_s + '.xyz', points )
         points = geofiles.xyz_to_lonlat( points )
-        geofiles.w_lonlat( file_s + '.ll', points )
+        geofiles.w_lonlat( 'temp.ll', points )
+    
+##        #outputting shapes
+##        geofiles.w_xyz( file_s + '.xyz', points )
+##        points = geofiles.xyz_to_lonlat( points )
+##        geofiles.w_lonlat( file_s + '.ll', points )
 
         #creating boarders with GMT
         ts = str( thick )
-        subprocess.call( 'gmt gmtselect ' + file_s + '.ll -fg -C' + ts + \
-                         'k/contours.ll > ' + file_b + '.ll', shell=True )
+##        subprocess.call( 'gmt gmtselect ' + file_s + '.ll -fg -C' + ts + \
+##                         'k/contours.ll > ' + file_b + '.ll', shell=True )
+        subprocess.call( 'gmt gmtselect ' + 'temp.ll -fg -C' + ts + \
+                         'k/contours.ll > ' + file_b, shell=True )
 
+        os.remove('temp.ll')
+
+        return
+
+    def merge_boarders( self, file1, file2, thick, file_out='merged.ll' ):
+
+        self.extract_boarders_from_v( file1, file2, thick, 'temp' )
+        verts = geofiles.r_lonlat( file1 )
+        app = geofiles.r_lonlat( file2 )
+        
+        geofiles.w_lonlat( file_out, verts + app )
+        os.remove( 'temp' )
+
+        return
+
+    def extract_boarders_from_v( self, file_v, file_b, thick, \
+                                 file_out='extrd.ll'):
+
+        ts = str( thick )
+        fv = str( file_v )
+        fb = str( file_b )
+        subprocess.call( 'gmt gmtselect ' + fv + ' -fg -Ic -C' + ts + \
+                         'k/' + fb +' > ' + file_out, shell=True )
+        
+        return
+
+    def filter_v_by_b( self, file_v, file_b, thick, file_out='filtrd.ll'):
+        ts = str( thick )
+        fv = str( file_v )
+        fb = str( file_b )
+        subprocess.call( 'gmt gmtselect ' + fv + ' -fg -C' + ts + \
+                         'k/' + fb +' > ' + file_out, shell=True )
+        
         return
         
 

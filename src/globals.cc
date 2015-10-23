@@ -36,7 +36,7 @@ void Globals::post_init()
 
   if( mark_boarders )
     {
-      cout<<"preparing boarders\n";
+      cout<<"Marking boarders with points\n";
 
       // reading boarders
       std::ifstream in( board_file.c_str() );
@@ -73,6 +73,6 @@ void Globals::post_init()
                 }
             }
         }
-      cout<<"done\n\n";
+      cout<<"Done\n\n";
     }
 }

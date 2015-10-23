@@ -76,6 +76,14 @@ class GMT_Plotter:
     def import_config( self, configFile ):
         '''Import configuration from specified file'''
         exec( open( configFile ).read(), globals(), self.config )
+                    
+        self.verbose = 'q'
+        if self.config.get('verbose') == True:
+             self.verbose = 'd'
+
+        self.uwf = self.config.get( 'uwind_file', None )
+        self.vwf = self.config.get( 'vwind_file', None )
+        self.domain = self.config.get( 'inter_domain', (0, 360, -90, 90) )
 
 ##-----------------------------------------------------------------------------
 ##--------------------------------- PLOTTING ----------------------------------
@@ -92,11 +100,7 @@ class GMT_Plotter:
 
         if time:
             self.config['time_index'] = time
-            
-        verbose = 'q'
-        if self.config.get('verbose') == True:
-             verbose = 'd'
-        
+
         if self.config.get('verbose'):
             print( 'plotter start plotting' )
 
@@ -105,44 +109,48 @@ class GMT_Plotter:
         if nmc_grid:
             self.W = nmc_grid
         if not self.W:
-            UW = wnd.NMCVar( self.config.get( 'uwind_file','uwnd.nc' ), 'uwnd' )
-            VW = wnd.NMCVar( self.config.get( 'vwind_file','vwnd.nc' ), 'vwnd' )
-            self.W = wnd.NMCSurfaceVField( UW, VW,
-                                      self.config.get( 'time_index', -1 ) )
-            
-        Inter = Interpolator( self.W, self.config.get( 'grid_step_lat', 2.5 ),\
-                              self.config.get( 'grid_step_lon', 2.5 ) )
-        self.W.grid_save_( 'grid.txt' ) #saving base gird
+            if self.uwf and self.vwf:
+                UW = wnd.NMCVar( self.uwf, 'uwnd' )
+                VW = wnd.NMCVar( self.vwf, 'vwnd' )
+                self.W = wnd.NMCSurfaceVField( UW, VW,
+                                  self.config.get( 'time_index', -1 ) )
+            else:
+                self.W = None
+
+        if self.W:            
+            Inter = Interpolator( self.W, self.config.get( 'grid_step_lat', 2.5 ),\
+                                  self.config.get( 'grid_step_lon', 2.5 ) )
+            self.W.grid_save_( 'grid.txt' ) #saving base gird
 
 ##----------------------- generating interpolation grid -----------------------
 
-        if self.config.get('verbose'):
-            print('generating inter_grid')
-        domain = self.config.get( 'inter_domain', (0, 360, -90, 90) )
-        RV = rand_vec.RandVecGenerator( domain[0], \
-            domain[1], 90 + domain[2], 90 + domain[3] )
-            #domain[1], 90 - domain[3], 90 - domain[2] )
-        if psi == 0:
-            max_wind = 10
-            psi = 1
-        else:
-            RV.hp_generate( psi, DEGREES, self.config.get( 'verbose' ) )
-            vecs = RV.Grid.points_angular
+            if self.config.get('verbose'):
+                print('generating inter_grid')
+            
+            RV = rand_vec.RandVecGenerator( self.domain[0], \
+                self.domain[1], 90 + self.domain[2], 90 + self.domain[3] )
+                #domain[1], 90 - domain[3], 90 - domain[2] )
+            if psi == 0:
+                max_wind = 10
+                psi = 1
+            else:
+                RV.hp_generate( psi, DEGREES, self.config.get( 'verbose' ) )
+                vecs = RV.Grid.points_angular
 
 ##-------------------------- making interpolations ----------------------
 
-            if self.config.get('verbose'):
-                print('interpolating')
-            max_wind = 0
-            with open('interpolated_vectors.txt','w') as outp:
-                for v in vecs:
-                    temp = Inter.interpolate_simple( v[1], v[0] )
-                    
-                    if sqrt( temp[0]*temp[0] + temp[1]*temp[1]) > max_wind:
-                        max_wind = sqrt( temp[0]*temp[0] + temp[1]*temp[1])
+                if self.config.get('verbose'):
+                    print('interpolating')
+                max_wind = 0
+                with open('interpolated_vectors.txt','w') as outp:
+                    for v in vecs:
+                        temp = Inter.interpolate_simple( v[1], v[0] )
                         
-                    outp.write(str(v[0])+' '+str(v[1])+' '+ \
-                               str(temp[0])+' '+str(temp[1])+' 0 0 0 \n')
+                        if sqrt( temp[0]*temp[0] + temp[1]*temp[1]) > max_wind:
+                            max_wind = sqrt( temp[0]*temp[0] + temp[1]*temp[1])
+                            
+                        outp.write(str(v[0])+' '+str(v[1])+' '+ \
+                                   str(temp[0])+' '+str(temp[1])+' 0 0 0 \n')
 
 
 ##------------------------- preparing draw_config.txt -------------------------
@@ -151,8 +159,11 @@ class GMT_Plotter:
             print('preparing draw_config')
             
         #scaling factor for vectors on picture
-        dphi = domain[1] - domain[0]
-        dtheta = domain[3] - domain[2]
+        if psi == 0:
+            max_wind = 10
+            psi = 1
+        dphi = self.domain[1] - self.domain[0]
+        dtheta = self.domain[3] - self.domain[2]
         width = sqrt ( abs( dphi*dtheta ) )
         psi *= self.config.get( 'vector_scaling', \
                 self.deft_conf['vector_scaling'] )
@@ -165,22 +176,29 @@ class GMT_Plotter:
                 view = self.config.get( 'view', '-Rg -JG350/20/6i -Bag30 ' ),
                 ground_colr = self.config.get( 'ground_colr', '255/226/164' ),
                 coasts = self.config.get( 'coasts', self.deft_conf['coasts'] ),
-                verb = verbose
+                verb = self.verbose
                 ))
             
             for line in self.config.get( 'underlays',
                                          self.deft_conf['underlays'] ):
                 dc.write( line + '\n' )
 
-            dc.write( self.draw_wind_str.format(
-                inter_wind = self.config.get( 'inter_wind', \
-                                              self.deft_conf['coasts'] ),
-                inter_scale = str( (psi * 40) / (max_wind * width) ),
-                grid_wind = self.config.get( 'grid_wind', \
-                                             self.deft_conf['grid_wind'] ),
-                grid_scale = str( (psi * 40) / (max_wind * width) ),
-                verb = verbose
-                ) )
+            inw = self.config.get( 'inter_wind', None )
+                                   #self.deft_conf['coasts'] )
+            grw = self.config.get( 'grid_wind', None )
+                                    #self.deft_conf['grid_wind'] )
+            
+            if inw or grw:
+                if inw == None:
+                    inw = self.deft_conf['coasts']
+                if grw == None:
+                    rgw = self.deft_conf['grid_wind']
+                    
+                dc.write( self.draw_wind_str.format(
+                    verb = self.verbose, inter_wind = inw, grid_wind = grw,
+                    inter_scale = str( (psi * 40) / (max_wind * width) ),
+                    grid_scale = str( (psi * 40) / (max_wind * width) ),
+                    ) )
             
             for line in self.config.get( 'overlays', [] ):
                 dc.write( line + '\n' )
