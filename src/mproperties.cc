@@ -8,8 +8,20 @@
 
 #include "mproperties.hh"
 
+
+
 void mproperties( Globals& siku )
 {
+  for( size_t i = 0; i < siku.es.size(); ++i )
+    {
+      if( siku.es[i].ERRORED )
+        {
+          std::swap( siku.es[i], siku.es[siku.es.size()-1] );
+          siku.es.pop_back();
+        }
+    }
+  cout<<"Elements after cleaning errors: "<<siku.es.size()<<endl;
+
   for ( auto & e: siku.es )
     {
       Material *pmat = &siku.ms[ e.imat ]; // short link to material

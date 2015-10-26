@@ -4,8 +4,8 @@
 #Options marked like '!*' may be passed from scenario
 #Most importano option is 'view' - in defines projection and map region
 
-#uwind_file = 'u2014.nc' #!* #file for uwind source for grid and interpolation
-#vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation
+uwind_file = 'u2014.nc' #!* #file for uwind source for grid and interpolation
+vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation
 #time_index = -1 #!* #time index in NMC file 
 #grid_step_lat = 2.5 #grid step in latitude degrees
 #grid_step_lon = 2.5 #grid step in longitude degrees
@@ -44,13 +44,13 @@ view = '-R172/50/263/75r -JA205/71/15 -Bag30 '
 #coasts = 'pscoast -R -J -B -I1/0.25p,70/150/255 -N1/0.15p,110/80/0\
 #-I2/0.1p,70/150/255 -G187/142/46 -S109/202/255 '
 
-vector_scaling = 0.1
+#vector_scaling = 0.1
 #vector_scaling = 0.01
 #vector_scaling = 5.5
 
-#inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,green -L\
-#-A3.0p+e+ggreen -Se'
-#grid_wind = 'psvelo grid.txt -R -J -W0.25p,blue -L -A1.0p+e+gblue -Se'
+inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,green -L\
+-A3.0p+e+ggreen -Se'
+grid_wind = 'psvelo grid.txt -R -J -W0.25p,blue -L -A1.0p+e+gblue -Se'
 
 #any underlays (right after coasts, befor winds)
 #underlays = [

@@ -56,7 +56,6 @@ void Globals::post_init()
 
       in.close();
 
-      int II=0;
       // marking boarders by boarder points (2d approximation)
       size_t size = points.size();
       for( auto& e : es )

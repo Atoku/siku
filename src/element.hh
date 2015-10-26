@@ -92,6 +92,8 @@ public:
                                 //!frame
   double N {0};                 //!< N*m, torque value in local frame
 
+  bool ERRORED{ false };        //!< flag for runtime error detection
+
   // ------------------- METHODS: -------------------------------------
 
   //! Check if point (given inglobal x,y,z ) is inside the element

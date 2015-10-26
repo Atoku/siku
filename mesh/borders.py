@@ -21,11 +21,12 @@ def main():
     board.add_hp_verts( 2., 1., (0, 360, 60, 90) ) #0.5 0.9
     print('  high resolution domain')
     board.add_hp_verts( 0.1, 0.1, (170, 210, 60, 70) )
+    board.add_hp_verts( 0.02, 0.01, (200, 220, 69, 72) )
 
     #canal
     print('-adding `canal` high resolution domain')
     board.add_contour( 'canal.ll' )
-    board.add_hp_verts( 0.07, 0.09, (180, 185, 55, 60) )
+    board.add_hp_verts( 0.07, 0.07, (175, 190, 55, 60) )
 
     print('-filtering contours')
     board.filter_contour( 0.15, (0, 360, 50, 90) )

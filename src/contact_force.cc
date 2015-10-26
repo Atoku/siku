@@ -33,8 +33,11 @@ using namespace Coordinates;
 
 // -----------------------------------------------------------------------
 
-void contact_push( Element& e1, Element& e2, Globals& siku )
+void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
 {
+  Element &e1 = siku.es[i1];
+  Element &e2 = siku.es[i2];
+
   mat3d src_to_dest = loc_to_loc_mat( e1.q, e2.q ); // !static
   mat3d dest_to_src = loc_to_loc_mat( e2.q, e1.q ); // !static
   vec3d tv; // !static
@@ -59,10 +62,30 @@ void contact_push( Element& e1, Element& e2, Globals& siku )
 
   // creating polygons and calculating intersection
   append( poly1, P1 );
-  correct( poly1 );
+  BG::correct( poly1 );
   append( poly2, P2 );
-  correct( poly2 );
-  intersection( poly1, poly2, poly_res );
+  BG::correct( poly2 );
+
+  if( BG::intersects( poly1 ) )
+    {
+      //cout<<"e1 self-intersects ---\n";
+      e1.ERRORED = true;
+    }
+  if( BG::intersects( poly2 ) )
+    {
+      //cout<<"e2 self-intersects ---\n";
+      e2.ERRORED = true;
+    }
+
+
+  try
+  {
+      intersection( poly1, poly2, poly_res );
+  }
+  catch(boost::geometry::overlay_invalid_input_exception const& e)
+  {
+      cout<<"!! intersection error\n";
+  }
 
   static point2d center( 0, 0 ); // !static
 

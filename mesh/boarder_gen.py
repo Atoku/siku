@@ -104,7 +104,8 @@ class Boarder:
             grid = hpgrid.Grid(  )
         else:
             hpDomain = hpgrid.Domain( \
-                phi = ( GC.deg_to_rad_ll( domain[0], domain[1] ) ), \
+                phi = ( GC.ratio180 * GC.norm_lon( domain[0] ), \
+                        GC.ratio180 * GC.norm_lon( domain[1] ) ), \
                 theta = ( GC.ratio180 * ( 90 - GC.norm_lat( domain[3] ) ), \
                           GC.ratio180 * ( 90 - GC.norm_lat( domain[2] ) ) ) )
             grid = hpgrid.Grid( hpDomain )
@@ -115,14 +116,13 @@ class Boarder:
 
     def gener_boarders( self, thick, dens = None, domain = None, \
                         file_b = 'boarders.ll' ):#, file_s = 'shapes' ):
-##        '''Generates files:
-##        -'file_b.ll' (lon-lat convension) list of points filtered by
-##        optional 'dens' density (hpgrid method) and located whithin 'thick'
-##        distance from ocean coasts (in kilometers) inside domain.
-##        -'file_s[.ll,.xyz]' all inner vertices filtered by optional 'dens'
-##        density.
-##        -'contours[.ll,.xyz]' current contours inside domain.
-##        '''
+        '''Generates files:
+        -'file_b.ll' (lon-lat convension) list of points filtered by
+        optional 'dens' density (hpgrid method) and located whithin 'thick'
+        distance from ocean coasts (in kilometers) inside domain.
+        -'contours[.ll,.xyz]' current contours inside domain.
+        -garbage due to inner calls.
+        '''
         contour = [ [ GC.norm_lon( c[0] ) , GC.norm_lat( c[1] ) ] \
                     for c in self.contour ]
 
@@ -172,7 +172,10 @@ class Boarder:
         return
 
     def merge_boarders( self, file1, file2, thick, file_out='merged.ll' ):
-
+        '''Merges two presumably boarder files into 'file_out' by
+        placing all points from second file and that very points from file1
+        those are out of file2 'cover area'
+        '''
         self.extract_boarders_from_v( file1, file2, thick, 'temp' )
         verts = geofiles.r_lonlat( file1 )
         app = geofiles.r_lonlat( file2 )
@@ -184,7 +187,9 @@ class Boarder:
 
     def extract_boarders_from_v( self, file_v, file_b, thick, \
                                  file_out='extrd.ll'):
-
+        '''Select all points from 'file_v' those are out of file_b 'cover area'
+        and place them into file_out.
+        '''
         ts = str( thick )
         fv = str( file_v )
         fb = str( file_b )
@@ -194,6 +199,9 @@ class Boarder:
         return
 
     def filter_v_by_b( self, file_v, file_b, thick, file_out='filtrd.ll'):
+        '''Select all points from 'file_v' those are inside file_b 'cover area'
+        and place them into file_out.
+        '''
         ts = str( thick )
         fv = str( file_v )
         fb = str( file_b )

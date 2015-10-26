@@ -73,6 +73,7 @@ inline void outVec( const vec3d& vec)
 // --------------------------------------------------------------------------
 
 //! General boost includes
+//#define BOOST_GEOMETRY_DEBUG_HAS_SELF_INTERSECTIONS
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
@@ -87,7 +88,7 @@ typedef boost::geometry::model::polygon< point2d, false, false > polygon2d;
 namespace BG = boost::geometry;
 
 // converting scale
-const double BOOST_POINT_SCALE = 1.;
+const double BOOST_POINT_SCALE = 1. ;
 
 // two ways transforming
 inline vec3d point_to_vec( const point2d& p2 )
