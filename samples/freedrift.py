@@ -86,8 +86,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 1* hour 
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 2
+    siku.time.finish = siku.uw.times[st_t_ind] #+ 1* hour
+    siku.time.dt = datetime.timedelta ( milliseconds = 1 )
+    #siku.time.dt = ( siku.time.finish - siku.time.start ) / 2
    
     # ---------------------------------------------------------------------
     # elements
@@ -257,7 +258,7 @@ def main():
     siku.plotter = GMT_Plotter( 'plot_config.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 4
+    siku.diagnostics.monitor_period = 1
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -344,9 +345,9 @@ def aftertimestep( t, n, ns ):
         pic_name = 'drift%03d.eps' % \
             (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
         print('drawing ' + str( pic_name ) )
-        
+
         siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
-        
+
     #siku.local.poly_f.close()
     return 0
 
@@ -391,7 +392,7 @@ def winds_diag( t, winds ):
     mesh = siku.diagnostics.meshes[0]
     ez = mathutils.Vector( (0,0,1) )
 
-## Commented to stop that file breeding while other modules are being tested
+###### Commented to stop that file breeding while other modules are being tested
 ##    fp = open( 'winds-%02d.txt' % (siku.diagnostics.wind_counter), 'w' )
 ##
 ##    for i, w in enumerate( winds ):

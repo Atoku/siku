@@ -65,7 +65,12 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_dt, mydt, seconds, stdtypes.t_long );
   dtype_freg( stdtypes.t_dt, mydt, microseconds, stdtypes.t_long );
   
-  // element
+  // element  //!!! TESTING
+  typedef Element myel; // for short
+  stdtypes.t_element=  H5Tcreate( H5T_COMPOUND, sizeof( myel ) );
+  dtype_freg( stdtypes.t_element, myel, q, stdtypes.t_quat );
+  //!!! TESTING -^
+
 }
 
 //---------------------------------------------------------------------

@@ -1085,37 +1085,42 @@ Sikupy::fcall_presave ( Globals& siku )
 {
   int status = FCALL_OK;
 
-  // reading siku.callback.presave
-  PyObject* pFunc;
-
-  pFunc = PyObject_GetAttrString ( pSiku_callback, "presave" ); // new
-  assert( pFunc );
-  if ( !PyCallable_Check ( pFunc ) )
-    return FCALL_ERROR_NO_FUNCTION;
+//  // reading siku.callback.presave
+//  PyObject* pFunc;
+//
+//  pFunc = PyObject_GetAttrString ( pSiku_callback, "presave" ); // new
+//  assert( pFunc );
+//  if ( !PyCallable_Check ( pFunc ) )
+//    return FCALL_ERROR_NO_FUNCTION;
 
   // preparing paramaters to pass (we send model time and dt) as
   // datetime object
   const size_t n = siku.time.get_n ();
   const size_t ns = siku.time.get_ns ();
 
-  PyObject* pargs;
-  pargs = Py_BuildValue ( "(O,i,i)", pCurTime, n, ns ); // new
-  assert( pargs );
+//  PyObject* pargs;
+//  pargs = Py_BuildValue ( "(O,i,i)", pCurTime, n, ns ); // new
+//  assert( pargs );
+//
+//  // calling the object
+//  PyObject* pReturn_value;
+//  pReturn_value = PyObject_CallObject ( pFunc, pargs ); // new
 
-  // calling the object
-  PyObject* pReturn_value;
-  pReturn_value = PyObject_CallObject ( pFunc, pargs ); // new
+  // instead of all that is commented out
+  PyObject* pReturnValue =
+        PyObject_CallMethod ( pSiku_callback, "presave", "(O,i,i)", pCurTime,
+                              n, ns ); //new
 
   // if not returned a string, then it is a wrong presave
-  if ( !PyUnicode_Check( pReturn_value ) )
+  if ( !PyUnicode_Check( pReturnValue ) )
     return FCALL_ERROR_PRESAVE_NOSTRING;
 
-  read_string ( pReturn_value, siku.savefile );
+  read_string ( pReturnValue, siku.savefile );
 
   // do not need arguments and value anymore
-  Py_DECREF( pargs );
-  Py_DECREF( pReturn_value );
-  Py_DECREF( pFunc );
+//  Py_DECREF( pargs );
+  Py_DECREF( pReturnValue );
+//  Py_DECREF( pFunc );
 
   return status;
 }

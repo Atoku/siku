@@ -26,7 +26,7 @@ vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
-view = '-R172/50/263/75r -JA205/71/15 -Bag30 '
+view = '-R190/65/240/75r -JA205/71/15 -Bag30 '
 ##view = '-Rg -JA205/71/15 -Bag30 '
 
 #Polar Stereographic (hope that is really stereo)

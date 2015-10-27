@@ -110,7 +110,8 @@ main ( int argc, char* argv[] )
   cout<<"Elements: "<<siku.es.size()<<endl;
 
   // Main Time Loop
-  while ( !siku.time.is_done () )
+  //while ( !siku.time.is_done () )
+  do
     {
       double dt = siku.time.get_dt ();
 
@@ -146,9 +147,12 @@ main ( int argc, char* argv[] )
       // ---- Saving ---
       if ( siku.time.is_savetime () )
         {
-          (void) sikupy.fcall_presave ( siku ); // no function = no action
+          // why have this been marked as 'void'? It returns save/not status!
+          //(void)
+          int save_status = sikupy.fcall_presave ( siku ); // no function = no action
 
-          // highio.save( siku );
+          if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
+            highio.save( siku );
 
           siku.time.save_increment ();
         }
@@ -166,6 +170,7 @@ main ( int argc, char* argv[] )
       siku.time.increment ();
 
     }
+  while ( !siku.time.is_done () );
 
   sikupy.fcall_conclusions( siku );
 

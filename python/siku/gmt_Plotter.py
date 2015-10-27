@@ -95,6 +95,7 @@ class GMT_Plotter:
         calling interpolation, preparing draw_config.txt and finaly executing
         DMT_Drawer
         '''
+
         if out_file:
             self.config['out_pic_name'] = out_file
 
@@ -157,7 +158,7 @@ class GMT_Plotter:
 
         if self.config.get('verbose'):
             print('preparing draw_config')
-            
+  
         #scaling factor for vectors on picture
         if psi == 0:
             max_wind = 10
@@ -207,7 +208,7 @@ class GMT_Plotter:
 
         if self.config.get('verbose'):
             print('drawing')
-        self.D = GMT_Drawer('draw_config.txt') 
+        self.D = GMT_Drawer('draw_config.txt')
         self.D.draw( verbose = self.config.get( 'verbose' ) ) #at last - plotting
 
     pass
