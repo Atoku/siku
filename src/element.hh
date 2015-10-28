@@ -60,8 +60,10 @@ public:
   unsigned int flag;            //!< state flag
 //  char* monitor {nullptr};         //!< monitor function name (0-term)
 //  char* control {nullptr};         //!< control function name (0-term)
-  std::string monitor;         //!< monitor function name
-  std::string control;         //!< control function name
+  //std::string monitor;         //!< monitor function name
+  //std::string control;         //!< control function name
+  size_t mon_ind { 0 };               //!< monitor function index
+  size_t con_ind { 0 };               //!< control function index
 
   // --------------- Not changing state parameters -------------------
   

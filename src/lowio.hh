@@ -121,6 +121,13 @@ private:
     hid_t t_double;
     hid_t t_quat;
 
+//////////
+    hid_t t_vec;
+    hid_t t_bool;
+    hid_t t_size;
+    hid_t t_uint;
+
+
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp
     hid_t t_element;            //!< Element 

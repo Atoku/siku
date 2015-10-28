@@ -305,7 +305,7 @@ def initializations( siku, t ):
 
 def conclusions( siku, t ):
     print('creating .gif')
-    subprocess.call( "convert -density 300 -delay 10 drift*.eps drift.gif", \
+    subprocess.call( "nice convert -density 300 -delay 10 drift*.eps drift.gif", \
                      shell=True )
     ###old version
     #os.system("convert -density 300 -delay 10 drift*.eps drift.gif")

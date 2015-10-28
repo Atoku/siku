@@ -619,8 +619,9 @@ Sikupy::read_elements ( Globals& siku )
 
       if ( read_string ( pobj, stmp ) )
         {
-          siku.es[i].monitor = string( stmp.c_str() ); //strdup ( stmp.c_str () );
-          assert( siku.es[i].monitor );
+//          siku.es[i].monitor = string( stmp.c_str() ); //strdup ( stmp.c_str () );
+//          assert( siku.es[i].monitor );
+          siku.add_monit( stmp, siku.es[i] );
 
           // we also need to set a flag for this element
           siku.es[i].flag |= Element::F_MONITORED;

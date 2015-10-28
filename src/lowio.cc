@@ -47,6 +47,19 @@ Lowio::Lowio()
   H5Tinsert( stdtypes.t_quat, "c", 2*8, stdtypes.t_double );
   H5Tinsert( stdtypes.t_quat, "d", 3*8, stdtypes.t_double );
 
+  // vec3d
+  stdtypes.t_vec = H5Tcreate( H5T_COMPOUND, sizeof(double)*3 );
+  H5Tinsert( stdtypes.t_vec, "x", 0,   stdtypes.t_double );
+  H5Tinsert( stdtypes.t_vec, "y", 8,   stdtypes.t_double );
+  H5Tinsert( stdtypes.t_vec, "z", 2*8, stdtypes.t_double );
+
+  // bool //hope so
+  stdtypes.t_bool = H5T_NATIVE_HBOOL;
+  // native size //also hope so
+  stdtypes.t_size = H5T_NATIVE_HSIZE;
+  // unsigned int
+  stdtypes.t_uint = H5T_NATIVE_UINT;
+
   // time
   typedef ModelTimeTypes::timestamp mytime; // for short
   stdtypes.t_time =  H5Tcreate( H5T_COMPOUND, sizeof( mytime ) );
@@ -69,6 +82,23 @@ Lowio::Lowio()
   typedef Element myel; // for short
   stdtypes.t_element=  H5Tcreate( H5T_COMPOUND, sizeof( myel ) );
   dtype_freg( stdtypes.t_element, myel, q, stdtypes.t_quat );
+  dtype_freg( stdtypes.t_element, myel, Glob, stdtypes.t_vec);
+  dtype_freg( stdtypes.t_element, myel, V, stdtypes.t_vec);
+  dtype_freg( stdtypes.t_element, myel, m, stdtypes.t_double);
+  dtype_freg( stdtypes.t_element, myel, I, stdtypes.t_double);
+  dtype_freg( stdtypes.t_element, myel, W, stdtypes.t_vec);
+  dtype_freg( stdtypes.t_element, myel, F, stdtypes.t_vec);
+  dtype_freg( stdtypes.t_element, myel, N, stdtypes.t_double);
+
+  dtype_freg( stdtypes.t_element, myel, i, stdtypes.t_double);
+  dtype_freg( stdtypes.t_element, myel, A, stdtypes.t_double);
+  dtype_freg( stdtypes.t_element, myel, sbb_rmin, stdtypes.t_double);
+  dtype_freg( stdtypes.t_element, myel, imat, stdtypes.t_size);
+  dtype_freg( stdtypes.t_element, myel, igroup, stdtypes.t_size);
+
+  dtype_freg( stdtypes.t_element, myel, flag, stdtypes.t_uint);
+  dtype_freg( stdtypes.t_element, myel, mon_ind, stdtypes.t_size);
+  dtype_freg( stdtypes.t_element, myel, con_ind, stdtypes.t_size);
   //!!! TESTING -^
 
 }

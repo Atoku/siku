@@ -11,9 +11,19 @@
 #include "coordinates.hh"
 
 #include "fstream"
-#include <vector>
 
 using namespace Coordinates;
+
+// --------------------------------------------------------------------------
+
+Globals::Globals()
+{
+  // default empty-string first members
+  cons.push_back( std::string( "" ) );
+  mons.push_back( std::string( "" ) );
+}
+
+// --------------------------------------------------------------------------
 
 void Globals::post_init()
 {
@@ -75,3 +85,35 @@ void Globals::post_init()
       cout<<"Done\n\n";
     }
 }
+
+// --------------------------------------------------------------------------
+
+void Globals::add_monit( std::string& mon, Element& e )
+{
+  // search for matching registered monitor name
+  for( size_t i =0; i < mons.size(); ++i )
+    {
+      if( ! mons[i].compare( mon ) ) // 0 means equal
+        {
+          //set found monitor name index
+          e.mon_ind = i;
+          return;
+        }
+    }
+
+  // if name was not found - add new one
+  mons.push_back( mon );
+  e.mon_ind = mons.size() - 1;
+  return;
+}
+
+// --------------------------------------------------------------------------
+
+void Globals::add_contr( std::string& con, Element& e )
+{
+  // YET UNUSED
+  /*
+   * TODO: Add control functions all around the program.
+   */
+}
+

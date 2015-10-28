@@ -11,6 +11,7 @@
 #define GLOBALS_HH
 
 #include <vector>
+#include <string>
 
 #include "info.hh"
 #include "element.hh"
@@ -47,6 +48,12 @@ struct Globals
   //! Elements data
   std::vector < Element > es;
 
+  //! Monitors
+  std::vector < std::string > mons;
+
+  //! Controls
+  std::vector < std::string > cons;
+
   //! model time 
   ModelTime time;
 
@@ -67,7 +74,7 @@ struct Globals
   ContactDetector ConDet;
 
   //! Flag for marking boarder polygons as 'static' or else
-  unsigned long mark_boarders;
+  unsigned long mark_boarders { 0 };
 
   //! Boarders` points file name
   string board_file;
@@ -78,6 +85,16 @@ struct Globals
 
   //! Post-initialization (with loaded values)
   void post_init();
+
+  //! Default constructor
+  Globals();
+
+  //! Registration of element`s monitor function
+  void add_monit( std::string& mon, Element& e );
+
+  //! Registration of element`s control function
+  void add_contr( std::string& con, Element& e );
+
 
 };
 

@@ -65,6 +65,9 @@ int Highio::save( const Globals& siku )
 
   lowio.save_astrings ( astrs, dataname, description );
 
+  // saving monitors
+  lowio.save_astrings( siku.mons, string( "Monitor functions" ),
+                       string( "TODO: fill" ) );
 
   //---------------------------------------------------------------------
   
