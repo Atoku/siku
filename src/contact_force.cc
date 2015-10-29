@@ -69,12 +69,12 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
   if( BG::intersects( poly1 ) )
     {
       //cout<<"e1 self-intersects ---\n";
-      e1.ERRORED = true;
+      siku.es[i1].ERRORED = true;
     }
   if( BG::intersects( poly2 ) )
     {
       //cout<<"e2 self-intersects ---\n";
-      e2.ERRORED = true;
+      siku.es[i2].ERRORED = true;
     }
 
 
@@ -84,7 +84,12 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
   }
   catch(boost::geometry::overlay_invalid_input_exception const& e)
   {
-      cout<<"!! intersection error\n";
+      cout<<"!! intersection error\t";
+      if( siku.es[i1].ERRORED )
+        cout<<i1<<"\t";
+      if( siku.es[i2].ERRORED )
+        cout<<i2;
+      cout<<endl;
   }
 
   static point2d center( 0, 0 ); // !static
@@ -141,7 +146,7 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
       // force and torques components coefficients (fitted manually and wrong)
       // should depend from dt, ice properties, earth radius and so on...
       static const double kv = 0.00005;
-      static const double kr = 0.0002;
+      static const double kr = 0.00002;
 
       static const double kw = 1.5;
 

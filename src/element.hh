@@ -38,6 +38,14 @@ using namespace std;
 class Element
 {
 public:
+  //! \brief struct for marking and saving vertices
+  struct vertex
+  {
+    vec3d pos = nullvec ;
+    size_t elem_id{ 0 };
+    vertex(){};
+    vertex(const vec3d& v, const size_t& id): pos( v ), elem_id( id ) {}
+  };
 
   //! \brief flag state for free body element
   static const unsigned int F_FREE   {0x1};
@@ -64,6 +72,9 @@ public:
   //std::string control;         //!< control function name
   size_t mon_ind { 0 };               //!< monitor function index
   size_t con_ind { 0 };               //!< control function index
+
+  size_t id { 0 };                    //!< id of element, matches it`s index
+                                      //! in Globals.es
 
   // --------------- Not changing state parameters -------------------
   
@@ -94,7 +105,7 @@ public:
                                 //!frame
   double N {0};                 //!< N*m, torque value in local frame
 
-  bool ERRORED{ false };        //!< flag for runtime error detection
+  bool ERRORED { false };       //!< flag for runtime error detection
 
   // ------------------- METHODS: -------------------------------------
 

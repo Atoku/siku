@@ -21,7 +21,7 @@ position ( Globals& siku, const double dt )
     {
       if ( e.flag & Element::F_STATIC ) continue;
 
-      double S = glm::dot ( e.W, e.W ) * dt * dt * C;
+      //double S = glm::dot ( e.W, e.W ) * dt * dt * C;
       //p = quat ( 1 - S, 0.5 * dt * e.W )  / ( 1 + S );
       //no self rotation
       p = quat ( 1 , 0.5 * dt * vec3d( e.W.x, e.W.y, 0 ) );

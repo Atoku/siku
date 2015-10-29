@@ -86,9 +86,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] #+ 1* hour
-    siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    #siku.time.dt = ( siku.time.finish - siku.time.start ) / 2
+    siku.time.finish = siku.uw.times[st_t_ind] + 12* hour
+    #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 240
    
     # ---------------------------------------------------------------------
     # elements
@@ -258,7 +258,7 @@ def main():
     siku.plotter = GMT_Plotter( 'plot_config.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 1
+    siku.diagnostics.monitor_period = 6
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 

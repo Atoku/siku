@@ -45,8 +45,13 @@ struct Globals
   //! Materials
   std::vector < Material > ms;
 
-  //! Elements data
+  //! Elements data !! Important: the order of elements in this array should
+  //! remain unchanged. Element IDs match their position in this vector.
+  //! For any sorting necessities use 'pes' vector.
   std::vector < Element > es;
+
+  //! Elements` pointers vector for sortings and temporal processings
+  std::vector < Element* > pes;
 
   //! Monitors
   std::vector < std::string > mons;
@@ -58,14 +63,10 @@ struct Globals
   ModelTime time;
 
   //! atmospheric wind data
-  Vecfield wind;// = Vecfield( FIELD_TEST );//<-- constructor for testing
+  Vecfield wind;
 
   //! water currents data (parametrical constructor call)
-  Vecfield flows = Vecfield( Vecfield::NONE );
-
-  //! Current filename to save to
-  string savefile
-    { "siku_output.h5" };
+  Vecfield flows = Vecfield( Vecfield::NONE ); //YET NO FLOWS
 
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
@@ -73,15 +74,21 @@ struct Globals
   //! Contact detector and store
   ContactDetector ConDet;
 
-  //! Flag for marking boarder polygons as 'static' or else
-  unsigned long mark_boarders { 0 };
-
   //! Boarders` points file name
   string board_file;
+
+  //! Current filename to save to
+  string savefile
+      { "siku_output.h5" };
+
+  //! Flag for marking boarder polygons as 'static' or else
+  unsigned long mark_boarders { 0 };
 
   //! Callback-returned status (masked flags)
   unsigned long callback_status
     { STATUS_NONE };
+
+  // ------------------------------ METHODS ---------------------------------
 
   //! Post-initialization (with loaded values)
   void post_init();

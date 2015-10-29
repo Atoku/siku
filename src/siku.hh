@@ -36,30 +36,33 @@
 
 //! Main vector types
 #include <glm/vec3.hpp>
-#ifdef SIKU_VECF                // float vectors
-typedef glm::fvec3 vec3d;
-#else
+////// temporally disabled to avoid ambiguities in H5 save/load
+//#ifdef SIKU_VECF                // float vectors
+//typedef glm::fvec3 vec3d;
+//#else
 typedef glm::dvec3 vec3d;
-#endif
+//#endif
 
 // zero-vector for fast cleaning
 const vec3d nullvec = vec3d( 0., 0., 0. );
 
 //! Main quaternion types
 #include <glm/gtc/quaternion.hpp>
-#ifdef SIKU_QUATF
-typedef glm::fquat quat;
-#else
+////// temporally disabled to avoid ambiguities in H5 save/load
+//#ifdef SIKU_QUATF
+//typedef glm::fquat quat;
+//#else
 typedef glm::dquat quat;
-#endif
+//#endif
 
 //! Main matrix types
 #include <glm/mat3x3.hpp>
-#ifdef SIKU_QUATF
-typedef glm::fmat3 mat3d;
-#else
+////// temporally disabled to avoid ambiguities in H5 save/load
+//#ifdef SIKU_QUATF
+//typedef glm::fmat3 mat3d;
+//#else
 typedef glm::dmat3 mat3d;
-#endif
+//#endif
 
 ////////////////////////// FOR TESTING ////////////////////////////
 #include <iostream>
@@ -87,7 +90,7 @@ typedef boost::geometry::model::polygon< point2d, false, false > polygon2d;
 //! boost::geometry namespace shortcut
 namespace BG = boost::geometry;
 
-// converting scale
+// converting scale for vec3d <-> point2d
 const double BOOST_POINT_SCALE = 1. ;
 
 // two ways transforming

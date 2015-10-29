@@ -17,6 +17,7 @@
 class Highio
 {
 public:
+  vector<Element::vertex> verts;
 
   static const int STATUS_OK       { 0x0 }; //!< OK status code
   static const int STATUS_ERR_FILE { 0x1 }; //!< Error with file creation 
@@ -32,6 +33,10 @@ private:
   //! \brief main object for high I/O put here to avoid extra type registrations
   Lowio lowio;
 
+  //! \brief fill vertices vector with polygon vertices` coordinates for saving
+  //! !!IMPORTANT: works with local coordinates
+  //! \param[in] siku global variables
+  void fill_verts( const Globals& siku );
 };
 
 #endif      /* HIGHIO_HH */

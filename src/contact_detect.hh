@@ -52,8 +52,20 @@ public:
     size_t i2 {0};
     int step{0};
     Contact(){}
-    Contact(const size_t& i1_, const size_t& i2_, const int& s ):
-      i1(i1_), i2(i2_), step(s) {}
+    Contact(const size_t& i1_, const size_t& i2_, const int& s ): step(s)
+    {
+      // first element in contact should remain first in list (lower id)
+      if( i1_ < i2_)
+        {
+          i1 = i1_;
+          i2 = i2_;
+        }
+      else
+        {
+          i1 = i2_;
+          i2 = i1_;
+        }
+    }
   };
 
   //! \brief Method specifier (ye, i know what 'meth' means...)

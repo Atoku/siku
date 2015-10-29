@@ -69,9 +69,29 @@ int Highio::save( const Globals& siku )
   lowio.save_astrings( siku.mons, string( "Monitor functions" ),
                        string( "TODO: fill" ) );
 
+  // saving polygon vertices
+  fill_verts( siku );
+  lowio.save_array( lowio.type_vert(), "Data/Vertices",
+                      verts.data(), verts.size(), "TODO: fill", "TODO: fill" );
+
   //---------------------------------------------------------------------
   
   lowio.release();              // and stop working with this file
 
   return status;
+}
+
+//---------------------------------------------------------------------
+
+void Highio::fill_verts( const Globals& siku )
+{
+  verts.clear();
+
+  for( auto& e : siku.es )
+    {
+      for( auto& v : e.P )
+        {
+          verts.push_back( Element::vertex( v, e.id ) );
+        }
+    }
 }

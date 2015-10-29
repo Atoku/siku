@@ -151,8 +151,8 @@ main ( int argc, char* argv[] )
           //(void)
           int save_status = sikupy.fcall_presave ( siku ); // no function = no action
 
-          if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
-            highio.save( siku );
+          //if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
+          //  highio.save( siku );
 
           siku.time.save_increment ();
         }

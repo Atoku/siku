@@ -33,6 +33,7 @@ using namespace Coordinates;
 // For sorting watch https://s-media-cache-ak0.pinimg.com/originals/5f/fc/42/5ffc4224b938d1fb0abee887e4add84b.jpg
 // Yet simple 'sort' from <algorithm> is used.
 
+// comparator for sorting algorithm
 inline bool elements_x_compare( const Element& e1, const Element& e2 )
 {
   /*
@@ -42,27 +43,41 @@ inline bool elements_x_compare( const Element& e1, const Element& e2 )
   return (e1.Glob.x - e1.sbb_rmin) < (e2.Glob.x - e2.sbb_rmin);
 }
 
+// pointer comparator for sorting algorithm
+inline bool el_pointers_x_compare( Element* pe1, Element* pe2 )
+{
+  return elements_x_compare( *pe1, * pe2 );
+  //return (pe1->Glob.x - pe1->sbb_rmin) < (pe2->Glob.x - pe2->sbb_rmin);
+}
+
 void ContactDetector::sweep_n_prune( Globals& siku )
 {
+  // preparing additional vector:
+  // setting pointers in supporting vector (for sortings, etc)
+  siku.pes.clear();
+  for( size_t i = 0; i < siku.es.size(); ++i )
+    siku.pes.push_back( &siku.es[i] );
+
   // sorting
-  std::sort( siku.es.begin(), siku.es.end(), elements_x_compare );
+  std::sort( siku.pes.begin(), siku.pes.end(), el_pointers_x_compare );
 
   // contact search
   cont.clear();
 
-  for ( size_t i = 0; i < siku.es.size () - 1; ++i )
+  for ( size_t i = 0; i < siku.pes.size () - 1; ++i )
     {
-      for ( size_t j = i + 1; j < siku.es.size (); ++j )
+      for ( size_t j = i + 1; j < siku.pes.size (); ++j )
         {
-          if ( sq_dist( siku.es[i].Glob, siku.es[j].Glob ) <
-              square_( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
+          if ( sq_dist( siku.pes[i]->Glob, siku.pes[j]->Glob ) <
+              square_( siku.pes[i]->sbb_rmin + siku.pes[j]->sbb_rmin ) )
             {
-              cont.push_back ( Contact ( i, j, siku.time.get_n () ) );
+              cont.push_back ( Contact (
+                  siku.pes[i]->id, siku.pes[j]->id, siku.time.get_n () ) );
 //              cout << "SWEEP PAIR " << i << "-" << j << "  step: "
 //                  << siku.time.get_n()<<endl;
             }
-          if ( (siku.es[i].Glob.x + siku.es[i].sbb_rmin) <
-              (siku.es[j].Glob.x - siku.es[j].sbb_rmin) )
+          if ( (siku.pes[i]->Glob.x + siku.pes[i]->sbb_rmin) <
+              (siku.pes[j]->Glob.x - siku.pes[j]->sbb_rmin) )
 
               break;
 

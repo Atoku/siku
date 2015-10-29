@@ -100,6 +100,9 @@ public:
   //! \brief returns time ststamp type
   hid_t type_dt() const { return stdtypes.t_dt; };
 
+  //! \brief returns time vertex type
+  hid_t type_vert() const { return stdtypes.t_vertex; };
+
   //! \brief closes the file and releases the memory. Note: it is not
   //! in a destructor as we might want to use the same object many
   //! times for different files
@@ -126,7 +129,8 @@ private:
     hid_t t_bool;
     hid_t t_size;
     hid_t t_uint;
-
+//
+    hid_t t_vertex;
 
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp

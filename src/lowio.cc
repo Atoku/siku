@@ -40,6 +40,9 @@ Lowio::Lowio()
 
   // Registering the datatypes
 
+  /*
+   * TODO: change sizeof(double) into dynamic type sizing like 'vec3d::type'...
+   */
   // quat
   stdtypes.t_quat = H5Tcreate( H5T_COMPOUND, sizeof(double)*4 );
   H5Tinsert( stdtypes.t_quat, "a", 0,   stdtypes.t_double );
@@ -99,6 +102,13 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_element, myel, flag, stdtypes.t_uint);
   dtype_freg( stdtypes.t_element, myel, mon_ind, stdtypes.t_size);
   dtype_freg( stdtypes.t_element, myel, con_ind, stdtypes.t_size);
+  dtype_freg( stdtypes.t_element, myel, id, stdtypes.t_size);
+
+
+  typedef Element::vertex vert;
+  stdtypes.t_vertex =  H5Tcreate( H5T_COMPOUND, sizeof( vert ) );
+  dtype_freg( stdtypes.t_vertex, vert, pos, stdtypes.t_vec);
+  dtype_freg( stdtypes.t_vertex, vert, elem_id, stdtypes.t_size);
   //!!! TESTING -^
 
 }

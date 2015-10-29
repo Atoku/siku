@@ -12,15 +12,24 @@
 
 void mproperties( Globals& siku )
 {
-  for( size_t i = 0; i < siku.es.size(); ++i )
+  size_t size = siku.es.size();
+  int count = 0;
+  Element el;
+  for( size_t i = 0; i < size; ++i )
     {
       if( siku.es[i].ERRORED )
         {
-          std::swap( siku.es[i], siku.es[siku.es.size()-1] );
+          //std::swap( siku.es[i], siku.es[--size] );
+          //el = siku.es[i];
+          siku.es[i] = siku.es[--size];
+          //siku.es[size] = el;
           siku.es.pop_back();
+          count++;
         }
     }
-  cout<<"Elements after cleaning errors: "<<siku.es.size()<<endl;
+  if(count)
+    cout<<"Cleared: "<<count<<" Elements after cleaning errors: "
+        <<siku.es.size()<<endl;
 
   for ( auto & e: siku.es )
     {

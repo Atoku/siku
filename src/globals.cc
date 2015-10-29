@@ -31,17 +31,21 @@ void Globals::post_init()
 //  if( wind.FIELD_SOURCE_TYPE == Vecfield::NMC )
 //    Sikupy::read_nmc_vecfield ( *siku.wind.NMCVec, "wind" );
 
-  for( auto& e : es )
+  for( size_t i =0; i < es.size(); ++i )
     {
+      // setting elements id
+      es[i].id = i;
+
       // setting default (loaded from .py) velocity and rotation
       double lat, lon;
-      sph_by_quat( e.q, &lat, &lon );
+      sph_by_quat( es[i].q, &lat, &lon );
 
       vec3d temp = glob_to_loc(
-          e.q, geo_to_cart_surf_velo( lat, lon, e.V.x, e.V.y ) );
+          es[i].q, geo_to_cart_surf_velo( lat, lon, es[i].V.x, es[i].V.y ) );
 
       // velocity must be inputed in East-North terms
-      e.W = vec3d( -temp.y * planet.R_rec, temp.x * planet.R_rec, e.V.z );
+      es[i].W = vec3d( -temp.y * planet.R_rec, temp.x * planet.R_rec,
+                       es[i].V.z );
     }
 
   if( mark_boarders )
