@@ -14,7 +14,7 @@ def main():
 
     print('-preparing contours')
     #better use all shapes, but that takes time
-    board.make_shapes_contour( domain = (0, 360, 50, 90) )
+    board.make_shapes_contour( domain = (45, 315, 50, 90) )
 
     print('-adding verts')
     board.add_hp_verts( 15.0, 14.0 )
@@ -65,17 +65,6 @@ def main():
     geofiles.w_xyz( 'shapes.xyz', geofiles.lonlat_to_xyz( verts + boards ) )
 
     #os.remove( 'verts.ll' )
-
-##    print('-actually generating boarders` file')
-##    board.gener_boarders( 20, 0.15, domain = ( 0, 360, 50, 90), \
-##                          file_b = 'boarders'  )
-   
-####    print('-actually generating boarders` file')
-####    board.gener_boarders( 20, 0.3, domain = ( 0, 360, 60, 90), \
-####                          file = 'polar.ll' )
-####    print('  high resolution domain')
-####    board.gener_boarders( 20, 0.05, domain = ( 170, 210, 54, 70 ), \
-####                          file = 'beaufort.ll' )
 
     print('done!\n')
     return 

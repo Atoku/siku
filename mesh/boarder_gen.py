@@ -59,15 +59,14 @@ class Boarder:
         '''Add specific shapes list to self.contour'''
         for s in shapes:
             self.contour = self.contour + s.points
-        self.contour = dupl_del( self.contour )
         
         contour = [ [ GC.norm_lon( c[0] ) , GC.norm_lat( c[1] ) ] \
             for c in self.contour ]
-        self.contour = dupl_del( contour )
 
         if domain:
             self.contour = \
                     [ p for p in self.contour[:] if is_inside( p, domain ) ]
+        self.contour = dupl_del( contour )
 
     def add_contour( self, file ):
         '''Adds contour points from specific table file in (lon, lat) convension

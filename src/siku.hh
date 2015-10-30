@@ -27,6 +27,19 @@
 #ifndef SIKU_HH
 #define SIKU_HH
 
+#ifdef SIKU_FP_CHECK  /* files included only if FP_CHECK */
+
+#if HAVE_FENV_H
+#include <fenv.h> /*  adding NaN check for Linux */
+//#pragma STDC FENV_ACCESS ON
+#endif
+
+#if HAVE_XMMINTRIN_H
+#include <xmmintrin.h> /*  adding NaN check for SSE and MacOS */
+#endif
+
+#endif /* SIKU_FP_CHECK */
+
 //! Default name for Lua configuration file
 #define SIKU_DEFAULT_PYTHON "sikucfg.py"
 
@@ -165,6 +178,23 @@ inline void print(const vec3d& p)
 inline void print(const quat& q)
 {
   std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
+}
+
+// --------------------------------------------------------------------------
+// Manual NaN checks
+// --------------------------------------------------------------------------
+
+// NaN quat
+inline bool NaN_q( const quat& q )
+{
+  return ( q.w != q.w || q.x != q.x || q.y != q.y || q.z != q.z ) ?
+      true : false;
+}
+
+// NaN vec3d
+inline bool NaN_v( const vec3d& v )
+{
+  return ( v.x != v.x || v.y != v.y || v.z != v.z ) ? true : false;
 }
 
 #endif  // SIKU_HH

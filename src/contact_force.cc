@@ -69,12 +69,12 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
   if( BG::intersects( poly1 ) )
     {
       //cout<<"e1 self-intersects ---\n";
-      siku.es[i1].ERRORED = true;
+      siku.es[i1].flag |= Element::F_ERRORED;
     }
   if( BG::intersects( poly2 ) )
     {
       //cout<<"e2 self-intersects ---\n";
-      siku.es[i2].ERRORED = true;
+      siku.es[i2].flag |= Element::F_ERRORED;
     }
 
 
@@ -85,9 +85,9 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
   catch(boost::geometry::overlay_invalid_input_exception const& e)
   {
       cout<<"!! intersection error\t";
-      if( siku.es[i1].ERRORED )
+      if( siku.es[i1].flag & Element::F_ERRORED )
         cout<<i1<<"\t";
-      if( siku.es[i2].ERRORED )
+      if( siku.es[i2].flag & Element::F_ERRORED)
         cout<<i2;
       cout<<endl;
   }
@@ -106,7 +106,7 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
       double area =  BG::area( poly_res[0] );
       double Area = area * siku.planet.R2;
       //double A = 2 * area / ( e1.A + e2.A );
-      double force  = pow( area, 0.25 ) * siku.planet.R2;
+      double force  = pow( area, 0.5 ) * siku.planet.R2;
       double dt = siku.time.get_dt();
 
       // point from e1 center to e2 center
@@ -145,10 +145,10 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
 
       // force and torques components coefficients (fitted manually and wrong)
       // should depend from dt, ice properties, earth radius and so on...
-      static const double kv = 0.00005;
-      static const double kr = 0.00002;
+      static const double kv = 0.005;
+      static const double kr = 0.02;
 
-      static const double kw = 1.5;
+      static const double kw = 0.015;
 
       // total force consists of velo-component and overlap component
       vec3d Force =

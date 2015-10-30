@@ -66,8 +66,13 @@ void ContactDetector::sweep_n_prune( Globals& siku )
 
   for ( size_t i = 0; i < siku.pes.size () - 1; ++i )
     {
+      if( siku.pes[i]->flag & Element::F_ERRORED )
+        continue;
       for ( size_t j = i + 1; j < siku.pes.size (); ++j )
         {
+          if( siku.pes[j]->flag & Element::F_ERRORED )
+            continue;
+
           if ( sq_dist( siku.pes[i]->Glob, siku.pes[j]->Glob ) <
               square_( siku.pes[i]->sbb_rmin + siku.pes[j]->sbb_rmin ) )
             {

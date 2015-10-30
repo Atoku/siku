@@ -141,6 +141,8 @@ PC_PYTHON_CHECK_LDFLAGS
 PYTHON_CXXFLAGS=${PYTHON_CFLAGS//'-Wstrict-prototypes'/}
 AC_SUBST(PYTHON_CXXFLAGS)
 
+AC_CHECK_HEADERS(fenv.h)
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 

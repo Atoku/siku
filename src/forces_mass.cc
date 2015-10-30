@@ -16,19 +16,14 @@ double test_adjuster = 0.05;
 
 void forces_mass( Globals& siku )
 {
+
   for ( size_t i = 0; i < siku.es.size (); ++i )
     {
+      if( siku.es[i].flag & Element::F_ERRORED )
+        continue;
+
       // i just don`t like range-based loops
       auto & e = siku.es[i];
-
-      // input test: element`s quat NaN check
-      if( e.q.w != e.q.w || e.q.x != e.q.x ||
-          e.q.y != e.q.y || e.q.z != e.q.z )
-        {
-          cout<<"\nERROR: NaN quat at element \n"<<i<<" !\n";
-          cout<<e.q.w<<" "<<e.q.x<<" "<<e.q.y<<" "<<e.q.z<<" "<<"\n";
-          fatal( 1, "NaN value in quat");
-        }
 
       //-------- WIND----------
       // acquiring element` position in terms lat-lon

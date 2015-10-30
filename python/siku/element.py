@@ -25,6 +25,7 @@ class Element:
     f_free   = 0x1
     f_steady = 0x2
     f_static = 0x4
+    f_special = 0x20
 
     def __init__( self, polygon, imat, st_loc_velo = None ):
 

@@ -88,7 +88,7 @@ def main():
     siku.time.last_update = siku.time.last
     siku.time.finish = siku.uw.times[st_t_ind] + 12* hour
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 240
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 360
    
     # ---------------------------------------------------------------------
     # elements
@@ -218,7 +218,7 @@ def main():
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
     siku.defaults.boarder_mark = 1
-    siku.defaults.boarders = 'canal.ll'
+    siku.defaults.boarders = 'contours.ll'
 
     print('Marking boarders with GMT')
     bor = PV.get_boarder_by_gmt()
@@ -258,7 +258,7 @@ def main():
     siku.plotter = GMT_Plotter( 'plot_config.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 6
+    siku.diagnostics.monitor_period = 12
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -326,9 +326,9 @@ def pretimestep( t, n, ns ):
 ##        siku.time.last = t
 
     # step by NMC own time step
-    if t >= siku.uw.times[siku.time.update_index + 1]:
+    if t >= siku.time.last: #siku.uw.times[siku.time.update_index + 1]:
         status += siku.MASK['WINDS']
-        siku.time.last = t
+        siku.time.last = siku.time.finish#t
 
     # and change the winds here
     # ~!wind is changed with another call
@@ -355,7 +355,7 @@ def aftertimestep( t, n, ns ):
 
 def drift_monitor( t, Q, Ps, i, st ):
 ##    #static polygons (generally shores) may be simply passed
-##    if st == element.Element.f_static:
+##    if st & element.Element.f_static:
 ##        return
     
     # create actual quaternion
@@ -372,9 +372,11 @@ def drift_monitor( t, Q, Ps, i, st ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         poly = siku.local.poly_f
-        if st == element.Element.f_static:
+        if st & element.Element.f_special:
+            poly.write( '> -Gpink -W0.1p,purple \n' ) 
+        elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
-        elif st == element.Element.f_steady:
+        elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
             poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )

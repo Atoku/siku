@@ -15,7 +15,7 @@ def main():
 
     print('-preparing contours')
     #better use all shapes, but that takes time
-    board.make_shapes_contour( domain = (0, 360, 50, 90) )
+    board.make_shapes_contour( domain = (45, 315, 50, 90) )
 
     print('-adding verts')
     board.add_hp_verts( 15.0, 14.0 )

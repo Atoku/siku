@@ -14,6 +14,8 @@
 #include "coordinates.hh"
 #include "contact_force.hh"
 
+//#include "planet.hh"
+
 ///////////
 #include <iostream>
 
@@ -25,6 +27,9 @@ dynamics ( Globals& siku, const double dt )
 
   for ( auto & e : siku.es )
     {
+      if( e.flag & Element::F_ERRORED )
+        continue;
+
       //cout<<"%%% "<<e.I<<endl;
       //cout<<"%%% "<<e.m<<endl;
 
@@ -34,7 +39,7 @@ dynamics ( Globals& siku, const double dt )
 //      vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
 //                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );
       //// manual drag added
-      double c = 0.002 / siku.time.get_dt(); //time scaling coz pseudoforce
+      double c = 0.0 * siku.planet.R_rec * siku.time.get_dt(); //time scaling coz pseudoforce
       vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
                  e.F[0] / ( siku.planet.R * e.m ), e.N / e.I - c * e.W.z );
 

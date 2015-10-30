@@ -19,6 +19,9 @@ position ( Globals& siku, const double dt )
 
   for ( auto & e : siku.es )
     {
+      if( e.flag & Element::F_ERRORED )
+        continue;
+
       if ( e.flag & Element::F_STATIC ) continue;
 
       //double S = glm::dot ( e.W, e.W ) * dt * dt * C;
