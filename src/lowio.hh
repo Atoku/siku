@@ -21,6 +21,8 @@ extern "C" {
 class Lowio
 {
 public:
+  //! \brief highio can access private members (actually add for stdtypes)
+  friend class Highio;
 
   //! \brief File access for init function to overwrite the file
   const unsigned int ACCESS_F_OVERWRITE     { H5F_ACC_TRUNC };
@@ -76,6 +78,11 @@ public:
                   const string& units,
                   const string& description );
 
+  int save_string ( const string& name,
+                    const string& str,
+                    const string& units,
+                    const string& description );
+
   int save_astrings ( const vector<string>& strs,
                       const string& dataname,  
                       const string& description );
@@ -122,20 +129,31 @@ private:
     hid_t t_int;
     hid_t t_long;
     hid_t t_double;
-    hid_t t_quat;
-
-//////////
-    hid_t t_vec;
-    hid_t t_bool;
-    hid_t t_size;
     hid_t t_uint;
-//
+    hid_t t_ulong;
+    hid_t t_size;
+    hid_t t_char;
+    hid_t t_bool;
+
+    hid_t t_vec;
+    hid_t t_quat;
     hid_t t_vertex;
+    hid_t t_contact;
 
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp
     hid_t t_element;            //!< Element 
   } stdtypes;
+
+  //! \brief Complex types for large classes` entities
+//  struct comptypes_s
+//  {
+//    hid_t t_info;
+//    hid_t t_planet;
+//    hid_t t_material;
+//    hid_t t_vecfield;
+//    hid_t t_;
+//  } comptypes;
 
   //! \brief General save function. len=0 for scalar
   //! \param[in] dtype data type (use Types functions)

@@ -102,6 +102,11 @@ main ( int argc, char* argv[] )
   // Post-initialization of globals
   siku.post_init();
 
+///// temporally placed here because of changed order of calls in main loop
+  // --- Recovering mass, moments of inertia, other parameters if
+  // --- necessary
+  mproperties ( siku );
+
   // python custom initializations
   sikupy.fcall_inits( siku );
 
@@ -113,6 +118,7 @@ main ( int argc, char* argv[] )
   //while ( !siku.time.is_done () )
   do
     {
+      // ------------------------- preactions ------------------------------
       double dt = siku.time.get_dt ();
 
       cout<<"\n Step: "<<siku.time.get_n()<<endl;
@@ -121,28 +127,32 @@ main ( int argc, char* argv[] )
       // --- pretimestep
       (void) sikupy.fcall_pretimestep ( siku );
 
-      // --- Recovering mass, moments of inertia, other parameters if
-      // --- necessary
-      mproperties ( siku );
-
-      // --- Searching for interaction pairs
-      siku.ConDet.detect( siku );
-
       // --- Updating external forcing fields if necessary
       //sikupy.fcall_winds ( siku ); //<- GONE to _pretimestep
 
+      // --- Searching for interaction pairs
+            siku.ConDet.detect( siku );
+
       // --- Broad Phase Contact Detection if necessary
+
+      // ------------------------- physics ------------------------------
 
       // --- Mass Forces assignement (Drivers, Coriolis)
       forces_mass( siku );
 
       // --- Contact Forces assignement
+      // ^-- built in into dynamics
 
       // --- Dynamics solution
       dynamics ( siku, dt );
 
       // --- Position update
       position ( siku, dt );
+
+      // --- State update
+      mproperties ( siku );
+
+      // ------------------------- postactions ------------------------------
 
       // ---- Saving ---
       if ( siku.time.is_savetime () )
@@ -151,8 +161,8 @@ main ( int argc, char* argv[] )
           //(void)
           int save_status = sikupy.fcall_presave ( siku ); // no function = no action
 
-          //if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
-          //  highio.save( siku );
+          if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
+            highio.save( siku );
 
           siku.time.save_increment ();
         }
@@ -168,10 +178,11 @@ main ( int argc, char* argv[] )
 
       // --- END OF LOOP ---
       siku.time.increment ();
-
+      // ------------------------------------------------------------------
     }
   while ( !siku.time.is_done () );
 
+  // finalizing
   sikupy.fcall_conclusions( siku );
 
   cout<<"\nDONE!\n";

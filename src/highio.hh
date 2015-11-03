@@ -37,6 +37,26 @@ private:
   //! !!IMPORTANT: works with local coordinates
   //! \param[in] siku global variables
   void fill_verts( const Globals& siku );
+
+//// YET UNTESTED
+  void save_info( const Globals& siku );
+  void save_planet( const Globals& siku );
+  void save_materials( const Globals& siku );
+  void save_vecfield( const Globals& siku );
+  void save_diagnostics( const Globals& siku );
+  void save_condet( const Globals& siku );
+
+  // ----------------------- support methods --------------------------------
+
+  //! \brief Save single Diagbase with inner array
+  int save_diag ( const string& location, void* pdiag );
+
+  //! \brief Save single material with all inner arrays
+  int save_material ( const string& location, void* pmat );
+
+  //! \brief Save single mesh with inner array
+  int save_mesh ( const string& location, void* pmesh );
+
 };
 
 #endif      /* HIGHIO_HH */

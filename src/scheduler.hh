@@ -54,10 +54,23 @@ class Scheduler
   void increment_event_time()
   { tevent += dt; };
 
+  //! \brief time access for saving
+  void get_dt_as_dtstamp( ModelTimeTypes::dtstamp* ) const;
+  void get_tevent_as_timestamp( ModelTimeTypes::timestamp* ) const;
+
  private:
 
   boost::posix_time::time_duration dt; //!< time step
   boost::posix_time::ptime tevent;     //!< time for next event
+
+  // ---------------- private methods ---------------
+
+  // cloned from 'ModelTime'
+  void get_as_timestamp( const boost::posix_time::ptime & t,
+                       ModelTimeTypes::timestamp* pmts ) const;
+
+  void get_as_dtstamp( const boost::posix_time::time_duration & dt,
+                       ModelTimeTypes::dtstamp* pmts ) const;
 
 };
 

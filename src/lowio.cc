@@ -11,6 +11,7 @@
 #include "element.hh"
 #include "lowio.hh"
 #include "modeltime.hh"
+#include "contact_detect.hh"
 
 // Macro to register a compound odatatype
 #define dtype_freg( dtype, structure, field, ftype )           \
@@ -62,6 +63,10 @@ Lowio::Lowio()
   stdtypes.t_size = H5T_NATIVE_HSIZE;
   // unsigned int
   stdtypes.t_uint = H5T_NATIVE_UINT;
+  // char
+  stdtypes.t_char = H5T_NATIVE_CHAR;
+  // unsigned long
+  stdtypes.t_ulong = H5T_NATIVE_ULONG;
 
   // time
   typedef ModelTimeTypes::timestamp mytime; // for short
@@ -111,6 +116,12 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_vertex, vert, elem_id, stdtypes.t_size);
   //!!! TESTING -^
 
+  typedef ContactDetector::Contact cont;
+   stdtypes.t_contact =  H5Tcreate( H5T_COMPOUND, sizeof( cont ) );
+   dtype_freg( stdtypes.t_contact, cont, i1, stdtypes.t_size);
+   dtype_freg( stdtypes.t_contact, cont, i2, stdtypes.t_size);
+   dtype_freg( stdtypes.t_contact, cont, step, stdtypes.t_int);
+
 }
 
 //---------------------------------------------------------------------
@@ -139,6 +150,21 @@ void Lowio::init( const string& param_filename, const unsigned int access )
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       group_data_id = H5Gcreate( fileid, "/Data", 
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Info",
+                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Diag",
+                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Diag/Meshes",
+                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Diag/Windbases",
+                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Planet",
+                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Materials",
+                                       H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Contacts",
+                                       H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
     }
   else
     {
@@ -243,6 +269,17 @@ int Lowio::save_array( const hid_t dtype,    /* data type */
                      )
 {
   return save( dtype, dataname, data, len, units, description );
+}
+
+//---------------------------------------------------------------------
+
+int Lowio::save_string ( const string& name,
+                  const string& str,
+                  const string& units,
+                  const string& description )
+{
+  return save( stdtypes.t_char, name, str.data(),
+               str.size(), units, description );
 }
 
 //---------------------------------------------------------------------

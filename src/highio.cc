@@ -7,7 +7,6 @@
 */
 
 #include "highio.hh"
-#include "modeltime.hh"
 
 int Highio::save( const Globals& siku )
 {
@@ -69,10 +68,31 @@ int Highio::save( const Globals& siku )
   lowio.save_astrings( siku.mons, string( "Monitor functions" ),
                        string( "TODO: fill" ) );
 
+  // saving controls
+  lowio.save_astrings( siku.cons, string( "Control functions" ),
+                       string( "TODO: fill" ) );
+
   // saving polygon vertices
   fill_verts( siku );
   lowio.save_array( lowio.type_vert(), "Data/Vertices",
                       verts.data(), verts.size(), "TODO: fill", "TODO: fill" );
+
+  // saving flags and names
+  lowio.save_string( string("Boarder File"), siku.board_file,  "TODO: fill",
+                     "TODO: fill" );
+  lowio.save_string( string("Save File"), siku.savefile,  "TODO: fill",
+                     "TODO: fill" );
+  lowio.save_value( lowio.stdtypes.t_ulong, string("Boarders flag"),
+                    &siku.mark_boarders,  "TODO: fill", "TODO: fill" );
+
+  //-------------------------------- sup calls ----------------------------
+
+  save_info( siku );
+  save_planet( siku );
+  save_materials( siku );
+  save_vecfield( siku );
+  save_diagnostics( siku );
+  save_condet( siku );
 
   //---------------------------------------------------------------------
   
@@ -95,3 +115,142 @@ void Highio::fill_verts( const Globals& siku )
         }
     }
 }
+
+//---------------------------------------------------------------------
+
+void Highio::save_info( const Globals& siku )
+{
+  lowio.save_string( string("Info/name"), siku.info.name,
+                     "TODO: fill", "TODO: fill" );
+  lowio.save_string( string("Info/brief"), siku.info.brief,
+                       "TODO: fill", "TODO: fill" );
+  lowio.save_string( string("Info/version"), siku.info.version,
+                       "TODO: fill", "TODO: fill" );
+  lowio.save_string( string("Info/date"), siku.info.date,
+                       "TODO: fill", "TODO: fill" );
+  lowio.save_string( string("Info/rundate"), siku.info.rundate,
+                       "TODO: fill", "TODO: fill" );
+}
+
+//---------------------------------------------------------------------
+
+void Highio::save_planet( const Globals& siku )
+{
+  lowio.save_value( lowio.stdtypes.t_double, "Planet/R",
+                      &siku.planet.R, "TODO: fill", "TODO: fill" );
+  lowio.save_value( lowio.stdtypes.t_double, "Planet/R_rec",
+                      &siku.planet.R_rec, "TODO: fill", "TODO: fill" );
+  lowio.save_value( lowio.stdtypes.t_double, "Planet/R2",
+                      &siku.planet.R2, "TODO: fill", "TODO: fill" );
+  lowio.save_value( lowio.stdtypes.t_double, "Planet/R2_rec",
+                      &siku.planet.R2_rec, "TODO: fill", "TODO: fill" );
+}
+
+//---------------------------------------------------------------------
+
+void Highio::save_materials( const Globals& siku )
+{
+  for( auto& m : siku.ms )
+    {
+      save_material( string("Materials/"), (void*)&m );
+    }
+}
+
+//---------------------------------------------------------------------
+
+void Highio::save_vecfield( const Globals& siku )
+{
+  /*
+   * TODO: FILL!!!
+   */
+}
+
+//---------------------------------------------------------------------
+
+void Highio::save_diagnostics( const Globals& siku )
+{
+  for( auto& m : siku.diagnostics.windbase )
+    {
+      save_mesh( string("Diag/Meshes/"), (void*)&m );
+    }
+
+  for( auto& w : siku.diagnostics.windbase )
+    {
+      save_diag( string("Diag/Windbases/"), (void*)&w );
+    }
+}
+
+//---------------------------------------------------------------------
+
+void Highio::save_condet( const Globals& siku )
+{
+  lowio.save_value( lowio.stdtypes.t_ulong, string("Contacts/det_method"),
+                    &siku.ConDet.det_meth, "TODO: fill", "TODO: fill" );
+
+  lowio.save_array( lowio.stdtypes.t_contact, string("Contacts/Contacts"),
+                    siku.ConDet.cont.data(), siku.ConDet.cont.size(),
+                    "TODO: fill", "TODO: fill" );
+}
+
+//---------------------------------------------------------------------
+
+int Highio::save_diag ( const string& location, void* pdiag )
+{
+  Diagbase* diag = (Diagbase*) pdiag;
+  ModelTimeTypes::dtstamp pmts;
+  ModelTimeTypes::timestamp ts;
+  int ret = 0;
+  ret = lowio.save_value( lowio.stdtypes.t_size, location+string("ifunc"),
+                    &diag->ifunc, "TODO: fill", "TODO: fill" );
+  ret |= lowio.save_value( lowio.stdtypes.t_size, location+string("imesh"),
+                    &diag->imesh, "TODO: fill", "TODO: fill" );
+  diag->scheduler.get_dt_as_dtstamp( &pmts );
+  ret |= lowio.save_value( lowio.stdtypes.t_dt,
+                           location+string("Scheduler/duration"),
+                           &pmts, "TODO: fill", "TODO: fill" );
+  diag->scheduler.get_tevent_as_timestamp( &ts );
+  ret |= lowio.save_value( lowio.stdtypes.t_time,
+                           location+string("Scheduler/event"),
+                           &ts, "TODO: fill", "TODO: fill" );
+  return ret;
+}
+
+//---------------------------------------------------------------------
+
+int Highio::save_material ( const string& location, void* pmat )
+{
+  Material* mat = (Material*) pmat;
+  int ret = 0;
+  ret = lowio.save_string( location+mat->name, mat->name, "TODO: fill",
+                           "TODO: fill" );
+  ret |= lowio.save_array( lowio.stdtypes.t_double,
+                           location+string("thic_inters"),
+                           mat->thickness_intervals.data(),
+                           mat->thickness_intervals.size(),
+                           "TODO: fill", "TODO: fill" );
+  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("rho"),
+                           mat->rho.data(),mat->rho.size(), "TODO: fill",
+                           "TODO: fill" );
+  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("sigma_c"),
+                           mat->sigma_c.data(), mat->sigma_c.size(),
+                           "TODO: fill", "TODO: fill" );
+  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("sigma_t"),
+                           mat->sigma_t.data(), mat->sigma_t.size(),
+                           "TODO: fill", "TODO: fill" );
+  ret |= lowio.save_value( lowio.stdtypes.t_double, location+string("E"),
+                           &mat->E, "TODO: fill", "TODO: fill" );
+  ret |= lowio.save_value( lowio.stdtypes.t_double, location+string("nu"),
+                           &mat->nu, "TODO: fill", "TODO: fill" );
+  return ret;
+}
+
+//---------------------------------------------------------------------
+
+int Highio::save_mesh ( const string& location, void* pmesh )
+{
+  Mesh* mesh = (Mesh*) pmesh;
+  return lowio.save_array( lowio.stdtypes.t_vec, location+string("data"),
+                           mesh->data.data(), mesh->data.size(), "TODO: fill",
+                           "TODO: fill" );
+}
+

@@ -74,6 +74,8 @@ public:
   // contacts pool
   std::vector < Contact > cont;
 
+  //------------------------------- methods ----------------------------------
+
   //! \brief Method for calling contacts detection
   void detect( Globals& siku );
 
