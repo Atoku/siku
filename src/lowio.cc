@@ -12,6 +12,7 @@
 #include "lowio.hh"
 #include "modeltime.hh"
 #include "contact_detect.hh"
+#include "nmc_reader.hh"
 
 // Macro to register a compound odatatype
 #define dtype_freg( dtype, structure, field, ftype )           \
@@ -117,10 +118,16 @@ Lowio::Lowio()
   //!!! TESTING -^
 
   typedef ContactDetector::Contact cont;
-   stdtypes.t_contact =  H5Tcreate( H5T_COMPOUND, sizeof( cont ) );
-   dtype_freg( stdtypes.t_contact, cont, i1, stdtypes.t_size);
-   dtype_freg( stdtypes.t_contact, cont, i2, stdtypes.t_size);
-   dtype_freg( stdtypes.t_contact, cont, step, stdtypes.t_int);
+  stdtypes.t_contact =  H5Tcreate( H5T_COMPOUND, sizeof( cont ) );
+  dtype_freg( stdtypes.t_contact, cont, i1, stdtypes.t_size);
+  dtype_freg( stdtypes.t_contact, cont, i2, stdtypes.t_size);
+  dtype_freg( stdtypes.t_contact, cont, step, stdtypes.t_int);
+
+  typedef NMCVecfield::GridNode node;
+  stdtypes.t_gridnode =  H5Tcreate( H5T_COMPOUND, sizeof( node ) );
+  dtype_freg( stdtypes.t_gridnode, node, lat, stdtypes.t_double);
+  dtype_freg( stdtypes.t_gridnode, node, lon, stdtypes.t_double);
+  dtype_freg( stdtypes.t_gridnode, node, value, stdtypes.t_vec);
 
 }
 
@@ -151,6 +158,8 @@ void Lowio::init( const string& param_filename, const unsigned int access )
       group_data_id = H5Gcreate( fileid, "/Data", 
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       group_data_id = H5Gcreate( fileid, "/Info",
+                                 H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      group_data_id = H5Gcreate( fileid, "/Wind",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       group_data_id = H5Gcreate( fileid, "/Diag",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);

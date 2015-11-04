@@ -30,9 +30,10 @@
 
 class NMCVecfield
 {
-protected:
+
   friend class Sikupy;
 
+public:
   //! \brief inner structure (POD) for simple returns
   struct GridNode // Just for smart packing
   {
@@ -47,6 +48,7 @@ protected:
     {}
   };
 
+protected:
   //! \brief the wind velocity value itself (storaged as vec3d)
   std::vector < std::vector < vec3d > > grid;
 

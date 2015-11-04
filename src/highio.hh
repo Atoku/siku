@@ -57,6 +57,9 @@ private:
   //! \brief Save single mesh with inner array
   int save_mesh ( const string& location, void* pmesh );
 
+  //! \ Save NMC class grid
+  int save_nmc( const string& location, void* pnmc);
+
 };
 
 #endif      /* HIGHIO_HH */

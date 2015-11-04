@@ -139,6 +139,7 @@ private:
     hid_t t_quat;
     hid_t t_vertex;
     hid_t t_contact;
+    hid_t t_gridnode;
 
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp

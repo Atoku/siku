@@ -160,9 +160,15 @@ void Highio::save_materials( const Globals& siku )
 
 void Highio::save_vecfield( const Globals& siku )
 {
-  /*
-   * TODO: FILL!!!
-   */
+  lowio.save_value(lowio.stdtypes.t_ulong, string("Wind/Source"),
+                   &siku.wind.FIELD_SOURCE_TYPE, "TODO: fill", "TODO: fill" );
+
+  switch( siku.wind.FIELD_SOURCE_TYPE )
+  {
+    case Vecfield::NMC:
+      save_nmc( string("Wind/"), (void*)siku.wind.NMCVec );
+      break;
+  }
 }
 
 //---------------------------------------------------------------------
@@ -254,3 +260,29 @@ int Highio::save_mesh ( const string& location, void* pmesh )
                            "TODO: fill" );
 }
 
+//---------------------------------------------------------------------
+
+int Highio::save_nmc( const string& loc, void* pnmc)
+{
+  int res;
+  NMCVecfield* nmc = (NMCVecfield*) pnmc;
+  size_t lons = nmc->get_lon_size(), lats = nmc->get_lat_size();
+
+  res = lowio.save_value( lowio.stdtypes.t_size, loc+string("Size Lon"), &lons,
+                          "TODO: fill", "TODO: fill" );
+  res |= lowio.save_value( lowio.stdtypes.t_size, loc+string("Size Lat"), &lats,
+                          "TODO: fill", "TODO: fill" );
+
+  NMCVecfield::GridNode* raw = new NMCVecfield::GridNode[ lons*lats ];
+  for (size_t i = 0; i < lats; i++ )
+    for (size_t j = 0; j < lons; j++)
+      {
+        raw[ lats*j + i ] = nmc->get_node( i, j );
+      }
+
+  res |= lowio.save_array( lowio.stdtypes.t_gridnode, loc+string("Grid"),
+                           raw, lats*lons, "TODO: fill", "TODO: fill" );
+
+  delete[] raw;
+  return res;
+}

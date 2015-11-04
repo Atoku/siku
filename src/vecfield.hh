@@ -37,17 +37,21 @@ class Vecfield
 public:
 
   //! \brief Defines the source type for the vector field used
-  enum Source_Type { NONE, TEST, NMC };
-
-  //! \brief Flag for vecfield source type
-  Source_Type FIELD_SOURCE_TYPE { NONE };
+  enum Source_Type : unsigned long { NONE, TEST, NMC };
 
   //! \brief Flag points to standard field from Fuselier paper
   static const int MODE_VEC_STD_FIELD1 { 1 };
 
+  //-------------------------------------------------------------------------
+
+  //! \brief Flag for vecfield source type
+  Source_Type FIELD_SOURCE_TYPE { NONE };
+
   //! \brief NMC wind grid pointer. If the source is NMC wind - object
   //! will be initialized in constructor.
   NMCVecfield* NMCVec {nullptr};
+
+  //-------------------------------------------------------------------------
 
   Vecfield ();
   Vecfield ( const Source_Type& SOURCE_TYPE );
