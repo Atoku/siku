@@ -88,7 +88,7 @@ def main():
     siku.time.last_update = siku.time.last
     siku.time.finish = siku.uw.times[st_t_ind] + 1* hour
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 37
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 13
    
     # ---------------------------------------------------------------------
     # elements
@@ -180,28 +180,28 @@ def main():
 ##                     (292.0, 24.0),
 ##                     (292.0, 29.0),
 ##                     (291.0, 29.0) ] )
-##    coords.append( [ (293.0, 26.0), #19
-##                     (294.0, 26.0),
-##                     (294.0, 27.0),
-##                     (293.0, 27.0) ] )
+    coords.append( [ (293.0, 26.0), #19
+                     (294.0, 26.0),
+                     (294.0, 27.0),
+                     (293.0, 27.0) ] )
 
     # ---------------------- voronoi initialization ------------------------
-    print('\nLoading polygons')
-    ## North cap
-    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-    ## Channel (handmade)
-    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-    
-    PV.filter_( 0, 360, 60, 90 )
-    PC.filter_( 179, 187, 54, 60 )
-    
-    print('Deleting land polygons')
-    PV.clear_the_land()
-
-    coords = PV.coords
-    coords = coords + PC.coords
-
-    ### Initializing elements with polygon vertices
+##    print('\nLoading polygons')
+##    ## North cap
+##    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+##    ## Channel (handmade)
+##    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+##    
+##    PV.filter_( 0, 360, 60, 90 )
+##    PC.filter_( 179, 187, 54, 60 )
+##    
+##    print('Deleting land polygons')
+##    PV.clear_the_land()
+##
+##    coords = PV.coords
+##    coords = coords + PC.coords
+##
+##    ### Initializing elements with polygon vertices
     for c in coords:
         siku.P.update( c )
      
@@ -214,17 +214,17 @@ def main():
         
         # all elements in the list
         siku.elements.append( E )
-
-    ## Core will mark polygons, those contain at leas one point from next
-    ## file as 'static'
-    siku.defaults.boarder_mark = 1
-    siku.defaults.boarders = 'contours.ll'
-
-    print('Marking boarders with GMT')
-    bor = PV.get_boarder_by_gmt()
-    for b in bor:
-        siku.elements[ b ].flag_state = element.Element.f_static
-    print('Done\n\n')
+##
+##    ## Core will mark polygons, those contain at leas one point from next
+##    ## file as 'static'
+##    siku.defaults.boarder_mark = 1
+##    siku.defaults.boarders = 'contours.ll'
+##
+##    print('Marking boarders with GMT')
+##    bor = PV.get_boarder_by_gmt()
+##    for b in bor:
+##        siku.elements[ b ].flag_state = element.Element.f_static
+##    print('Done\n\n')
 
     # ------------------------- speed sattings ----------------------------
 
@@ -263,6 +263,9 @@ def main():
     siku.diagnostics.step_count = 0
 
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
+
+    # name of file to load from
+    siku.defaults.loadfile = 'siku-2014-01-01-06:00:00.h5'
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds

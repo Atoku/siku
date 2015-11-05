@@ -96,6 +96,10 @@ main ( int argc, char* argv[] )
   // Initializing all global variables from config file.
   sikupy.initialize ( siku );
 
+  // If there is actually load file name - load from that file
+  if( siku.loadfile.length() )
+    highio.load( siku, siku.loadfile );
+
   if ( options.is_verbose () )
     std::cout << "End of reading config file" << std::endl;
 
@@ -161,8 +165,8 @@ main ( int argc, char* argv[] )
           //(void)
           int save_status = sikupy.fcall_presave ( siku ); // no function = no action
 
-          if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
-            highio.save( siku );
+          //if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
+          //  highio.save( siku );
 
           siku.time.save_increment ();
         }

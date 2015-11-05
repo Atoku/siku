@@ -81,6 +81,9 @@ struct Globals
   string savefile
       { "siku_output.h5" };
 
+  //! Filename to load from
+  string loadfile;
+
   //! Flag for marking boarder polygons as 'static' or else
   unsigned long mark_boarders { 0 };
 

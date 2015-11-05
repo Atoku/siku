@@ -190,6 +190,11 @@ Sikupy::read_default( Globals& siku )
 
   success &= read_string( pTemp, siku.board_file );
 
+  // read load file name. zero-length string for no load
+  pTemp = PyObject_GetAttrString ( pDef, "loadfile" );
+  assert( pTemp );
+  success &= read_string( pTemp, siku.loadfile );
+
   // cleaning
   Py_DECREF( pTemp );
   Py_DECREF( pDef );

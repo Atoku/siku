@@ -51,7 +51,7 @@ int Highio::save( const Globals& siku )
   
 
   // saving elements
-  lowio.save_array( lowio.type_element(), "Data/Elements", 
+  lowio.save_array( lowio.type_element(), "Elements/Elements",
                     siku.es.data(), siku.es.size(), "TODO: fill", "TODO: fill" );
 
   // saving element groups
@@ -73,8 +73,8 @@ int Highio::save( const Globals& siku )
                        string( "TODO: fill" ) );
 
   // saving polygon vertices
-  fill_verts( siku );
-  lowio.save_array( lowio.type_vert(), "Data/Vertices",
+  presave_verts( siku );
+  lowio.save_array( lowio.type_vert(), "Elements/Vertices",
                       verts.data(), verts.size(), "TODO: fill", "TODO: fill" );
 
   // saving flags and names
@@ -103,7 +103,7 @@ int Highio::save( const Globals& siku )
 
 //---------------------------------------------------------------------
 
-void Highio::fill_verts( const Globals& siku )
+void Highio::presave_verts( const Globals& siku )
 {
   verts.clear();
 
@@ -227,7 +227,7 @@ int Highio::save_material ( const string& location, void* pmat )
 {
   Material* mat = (Material*) pmat;
   int ret = 0;
-  ret = lowio.save_string( location+mat->name, mat->name, "TODO: fill",
+  ret = lowio.save_string( location+string("name"), mat->name, "TODO: fill",
                            "TODO: fill" );
   ret |= lowio.save_array( lowio.stdtypes.t_double,
                            location+string("thic_inters"),
@@ -285,4 +285,59 @@ int Highio::save_nmc( const string& loc, void* pnmc)
 
   delete[] raw;
   return res;
+}
+
+//---------------------------------------------------------------------
+
+int Highio::load ( Globals& siku, const string& file_name )
+{
+  cout<<"TRY TO LOAD\n";
+cout<<"temporally diabled\n";
+//
+//  // file init and read dimensions
+//  lowio.init( siku.loadfile, lowio.ACCESS_F_READONLY );
+//  Dims dims;
+//  load_dims( dims );
+//
+//  cout<<" read elements"<<endl;
+//  // read elements
+//  siku.es.clear();
+//  //siku.es.resize( dims.elem_s, Element() );
+//  Element* temp = new Element[dims.elem_s];
+//  //lowio.read( "Elements/Elements", siku.es.data() );
+//  lowio.read( "Elements/Elements", temp );
+//  cout<<"BDFB\n";
+//  for(size_t i=0; i< dims.elem_s;++i)
+//    {
+//      siku.es.push_back(temp[i]);
+//    }
+//
+//
+//  cout<<siku.es.size()<<endl<<" read vertices"<<endl;
+//  // reading vertices
+//  verts.resize( dims.vert_s );
+//  lowio.read( "Elements/Vertices", verts.data() );
+//  for( size_t i = 0; i < dims.vert_s; ++i )
+//    siku.es[ verts[i].elem_id ].P.push_back( verts[i].pos );
+//
+//
+//
+//
+//  lowio.release();
+//
+//  cout<<"LOADED\n";
+  return 0;
+}
+
+//---------------------------------------------------------------------
+
+
+void Highio::load_dims( Highio::Dims& dims )
+{
+  dims.contact_s = lowio.get_dim("Contacts/Contacts");
+  dims.control_s = lowio.get_dim("Control functions");
+  dims.monit_s = lowio.get_dim("Monitor functions");
+  dims.elem_s = lowio.get_dim("Elements/Elements");
+  dims.vert_s = lowio.get_dim("Elements/Vertices");
+  dims.grid_s = lowio.get_dim("Wind/Grid");
 }

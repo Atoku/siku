@@ -12,7 +12,7 @@
 //////testing
 #include <iostream>
 
-double test_adjuster = 0.05;
+double test_adjuster = 0.5;
 
 void forces_mass( Globals& siku )
 {
@@ -57,7 +57,7 @@ void forces_mass( Globals& siku )
       W -= V;
 
       // applying water forces
-      e.F += 0.0045 * 1000 * vec_len( W ) * W * e.A * siku.planet.R2 *test_adjuster;
+      e.F += 0.0045 * 1 * vec_len( W ) * W * e.A * siku.planet.R2 *test_adjuster;
 
       // experimental water torque
       //e.N += 0.0045 * e.W.z * e.W.z * e.I * test_adjuster;

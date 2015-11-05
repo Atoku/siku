@@ -155,7 +155,7 @@ void Lowio::init( const string& param_filename, const unsigned int access )
                           H5P_DEFAULT, H5P_DEFAULT);
       group_time_id = H5Gcreate( fileid, "/Time", 
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Data", 
+      group_data_id = H5Gcreate( fileid, "/Elements",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       group_data_id = H5Gcreate( fileid, "/Info",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -287,8 +287,52 @@ int Lowio::save_string ( const string& name,
                   const string& units,
                   const string& description )
 {
-  return save( stdtypes.t_char, name, str.data(),
-               str.size(), units, description );
+//  return save( stdtypes.t_char, name, str.data(),
+//               str.size(), units, description );
+
+  // We have to copy all the data from strs as the only chance to get
+  char* ps[1];
+  ps[0] = new char[str.size()];
+  strcpy( ps[0], str.c_str() );
+
+  // saving itself
+  herr_t status;                /* error code */
+  hid_t dataspace, dataset;   /* dataspace and dataset for HDF5 */
+  hid_t hid_str;              /* datatype variable length string */
+
+  /* create a string of variable length */
+  hid_str = H5Tcopy( H5T_C_S1 );
+  H5Tset_size( hid_str, H5T_VARIABLE );
+
+  /* dataspace for array of something of length N */
+  hsize_t dims[1];
+  dims[0] = 1;
+  dataspace = H5Screate_simple( 1, dims, NULL );
+  assert( dataspace >= 0 );
+
+  /* dataset creation */
+  dataset = H5Dcreate( fileid, name.c_str(),
+                       hid_str, dataspace,
+                       H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  assert( dataset >= 0 );
+
+  status = H5Dwrite ( dataset, hid_str,
+                      H5S_ALL, H5S_ALL, H5P_DEFAULT,
+                      ps );
+
+  /* save attribute description */
+  if ( description.size() != 0 )
+    save_attribute( dataset, "Description", description );
+
+  // freeing memory from temp buffer
+  delete[] ps[0];
+
+  /* freeing memory from dataset and dataspace in HDF */
+  H5Dclose (dataset);
+  H5Sclose (dataspace);
+  H5Tclose ( hid_str );
+
+  return status;
 }
 
 //---------------------------------------------------------------------
