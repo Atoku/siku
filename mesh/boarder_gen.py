@@ -19,6 +19,8 @@ from siku import geocoords
 from siku import geofiles
 GC = geocoords
 
+import ExtBoards
+
 # -------------------------------------------------------------------------
 # In this module all fields named exactly as 'domain' have to be 4-tuple in
 # convension (minlon, maxlon, minlat, maxlat), or None if it`s indefinite
@@ -77,25 +79,28 @@ class Boarder:
 
     def filter_contour( self, dens, domain=None ):
         '''Filters contour vertices (only inside domain, if one is given)
-        for lowering resolution.'''
-        verts = []
-
-        if domain:
-            for c in self.contour:
-                if is_inside( c, domain ):
-                    verts.append( c )
-                    self.contour.remove( c )
-        else:
-            verts = self.contour[:]
-            self.contour= []
-
-        verts = geofiles.lonlat_to_xyz( verts )
-        g = hpgrid.Grid()
-        g.points = verts
-        g.points_filter( dens )
-        verts = geofiles.xyz_to_lonlat( g.points )
-
-        self.contour = self.contour + verts
+##        for lowering resolution.'''
+##        verts = []
+##
+##        if domain:
+##            for c in self.contour:
+##                if is_inside( c, domain ):
+##                    verts.append( c )
+##                    self.contour.remove( c )
+##        else:
+##            verts = self.contour[:]
+##            self.contour= []
+##
+##        verts = geofiles.lonlat_to_xyz( verts )
+##        g = hpgrid.Grid()
+##        g.points = verts
+##        g.points_filter( dens )
+##        verts = geofiles.xyz_to_lonlat( g.points )
+##
+##        self.contour = self.contour + verts
+        if domain == None:
+            domain = (0.0, 360.0, -90.0, 90.0)
+        self.contour = ExtBoards.filter_contours( self.contour[:], dens, domain )
 
     def add_hp_verts( self, gen_dens, fil_dens, domain = None ):
         '''Generates and appends vertices using hpgrid monule'''
@@ -230,8 +235,8 @@ def dupl_del( verts ):
 def is_inside( vert, domain ):
     '''Checks if vertex given as (lon, lat) is inside the region given as
     (minlon, maxlon, minlat, maxlat) in degrees'''
-    if vert[0] > domain[0] and vert[0] < domain[1] and \
-       vert[1] > domain[2] and vert[1] < domain[3]:
+    if vert[0] >= domain[0] and vert[0] <= domain[1] and \
+       vert[1] >= domain[2] and vert[1] <= domain[3]:
         return True
     else:
         return False
