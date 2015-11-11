@@ -103,7 +103,6 @@ void Sikupy::initialize(Globals &siku)
     assert(success);
     success = read_diagnostics(siku.diagnostics);
     assert(success);
-
     if ( success == 0 )
     fatal( 1, "Something  wrong went on initialization" );
   }
@@ -391,6 +390,7 @@ int
 Sikupy::read_materials ( vector < Material >& ms )
 {
   int success = 1;
+  std:vector<double> tvec;
 
   PyObject *pSiku_materials;    // siku.materials list
 
@@ -432,8 +432,10 @@ Sikupy::read_materials ( vector < Material >& ms )
       pobj = PyObject_GetAttrString ( pitem, "thickness_intervals" ); // new
       assert( pobj );
 
-      success = read_double_vector ( pobj, ms[i].thickness_intervals );
+      success = read_double_vector ( pobj, tvec );
       assert( success );
+      for( size_t i = 0; i < tvec.size(); ++i )
+        ms[i].layers[i].thickness = tvec[i];
 
       Py_DECREF( pobj );
 
@@ -441,34 +443,40 @@ Sikupy::read_materials ( vector < Material >& ms )
       pobj = PyObject_GetAttrString ( pitem, "rho" ); // new
       assert( pobj );
 
-      success = read_double_vector ( pobj, ms[i].rho );
+      success = read_double_vector ( pobj, tvec );
       assert( success );
+      for( size_t i = 0; i < tvec.size(); ++i )
+        ms[i].layers[i].rho = tvec[i];
 
       Py_DECREF( pobj );
 
-      assert( ms[i].rho.size () == ms[i].thickness_intervals.size () );
+      //assert( ms[i].rho.size () == ms[i].thickness_intervals.size () );
 
       // reading sigma_c
       pobj = PyObject_GetAttrString ( pitem, "sigma_c" ); // new
       assert( pobj );
 
-      success = read_double_vector ( pobj, ms[i].sigma_c );
+      success = read_double_vector ( pobj, tvec );
       assert( success );
+      for( size_t i = 0; i < tvec.size(); ++i )
+        ms[i].layers[i].sigma_c = tvec[i];
 
       Py_DECREF( pobj );
 
-      assert( ms[i].sigma_c.size () == ms[i].thickness_intervals.size () );
+      //assert( ms[i].sigma_c.size () == ms[i].thickness_intervals.size () );
 
       // reading sigma_t
       pobj = PyObject_GetAttrString ( pitem, "sigma_t" ); // new
       assert( pobj );
 
-      success = read_double_vector ( pobj, ms[i].sigma_t );
+      success = read_double_vector ( pobj, tvec );
       assert( success );
+      for( size_t i = 0; i < tvec.size(); ++i )
+        ms[i].layers[i].sigma_t = tvec[i];
 
       Py_DECREF( pobj );
 
-      assert( ms[i].sigma_t.size () == ms[i].thickness_intervals.size () );
+      //assert( ms[i].sigma_t.size () == ms[i].thickness_intervals.size () );
 
       // reading Young modulus
       pobj = PyObject_GetAttrString ( pitem, "E" ); // new
@@ -501,6 +509,7 @@ Sikupy::read_elements ( Globals& siku )
   int success = 1;
   long tmp = 0;                 // just a buffer
   string stmp;                  // just a buffer
+  std::vector<double> tvec;     // double buffer
 
   PyObject *pSiku_elements;      // siku.elements list
 
@@ -567,9 +576,11 @@ Sikupy::read_elements ( Globals& siku )
       pobj = PyObject_GetAttrString ( pitem, "gh" );
       assert( pobj );
 
-      success = read_double_vector ( pobj, siku.es[i].gh );
+      success = read_double_vector ( pobj, tvec );
       if ( !success )
         fatal( 2, "g(h) is not set of element %lu", i );
+      for( size_t j = 0; j < tvec.size(); ++j )
+        siku.es[i].gh[j] = tvec[j];
 
       Py_DECREF( pobj );
 

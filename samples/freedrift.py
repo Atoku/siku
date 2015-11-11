@@ -59,16 +59,16 @@ def main():
     # ---------------------------------------------------------------------
 
     #start time index
-    st_t_ind = 1
+    st_t_ind = 2
     
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
-##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-##    w.make_test_field( 0.,0. )
-##    siku.wind = w
+    siku.defaults.wind_source = siku.WIND_SOURCES['TEST']
+    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+    w.make_test_field( 0.,0. )
+    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -200,8 +200,8 @@ def main():
 ##
 ##    coords = PV.coords
 ##    coords = coords + PC.coords
-##
-##    ### Initializing elements with polygon vertices
+
+    ### Initializing elements with polygon vertices
     for c in coords:
         siku.P.update( c )
      
@@ -214,9 +214,9 @@ def main():
         
         # all elements in the list
         siku.elements.append( E )
-##
-##    ## Core will mark polygons, those contain at leas one point from next
-##    ## file as 'static'
+
+    ## Core will mark polygons, those contain at leas one point from next
+    ## file as 'static'
 ##    siku.defaults.boarder_mark = 1
 ##    siku.defaults.boarders = 'contours.ll'
 ##
@@ -224,7 +224,7 @@ def main():
 ##    bor = PV.get_boarder_by_gmt()
 ##    for b in bor:
 ##        siku.elements[ b ].flag_state = element.Element.f_static
-##    print('Done\n\n')
+    print('Done\n\n')
 
     # ------------------------- speed sattings ----------------------------
 
@@ -265,7 +265,7 @@ def main():
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     # name of file to load from
-    siku.defaults.loadfile = 'siku-2014-01-01-06:00:00.h5'
+    #siku.defaults.loadfile = 'siku-2014-01-01-06:00:00.h5'
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds
@@ -294,7 +294,7 @@ def main():
     siku.callback.aftertimestep = aftertimestep
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
-
+    
     return 0
 
 # --------------------------------------------------------------------------

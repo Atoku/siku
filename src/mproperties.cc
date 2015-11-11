@@ -79,9 +79,9 @@ void mproperties( Globals& siku )
 
       // mass update
       double m = 0;
-      for ( size_t i = 0; i < pmat->thickness_intervals.size(); ++i )
+      for ( size_t i = 0; i < MAT_LAY_AMO; ++i )
         {
-          m += pmat->thickness_intervals[i] * pmat->rho[i] * e.gh[i];
+          m += pmat->layers[i].thickness * pmat->layers[i].rho * e.gh[i];
         }
 
       e.m = e.A * m;

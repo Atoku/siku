@@ -17,6 +17,8 @@ extern "C" {
 #include <hdf5.h>
 }
 
+#include "globals.hh"
+
 //! \brief Class for working with HDF5 in Siku 
 class Lowio
 {
@@ -96,6 +98,10 @@ public:
   //! \param[out] buff enough memory to hold the data
   int read( const string& name, void* buff );
 
+//////////////////////////////////////////////////////////////////////////
+  int save_material( const string& location, void* pmat,
+                     const string& description );
+
   // Types -----
 
   //! \brief returns element type 
@@ -134,19 +140,23 @@ private:
     hid_t t_size;
     hid_t t_char;
     hid_t t_bool;
+    hid_t t_string;
 
     hid_t t_vec;
     hid_t t_quat;
     hid_t t_vertex;
     hid_t t_contact;
     hid_t t_gridnode;
+    hid_t t_matlayer;
+    hid_t t_matarr;
+    hid_t t_material;
 
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp
     hid_t t_element;            //!< Element 
   } stdtypes;
 
-  //! \brief Complex types for large classes` entities
+  //! \brief Composite types for large classes` entities
 //  struct comptypes_s
 //  {
 //    hid_t t_info;

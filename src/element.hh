@@ -72,8 +72,8 @@ public:
   // --------------- Not changing handling parameters ----------------
 
   unsigned int flag;            //!< state flag
-//  char* monitor {nullptr};         //!< monitor function name (0-term)
-//  char* control {nullptr};         //!< control function name (0-term)
+  //char* monitor {nullptr};         //!< monitor function name (0-term)
+  //char* control {nullptr};         //!< control function name (0-term)
   //std::string monitor;         //!< monitor function name
   //std::string control;         //!< control function name
   size_t mon_ind { 0 };               //!< monitor function index
@@ -82,18 +82,7 @@ public:
   size_t id { 0 };                    //!< id of element, matches it`s index
                                       //! in Globals.es
 
-  // --------------- Not changing state parameters -------------------
-  
-  double i;                     //!< I/m, geometical moment of inertia
-  double A;                     //!< m^2, area of polygon
-  vector<double> gh;            //!< g(h) thickness distribution 
-  vector<vec3d> P;              //!< 1, local unit frame coords of
-                                //! vertices
-  double sbb_rmin;              //!< bounding sphere minimum radius
-  size_t imat;                  //!< material index
-  size_t igroup;                //!< group index
-  
-  // --------------- Changing parameters -----------------------------
+  // --------------- Rapidly changing parameters ----------------------
 
   //! \brief "Pendulum" orientation: defines the position of the ice
   //! element on a sphere
@@ -111,8 +100,19 @@ public:
                                 //!frame
   double N {0};                 //!< N*m, torque value in local frame
 
-  //gone to states flag
-  //bool ERRORED { false };       //!< flag for runtime error detection
+  // --------------- Not changing state parameters -------------------
+
+  size_t imat;                  //!< material index
+  size_t igroup;                //!< group index
+  double i;                     //!< I/m, geometical moment of inertia
+  double A;                     //!< m^2, area of polygon
+  double sbb_rmin;              //!< bounding sphere minimum radius
+
+  //OLD //vector<double> gh;
+  //vector<double> gh;
+  double gh[ MAT_LAY_AMO ];     //!< g(h) thickness distribution
+  vector<vec3d> P;              //!< 1, local unit frame coords of
+                                //! vertices
 
   // ------------------- METHODS: -------------------------------------
 

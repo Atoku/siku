@@ -75,7 +75,8 @@ struct Globals
   ContactDetector ConDet;
 
   //! Boarders` points file name
-  string board_file;
+  string board_file
+      { "NO BOARDERS" };
 
   //! Current filename to save to
   string savefile

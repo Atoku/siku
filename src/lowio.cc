@@ -69,6 +69,10 @@ Lowio::Lowio()
   // unsigned long
   stdtypes.t_ulong = H5T_NATIVE_ULONG;
 
+  // STRING?
+  stdtypes.t_string = H5Tcopy( H5T_C_S1 );
+  H5Tset_size( stdtypes.t_string, H5T_VARIABLE );
+
   // time
   typedef ModelTimeTypes::timestamp mytime; // for short
   stdtypes.t_time =  H5Tcreate( H5T_COMPOUND, sizeof( mytime ) );
@@ -128,6 +132,26 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_gridnode, node, lat, stdtypes.t_double);
   dtype_freg( stdtypes.t_gridnode, node, lon, stdtypes.t_double);
   dtype_freg( stdtypes.t_gridnode, node, value, stdtypes.t_vec);
+
+  typedef Material::Layer matlay;
+  stdtypes.t_matlayer =  H5Tcreate( H5T_COMPOUND, sizeof( matlay ) );
+  dtype_freg( stdtypes.t_matlayer, matlay, thickness, stdtypes.t_double);
+  dtype_freg( stdtypes.t_matlayer, matlay, rho, stdtypes.t_double);
+  dtype_freg( stdtypes.t_matlayer, matlay, sigma_c, stdtypes.t_double);
+  dtype_freg( stdtypes.t_matlayer, matlay, sigma_t, stdtypes.t_double);
+  //stdtypes.t_matarr = H5Tcreate( H5T_ARRAY, MAT_LAY_AMO );
+  H5Tset_size( stdtypes.t_matlayer, size_t( MAT_LAY_AMO*sizeof(matlay) ) );
+
+  stdtypes.t_matarr = H5Tcreate(H5T_ARRAY, sizeof(matlay)*MAT_LAY_AMO );
+  hsize_t adims[] = { MAT_LAY_AMO };
+  //stdtypes.t_matarr = H5Tarray_create( stdtypes.t_matlayer, 1, adims );
+
+
+  typedef Material mater;
+  stdtypes.t_material =  H5Tcreate( H5T_COMPOUND, sizeof( mater ) );
+  dtype_freg( stdtypes.t_material, mater, E, stdtypes.t_double );
+  dtype_freg( stdtypes.t_material, mater, nu, stdtypes.t_double );
+  dtype_freg( stdtypes.t_material, mater, layers, stdtypes.t_matarr );
 
 }
 
@@ -419,6 +443,51 @@ void Lowio::save_attribute( hid_t dataset,
 
   H5Aclose( attr );
   H5Sclose ( attr_dspace );
+}
+
+//---------------------------------------------------------------------
+
+int Lowio::save_material( const string& location, void* pmat,
+                          const string& description )
+{
+  Material* mat = (Material*) pmat;
+
+  // saving itself
+  herr_t status;                /* error code */
+  hid_t dataspace, dataset;   /* dataspace and dataset for HDF5 */
+  hid_t hid_mat;              /* datatype variable length string */
+
+  /* create a string of variable length */
+  hid_mat = H5Tcopy( stdtypes.t_material );
+  H5Tinsert( hid_mat, "name", HOFFSET( Material, name ), stdtypes.t_string );
+  //H5Tset_size( hid_str, H5T_VARIABLE );
+
+  /* dataspace for array of something of length N */
+  hsize_t dims[1];
+  dims[0] = 1;
+  dataspace = H5Screate_simple( 1, dims, NULL );
+  assert( dataspace >= 0 );
+
+  /* dataset creation */
+  dataset = H5Dcreate( fileid, (location+mat->name).c_str(),
+                       hid_mat, dataspace,
+                       H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  assert( dataset >= 0 );
+  printf("GGGG\n");
+  status = H5Dwrite ( dataset, hid_mat,
+                      H5S_ALL, H5S_ALL, H5P_DEFAULT,
+                      pmat );
+  printf("GGGG\n");
+  /* save attribute description */
+  if ( description.size() != 0 )
+    save_attribute( dataset, "Description", description );
+
+  /* freeing memory from dataset and dataspace in HDF */
+  H5Dclose (dataset);
+  H5Sclose (dataspace);
+  H5Tclose ( hid_mat );
+
+  return status;
 }
 
 //---------------------------------------------------------------------

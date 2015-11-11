@@ -38,7 +38,6 @@ int Highio::save( const Globals& siku )
                     &mt_timestamp, "Ending computation time", "TODO: fill" );
 
   // saving dt
-  
   ModelTimeTypes::dtstamp mt_dt;
 
   siku.time.get_dt_as_dtstamp( &mt_dt );
@@ -80,8 +79,10 @@ int Highio::save( const Globals& siku )
   // saving flags and names
   lowio.save_string( string("Boarder File"), siku.board_file,  "TODO: fill",
                      "TODO: fill" );
+
   lowio.save_string( string("Save File"), siku.savefile,  "TODO: fill",
                      "TODO: fill" );
+
   lowio.save_value( lowio.stdtypes.t_ulong, string("Boarders flag"),
                     &siku.mark_boarders,  "TODO: fill", "TODO: fill" );
 
@@ -150,9 +151,9 @@ void Highio::save_planet( const Globals& siku )
 
 void Highio::save_materials( const Globals& siku )
 {
-  for( auto& m : siku.ms )
+  for( size_t i = 0; i < siku.ms.size(); ++i )
     {
-      save_material( string("Materials/"), (void*)&m );
+      save_material( string("Materials/"), (void*)&siku.ms[i] );
     }
 }
 
@@ -227,26 +228,74 @@ int Highio::save_material ( const string& location, void* pmat )
 {
   Material* mat = (Material*) pmat;
   int ret = 0;
-  ret = lowio.save_string( location+string("name"), mat->name, "TODO: fill",
-                           "TODO: fill" );
-  ret |= lowio.save_array( lowio.stdtypes.t_double,
-                           location+string("thic_inters"),
-                           mat->thickness_intervals.data(),
-                           mat->thickness_intervals.size(),
-                           "TODO: fill", "TODO: fill" );
-  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("rho"),
-                           mat->rho.data(),mat->rho.size(), "TODO: fill",
-                           "TODO: fill" );
-  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("sigma_c"),
-                           mat->sigma_c.data(), mat->sigma_c.size(),
-                           "TODO: fill", "TODO: fill" );
-  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("sigma_t"),
-                           mat->sigma_t.data(), mat->sigma_t.size(),
-                           "TODO: fill", "TODO: fill" );
-  ret |= lowio.save_value( lowio.stdtypes.t_double, location+string("E"),
-                           &mat->E, "TODO: fill", "TODO: fill" );
-  ret |= lowio.save_value( lowio.stdtypes.t_double, location+string("nu"),
-                           &mat->nu, "TODO: fill", "TODO: fill" );
+
+  lowio.save_material( location, pmat, string("No taste, no color, nothing") );
+
+//  ret = lowio.save_string( location+string("name"), mat->name, "TODO: fill",
+//                           "TODO: fill" );
+//  ret |= lowio.save_array( lowio.stdtypes.t_double,
+//                           location+string("thic_inters"),
+//                           mat->thickness_intervals.data(),
+//                           mat->thickness_intervals.size(),
+//                           "TODO: fill", "TODO: fill" );
+//  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("rho"),
+//                           mat->rho.data(),mat->rho.size(), "TODO: fill",
+//                           "TODO: fill" );
+//  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("sigma_c"),
+//                           mat->sigma_c.data(), mat->sigma_c.size(),
+//                           "TODO: fill", "TODO: fill" );
+//  ret |= lowio.save_array( lowio.stdtypes.t_double, location+string("sigma_t"),
+//                           mat->sigma_t.data(), mat->sigma_t.size(),
+//                           "TODO: fill", "TODO: fill" );
+//  ret |= lowio.save_value( lowio.stdtypes.t_double, location+string("E"),
+//                           &mat->E, "TODO: fill", "TODO: fill" );
+//  ret |= lowio.save_value( lowio.stdtypes.t_double, location+string("nu"),
+//                           &mat->nu, "TODO: fill", "TODO: fill" );
+
+//  H5Dcreate)
+//  herr_t status;                /* error code */
+//  hid_t dataspace, dataset;     /* dataspace and dataset for HDF5 */
+//
+//  /* dataspace creation depends on the len value */
+//  if ( len == 0 )
+//    {
+//      dataspace = H5Screate ( H5S_SCALAR );
+//    }
+//  else
+//    {
+//      hsize_t dims[1];              /* dims[0] = length of array */
+//      dims[0] = len;
+//      dataspace = H5Screate_simple (1, dims, NULL );
+//    }
+//  assert( dataspace >= 0 );
+//
+//  /* dataset creation is the same */
+//  dataset = H5Dcreate ( fileid, dataname.c_str(),
+//                        dtype, dataspace,
+//                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+//  assert( dataset >= 0 );
+//
+//  status = H5Dwrite ( dataset, dtype,
+//                      H5S_ALL, H5S_ALL, H5P_DEFAULT,
+//                      data );
+//
+//  /* Saving units and long_names if they are not NULL */
+//  if ( units.size() != 0 )
+//     save_attribute( dataset, TITLE_UNITS, units );
+//
+//  if ( description.size() != 0 )
+//    save_attribute( dataset, TITLE_DESCRIPTION, description );
+//
+//  /* -- END attributes */
+//
+//  /* freeing memory from dataset and dataspace in HDF */
+//  H5Dclose (dataset);
+//  H5Sclose (dataspace);
+//
+//  return status;
+
+
+
   return ret;
 }
 

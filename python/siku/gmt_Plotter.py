@@ -95,7 +95,7 @@ class GMT_Plotter:
         calling interpolation, preparing draw_config.txt and finaly executing
         DMT_Drawer
         '''
-
+        
         if out_file:
             self.config['out_pic_name'] = out_file
 
@@ -106,10 +106,11 @@ class GMT_Plotter:
             print( 'plotter start plotting' )
 
         psi = self.config.get( 'inter_density', 0 )
-
-        if nmc_grid:
+        
+        if nmc_grid:            
             self.W = nmc_grid
-        if not self.W:
+
+        if self.W == None:        
             if self.uwf and self.vwf:
                 UW = wnd.NMCVar( self.uwf, 'uwnd' )
                 VW = wnd.NMCVar( self.vwf, 'vwnd' )
@@ -117,17 +118,18 @@ class GMT_Plotter:
                                   self.config.get( 'time_index', -1 ) )
             else:
                 self.W = None
-
-        if self.W:            
+        
+        if self.W:
             Inter = Interpolator( self.W, self.config.get( 'grid_step_lat', 2.5 ),\
                                   self.config.get( 'grid_step_lon', 2.5 ) )
+         
             self.W.grid_save_( 'grid.txt' ) #saving base gird
-
+         
 ##----------------------- generating interpolation grid -----------------------
 
             if self.config.get('verbose'):
                 print('generating inter_grid')
-            
+         
             RV = rand_vec.RandVecGenerator( self.domain[0], \
                 self.domain[1], 90 + self.domain[2], 90 + self.domain[3] )
                 #domain[1], 90 - domain[3], 90 - domain[2] )
@@ -137,7 +139,7 @@ class GMT_Plotter:
             else:
                 RV.hp_generate( psi, DEGREES, self.config.get( 'verbose' ) )
                 vecs = RV.Grid.points_angular
-
+         
 ##-------------------------- making interpolations ----------------------
 
                 if self.config.get('verbose'):
@@ -158,7 +160,7 @@ class GMT_Plotter:
 
         if self.config.get('verbose'):
             print('preparing draw_config')
-  
+        
         #scaling factor for vectors on picture
         if psi == 0:
             max_wind = 10
@@ -205,7 +207,7 @@ class GMT_Plotter:
                 dc.write( line + '\n' )
             
 ##-------------------------------- drawing ------------------------------
-
+        
         if self.config.get('verbose'):
             print('drawing')
         self.D = GMT_Drawer('draw_config.txt')

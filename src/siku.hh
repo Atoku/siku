@@ -40,6 +40,13 @@
 
 #endif /* SIKU_FP_CHECK */
 
+//! Max material layers amount
+#ifdef SIKU_MAX_THICK
+static const unsigned int MAT_LAY_AMO = SIKU_MAX_THICK; // WTF size_t does not work?!
+#else
+static const unsigned int MAT_LAY_AMO = 10; // WTF size_t does not work?!
+#endif
+
 //! Default name for Lua configuration file
 #define SIKU_DEFAULT_PYTHON "sikucfg.py"
 

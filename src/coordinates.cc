@@ -35,10 +35,10 @@ namespace Coordinates
   {
     double st = sin ( theta );
     double ct = cos ( theta );
-    // or double ct = sqrt( 1 - st*st );
+    // or double ct = sqrt( 1. - st*st );
     double sp = sin ( phi );
     double cp = cos ( phi );
-    // or double cp = sqrt( 1 - sp*sp );
+    // or double cp = sqrt( 1. - sp*sp );
 
     return vec3d ( r * st * cp, r * st * sp, r * ct );
   }
