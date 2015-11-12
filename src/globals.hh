@@ -45,6 +45,8 @@ struct Globals
   //! Materials
   std::vector < Material > ms;
 
+  Material tmat;
+
   //! Elements data !! Important: the order of elements in this array should
   //! remain unchanged. Element IDs match their position in this vector.
   //! For any sorting necessities use 'pes' vector.

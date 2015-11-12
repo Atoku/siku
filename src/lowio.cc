@@ -134,18 +134,14 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_gridnode, node, value, stdtypes.t_vec);
 
   typedef Material::Layer matlay;
-  stdtypes.t_matlayer =  H5Tcreate( H5T_COMPOUND, sizeof( matlay ) );
+  stdtypes.t_matlayer =  H5Tcreate( H5T_COMPOUND, 4*sizeof( double ) );
   dtype_freg( stdtypes.t_matlayer, matlay, thickness, stdtypes.t_double);
   dtype_freg( stdtypes.t_matlayer, matlay, rho, stdtypes.t_double);
   dtype_freg( stdtypes.t_matlayer, matlay, sigma_c, stdtypes.t_double);
   dtype_freg( stdtypes.t_matlayer, matlay, sigma_t, stdtypes.t_double);
-  //stdtypes.t_matarr = H5Tcreate( H5T_ARRAY, MAT_LAY_AMO );
-  H5Tset_size( stdtypes.t_matlayer, size_t( MAT_LAY_AMO*sizeof(matlay) ) );
 
-  stdtypes.t_matarr = H5Tcreate(H5T_ARRAY, sizeof(matlay)*MAT_LAY_AMO );
   hsize_t adims[] = { MAT_LAY_AMO };
-  //stdtypes.t_matarr = H5Tarray_create( stdtypes.t_matlayer, 1, adims );
-
+  stdtypes.t_matarr = H5Tarray_create( stdtypes.t_matlayer, 1, adims );
 
   typedef Material mater;
   stdtypes.t_material =  H5Tcreate( H5T_COMPOUND, sizeof( mater ) );
@@ -473,11 +469,11 @@ int Lowio::save_material( const string& location, void* pmat,
                        hid_mat, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   assert( dataset >= 0 );
-  printf("GGGG\n");
+
   status = H5Dwrite ( dataset, hid_mat,
                       H5S_ALL, H5S_ALL, H5P_DEFAULT,
                       pmat );
-  printf("GGGG\n");
+
   /* save attribute description */
   if ( description.size() != 0 )
     save_attribute( dataset, "Description", description );

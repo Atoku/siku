@@ -434,8 +434,8 @@ Sikupy::read_materials ( vector < Material >& ms )
 
       success = read_double_vector ( pobj, tvec );
       assert( success );
-      for( size_t i = 0; i < tvec.size(); ++i )
-        ms[i].layers[i].thickness = tvec[i];
+      for( size_t j = 0; j < tvec.size(); ++j )
+        ms[i].layers[j].thickness = tvec[j];
 
       Py_DECREF( pobj );
 
@@ -445,8 +445,8 @@ Sikupy::read_materials ( vector < Material >& ms )
 
       success = read_double_vector ( pobj, tvec );
       assert( success );
-      for( size_t i = 0; i < tvec.size(); ++i )
-        ms[i].layers[i].rho = tvec[i];
+      for( size_t j = 0; j < tvec.size(); ++j )
+        ms[i].layers[j].rho = tvec[j];
 
       Py_DECREF( pobj );
 
@@ -458,8 +458,8 @@ Sikupy::read_materials ( vector < Material >& ms )
 
       success = read_double_vector ( pobj, tvec );
       assert( success );
-      for( size_t i = 0; i < tvec.size(); ++i )
-        ms[i].layers[i].sigma_c = tvec[i];
+      for( size_t j = 0; j < tvec.size(); ++j )
+        ms[i].layers[j].sigma_c = tvec[j];
 
       Py_DECREF( pobj );
 
@@ -471,8 +471,8 @@ Sikupy::read_materials ( vector < Material >& ms )
 
       success = read_double_vector ( pobj, tvec );
       assert( success );
-      for( size_t i = 0; i < tvec.size(); ++i )
-        ms[i].layers[i].sigma_t = tvec[i];
+      for( size_t j = 0; j < tvec.size(); ++j )
+        ms[i].layers[j].sigma_t = tvec[j];
 
       Py_DECREF( pobj );
 

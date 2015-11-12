@@ -338,43 +338,51 @@ int Highio::save_nmc( const string& loc, void* pnmc)
 
 //---------------------------------------------------------------------
 
+vec3d NewVec( const vec3d& vec )
+{
+  vec3d v = vec;
+  return v;
+}
+
 int Highio::load ( Globals& siku, const string& file_name )
 {
   cout<<"TRY TO LOAD\n";
-cout<<"temporally diabled\n";
-//
-//  // file init and read dimensions
-//  lowio.init( siku.loadfile, lowio.ACCESS_F_READONLY );
-//  Dims dims;
-//  load_dims( dims );
-//
-//  cout<<" read elements"<<endl;
-//  // read elements
-//  siku.es.clear();
-//  //siku.es.resize( dims.elem_s, Element() );
-//  Element* temp = new Element[dims.elem_s];
-//  //lowio.read( "Elements/Elements", siku.es.data() );
-//  lowio.read( "Elements/Elements", temp );
-//  cout<<"BDFB\n";
-//  for(size_t i=0; i< dims.elem_s;++i)
-//    {
-//      siku.es.push_back(temp[i]);
-//    }
-//
-//
-//  cout<<siku.es.size()<<endl<<" read vertices"<<endl;
-//  // reading vertices
-//  verts.resize( dims.vert_s );
-//  lowio.read( "Elements/Vertices", verts.data() );
-//  for( size_t i = 0; i < dims.vert_s; ++i )
-//    siku.es[ verts[i].elem_id ].P.push_back( verts[i].pos );
-//
-//
-//
-//
-//  lowio.release();
-//
-//  cout<<"LOADED\n";
+
+  // file init and read dimensions
+  lowio.init( siku.loadfile, lowio.ACCESS_F_READONLY );
+  Dims dims;
+  load_dims( dims );
+
+  cout<<" read elements"<<endl;
+  // read elements
+  siku.es.resize( dims.elem_s, Element() );
+  lowio.read( "Elements/Elements", siku.es.data() );
+  for ( auto& a : siku.es )
+    {
+      a.P.clear();
+    }
+
+  cout<<siku.es.size()<<endl<<" read vertices"<<endl;
+  // reading vertices
+  verts.resize( dims.vert_s );
+  lowio.read( "Elements/Vertices", verts.data() );
+  for( size_t i = 0; i < verts.size(); ++i )
+    {
+      size_t ind = verts[i].elem_id;
+      vec3d pos = verts[i].pos;
+      print(pos);
+
+      siku.es[ ind ].P.push_back( NewVec(pos) );
+
+      printf("%d    %d\n",ind,siku.es[ind].P.size() );
+    }
+  cout<<" read mats"<<endl;
+
+  lowio.read("Materials/ice", (void*)&siku.tmat );
+
+  lowio.release();
+
+  cout<<"LOADED\n";
   return 0;
 }
 

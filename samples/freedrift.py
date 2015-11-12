@@ -180,10 +180,10 @@ def main():
 ##                     (292.0, 24.0),
 ##                     (292.0, 29.0),
 ##                     (291.0, 29.0) ] )
-    coords.append( [ (293.0, 26.0), #19
-                     (294.0, 26.0),
-                     (294.0, 27.0),
-                     (293.0, 27.0) ] )
+##    coords.append( [ (293.0, 26.0), #19
+##                     (294.0, 26.0),
+##                     (294.0, 27.0),
+##                     (293.0, 27.0) ] )
 
     # ---------------------- voronoi initialization ------------------------
 ##    print('\nLoading polygons')
@@ -265,7 +265,8 @@ def main():
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     # name of file to load from
-    #siku.defaults.loadfile = 'siku-2014-01-01-06:00:00.h5'
+    #siku.defaults.loadfile = 'siku-2014-01-01-12:00:00.h5'
+    siku.defaults.loadfile = 'save_test.h5'
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds

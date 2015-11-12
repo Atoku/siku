@@ -119,6 +119,11 @@ public:
   //! Check if point (given inglobal x,y,z ) is inside the element
   bool contains( const vec3d& p );
 
+  Element()
+  {
+    P = vector<vec3d>(0);
+  }
+
   //! Destructor takes care about monitor and control functions
   ~Element()
   {
