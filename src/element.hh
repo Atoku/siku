@@ -41,8 +41,9 @@ public:
   //! \brief struct for marking and saving vertices
   struct vertex
   {
+    unsigned long elem_id{ 0 };
     vec3d pos = nullvec ;
-    size_t elem_id{ 0 };
+
     vertex(){};
     vertex(const vec3d& v, const size_t& id): pos( v ), elem_id( id ) {}
   };
@@ -119,10 +120,10 @@ public:
   //! Check if point (given inglobal x,y,z ) is inside the element
   bool contains( const vec3d& p );
 
-  Element()
-  {
-    P = vector<vec3d>(0);
-  }
+//  Element()
+//  {
+//    P = vector<vec3d>(0);
+//  }
 
   //! Destructor takes care about monitor and control functions
   ~Element()

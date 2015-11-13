@@ -46,22 +46,22 @@ Lowio::Lowio()
    * TODO: change sizeof(double) into dynamic type sizing like 'vec3d::type'...
    */
   // quat
-  stdtypes.t_quat = H5Tcreate( H5T_COMPOUND, sizeof(double)*4 );
+  stdtypes.t_quat = H5Tcreate( H5T_COMPOUND, sizeof( quat ) );
   H5Tinsert( stdtypes.t_quat, "a", 0,   stdtypes.t_double );
   H5Tinsert( stdtypes.t_quat, "b", 8,   stdtypes.t_double );
   H5Tinsert( stdtypes.t_quat, "c", 2*8, stdtypes.t_double );
   H5Tinsert( stdtypes.t_quat, "d", 3*8, stdtypes.t_double );
 
   // vec3d
-  stdtypes.t_vec = H5Tcreate( H5T_COMPOUND, sizeof(double)*3 );
-  H5Tinsert( stdtypes.t_vec, "x", 0,   stdtypes.t_double );
-  H5Tinsert( stdtypes.t_vec, "y", 8,   stdtypes.t_double );
-  H5Tinsert( stdtypes.t_vec, "z", 2*8, stdtypes.t_double );
+  stdtypes.t_vec = H5Tcreate( H5T_COMPOUND, sizeof( vec3d ) );
+  H5Tinsert( stdtypes.t_vec, "x", HOFFSET( vec3d, x ), stdtypes.t_double );
+  H5Tinsert( stdtypes.t_vec, "y", HOFFSET( vec3d, y ), stdtypes.t_double );
+  H5Tinsert( stdtypes.t_vec, "z", HOFFSET( vec3d, z ), stdtypes.t_double );
 
   // bool //hope so
   stdtypes.t_bool = H5T_NATIVE_HBOOL;
   // native size //also hope so
-  stdtypes.t_size = H5T_NATIVE_HSIZE;
+  stdtypes.t_size = H5T_NATIVE_ULONG;
   // unsigned int
   stdtypes.t_uint = H5T_NATIVE_UINT;
   // char
@@ -92,7 +92,7 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_dt, mydt, microseconds, stdtypes.t_long );
   
   // element  //!!! TESTING
-  typedef Element myel; // for short
+  typedef TEL myel; // for short
   stdtypes.t_element=  H5Tcreate( H5T_COMPOUND, sizeof( myel ) );
   dtype_freg( stdtypes.t_element, myel, q, stdtypes.t_quat );
   dtype_freg( stdtypes.t_element, myel, Glob, stdtypes.t_vec);
@@ -117,8 +117,8 @@ Lowio::Lowio()
 
   typedef Element::vertex vert;
   stdtypes.t_vertex =  H5Tcreate( H5T_COMPOUND, sizeof( vert ) );
-  dtype_freg( stdtypes.t_vertex, vert, pos, stdtypes.t_vec);
   dtype_freg( stdtypes.t_vertex, vert, elem_id, stdtypes.t_size);
+  dtype_freg( stdtypes.t_vertex, vert, pos, stdtypes.t_vec);
   //!!! TESTING -^
 
   typedef ContactDetector::Contact cont;
@@ -134,7 +134,7 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_gridnode, node, value, stdtypes.t_vec);
 
   typedef Material::Layer matlay;
-  stdtypes.t_matlayer =  H5Tcreate( H5T_COMPOUND, 4*sizeof( double ) );
+  stdtypes.t_matlayer =  H5Tcreate( H5T_COMPOUND, sizeof( matlay ) );
   dtype_freg( stdtypes.t_matlayer, matlay, thickness, stdtypes.t_double);
   dtype_freg( stdtypes.t_matlayer, matlay, rho, stdtypes.t_double);
   dtype_freg( stdtypes.t_matlayer, matlay, sigma_c, stdtypes.t_double);

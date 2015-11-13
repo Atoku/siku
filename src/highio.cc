@@ -48,10 +48,18 @@ int Highio::save( const Globals& siku )
   lowio.save_value( lowio.type_dt(), "Time/dts",
                     &mt_dt, "Saving frequency time step", "TODO: fill" );
   
-
   // saving elements
+  TEL* El = new TEL[siku.es.size()];
+  for(unsigned long i=0;i<siku.es.size();i++)
+    {
+      El[i].q = siku.es[i].q;
+      El[i].A = siku.es[i].A;
+    }
+//  lowio.save_array( lowio.type_element(), "Elements/Elements",
+//                    siku.es.data(), siku.es.size(), "TODO:fill", "TODO:fill" );
   lowio.save_array( lowio.type_element(), "Elements/Elements",
-                    siku.es.data(), siku.es.size(), "TODO: fill", "TODO: fill" );
+                     El, siku.es.size(), "TODO: fill", "TODO: fill" );
+  delete[]El;
 
   // saving element groups
   vector<string> astrs;
@@ -166,6 +174,11 @@ void Highio::save_vecfield( const Globals& siku )
 
   switch( siku.wind.FIELD_SOURCE_TYPE )
   {
+    case Vecfield::NONE:
+    case Vecfield::TEST:
+      break;
+
+
     case Vecfield::NMC:
       save_nmc( string("Wind/"), (void*)siku.wind.NMCVec );
       break;
@@ -338,12 +351,6 @@ int Highio::save_nmc( const string& loc, void* pnmc)
 
 //---------------------------------------------------------------------
 
-vec3d NewVec( const vec3d& vec )
-{
-  vec3d v = vec;
-  return v;
-}
-
 int Highio::load ( Globals& siku, const string& file_name )
 {
   cout<<"TRY TO LOAD\n";
@@ -353,32 +360,103 @@ int Highio::load ( Globals& siku, const string& file_name )
   Dims dims;
   load_dims( dims );
 
-  cout<<" read elements"<<endl;
-  // read elements
-  siku.es.resize( dims.elem_s, Element() );
-  lowio.read( "Elements/Elements", siku.es.data() );
-  for ( auto& a : siku.es )
+//  cout<<" read elements"<<endl;
+//  // read elements
+//  Element* pelems = new Element[dims.elem_s];
+//  int* vn = new int[dims.elem_s];
+//  int* vi = new int[dims.elem_s];
+//  for(size_t i=0; i<dims.elem_s;i++)
+//    vn[i]=vi[i]=0;
+//
+//  siku.es.resize( dims.elem_s, Element() );
+//
+//
+/////////////////////////////////
+////  lowio.read
+//  for  ( size_t i=0; i<dims.elem_s; ++i)
+//    pelems[i] = Element();
+//  lowio.read( "Elements/Elements", pelems );
+////  for ( size_t i=0; i<dims.elem_s; ++i)
+////    {
+////      siku.es[i]=pelems[i];
+////      siku.es[i].P.clear();
+////    }
+//
+//  verts.resize( dims.vert_s );
+//  lowio.read( "Elements/Vertices", verts.data() );
+//
+//
+//
+//  for( size_t i = 0; i < verts.size(); ++i )
+//    {
+//      vn[verts[i].elem_id]++;
+//    }
+//
+//
+//  for ( size_t i=0; i<dims.elem_s; ++i)
+//    {
+//      pelems[i].P.resize( vn[i] );
+//      //siku.es[i].P.resize(vn[i]);
+//    }
+//
+//  for(int j = 0; j < 10 ; j++)
+//    {
+//      cout<<verts[j].elem_id<<"\t";
+//      print(verts[j].pos);
+//      //cout<<vi[ j ]<<"\t"<<pelems[j].P.size()<<endl;
+//    }
+//
+//  for( size_t i = 0; i < verts.size(); ++i )
+//    {
+//      size_t ind = verts[i].elem_id;
+//      vec3d pos = verts[i].pos;
+//      //siku.es[ ind ].P[ vi[ ind ] ] = pos;
+//      cout<<vi[ ind ]<<"\t"<<ind<<"\t"<<pelems[ind].P.size()<<endl;
+//      pelems[ ind ].P.at( vi[ ind ] ) = pos;
+//      vi[ ind ]++;
+//    }
+//
+//  for ( size_t i=0; i<dims.elem_s; ++i)
+//    {
+//      siku.es[i]=pelems[i];
+//    }
+//
+//
+//  delete[]pelems;
+//  delete[] vn;
+//  delete[] vi;
+/////////////////////////////////
+
+  TEL* El = new TEL[dims.elem_s];
+
+  lowio.read( "Elements/Elements", El );
+  siku.es.resize(dims.elem_s);
+
+  for(unsigned long i=0;i<siku.es.size();i++)
     {
-      a.P.clear();
+      siku.es[i].q = El[i].q;
+      siku.es[i].A = El[i].A;
     }
 
-  cout<<siku.es.size()<<endl<<" read vertices"<<endl;
-  // reading vertices
-  verts.resize( dims.vert_s );
-  lowio.read( "Elements/Vertices", verts.data() );
-  for( size_t i = 0; i < verts.size(); ++i )
-    {
-      size_t ind = verts[i].elem_id;
-      vec3d pos = verts[i].pos;
-      print(pos);
+  //delete[]El;
+//  cout<<siku.es.size()<<endl<<" read vertices"<<endl;
+//  // reading vertices
+//  verts.resize( dims.vert_s );
+//  lowio.read( "Elements/Vertices", verts.data() );
+//  for( size_t i = 0; i < verts.size(); ++i )
+//    {
+//      size_t ind = verts[i].elem_id;
+//      vec3d* pos = new vec3d;
+//      memcpy( pos, &verts[i].pos, sizeof(vec3d) );
+//      print(*pos);
+//      printf("%lu  %lu    %lu\n",i, ind, siku.es[ind].P.size() );
+//      siku.es[ ind ].P.push_back( *pos );
+//      printf("%lu    %lu\n",ind, siku.es[ind].P.size() );
+//    }
+  //cout<<" read mats"<<endl;
 
-      siku.es[ ind ].P.push_back( NewVec(pos) );
+  //lowio.read("Materials/ice", (void*)&siku.tmat );
 
-      printf("%d    %d\n",ind,siku.es[ind].P.size() );
-    }
-  cout<<" read mats"<<endl;
-
-  lowio.read("Materials/ice", (void*)&siku.tmat );
 
   lowio.release();
 

@@ -224,7 +224,7 @@ def main():
 ##    bor = PV.get_boarder_by_gmt()
 ##    for b in bor:
 ##        siku.elements[ b ].flag_state = element.Element.f_static
-    print('Done\n\n')
+##    print('Done\n\n')
 
     # ------------------------- speed sattings ----------------------------
 
