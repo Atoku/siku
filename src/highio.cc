@@ -341,7 +341,12 @@ int Highio::save_nmc( const string& loc, void* pnmc)
 int Highio::load ( Globals& siku, const string& file_name )
 {
   cout<<"TRY TO LOAD\n";
-cout<<"temporally diabled\n";
+  cout<<"temporally diabled\n";
+
+  vec3d* ppos = new vec3d;
+  memcpy( ppos, &verts[i].pos, sizeof( vec3d ) );
+  push_back( *pos );
+ 
 //
 //  // file init and read dimensions
 //  lowio.init( siku.loadfile, lowio.ACCESS_F_READONLY );
