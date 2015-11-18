@@ -19,39 +19,6 @@ extern "C" {
 
 #include "globals.hh"
 
-class TEL
-{
-public:
-  // --------------- Not changing handling parameters ----------------
-
-  unsigned int flag { 0 };
-  unsigned long mon_ind { 0 };
-  unsigned long con_ind { 0 };
-  unsigned long id { 0 };
-
-  // --------------- Rapidly changing parameters ----------------------
-
-  quat q;
-  vec3d Glob = nullvec;
-  vec3d V = nullvec;
-  double m { 0 };
-  double I { 0 };
-  vec3d W = nullvec;
-  vec3d F = nullvec;
-  double N {0};
-
-  // --------------- Not changing state parameters -------------------
-
-  unsigned long imat { 0 };
-  unsigned long igroup { 0 };
-  double i { 0 };
-  double A { 0 };
-  double sbb_rmin { 0 };
-
-  //double gh[ MAT_LAY_AMO ];
-  //vector<vec3d> P;
-};
-
 //! \brief Class for working with HDF5 in Siku 
 class Lowio
 {
@@ -165,6 +132,7 @@ private:
   //! \brief Main types that are created on construction
   struct stdtypes_s
   {
+    // basic
     hid_t t_int;
     hid_t t_long;
     hid_t t_double;
@@ -175,18 +143,21 @@ private:
     hid_t t_bool;
     hid_t t_string;
 
+    // composite
     hid_t t_vec;
     hid_t t_quat;
     hid_t t_vertex;
     hid_t t_contact;
     hid_t t_gridnode;
     hid_t t_matlayer;
-    hid_t t_matarr;
-    hid_t t_material;
+    hid_t t_matlayarr;
+    hid_t t_elemgh;
 
+    // complex
+    hid_t t_material;
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp
-    hid_t t_element;            //!< Element 
+    hid_t t_element;            //!< Plain Element
   } stdtypes;
 
   //! \brief Composite types for large classes` entities

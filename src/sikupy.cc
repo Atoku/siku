@@ -1151,13 +1151,14 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // direct reference to the element to store
   const Element* pe = &siku.es[i];
+  Element ee = *pe;
 
   // creating quaternion object
   PyObject* pQTuple = PyTuple_New ( 4 ); // quaternion as a new tuple, len = 4
 
   for ( Py_ssize_t k = 0; k < 4; ++k )
     {
-      PyObject* pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] );
+      PyObject* pNum = PyFloat_FromDouble ( ee.q[ (k+3)%4 ] );
           // ^-number to fill into the tuple // new
 
       PyTuple_SET_ITEM( pQTuple, k, pNum );  // steals pNum

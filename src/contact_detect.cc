@@ -115,6 +115,10 @@ void ContactDetector::find_pairs( Globals& siku )
 
 void  ContactDetector::detect( Globals& siku )
 {
+  // elements amount check: less then 2 - contacts are impossible
+  if( siku.es.size() < 2 )
+    return;
+
   switch( det_meth )
   {
     case CONTACTS_N2:
