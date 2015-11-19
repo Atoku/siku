@@ -50,7 +50,7 @@ public:
   {
     size_t i1 {0};
     size_t i2 {0};
-    int step{0};
+    int step{-1};  // -1 marks default object
     Contact(){}
     Contact(const size_t& i1_, const size_t& i2_, const int& s ): step(s)
     {

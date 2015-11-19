@@ -71,6 +71,14 @@ Lowio::Lowio()
   stdtypes.t_string = H5Tcopy( H5T_C_S1 );
   H5Tset_size( stdtypes.t_string, H5T_VARIABLE );
 
+  // info
+  stdtypes.t_info =  H5Tcreate( H5T_COMPOUND, sizeof( Info ) );
+  dtype_freg( stdtypes.t_info, Info, brief, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, date, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, name, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, rundate, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, version, stdtypes.t_string );
+
   // time
   typedef ModelTimeTypes::timestamp mytime; // for short
   stdtypes.t_time =  H5Tcreate( H5T_COMPOUND, sizeof( mytime ) );
@@ -149,6 +157,7 @@ Lowio::Lowio()
   // entire material
   typedef Material mater;
   stdtypes.t_material =  H5Tcreate( H5T_COMPOUND, sizeof( mater ) );
+  dtype_freg( stdtypes.t_material, mater, name, stdtypes.t_string );
   dtype_freg( stdtypes.t_material, mater, E, stdtypes.t_double );
   dtype_freg( stdtypes.t_material, mater, nu, stdtypes.t_double );
   dtype_freg( stdtypes.t_material, mater, layers, stdtypes.t_matlayarr );
@@ -459,7 +468,7 @@ int Lowio::save_material( const string& location, void* pmat,
 
   /* create a string of variable length */
   hid_mat = H5Tcopy( stdtypes.t_material );
-  H5Tinsert( hid_mat, "name", HOFFSET( Material, name ), stdtypes.t_string );
+  //H5Tinsert( hid_mat, "name", HOFFSET( Material, name ), stdtypes.t_string );
   //H5Tset_size( hid_str, H5T_VARIABLE );
 
   /* dataspace for array of something of length N */

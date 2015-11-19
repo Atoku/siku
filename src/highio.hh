@@ -44,10 +44,11 @@ public:
   //! \return error code
   int save ( const Globals& siku );
   
-  //! \brief Load the main dump file with all the information about
-  //! \param[in] siku all global variables
-  //! \param[in] file_name name of file to load from
-  int load ( Globals& siku, const string& file_name );
+//// !Deprecated. All loads are made with python.
+//  //! \brief Load the main dump file with all the information about
+//  //! \param[in] siku all global variables
+//  //! \param[in] file_name name of file to load from
+//  int load ( Globals& siku, const string& file_name );
 
 private:
 

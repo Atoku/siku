@@ -152,6 +152,7 @@ private:
     hid_t t_matlayer;
     hid_t t_matlayarr;
     hid_t t_elemgh;
+    hid_t t_info;
 
     // complex
     hid_t t_material;

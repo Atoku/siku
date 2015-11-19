@@ -34,6 +34,8 @@ from   siku import gmt_Plotter
 GMT_Plotter = gmt_Plotter.GMT_Plotter
 from   siku import poly_voronoi
 PolyVor = poly_voronoi.PolyVor
+from   siku import h5load
+hload = h5load.Loader
 
 from   siku import wnd
  
@@ -180,10 +182,10 @@ def main():
 ##                     (292.0, 24.0),
 ##                     (292.0, 29.0),
 ##                     (291.0, 29.0) ] )
-    coords.append( [ (293.0, 26.0), #19
-                     (294.0, 26.0),
-                     (294.0, 27.0),
-                     (293.0, 27.0) ] )
+##    coords.append( [ (293.0, 26.0), #19
+##                     (294.0, 26.0),
+##                     (294.0, 27.0),
+##                     (293.0, 27.0) ] )
 
     # ---------------------- voronoi initialization ------------------------
 ##    print('\nLoading polygons')
@@ -202,18 +204,20 @@ def main():
 ##    coords = coords + PC.coords
 
     ### Initializing elements with polygon vertices
-    for c in coords:
-        siku.P.update( c )
-     
-        # Element declaration
-        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
-        E.monitor = "drift_monitor"
-        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
-               0.0, 0.0, 0.0, 0.0, 0.0 ]
-        E.set_gh( gh, ice )
-        
-        # all elements in the list
-        siku.elements.append( E )
+##    for c in coords:
+##        siku.P.update( c )
+##     
+##        # Element declaration
+##        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
+##        E.monitor = "drift_monitor"
+##        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
+##               0.0, 0.0, 0.0, 0.0, 0.0 ]
+##        E.set_gh( gh, ice )
+##        
+##        # all elements in the list
+##        siku.elements.append( E )
+
+
 
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
@@ -225,6 +229,48 @@ def main():
 ##    for b in bor:
 ##        siku.elements[ b ].flag_state = element.Element.f_static
 ##    print('Done\n\n')
+
+    # ---------------------- loading from file ----------------------------
+
+    print('file start atempt\n')
+##
+##    print(siku.elements[0].A)
+##    print(siku.elements[0].i)
+##    print(siku.elements[0].sbb_rmin)
+##    print(siku.elements[0].q)    
+##    print(siku.elements[0].verts_xyz_loc)
+##    print(siku.elements[0].imat)
+####    print(type(siku.elements[0].flag_state))
+####    print(siku.elements[0].flag_state)
+####    print(type(siku.elements[0].velo[0]))
+####    print(siku.elements[0].velo)
+##    print(siku.elements[0].gh)
+##    print(siku.elements[0].monitor)
+##    print(siku.elements[0].control)    
+##    
+    hl = hload('save_test.h5')
+    hl.load()
+    print('\n')
+##
+    siku.elements = hl.extract_els()
+    siku.materials = hl.extract_mats()
+        
+##    print(siku.elements[0].A)
+##    print(siku.elements[0].i)
+##    print(siku.elements[0].sbb_rmin)
+##    print(siku.elements[0].q)
+##    print(siku.elements[0].verts_xyz_loc)
+##    print(siku.elements[0].imat)
+####    print(type(siku.elements[0].flag_state))
+####    print(siku.elements[0].flag_state)
+####    print(type(siku.elements[0].velo[0]))
+####    print(siku.elements[0].velo)
+##    print(siku.elements[0].gh)
+##    print(siku.elements[0].monitor)
+##    print(siku.elements[0].control)  
+##    
+##    hl = None
+    input()
 
     # ------------------------- speed sattings ----------------------------
 
@@ -361,6 +407,9 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##    #static polygons (generally shores) may be simply passed
 ##    if st & element.Element.f_static:
 ##        return
+
+##    print(st)
+##    input()
     
     # create actual quaternion
     q = mathutils.Quaternion( Q )
