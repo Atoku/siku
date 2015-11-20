@@ -50,6 +50,13 @@ public:
 //  //! \param[in] file_name name of file to load from
 //  int load ( Globals& siku, const string& file_name );
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  //! \brief loads element data from specified file
+  //! \param[in] siku all global variables
+  //! \param[in] file_name name of file to load from
+  int load_elements( Globals& siku, const string& filename);
+
 private:
 
   //! \brief main object for high I/O put here to avoid extra type registrations
@@ -60,12 +67,25 @@ private:
   //! \param[in] siku global variables
   void presave_verts( const Globals& siku );
 
-//// YET UNTESTED
+  //! save globals.elements
+  void save_elements( const Globals& siku );
+
+  //! save globals.info
   void save_info( const Globals& siku );
+
+  //! save globals.planet
   void save_planet( const Globals& siku );
+
+  //! save globals.materials
   void save_materials( const Globals& siku );
+
+  //! save globals.vecfield
   void save_vecfield( const Globals& siku );
+
+  //! save globals.diagnostics (seems not working)
   void save_diagnostics( const Globals& siku );
+
+  //! save globals.contacts
   void save_condet( const Globals& siku );
 
   // ----------------------- support methods --------------------------------

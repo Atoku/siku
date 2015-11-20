@@ -63,11 +63,15 @@ public:
   //! \brief flag state for monitored object that exchanges
   //! information with python script
   static const unsigned int F_MONITORED  {0x10};
-  //! special flag for special 'marked' elements
-  static const unsigned int F_SPECIAL {0x20};
+  //! \brief special flag for special 'marked' elements
+  static const unsigned int F_SPECIAL {0x20}; // aka 32
+
+  //! \brief technical flag for NOT_NEW elements, means those elements were
+  //! either loaded from snapshot or already processed by dynamics/position
+  static const unsigned int F_PROCESSED {0x40};  // aka 64
 
   //! \brief flag state for elements with any kind of error properties
-  static const unsigned int F_ERRORED {0x80};
+  static const unsigned int F_ERRORED {0x80};  // aka 128
 
 
   // --------------- Not changing handling parameters ----------------

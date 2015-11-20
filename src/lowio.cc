@@ -79,6 +79,13 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_info, Info, rundate, stdtypes.t_string );
   dtype_freg( stdtypes.t_info, Info, version, stdtypes.t_string );
 
+  // planet
+  stdtypes.t_planet =  H5Tcreate( H5T_COMPOUND, sizeof( Planet ) );
+  dtype_freg( stdtypes.t_planet, Planet, R, stdtypes.t_double );
+  dtype_freg( stdtypes.t_planet, Planet, R2, stdtypes.t_double );
+  dtype_freg( stdtypes.t_planet, Planet, R_rec, stdtypes.t_double );
+  dtype_freg( stdtypes.t_planet, Planet, R2_rec, stdtypes.t_double );
+
   // time
   typedef ModelTimeTypes::timestamp mytime; // for short
   stdtypes.t_time =  H5Tcreate( H5T_COMPOUND, sizeof( mytime ) );

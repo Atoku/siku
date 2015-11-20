@@ -28,7 +28,7 @@ namespace Coordinates
   //! \param[in] q quaternion
   //! \param[out] plat pointer to latitude
   //! \param[out] plon pointer to longintude
-  void sph_by_quat( quat& q, double* plat, double* plon );
+  void sph_by_quat( const quat& q, double* plat, double* plon );
 
   //! \brief Returns local (x, y, z) representation of global (x, y, z) with
   //! the position given by quaternion 'q'
@@ -98,6 +98,13 @@ namespace Coordinates
   //! \param[in] n_velo north amplitute of velocisy
   vec3d geo_to_cart_surf_velo( const double& lat, const double& lon,
 		  const double& e_velo, const double& n_velo );
+
+  //! \brief Returns east-north representation of xyz vector given in local
+  //! coords on unit sphere
+  //!
+  //! \param[in] q - position quaternion
+  //! \param[in] xyz - 3d vector in local coordinates (Z component is ignored)
+  vec3d xyz_loc_to_en_geo( const quat& q, const vec3d& xyz ); // incomplete
 
   //! \brief converts degrees to radians
   inline double deg_to_rad( const double& deg ){ return deg / 180 * M_PI; }

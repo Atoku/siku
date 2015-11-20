@@ -33,8 +33,11 @@ void Globals::post_init()
 
   for( size_t i =0; i < es.size(); ++i )
     {
-      // setting elements id
+      // setting new elements id
       es[i].id = i;
+
+      if( es[i].flag & Element::F_PROCESSED ) continue; //only for new elements
+
 
       // setting default (loaded from .py) velocity and rotation
       double lat, lon;
@@ -74,6 +77,9 @@ void Globals::post_init()
       size_t size = points.size();
       for( auto& e : es )
         {
+          if( e.flag & Element::F_PROCESSED )  // only for new elements
+            continue;
+
           for( size_t i = 0; i < size; ++i )
             {
               if( e.contains( points[i] ) )

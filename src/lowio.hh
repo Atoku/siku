@@ -153,6 +153,7 @@ private:
     hid_t t_matlayarr;
     hid_t t_elemgh;
     hid_t t_info;
+    hid_t t_planet;
 
     // complex
     hid_t t_material;

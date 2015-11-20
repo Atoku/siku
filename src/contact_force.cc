@@ -38,6 +38,10 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
   Element &e1 = siku.es[i1];
   Element &e2 = siku.es[i2];
 
+  // TODO: such errors should be removed by removing their reason
+  if( (e1.flag & Element::F_ERRORED) || (e2.flag & Element::F_ERRORED) )
+    return;
+
   mat3d src_to_dest = loc_to_loc_mat( e1.q, e2.q ); // !static
   mat3d dest_to_src = loc_to_loc_mat( e2.q, e1.q ); // !static
   vec3d tv; // !static

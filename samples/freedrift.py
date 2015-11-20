@@ -217,8 +217,6 @@ def main():
 ##        # all elements in the list
 ##        siku.elements.append( E )
 
-
-
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
 ##    siku.defaults.boarder_mark = 1
@@ -247,7 +245,8 @@ def main():
 ##    print(siku.elements[0].gh)
 ##    print(siku.elements[0].monitor)
 ##    print(siku.elements[0].control)    
-##    
+##
+    
     hl = hload('save_test.h5')
     hl.load()
     print('\n')
@@ -270,7 +269,7 @@ def main():
 ##    print(siku.elements[0].control)  
 ##    
 ##    hl = None
-    input()
+##    input()
 
     # ------------------------- speed sattings ----------------------------
 

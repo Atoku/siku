@@ -32,7 +32,7 @@ void mproperties( Globals& siku )
 //    cout<<"Cleared: "<<count<<" Elements after cleaning errors: "
 //        <<siku.es.size()<<endl;
 
-  for ( auto & e: siku.es )
+  for ( Element & e: siku.es )
     {
       if( e.flag & Element::F_ERRORED )
         continue;
@@ -78,7 +78,7 @@ void mproperties( Globals& siku )
       Material *pmat = &siku.ms[ e.imat ]; // short link to material
 
       // mass update
-      double m = 0;
+      double m = 0.;
       for ( size_t i = 0; i < MAT_LAY_AMO; ++i )
         {
           m += pmat->layers[i].thickness * pmat->layers[i].rho * e.gh[i];
@@ -104,5 +104,8 @@ void mproperties( Globals& siku )
       // clearing the force and the torque
       e.F = nullvec;
       e.N = 0;
+
+      // marking element as it was already processed
+      e.flag |= Element::F_PROCESSED;
     }
 }

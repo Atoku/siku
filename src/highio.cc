@@ -49,39 +49,7 @@ int Highio::save( const Globals& siku )
                     &mt_dt, "Saving frequency time step", "TODO: fill" );
   
   // saving elements
-  PlainElement* El = new PlainElement[siku.es.size()];
-  for(unsigned long i=0;i<siku.es.size();i++)
-    {
-      El[i].flag = siku.es[i].flag;
-      El[i].mon_ind = siku.es[i].mon_ind;
-      El[i].con_ind = siku.es[i].con_ind;
-      El[i].id = siku.es[i].id;
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      El[i].q = siku.es[i].q;
-      El[i].Glob = siku.es[i].Glob;
-      El[i].V = siku.es[i].V;
-      El[i].m = siku.es[i].m;
-      El[i].I = siku.es[i].I;
-      El[i].W = siku.es[i].W;
-      El[i].F = siku.es[i].F;
-      El[i].N = siku.es[i].N;
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      El[i].imat = siku.es[i].imat;
-      El[i].igroup = siku.es[i].igroup;
-      El[i].i = siku.es[i].i;
-      El[i].A = siku.es[i].A;
-      El[i].sbb_rmin = siku.es[i].sbb_rmin;
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      for( unsigned int j = 0; j < MAT_LAY_AMO; ++j )
-        {
-          El[i].gh[j] = siku.es[i].gh[j];
-        }
-    }
-//  lowio.save_array( lowio.type_element(), "Elements/Elements",
-//                    siku.es.data(), siku.es.size(), "TODO:fill", "TODO:fill" );
-  lowio.save_array( lowio.type_element(), "Elements/Elements",
-                     El, siku.es.size(), "TODO: fill", "TODO: fill" );
-  delete[]El;
+  save_elements( siku );
 
   // saving element groups
   vector<string> astrs;
@@ -149,6 +117,47 @@ void Highio::presave_verts( const Globals& siku )
 
 //---------------------------------------------------------------------
 
+void Highio::save_elements( const Globals& siku )
+{
+  PlainElement* El = new PlainElement[siku.es.size()];
+  for(unsigned long i=0;i<siku.es.size();i++)
+    {
+      El[i].flag = siku.es[i].flag;
+      El[i].mon_ind = siku.es[i].mon_ind;
+      El[i].con_ind = siku.es[i].con_ind;
+      El[i].id = siku.es[i].id;
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      El[i].q = siku.es[i].q;
+      El[i].Glob = siku.es[i].Glob;
+
+      El[i].V = siku.es[i].V; // TODO: velo should be saved in global coords
+
+      El[i].m = siku.es[i].m;
+      El[i].I = siku.es[i].I;
+      El[i].W = siku.es[i].W;
+      El[i].F = siku.es[i].F;
+      El[i].N = siku.es[i].N;
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      El[i].imat = siku.es[i].imat;
+      El[i].igroup = siku.es[i].igroup;
+      El[i].i = siku.es[i].i;
+      El[i].A = siku.es[i].A;
+      El[i].sbb_rmin = siku.es[i].sbb_rmin;
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      for( unsigned int j = 0; j < MAT_LAY_AMO; ++j )
+        {
+          El[i].gh[j] = siku.es[i].gh[j];
+        }
+    }
+//  lowio.save_array( lowio.type_element(), "Elements/Elements",
+//                    siku.es.data(), siku.es.size(), "TODO:fill", "TODO:fill" );
+  lowio.save_array( lowio.type_element(), "Elements/Elements",
+                     El, siku.es.size(), "TODO: fill", "TODO: fill" );
+  delete[]El;
+}
+
+//---------------------------------------------------------------------
+
 void Highio::save_info( const Globals& siku )
 {
   lowio.save( lowio.stdtypes.t_info, "Info/Info", &siku.info, 1,
@@ -170,14 +179,16 @@ void Highio::save_info( const Globals& siku )
 
 void Highio::save_planet( const Globals& siku )
 {
-  lowio.save_value( lowio.stdtypes.t_double, "Planet/R",
-                      &siku.planet.R, "TODO: fill", "TODO: fill" );
-  lowio.save_value( lowio.stdtypes.t_double, "Planet/R_rec",
-                      &siku.planet.R_rec, "TODO: fill", "TODO: fill" );
-  lowio.save_value( lowio.stdtypes.t_double, "Planet/R2",
-                      &siku.planet.R2, "TODO: fill", "TODO: fill" );
-  lowio.save_value( lowio.stdtypes.t_double, "Planet/R2_rec",
-                      &siku.planet.R2_rec, "TODO: fill", "TODO: fill" );
+  lowio.save_value(lowio.stdtypes.t_planet, "Planet/Planet", &siku.planet,
+                   "TODO: fill", "TODO: fill" );
+//  lowio.save_value( lowio.stdtypes.t_double, "Planet/R",
+//                      &siku.planet.R, "TODO: fill", "TODO: fill" );
+//  lowio.save_value( lowio.stdtypes.t_double, "Planet/R_rec",
+//                      &siku.planet.R_rec, "TODO: fill", "TODO: fill" );
+//  lowio.save_value( lowio.stdtypes.t_double, "Planet/R2",
+//                      &siku.planet.R2, "TODO: fill", "TODO: fill" );
+//  lowio.save_value( lowio.stdtypes.t_double, "Planet/R2_rec",
+//                      &siku.planet.R2_rec, "TODO: fill", "TODO: fill" );
 }
 
 //---------------------------------------------------------------------
@@ -456,6 +467,66 @@ int Highio::save_nmc( const string& loc, void* pnmc)
 
 //---------------------------------------------------------------------
 
+int Highio::load_elements( Globals& siku, const string& filename )
+{
+  //file init and read dimensions
+  lowio.init( filename, lowio.ACCESS_F_READONLY );
+  Dims dims;
+  dims.elem_s = lowio.get_dim("Elements/Elements");
+  dims.vert_s = lowio.get_dim("Elements/Vertices");
+
+  siku.es.resize( dims.elem_s );
+
+  PlainElement* El = new PlainElement[siku.es.size()];
+  lowio.read( "Elements/Elements", El );
+  for( unsigned long i=0; i < siku.es.size(); i++ )
+    {
+      siku.es[i].flag = El[i].flag;
+      siku.es[i].mon_ind = El[i].mon_ind;
+      siku.es[i].con_ind = El[i].con_ind;
+      siku.es[i].id = El[i].id;
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      siku.es[i].q = El[i].q;
+      siku.es[i].Glob = El[i].Glob;
+      siku.es[i].V = El[i].V;
+      siku.es[i].m = El[i].m;
+      siku.es[i].I = El[i].I;
+      siku.es[i].W = El[i].W;
+      siku.es[i].F = El[i].F;
+      siku.es[i].N = El[i].N;
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      siku.es[i].imat = El[i].imat;
+      siku.es[i].igroup = El[i].igroup;
+      siku.es[i].i = El[i].i;
+      siku.es[i].A = El[i].A;
+      siku.es[i].sbb_rmin = El[i].sbb_rmin;
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      for( unsigned int j = 0; j < MAT_LAY_AMO; ++j )
+        {
+          siku.es[i].gh[j] = El[i].gh[j];
+        }
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      siku.es[i].P.clear();
+    }
+  delete[] El;
+
+  // verts
+  verts.resize( dims.vert_s );
+  lowio.read( "Elements/Vertices", verts.data() );
+
+  for( unsigned long i=0; i < verts.size(); i++ )
+    {
+      unsigned long ind = verts[i].elem_id;
+      vec3d pos = verts[i].pos;
+      siku.es[ ind ].P.push_back( pos );
+    }
+
+  lowio.release();
+
+  return 0;
+}
+
+//---------------------------------------------------------------------
 
 void Highio::load_dims( Highio::Dims& dims )
 {

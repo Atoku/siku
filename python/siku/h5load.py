@@ -55,7 +55,7 @@ class PlainElement:
 
     def load( self, dataset ):
         ''' Method for loding from h5 dataset '''
-        self.flag = dataset[0] 
+        self.flag = dataset[0]
         self.mon_ind = dataset[1]
         self.con_ind = dataset[2]
         self.id = dataset[3]
@@ -86,14 +86,14 @@ class PlainElement:
         '''
         el = element.Element()
         
-        el.A = float( self.A )
-        el.i = float( self.i )
-        el.sbb_rmin = float( self.sbb_rmin )
+        el.A = self.A
+        el.i = self.i
+        el.sbb_rmin = self.sbb_rmin
         el.q = self.q
         el.verts_xyz_loc = self.P
         
-        el.imat = self.imat
-        el.flag_state = self.flag
+        el.imat = int( self.imat )
+        el.flag_state = int( self.flag )
         el.velo = self.V
         el.set_gh( self.gh, mats[ self.imat ].to_mat() )
         

@@ -14,7 +14,7 @@
 namespace Coordinates
 {
   void
-  sph_by_quat ( quat& q, double* plat, double* plon )
+  sph_by_quat ( const quat& q, double* plat, double* plon )
   {
 //    // hardcoded result of multiplication of rotation matrix and (0, 0, 1)^T
 //    vec3d V( 2.*(q.x*q.z + q.w*q.y), 2.*(q.y*q.z - q.w*q.x),
@@ -58,4 +58,19 @@ namespace Coordinates
   }
 
 //---------------------------------------------------------------------
+
+  vec3d xyz_loc_to_en_geo( const quat& q, const vec3d& xyz )  // incomplete
+  {
+    vec3d v = loc_to_glob( q, xyz );
+//    double lon, lat;
+//
+//    sph_by_quat( q, &lat, &lon );
+
+
+
+    return v;
+  }
+
+//---------------------------------------------------------------------
+
 }
