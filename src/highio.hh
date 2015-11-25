@@ -29,8 +29,10 @@ public:
 
   // ---------------------------------------------------------------------
 private:
+
   // vector of polygon vertices for saving and loading
   vector<Element::vertex> verts;
+
 public:
 
   static const int STATUS_OK       { 0x0 }; //!< OK status code

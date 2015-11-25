@@ -50,6 +50,10 @@ static const unsigned int MAT_LAY_AMO = 10; // WTF size_t does not work?!
 //! Default name for Lua configuration file
 #define SIKU_DEFAULT_PYTHON "sikucfg.py"
 
+// --------------------------------------------------------------------------
+// =============================== GLM ======================================
+// --------------------------------------------------------------------------
+
 //===== GLM =====
 // removing degrees support to avoid warning message
 #define GLM_FORCE_RADIANS

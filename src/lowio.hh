@@ -19,6 +19,39 @@ extern "C" {
 
 #include "globals.hh"
 
+class TEL
+{
+public:
+  // --------------- Not changing handling parameters ----------------
+
+  unsigned int flag { 0 };
+  unsigned long mon_ind { 0 };
+  unsigned long con_ind { 0 };
+  unsigned long id { 0 };
+
+  // --------------- Rapidly changing parameters ----------------------
+
+  quat q;
+  vec3d Glob = nullvec;
+  vec3d V = nullvec;
+  double m { 0 };
+  double I { 0 };
+  vec3d W = nullvec;
+  vec3d F = nullvec;
+  double N {0};
+
+  // --------------- Not changing state parameters -------------------
+
+  unsigned long imat { 0 };
+  unsigned long igroup { 0 };
+  double i { 0 };
+  double A { 0 };
+  double sbb_rmin { 0 };
+
+  //double gh[ MAT_LAY_AMO ];
+  //vector<vec3d> P;
+};
+
 //! \brief Class for working with HDF5 in Siku 
 class Lowio
 {
