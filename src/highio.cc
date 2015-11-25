@@ -100,7 +100,7 @@ int Highio::save( const Globals& siku )
   return status;
 }
 
-//---------------------------------------------------------------------
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void Highio::presave_verts( const Globals& siku )
 {
@@ -288,7 +288,7 @@ int Highio::save_diag ( const string& location, void* pdiag )
 
 int Highio::save_material ( const string& location, void* pmat )
 {
-  Material* mat = (Material*) pmat;
+  //Material* mat = (Material*) pmat;
   int ret = 0;
 
   lowio.save_material( location, pmat, string("No taste, no color, nothing") );

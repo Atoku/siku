@@ -21,6 +21,23 @@ from   siku import gmt_Plotter
 
 #======================== Technical classes and functions ====================
 
+##class Wind:
+##    ''' Technical class for loading winds '''
+##    
+##    def load_nmc( self, file ):
+##        ''' Method for loading nmc wind vecdield '''
+##
+##        self.lats = []
+##        self.lons = []
+##        self.vec = []
+##        for l in file['Wind/Grid']:
+##            self.lats.append( l[0] )
+##            self.lons.append( l[1] )
+##            ##self.vec.append(  ) ##dis is the problem
+##            
+##        
+##    pass
+
 class PlainElement:
     ''' Siku: class for loading full runtime info about element.
     Has more fields then Element, but less functionality '''
@@ -176,6 +193,7 @@ class Loader:
     def __init__( self, filename = None ):
         ''' Default initializer '''
         self.filename = filename
+        self.file = None
         self.info = Info()
         self.mats = []
         self.els = []
@@ -183,6 +201,13 @@ class Loader:
         self.mons = []
         self.cons = []
         self.conts = []
+        
+        self.wind = None
+        self.wind_source = None
+
+        # preopen file if name is given
+        if self.filename:
+            self.file = h5py.File( self.filename, 'r' )
 
     def load( self, filename = None ):
         ''' Main high-level method. Calls numerous other methods and
@@ -190,35 +215,79 @@ class Loader:
         if filename:
             self.filename = filename
 
-        # no input check
-        if self.filename == None:
+        # optional opening file
+        if self.filename and self.file == None:
+            self.file = h5py.File( self.filename, 'r' )
+
+        # bad input check
+        if self.filename == None and self.file == None:
             return
 
-        # opening file
-        file = h5py.File( self.filename, 'r')
-
         # loading info
-        self.info.load( file['Info/Info'][0] )
+        self.info.load( self.file['Info/Info'][0] )
         
-        # loading materials
-        self.mats = [ PlainMat( d ) for d in file['Materials/Materials'] ]
+        # loading  stuff
+        self.load_mats()  # materials
+        self.load_els()  # elements and vertices
+        self.load_fnames()  # monitor and control functions` names
+        self.load_conts()  # contacts
 
-        # loading elements and vertices
-        self.els = [ PlainElement( d ) for d in file['Elements/Elements'] ]
-        self.verts = [ load_vertex( d ) for d in file['Elements/Vertices'] ]
+    def load_els( self ):
+        ''' Load elements from previously opened file '''
+        # bad input check
+        if self.file == None:
+            return
+        
+        self.els = [ PlainElement( d ) for d in self.file['Elements/Elements'] ]
+        self.verts = [ load_vertex( d ) for d in
+                       self.file['Elements/Vertices'] ]
         [ self.els[ v[0] ].P.append( v[1] )  for v in self.verts ]
-        
-        # loading monitor functions` names
-        self.mons = [ d.decode() for d in file['Monitor functions'] ]
 
-        # loading control functions` names
-        self.cons = [ d.decode() for d in file['Control functions'] ]
+    def load_mats( self ):
+        ''' Load materials from previously opened file '''
+        # bad input check
+        if self.file == None:
+            return
 
-        # loading contacts
-        self.conts = [ ( d[0], d[1], d[2] ) for d in file['Contacts/Contacts'] ]
+        self.mats = [ PlainMat( d ) for d in self.file['Materials/Materials'] ]
+
+    def load_fnames( self ):
+        ''' Load monitoring and control functions` names from previously
+        opened file '''
+        # bad input check
+        if self.file == None:
+            return
+
+        self.mons = [ d.decode() for d in self.file['Monitor functions'] ]
+        self.cons = [ d.decode() for d in self.file['Control functions'] ]
+
+    def load_conts( self ):
+        ''' Load contacts list from previously opened file '''
+        # bad input check
+        if self.file == None:
+            return
+
+        self.conts = [ ( d[0], d[1], d[2] ) for d in
+                       self.file['Contacts/Contacts'] ]
+
+##    def load_wind( self ):
+##        ''' Load wind grid from previously opened file '''
+##        # bad input check
+##        if self.file == None:
+##            return
+##
+##        # different sources
+##        self.wind_source = self.file['Wind/Source'][0]
+##
+##        if self.wind_source == 2:  #nmc wind grid
+##            self.wind = Wind()
+##            self.wind.load_nmc( self.file )
+
+#-----------------------------------------------------------------------------        
 
     def extract_els( self ):
-        ''' output method - returns list of elements '''
+        ''' output method - returns list of elements. Require loaded monitor
+        and control functions '''
         return [ e.to_element( self.mons, self.cons, self.mats )
                  for e in self.els ]
 

@@ -26,6 +26,7 @@ class Element:
     f_steady = 0x2
     f_static = 0x4
     f_special = 0x20
+    f_errored = 0x80 # aka 128
 
     def __init__( self, polygon = None, imat = None, st_loc_velo = None ):
         ''' Inits element. May init from polygon and imat. '''

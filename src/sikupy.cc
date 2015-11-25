@@ -390,7 +390,7 @@ int
 Sikupy::read_materials ( vector < Material >& ms )
 {
   int success = 1;
-  std:vector<double> tvec;
+  std::vector<double> tvec;
 
   PyObject *pSiku_materials;    // siku.materials list
 

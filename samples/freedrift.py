@@ -67,10 +67,10 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source = siku.WIND_SOURCES['TEST']
-    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w.make_test_field( 0.,0. )
-    siku.wind = w
+    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
+##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+##    w.make_test_field( 0.,0. )
+##    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -248,7 +248,12 @@ def main():
 ##
     
     hl = hload('save_test.h5')
-    hl.load()
+    #hl = hload('siku-2014-01-01-12:50:46.h5')
+
+    #hl.load()
+    hl.load_fnames()
+    hl.load_mats()
+    hl.load_els()
     print('\n')
 ##
     siku.elements = hl.extract_els()
@@ -406,6 +411,8 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##    #static polygons (generally shores) may be simply passed
 ##    if st & element.Element.f_static:
 ##        return
+    if st & element.Element.f_errored:
+        return
 
 ##    print(st)
 ##    input()

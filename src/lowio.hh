@@ -124,7 +124,7 @@ public:
 private:
 
   hid_t fileid { EMPTY_ID };    //!< File ID with file to work with 
-  unsigned int flags;           //!< Some extra info
+  unsigned int flags { 0 };           //!< Some extra info
   string filename;              //!< File name
   hid_t group_time_id { EMPTY_ID };  //!< Group ID for time data
   hid_t group_data_id { EMPTY_ID };  //!< Group ID for numerical data data 

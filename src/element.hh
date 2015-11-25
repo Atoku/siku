@@ -41,11 +41,15 @@ public:
   //! \brief struct for marking and saving vertices
   struct vertex
   {
-    unsigned long elem_id{ 0 };
-    vec3d pos = nullvec ;
+    unsigned long elem_id;
+    vec3d pos;
 
-    vertex(){};
-    vertex(const vec3d& v, const size_t& id): pos( v ), elem_id( id ) {}
+    vertex(const vec3d& v = nullvec, const size_t& id = 0)
+    //: pos( v ), elem_id( id ) {} // <- dis spawns a lot of warnings
+    {
+      pos = v;
+      elem_id = id;
+    }
   };
 
   //! \brief flag state for free body element

@@ -36,19 +36,26 @@ void Globals::post_init()
       // setting new elements id
       es[i].id = i;
 
-      if( es[i].flag & Element::F_PROCESSED ) continue; //only for new elements
+      vec3d temp;
 
+      if( ! (es[i].flag & Element::F_PROCESSED) )  //only for new elements
+        {
+          // setting default (loaded from .py) velocity and rotation
+          double lat, lon;
+          sph_by_quat ( es[i].q, &lat, &lon );
 
-      // setting default (loaded from .py) velocity and rotation
-      double lat, lon;
-      sph_by_quat( es[i].q, &lat, &lon );
+          // for new elements velocity must be inputed in East-North terms
+          temp = glob_to_loc ( es[i].q, geo_to_cart_surf_velo(
+              lat, lon, es[i].V.x, es[i].V.y ) );
+        }
+      else
+        {
+          temp = es[i].V;
+        }
 
-      vec3d temp = glob_to_loc(
-          es[i].q, geo_to_cart_surf_velo( lat, lon, es[i].V.x, es[i].V.y ) );
-
-      // velocity must be inputed in East-North terms
       es[i].W = vec3d( -temp.y * planet.R_rec, temp.x * planet.R_rec,
                        es[i].V.z );
+
     }
 
   if( mark_boarders )
