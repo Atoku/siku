@@ -208,8 +208,11 @@ void Highio::save_materials( const Globals& siku )
 
 void Highio::save_vecfield( const Globals& siku )
 {
-  lowio.save_value(lowio.stdtypes.t_ulong, string("Wind/Source"),
+  lowio.save_value( lowio.stdtypes.t_ulong, string("Wind/Source type"),
                    &siku.wind.FIELD_SOURCE_TYPE, "TODO: fill", "TODO: fill" );
+
+  lowio.save_astrings( siku.wind_crs, string( "Wind/Source files" ),
+                         string( "TODO: fill" ) );
 
   switch( siku.wind.FIELD_SOURCE_TYPE )
   {
@@ -356,8 +359,6 @@ int Highio::save_material ( const string& location, void* pmat )
 //
 //  return status;
 
-
-
   return ret;
 }
 
@@ -379,7 +380,10 @@ int Highio::save_nmc( const string& loc, void* pnmc)
   NMCVecfield* nmc = (NMCVecfield*) pnmc;
   size_t lons = nmc->get_lon_size(), lats = nmc->get_lat_size();
 
-  res = lowio.save_value( lowio.stdtypes.t_size, loc+string("Size Lon"), &lons,
+  res = lowio.save_value( lowio.stdtypes.t_ulong, string("Wind/Time index"),
+                          &nmc->time_step, "TODO: fill", "TODO: fill" );
+
+  res |= lowio.save_value( lowio.stdtypes.t_size, loc+string("Size Lon"), &lons,
                           "TODO: fill", "TODO: fill" );
   res |= lowio.save_value( lowio.stdtypes.t_size, loc+string("Size Lat"), &lats,
                           "TODO: fill", "TODO: fill" );
@@ -485,7 +489,7 @@ int Highio::load_elements( Globals& siku, const string& filename )
       siku.es[i].mon_ind = El[i].mon_ind;
       siku.es[i].con_ind = El[i].con_ind;
       siku.es[i].id = El[i].id;
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
       siku.es[i].q = El[i].q;
       siku.es[i].Glob = El[i].Glob;
       siku.es[i].V = El[i].V;
@@ -494,18 +498,18 @@ int Highio::load_elements( Globals& siku, const string& filename )
       siku.es[i].W = El[i].W;
       siku.es[i].F = El[i].F;
       siku.es[i].N = El[i].N;
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
       siku.es[i].imat = El[i].imat;
       siku.es[i].igroup = El[i].igroup;
       siku.es[i].i = El[i].i;
       siku.es[i].A = El[i].A;
       siku.es[i].sbb_rmin = El[i].sbb_rmin;
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
       for( unsigned int j = 0; j < MAT_LAY_AMO; ++j )
         {
           siku.es[i].gh[j] = El[i].gh[j];
         }
-      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
       siku.es[i].P.clear();
     }
   delete[] El;

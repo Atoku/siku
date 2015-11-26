@@ -54,7 +54,7 @@ def main():
         'ice': 0,
     }
     
-    siku.defaults.wind_source = siku.WIND_SOURCES['NONE']
+    siku.defaults.wind_source_type = siku.WIND_SOURCES['NONE']
 
     # ---------------------------------------------------------------------
     # date/time settings

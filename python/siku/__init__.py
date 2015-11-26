@@ -77,7 +77,8 @@ defaults = Defaults()
 
 # contact detection default method
 defaults.contact_method = CONTACT_METHODS['sweep']
-defaults.wind_source = WIND_SOURCES['TEST']
+defaults.wind_source_type = WIND_SOURCES['TEST']
+defaults.wind_source_names = []
 defaults.loadfile = ''
 defaults.boarders = 'boarders.ll'
 defaults.boarder_mark = 0

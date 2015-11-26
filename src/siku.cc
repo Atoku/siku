@@ -124,6 +124,7 @@ main ( int argc, char* argv[] )
   do
     {
       // ------------------------- preactions ------------------------------
+
       double dt = siku.time.get_dt ();
 
       cout<<"\n Step: "<<siku.time.get_n()<<endl;
@@ -183,6 +184,7 @@ main ( int argc, char* argv[] )
 
       // --- END OF LOOP ---
       siku.time.increment ();
+
       // ------------------------------------------------------------------
     }
   while ( !siku.time.is_done () );

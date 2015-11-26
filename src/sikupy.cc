@@ -169,7 +169,7 @@ Sikupy::read_default( Globals& siku )
   Py_DECREF( pTemp );
 
   // read wind source
-  pTemp = PyObject_GetAttrString ( pDef, "wind_source" );
+  pTemp = PyObject_GetAttrString ( pDef, "wind_source_type" );
   assert( pTemp );
 
   success &= read_ulong( pTemp, i );
@@ -843,9 +843,12 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
    * TODO: check while pSiku_wind is really the NMCSurfaceVField
    */
 
-  // preparing grid
-  PyObject* pTemp;
+  // readeng time index
+  PyObject* pTemp = PyObject_GetAttrString ( pSiku_wind, "time" ); //new
+  read_long( pTemp, vField.time_step );
+  Py_DECREF( pTemp );
 
+  // preparing grid
   PyObject* Lat = PyObject_GetAttrString ( pSiku_wind, "lat" ); //new
   size_t lat_s = PyList_Size ( Lat );
 
@@ -959,7 +962,7 @@ Sikupy::fcall_pretimestep ( Globals& siku )
   read_ulong ( pReturnValue, siku.callback_status );
 
   // Calls for inner methods. Mask is being checked inside each of them
-  status |= fcall_update_nmc_wind ( siku );
+  status |= fcall_update_wind ( siku );
 
   Py_DECREF( pReturnValue );
 
@@ -991,7 +994,7 @@ Sikupy::fcall_aftertimestep ( Globals& siku )
 //---------------------------------------------------------------------
 
 int
-Sikupy::fcall_update_nmc_wind ( Globals& siku )
+Sikupy::fcall_update_wind ( Globals& siku )
 {
   if ( !( siku.callback_status & STATUS_WINDS ) )
     return FCALL_OK;
@@ -1002,7 +1005,7 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
   // updating grid with specification of source type
   switch (siku.wind.FIELD_SOURCE_TYPE)
     {
-      case Vecfield::NMC:
+    case Vecfield::NMC:
       // update itself
       cout << "Updating wind. New time is: \n";
 
@@ -1017,16 +1020,29 @@ Sikupy::fcall_update_nmc_wind ( Globals& siku )
       if ( !read_nmc_vecfield ( *siku.wind.NMCVec, "wind" ) )
         return FCALL_ERROR_NOWINDS;
 
-      break;
+      // read wind source names
+      PyObject* pDef;
+      pDef = PyObject_GetAttrString ( pSiku, "defaults" ); // Defaults handler
+      assert( pDef );
 
-      case Vecfield::TEST:
-      cout<<"Test wind field: no need to update\n";
-      break;
+      pTemp = PyObject_GetAttrString ( pDef, "wind_source_names" ); // List
+      assert( pTemp );
+
+      read_string_vector( pTemp, siku.wind_crs );  // Read names
+
+      Py_DECREF( pTemp );  // clear memory
+      Py_DECREF( pDef );
+
+      break;  //-----------------------------
+
+    case Vecfield::TEST:
+      cout << "Test wind field: no need to update\n";
+      break;  //-----------------------------
 
     default:
-      fatal( 1, "No source specified" );
+      fatal( 1, "No source specified" )      ;
 
-      break;
+      break;  //-----------------------------
     }
 
   siku.callback_status &= ~STATUS_WINDS;
@@ -1348,6 +1364,32 @@ Sikupy::read_string ( PyObject* pstring, string& str )
     return false;
 
   str = string ( PyUnicode_AsUTF8 ( pstring ) );
+
+  return true;
+}
+
+//! \brief reading string list to vector
+bool
+Sikupy::read_string_vector ( PyObject* pstrlist, vector < string >& strv )
+{
+  assert( PyList_Check( pstrlist ) );
+  Py_ssize_t N = PyList_Size ( pstrlist );
+
+  // array sets length
+  strv.resize ( N );
+
+  // reading all the materials in this loop
+  for ( Py_ssize_t i = 0; i < N; ++i )
+    {
+      PyObject* pitem;
+      pitem = PyList_GetItem ( pstrlist, i ); // borrowed
+
+      // type check
+      if ( !PyUnicode_Check( pitem ) )
+        return false;
+
+      strv[i] = string ( PyUnicode_AsUTF8 ( pitem ) );
+    }
 
   return true;
 }

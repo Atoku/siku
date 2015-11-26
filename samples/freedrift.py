@@ -67,7 +67,8 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
+    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
 ##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 ##    w.make_test_field( 0.,0. )
 ##    siku.wind = w
@@ -231,50 +232,21 @@ def main():
     # ---------------------- loading from file ----------------------------
 
     print('file start atempt\n')
-##
-##    print(siku.elements[0].A)
-##    print(siku.elements[0].i)
-##    print(siku.elements[0].sbb_rmin)
-##    print(siku.elements[0].q)    
-##    print(siku.elements[0].verts_xyz_loc)
-##    print(siku.elements[0].imat)
-####    print(type(siku.elements[0].flag_state))
-####    print(siku.elements[0].flag_state)
-####    print(type(siku.elements[0].velo[0]))
-####    print(siku.elements[0].velo)
-##    print(siku.elements[0].gh)
-##    print(siku.elements[0].monitor)
-##    print(siku.elements[0].control)    
-##
     
     hl = hload('save_test.h5')
-    #hl = hload('siku-2014-01-01-12:50:46.h5')
-
-    #hl.load()
+##    #hl = hload('siku-2014-01-01-12:50:46.h5')
+##
+##    #hl.load()
     hl.load_fnames()
     hl.load_mats()
     hl.load_els()
     print('\n')
-##
+
     siku.elements = hl.extract_els()
     siku.materials = hl.extract_mats()
-        
-##    print(siku.elements[0].A)
-##    print(siku.elements[0].i)
-##    print(siku.elements[0].sbb_rmin)
-##    print(siku.elements[0].q)
-##    print(siku.elements[0].verts_xyz_loc)
-##    print(siku.elements[0].imat)
-####    print(type(siku.elements[0].flag_state))
-####    print(siku.elements[0].flag_state)
-####    print(type(siku.elements[0].velo[0]))
-####    print(siku.elements[0].velo)
-##    print(siku.elements[0].gh)
-##    print(siku.elements[0].monitor)
-##    print(siku.elements[0].control)  
-##    
-##    hl = None
-##    input()
+          
+    hl = None
+
 
     # ------------------------- speed sattings ----------------------------
 

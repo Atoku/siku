@@ -18,25 +18,28 @@ from   siku import material
 from   siku import geocoords
 from   siku import regrid
 from   siku import gmt_Plotter
+from   siku import wnd
 
 #======================== Technical classes and functions ====================
 
-##class Wind:
-##    ''' Technical class for loading winds '''
-##    
-##    def load_nmc( self, file ):
-##        ''' Method for loading nmc wind vecdield '''
-##
-##        self.lats = []
-##        self.lons = []
-##        self.vec = []
-##        for l in file['Wind/Grid']:
-##            self.lats.append( l[0] )
-##            self.lons.append( l[1] )
-##            ##self.vec.append(  ) ##dis is the problem
-##            
-##        
-##    pass
+class Wind:
+    ''' Technical class for loading and handling winds '''
+
+    def __init__( self, dataset = None ):
+        '''default constructor analogue'''
+        self.source_type = None
+    
+    def load_nmc( self, file ):
+        ''' Method for loading nmc wind vecdield '''
+
+        self.source_type = file['Wind/Source type'][0]
+        self.uw = wnd.NMCVar( file['Wind/Source files'][0], 'uwnd' )
+        self.vw = wnd.NMCVar( file['Wind/Source files'][1], 'vwnd' )
+        self.time = file['Wind/Time index'][0]
+        
+        self.wind = wnd.NMCSurfaceVField( self.uw, self.vw, self.time )
+            
+    pass
 
 class PlainElement:
     ''' Siku: class for loading full runtime info about element.
@@ -123,7 +126,7 @@ class Info:
     ''' Technical class for storaging various string attributes. '''
 
     def __init__( self ):
-        '''default constructor analogue'''
+        '''Default constructor analogue'''
         self.brief = ''
         self.date = ''
         self.name = ''
@@ -142,7 +145,7 @@ class PlainMat:
     ''' Technical class for loading materials. '''
 
     def __init__( self, dataset = None ):
-        '''default constructor analogue'''
+        '''Default constructor analogue'''
         self.name = ''
         self.E = 0.0
         self.nu = 0.0
@@ -231,6 +234,7 @@ class Loader:
         self.load_els()  # elements and vertices
         self.load_fnames()  # monitor and control functions` names
         self.load_conts()  # contacts
+        self.load_wind()  # wind field (type autodetection)
 
     def load_els( self ):
         ''' Load elements from previously opened file '''
@@ -270,38 +274,42 @@ class Loader:
         self.conts = [ ( d[0], d[1], d[2] ) for d in
                        self.file['Contacts/Contacts'] ]
 
-##    def load_wind( self ):
-##        ''' Load wind grid from previously opened file '''
-##        # bad input check
-##        if self.file == None:
-##            return
-##
-##        # different sources
-##        self.wind_source = self.file['Wind/Source'][0]
-##
-##        if self.wind_source == 2:  #nmc wind grid
-##            self.wind = Wind()
-##            self.wind.load_nmc( self.file )
+    def load_wind( self ):
+        ''' Load wind grid from previously opened file '''
+        # bad input check
+        if self.file == None:
+            return
+
+        # different sources
+        self.wind_source_type = self.file['Wind/Source type'][0]
+
+        if self.wind_source == 2:  #nmc wind grid
+            self.wind = Wind()
+            self.wind.load_nmc( self.file )
 
 #-----------------------------------------------------------------------------        
 
     def extract_els( self ):
-        ''' output method - returns list of elements. Require loaded monitor
+        ''' Output method - returns list of elements. Require loaded monitor
         and control functions '''
         return [ e.to_element( self.mons, self.cons, self.mats )
                  for e in self.els ]
 
     def extract_mats( self ):
-        ''' output method - returns list of materials '''
+        ''' Output method - returns list of materials '''
         return [ m.to_mat() for m in self.mats ]
 
     def extract_mons( self ):
-        ''' output method - returns list of monitor functions` names '''
+        ''' Output method - returns list of monitor functions` names '''
         return self.mons[:]
 
     def extract_cons( self ):
-        ''' output method - returns list of control functions` names '''
+        ''' Output method - returns list of control functions` names '''
         return self.cons[:]
+
+    def extract_wind( self ):
+        ''' Output method - returns reference to Wind handler object '''
+        return self.Wind
 
 #==================================== Main ===================================
 

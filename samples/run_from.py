@@ -67,7 +67,8 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
+    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
    
     # ---------------------------------------------------------------------
     # date/time settings
