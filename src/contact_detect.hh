@@ -40,6 +40,14 @@ enum : unsigned long
   SWEEP_N_PRUNE = 1
 };
 
+// contact state flag (outside of classes for fast access)
+enum ContType: unsigned long
+{
+  NONE = 0,
+  COLLISION = 1,
+  JOINT = 2
+};
+
 //! \brief Functions class: provides several methods for contact detection,
 //! storage and history access
 class ContactDetector
@@ -48,9 +56,11 @@ public:
   //! \brief Inner structure for holding interaction pairs metadata
   struct Contact
   {
-    size_t i1 {0};
-    size_t i2 {0};
-    int step{-1};  // -1 marks default object
+    ContType type { NONE };
+    size_t i1 { 0 };
+    size_t i2 { 0 };
+    int step{ -1 };  // -1 marks default object
+    //double durability{ 0 };  // must be discussed
     Contact(){}
     Contact(const size_t& i1_, const size_t& i2_, const int& s ): step(s)
     {
