@@ -104,14 +104,15 @@ def main():
     #### partially loading
     hl.load_fnames()
     hl.load_mats()
-    hl.load_els()
+    hl.load_els()  # most time spent here (inevitable)
     print('\n')
 
     siku.elements = hl.extract_els()
     siku.materials = hl.extract_mats()
-        
+
+    print('DONE!\n')
     hl = None
-    
+
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------

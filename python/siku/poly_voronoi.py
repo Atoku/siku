@@ -161,15 +161,15 @@ class PolyVor:
 
         if ocean_filter == None:
             ocean_filter = self.default_ocean
-        subprocess.call( ocean_filter, shell=True )
+        subprocess.call( ocean_filter, shell=True )  # most time spent here
 
         if land_filter == None:
             land_filter = self.default_land
-        subprocess.call( land_filter, shell=True )
-                
+        subprocess.call( land_filter, shell=True )  # most time spent here
+
         tc = geofiles.r_lonlati( landf )
         I = { p[2]:p[2] for p in tc }
-
+        
         tc = geofiles.r_lonlati( landf )
         II = { p[2]:p[2] for p in tc }
 
@@ -184,7 +184,7 @@ class PolyVor:
     def clear_the_land( self, ocean_filter=None, \
                         vert_f='temp.lli', filt_vert_f='oceanf.lli' ):
         '''Clears all polygons, that have no vertices located on water'''
-        
+
         tc = []
         for i in range( len ( self.coords ) ):
             p = self.coords[i]
@@ -194,8 +194,8 @@ class PolyVor:
 
         if ocean_filter == None:
             ocean_filter = self.default_ocean
-        subprocess.call( ocean_filter, shell=True )
- 
+        subprocess.call( ocean_filter, shell=True )  # most time spent here
+
         tc = geofiles.r_lonlati( filt_vert_f )
 
         I = { p[2]:p[2] for p in tc }

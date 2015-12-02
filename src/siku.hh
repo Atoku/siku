@@ -177,7 +177,6 @@ inline double vec_len2( const vec3d& vec)
   return vec.x*vec.x + vec.y*vec.y + vec.z*vec.z;
 }
 
-
 inline void print(const point2d& p)
 {
   std::cout<<p.x()<<"\t"<<p.y()<<std::endl;

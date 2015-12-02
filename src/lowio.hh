@@ -31,7 +31,8 @@ public:
   const unsigned int ACCESS_F_EXCLUSIVE     { H5F_ACC_EXCL };
   const unsigned int ACCESS_F_READONLY      { H5F_ACC_RDONLY };
   const unsigned int ACCESS_F_RDWR          { H5F_ACC_RDWR };
-  const hid_t        EMPTY_ID               { 0 };
+  static const hid_t EMPTY_ID               { 0 };  // have to be static for
+                                                    // groups struct inits
 
   //! \brief no dataset found error message for read functions
   const size_t DATASET_MISSING                 { size_t(-1) };
@@ -126,8 +127,20 @@ private:
   hid_t fileid { EMPTY_ID };    //!< File ID with file to work with 
   unsigned int flags { 0 };           //!< Some extra info
   string filename;              //!< File name
-  hid_t group_time_id { EMPTY_ID };  //!< Group ID for time data
-  hid_t group_data_id { EMPTY_ID };  //!< Group ID for numerical data data 
+  struct groups_id
+  {
+    hid_t time_id { EMPTY_ID };  //!< Group ID for time data
+    hid_t data_id { EMPTY_ID };  //!< Group ID for numerical data data
+    hid_t elem_id { EMPTY_ID };
+    hid_t info_id { EMPTY_ID };
+    hid_t wind_id { EMPTY_ID };
+    hid_t diag_id { EMPTY_ID };
+    hid_t diag_mesh_id { EMPTY_ID };
+    hid_t diag_wind_id { EMPTY_ID };
+    hid_t plan_id { EMPTY_ID };
+    hid_t mats_id { EMPTY_ID };
+    hid_t cont_id { EMPTY_ID };
+  } groups;
 
   //! \brief Main types that are created on construction
   struct stdtypes_s
