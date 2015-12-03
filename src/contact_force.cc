@@ -33,8 +33,10 @@ using namespace Coordinates;
 
 // -----------------------------------------------------------------------
 
-void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
+void contact_push( ContactDetector::Contact& c, Globals& siku )
 {
+  size_t i1 = c.i1;
+  size_t i2 = c.i2;
   Element &e1 = siku.es[i1];
   Element &e2 = siku.es[i2];
 
@@ -101,6 +103,9 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
   // calculating center of intersection
   if( poly_res.size() )
     {
+      // mark contact as a 'collision'
+      if( c.type != ContType::JOINT )  c.type = ContType::COLLISION;
+
       //!!!! further point2d algebra operators ('+', '-', ...) are my selfmade
 
       // searching for aim point (force application)
@@ -154,15 +159,29 @@ void contact_push( const size_t& i1, const size_t& i2, Globals& siku )
 
       static const double kw = 0.015;
 
-      // total force consists of velo-component and overlap component
-      vec3d Force =
-          ( kv * Area * dt ) * point_to_vec( v12 ) + //( kv * e1.m * A ) * point_to_vec( v12 ) +
-          kr * force * point_to_vec( ort );
+      vec3d Force = nullvec;
+      // total force consists of kinetic component and overlap component
+      // different force for static (means shores)
+      if( (e1.flag & Element::F_STATIC) || (e2.flag & Element::F_STATIC) )
+        {
+          Force = ( kv * Area * dt ) * point_to_vec( v12 ) +
+              5. / ( 1. - sqrt( 2.*area / ( e1.A + e2.A ) ) ) *
+              kr * force * point_to_vec( ort );
+        }
+      else
+        {
+
+          Force = ( kv * Area * dt ) * point_to_vec( v12 ) +
+              kr * force * point_to_vec( ort );
+        }
 
       // same as torques ( calculated like [r x v] )
-      double torque1 = kw * siku.planet.R_rec * cross( center, vec_to_point( Force ) );
-      double torque2 = kw * siku.planet.R_rec * cross( r2, vec_to_point( Force ) );
-      // distance from point to line http://algolist.manual.ru/maths/geom/distance/pointline.php
+      double torque1 =
+          kw * siku.planet.R_rec * cross( center, vec_to_point( Force ) );
+      double torque2 =
+          kw * siku.planet.R_rec * cross( r2, vec_to_point( Force ) );
+      // distance from point to line
+      // http://algolist.manual.ru/maths/geom/distance/pointline.php
 
       // signs are fitted manually
       e1.F -= Force;

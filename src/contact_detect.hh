@@ -45,7 +45,7 @@ enum ContType: unsigned long
 {
   NONE = 0,
   COLLISION = 1,
-  JOINT = 2
+  JOINT = 2  // aka coalesced
 };
 
 //! \brief Functions class: provides several methods for contact detection,
@@ -60,9 +60,10 @@ public:
     size_t i1 { 0 };
     size_t i2 { 0 };
     int step{ -1 };  // -1 marks default object
-    //double durability{ 0 };  // must be discussed
+    double durability{ 1. };  // must be discussed
     Contact(){}
-    Contact(const size_t& i1_, const size_t& i2_, const int& s ): step(s)
+    Contact(const size_t& i1_, const size_t& i2_, const int& s,
+            const ContType& ct = ContType::NONE ): step(s)
     {
       // first element in contact should remain first in list (lower id)
       if( i1_ < i2_)
@@ -89,12 +90,21 @@ public:
   //! \brief Method for calling contacts detection
   void detect( Globals& siku );
 
+  //! \brief Method for generating 'joint' contacts - hard frozen connections.
+  //! Second optional argument - tolerance of ice elements size. It is actually
+  //! a scaling factor for temporal resizing for overlap detection.
+  void freeze( Globals& siku, double tolerance = 0.01 );
+
 private:
   //! \brief simple method for contacts detection. N^2 complexity.
   void find_pairs( Globals& siku );
 
   //! \brief sweep and prune method for contacts detection.
   void sweep_n_prune( Globals& siku );
+
+  //! \brief smart cleaning of contacts list. 'Frozen' (coalesced) contacts
+  //! remain untouched until destroyed, other are renewed at each step
+  void clear();
 
 };
 

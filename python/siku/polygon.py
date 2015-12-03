@@ -49,7 +49,7 @@ class Polygon:
                        vertex connected to the first vertex.
 
         Updates the state:
-        self.A (float) -- Area of polygon
+        self.A (float) -- Area of polygon (on unit sphere)
         self.I (float) -- Geom. moment of inertia
         self.C (mathutils.Vector) -- Cartesian coordinates of CM
         self.q (mathutils.Quaternion) -- Quaternion representing
@@ -101,7 +101,7 @@ class Polygon:
         polygon as well as total area and geometric moment of inertia.
 
         Returns: A, I, C, Q, poly_xyz, poly_xyz_loc
-        A (float) -- Area of polygon
+        A (float) -- Area of polygon (on unit sphere)
         I (float) -- Geom. moment of inertia (e.g. div by mass: I/m)
         C (mathutils.Vector) -- Cartesian coordinates of center of mass
         Q (mathutils.Quaternion) -- rotation quaternion for polygon

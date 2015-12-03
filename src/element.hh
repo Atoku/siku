@@ -114,7 +114,7 @@ public:
   size_t imat;                  //!< material index
   size_t igroup;                //!< group index
   double i;                     //!< I/m, geometical moment of inertia
-  double A;                     //!< m^2, area of polygon
+  double A;                     //!< m^2, area of polygon (on unit sphere??!!)
   double sbb_rmin;              //!< bounding sphere minimum radius
 
   //OLD //vector<double> gh;

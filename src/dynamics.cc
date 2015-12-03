@@ -23,7 +23,7 @@ void
 dynamics ( Globals& siku, const double dt )
 {
   for ( auto& c : siku.ConDet.cont )
-    contact_push( c.i1, c.i2, siku );
+    contact_push( c, siku );
 
   for ( auto & e : siku.es )
     {

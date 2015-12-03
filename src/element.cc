@@ -1,5 +1,5 @@
 /*
- * Siku: Discrete element method sea-ice model: siku.cc
+ * Siku: Discrete element method sea-ice model
  *
  * Copyright (C) 2013 UAF. Author: Anton Kulchitsky
  *

@@ -117,6 +117,9 @@ main ( int argc, char* argv[] )
 
   // siku.time.print ();
 
+  // yet it is here, but I think it should be somewhere in mproperties or close
+  siku.ConDet.freeze( siku );
+
   cout<<"Elements: "<<siku.es.size()<<endl;
 
   // Main Time Loop

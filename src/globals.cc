@@ -101,6 +101,9 @@ void Globals::post_init()
         }
       cout<<"Done\n\n";
     }
+
+  // freezing start ice blocks
+  //ConDet.freeze( *this );
 }
 
 // --------------------------------------------------------------------------
