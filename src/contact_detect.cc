@@ -20,15 +20,17 @@
  *
  */
 
-#include "globals.hh"
-
-#include "contact_detect.hh"
-using namespace Coordinates;
-
 // we need some sorting!
 #include <algorithm>
 
-// predeclarations
+
+#include "globals.hh"
+#include "contact_detect.hh"
+#include "geometry.hh"
+using namespace Coordinates;
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~ predeclarations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 inline bool el_pointers_x_compare( Element* pe1, Element* pe2 );
 
 void add_cont( Globals& siku, const size_t& i1, const size_t& i2,
@@ -229,76 +231,24 @@ using namespace BG;
 // TODO: move to 'geometric' module
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 {
-  size_t i1 = c.i1;
-  size_t i2 = c.i2;
-  Element &e1 = siku.es[i1];
-  Element &e2 = siku.es[i2];
+  int ires;  // !static? temporal variable to store geometry results
+  vec3d center; // !static
+  double dump;  // !static? temporal dump
+  std::vector<vec3d> loc_P1;  // e1.P vertices in local coords
+  std::vector<vec3d> loc_P2;  // e2.P vertices in local coords
 
-  // TODO: such errors should be removed by removing their reason
-  if ( ( e1.flag & Element::F_ERRORED ) || ( e2.flag & Element::F_ERRORED ) )
-    return;
+  mat3d src_to_dest = loc_to_loc_mat( siku.es[c.i1].q, siku.es[c.i2].q );
+      // !static
+  mat3d dest_to_src = loc_to_loc_mat( siku.es[c.i2].q, siku.es[c.i1].q );
+      // !static
 
-  mat3d src_to_dest = loc_to_loc_mat ( e1.q, e2.q ); // !static
-  mat3d dest_to_src = loc_to_loc_mat ( e2.q, e1.q ); // !static
-  vec3d tv; // !static
-  std::vector < point2d > P1; // !static
-  std::vector < point2d > P2; // !static
+  for( auto& p : siku.es[c.i1].P )
+    loc_P1.push_back( p * tol );
+  for( auto& p : siku.es[c.i2].P )
+    loc_P2.push_back( src_to_dest * p * tol );
 
-  for ( auto& p : e1.P )
-    {
-      P1.push_back ( vec_to_point ( p * tol ) );  // size adjust
-    }
-
-  // localizing e2 vertices
-  for ( auto& p : e2.P )
-    {
-      tv = src_to_dest * ( p * tol );  // size adjust
-      P2.push_back ( vec_to_point ( tv ) );
-    }
-
-  polygon2d poly1; // !static
-  polygon2d poly2; // !static
-  std::vector < polygon2d > poly_res; // !static
-
-  // creating polygons and calculating intersection
-  append ( poly1, P1 );
-  BG::correct ( poly1 );
-  append ( poly2, P2 );
-  BG::correct ( poly2 );
-
-  if ( BG::intersects ( poly1 ) )
-    {
-      //cout<<"e1 self-intersects ---\n";
-      siku.es[i1].flag |= Element::F_ERRORED;
-    }
-  if ( BG::intersects ( poly2 ) )
-    {
-      //cout<<"e2 self-intersects ---\n";
-      siku.es[i2].flag |= Element::F_ERRORED;
-    }
-
-  try
-    {
-      intersection ( poly1, poly2, poly_res );
-    }
-  catch ( boost::geometry::overlay_invalid_input_exception const& e )
-    {
-      cout << "!! intersection error\t";
-      if ( siku.es[i1].flag & Element::F_ERRORED )
-        cout << i1 << "\t";
-      if ( siku.es[i2].flag & Element::F_ERRORED )
-        cout << i2;
-      cout << endl;
-    }
-
-  static point2d center ( 0, 0 ); // !static
-
-  // calculating center of intersection
-  if ( poly_res.size () )
-    {
-      c.type = ContType::JOINT;
-    }
-
+  if( Geometry::intersect( siku.es[c.i1].P, loc_P2, loc_P2, center, dump ) )
+    c.type = ContType::JOINT;
 }
 
 // --------------------------------------------------------------------------

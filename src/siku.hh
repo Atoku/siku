@@ -88,6 +88,11 @@ typedef glm::dquat quat;
 typedef glm::dmat3 mat3d;
 //#endif
 
+inline vec3d rot_90_cw_XY( const vec3d& v )
+{
+  return vec3d( v.y, -v.x, 0. );
+}
+
 ////////////////////////// FOR TESTING ////////////////////////////
 #include <iostream>
 inline void outVec( const vec3d& vec)
