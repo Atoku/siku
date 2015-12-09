@@ -180,9 +180,10 @@ namespace Geometry
      return false;
    }
 
-};
+}
 
 // ==================== Local implementations and utils =====================
+
 using namespace Geometry;
 
 bool _boost_intersect( const vector<vec3d>& p1, const vector<vec3d>& p2,
@@ -277,8 +278,8 @@ bool _manual_intersect( const vector<vec3d>& poly1, const vector<vec3d>& poly2,
         }
     }
 
-  ///////////////////////////// UNDODE HERE
-  UNDONE!
+  ///////////////////////////// UNDONE HERE
+  //UNDONE!
 
   return false;
 }

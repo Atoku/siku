@@ -38,10 +38,13 @@ siku_SOURCES = siku.cc siku.hh \
 	nmc_reader.hh nmc_reader.cc \
 	options.cc options.hh \
 	planet.hh \
+	polygon2d.hh \
 	position.hh position.cc \
 	scheduler.hh scheduler.cc \
 	sikupy.hh sikupy.cc \
-	vecfield.cc vecfield.hh
+	vecfield.cc vecfield.hh \
+	vector_algebra2d.hh \
+	vector_algebra3d.hh
 
 
 siku_CXXFLAGS = -I$(SHAPELIBDIR) $(AM_CXXFLAGS)
