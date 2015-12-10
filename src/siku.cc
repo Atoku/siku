@@ -96,9 +96,10 @@ main ( int argc, char* argv[] )
   // Initializing all global variables from config file.
   sikupy.initialize ( siku );
 
-  // If there is actually load file name - load from that file
-  if( siku.loadfile.length() )
-    highio.load( siku, siku.loadfile );
+//// Deprecated: loads with python
+//  // If there is actually load file name - load from that file
+//  if( siku.loadfile.length() )
+//    highio.load( siku, siku.loadfile );
 
   if ( options.is_verbose () )
     std::cout << "End of reading config file" << std::endl;
@@ -116,6 +117,9 @@ main ( int argc, char* argv[] )
 
   // siku.time.print ();
 
+  // yet it is here, but I think it should be somewhere in mproperties or close
+  siku.ConDet.freeze( siku );
+
   cout<<"Elements: "<<siku.es.size()<<endl;
 
   // Main Time Loop
@@ -123,6 +127,7 @@ main ( int argc, char* argv[] )
   do
     {
       // ------------------------- preactions ------------------------------
+
       double dt = siku.time.get_dt ();
 
       cout<<"\n Step: "<<siku.time.get_n()<<endl;
@@ -182,6 +187,7 @@ main ( int argc, char* argv[] )
 
       // --- END OF LOOP ---
       siku.time.increment ();
+
       // ------------------------------------------------------------------
     }
   while ( !siku.time.is_done () );

@@ -61,6 +61,9 @@ struct Globals
   //! Controls
   std::vector < std::string > cons;
 
+  //! a list of wind source files` names
+  std::vector < std::string > wind_crs;
+
   //! model time 
   ModelTime time;
 

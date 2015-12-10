@@ -105,7 +105,7 @@ public:
   //! \brief Update wind from NMC source
   //! \param[in] siku main global variables container
   int
-  fcall_update_nmc_wind ( Globals& siku );
+  fcall_update_wind ( Globals& siku );
 
 //  //! \brief Check and perform winds update
 //  //! \param[in] siku main global variables container
@@ -258,6 +258,13 @@ private:
   //! \return true on success, false on fail
   bool
   read_string ( PyObject* pstr, string& str );
+
+  //! \brief Reads vector of strings
+  //! \param pstrlist an Python object to read from
+  //! \param strv where to read to
+  //! \return true on success, false on fail
+  bool
+  read_string_vector ( PyObject* pstrlist, vector < string >& strv );
 
   //! \brief Reads vector of doubles from a list
   //! \param plist an Python object to read from

@@ -26,18 +26,26 @@ class Element:
     f_steady = 0x2
     f_static = 0x4
     f_special = 0x20
+    f_errored = 0x80 # aka 128
 
-    def __init__( self, polygon, imat, st_loc_velo = None ):
-
+    def __init__( self, polygon = None, imat = None, st_loc_velo = None ):
+        ''' Inits element. May init from polygon and imat. '''
         # copy all necessary data from polygon
-        self.A = polygon.A
-        self.i = polygon.i
-        self.sbb_rmin = polygon.sbb_rmin
-        self.q = [ polygon.q[0],  polygon.q[1],  
-                   polygon.q[2],  polygon.q[3] ]
+        if polygon:
+            self.A = polygon.A
+            self.i = polygon.i
+            self.sbb_rmin = polygon.sbb_rmin
+            self.q = [ polygon.q[0],  polygon.q[1],  
+                       polygon.q[2],  polygon.q[3] ]
 
-        self.verts_xyz_loc = [ (P[0],P[1],P[2]) for P in
-                               polygon.poly_xyz_loc ]
+            self.verts_xyz_loc = [ (P[0],P[1],P[2]) for P in
+                                   polygon.poly_xyz_loc ]
+        else:
+            self.A = 0.0
+            self.i = 0.0
+            self.sbb_rmin = 0.0
+            self.q = []
+            self.verts_xyz_loc = []
 
         # search the name in materials
         self.imat = imat

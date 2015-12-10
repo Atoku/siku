@@ -19,39 +19,6 @@ extern "C" {
 
 #include "globals.hh"
 
-class TEL
-{
-public:
-  // --------------- Not changing handling parameters ----------------
-
-  unsigned int flag { 0 };
-  unsigned long mon_ind { 0 };
-  unsigned long con_ind { 0 };
-  unsigned long id { 0 };
-
-  // --------------- Rapidly changing parameters ----------------------
-
-  quat q;
-  vec3d Glob = nullvec;
-  vec3d V = nullvec;
-  double m { 0 };
-  double I { 0 };
-  vec3d W = nullvec;
-  vec3d F = nullvec;
-  double N {0};
-
-  // --------------- Not changing state parameters -------------------
-
-  unsigned long imat { 0 };
-  unsigned long igroup { 0 };
-  double i { 0 };
-  double A { 0 };
-  double sbb_rmin { 0 };
-
-  //double gh[ MAT_LAY_AMO ];
-  //vector<vec3d> P;
-};
-
 //! \brief Class for working with HDF5 in Siku 
 class Lowio
 {
@@ -64,7 +31,8 @@ public:
   const unsigned int ACCESS_F_EXCLUSIVE     { H5F_ACC_EXCL };
   const unsigned int ACCESS_F_READONLY      { H5F_ACC_RDONLY };
   const unsigned int ACCESS_F_RDWR          { H5F_ACC_RDWR };
-  const hid_t        EMPTY_ID               { 0 };
+  static const hid_t EMPTY_ID               { 0 };  // have to be static for
+                                                    // groups struct inits
 
   //! \brief no dataset found error message for read functions
   const size_t DATASET_MISSING                 { size_t(-1) };
@@ -157,14 +125,27 @@ public:
 private:
 
   hid_t fileid { EMPTY_ID };    //!< File ID with file to work with 
-  unsigned int flags;           //!< Some extra info
+  unsigned int flags { 0 };           //!< Some extra info
   string filename;              //!< File name
-  hid_t group_time_id { EMPTY_ID };  //!< Group ID for time data
-  hid_t group_data_id { EMPTY_ID };  //!< Group ID for numerical data data 
+  struct groups_id
+  {
+    hid_t time_id { EMPTY_ID };  //!< Group ID for time data
+    hid_t data_id { EMPTY_ID };  //!< Group ID for numerical data data
+    hid_t elem_id { EMPTY_ID };
+    hid_t info_id { EMPTY_ID };
+    hid_t wind_id { EMPTY_ID };
+    hid_t diag_id { EMPTY_ID };
+    hid_t diag_mesh_id { EMPTY_ID };
+    hid_t diag_wind_id { EMPTY_ID };
+    hid_t plan_id { EMPTY_ID };
+    hid_t mats_id { EMPTY_ID };
+    hid_t cont_id { EMPTY_ID };
+  } groups;
 
   //! \brief Main types that are created on construction
   struct stdtypes_s
   {
+    // basic
     hid_t t_int;
     hid_t t_long;
     hid_t t_double;
@@ -175,18 +156,23 @@ private:
     hid_t t_bool;
     hid_t t_string;
 
+    // composite
     hid_t t_vec;
     hid_t t_quat;
     hid_t t_vertex;
     hid_t t_contact;
     hid_t t_gridnode;
     hid_t t_matlayer;
-    hid_t t_matarr;
-    hid_t t_material;
+    hid_t t_matlayarr;
+    hid_t t_elemgh;
+    hid_t t_info;
+    hid_t t_planet;
 
+    // complex
+    hid_t t_material;
     hid_t t_time;               //!< ModelTimeTypes::timestamp
     hid_t t_dt;                 //!< ModelTimeTypes::dtstamp
-    hid_t t_element;            //!< Element 
+    hid_t t_element;            //!< Plain Element
   } stdtypes;
 
   //! \brief Composite types for large classes` entities

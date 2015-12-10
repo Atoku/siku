@@ -34,6 +34,8 @@ from   siku import gmt_Plotter
 GMT_Plotter = gmt_Plotter.GMT_Plotter
 from   siku import poly_voronoi
 PolyVor = poly_voronoi.PolyVor
+from   siku import h5load
+hload = h5load.Loader
 
 from   siku import wnd
  
@@ -65,10 +67,11 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source = siku.WIND_SOURCES['TEST']
-    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w.make_test_field( 0.,0. )
-    siku.wind = w
+    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+##    w.make_test_field( 0.,0. )
+##    siku.wind = w
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -86,9 +89,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 1* hour
+    siku.time.finish = siku.uw.times[st_t_ind] + 6* hour
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 13
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 143
    
     # ---------------------------------------------------------------------
     # elements
@@ -202,18 +205,18 @@ def main():
 ##    coords = coords + PC.coords
 
     ### Initializing elements with polygon vertices
-    for c in coords:
-        siku.P.update( c )
-     
-        # Element declaration
-        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
-        E.monitor = "drift_monitor"
-        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
-               0.0, 0.0, 0.0, 0.0, 0.0 ]
-        E.set_gh( gh, ice )
-        
-        # all elements in the list
-        siku.elements.append( E )
+##    for c in coords:
+##        siku.P.update( c )
+##     
+##        # Element declaration
+##        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
+##        E.monitor = "drift_monitor"
+##        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
+##               0.0, 0.0, 0.0, 0.0, 0.0 ]
+##        E.set_gh( gh, ice )
+##        
+##        # all elements in the list
+##        siku.elements.append( E )
 
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
@@ -225,6 +228,25 @@ def main():
 ##    for b in bor:
 ##        siku.elements[ b ].flag_state = element.Element.f_static
 ##    print('Done\n\n')
+
+    # ---------------------- loading from file ----------------------------
+
+    print('file start atempt\n')
+    
+    hl = hload('save_test.h5')
+##    #hl = hload('siku-2014-01-01-12:50:46.h5')
+##
+##    #hl.load()
+    hl.load_fnames()
+    hl.load_mats()
+    hl.load_els()
+    print('\n')
+
+    siku.elements = hl.extract_els()
+    siku.materials = hl.extract_mats()
+          
+    hl = None
+
 
     # ------------------------- speed sattings ----------------------------
 
@@ -361,6 +383,11 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##    #static polygons (generally shores) may be simply passed
 ##    if st & element.Element.f_static:
 ##        return
+    if st & element.Element.f_errored:
+        return
+
+##    print(st)
+##    input()
     
     # create actual quaternion
     q = mathutils.Quaternion( Q )

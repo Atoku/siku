@@ -41,11 +41,15 @@ public:
   //! \brief struct for marking and saving vertices
   struct vertex
   {
-    unsigned long elem_id{ 0 };
-    vec3d pos = nullvec ;
+    unsigned long elem_id;
+    vec3d pos;
 
-    vertex(){};
-    vertex(const vec3d& v, const size_t& id): pos( v ), elem_id( id ) {}
+    vertex(const vec3d& v = nullvec, const size_t& id = 0)
+    //: pos( v ), elem_id( id ) {} // <- dis spawns a lot of warnings
+    {
+      pos = v;
+      elem_id = id;
+    }
   };
 
   //! \brief flag state for free body element
@@ -63,11 +67,15 @@ public:
   //! \brief flag state for monitored object that exchanges
   //! information with python script
   static const unsigned int F_MONITORED  {0x10};
-  //! special flag for special 'marked' elements
-  static const unsigned int F_SPECIAL {0x20};
+  //! \brief special flag for special 'marked' elements
+  static const unsigned int F_SPECIAL {0x20}; // aka 32
+
+  //! \brief technical flag for NOT_NEW elements, means those elements were
+  //! either loaded from snapshot or already processed by dynamics/position
+  static const unsigned int F_PROCESSED {0x40};  // aka 64
 
   //! \brief flag state for elements with any kind of error properties
-  static const unsigned int F_ERRORED {0x80};
+  static const unsigned int F_ERRORED {0x80};  // aka 128
 
 
   // --------------- Not changing handling parameters ----------------
@@ -106,7 +114,7 @@ public:
   size_t imat;                  //!< material index
   size_t igroup;                //!< group index
   double i;                     //!< I/m, geometical moment of inertia
-  double A;                     //!< m^2, area of polygon
+  double A;                     //!< m^2, area of polygon (on unit sphere??!!)
   double sbb_rmin;              //!< bounding sphere minimum radius
 
   //OLD //vector<double> gh;
@@ -131,6 +139,41 @@ public:
     //if ( monitor ) delete monitor;
     //if ( control ) delete control;
   }
+};
+
+//====================================================================
+
+//! \brief supporting class for file input/output
+class PlainElement
+{
+public:
+  // --------------- Not changing handling parameters ----------------
+
+  unsigned int flag { 0 };
+  unsigned long mon_ind { 0 };
+  unsigned long con_ind { 0 };
+  unsigned long id { 0 };
+
+  // --------------- Rapidly changing parameters ----------------------
+
+  quat q;
+  vec3d Glob = nullvec;
+  vec3d V = nullvec;
+  double m { 0 };
+  double I { 0 };
+  vec3d W = nullvec;
+  vec3d F = nullvec;
+  double N {0};
+
+  // --------------- Not changing state parameters -------------------
+
+  unsigned long imat { 0 };
+  unsigned long igroup { 0 };
+  double i { 0 };
+  double A { 0 };
+  double sbb_rmin { 0 };
+
+  double gh[ MAT_LAY_AMO ];
 };
 
 #endif

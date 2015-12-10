@@ -39,6 +39,6 @@
 
 //! Function for calculating two elements interaction. Changes both elements
 //! so should be used once per pair of elements.
-void contact_push( const size_t& i1, const size_t& i2, Globals& siku );
+void contact_push( ContactDetector::Contact& c, Globals& siku );
 
 #endif  /*CONTACTFORCE_HH*/

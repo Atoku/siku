@@ -40,11 +40,17 @@ Lowio::Lowio()
   stdtypes.t_long   = H5T_NATIVE_LONG;
   stdtypes.t_double = H5T_NATIVE_DOUBLE;
 
+  stdtypes.t_bool = H5T_NATIVE_HBOOL;  // bool //hope so
+  stdtypes.t_size = H5T_NATIVE_ULONG;  // native size //also hope so
+  stdtypes.t_uint = H5T_NATIVE_UINT;  // unsigned int
+  stdtypes.t_char = H5T_NATIVE_CHAR;  // char
+  stdtypes.t_ulong = H5T_NATIVE_ULONG;  // unsigned long
+
+  // materials` and elements` layers amount
+  hsize_t laydims[] = { MAT_LAY_AMO };
+
   // Registering the datatypes
 
-  /*
-   * TODO: change sizeof(double) into dynamic type sizing like 'vec3d::type'...
-   */
   // quat
   stdtypes.t_quat = H5Tcreate( H5T_COMPOUND, sizeof( quat ) );
   H5Tinsert( stdtypes.t_quat, "a", 0,   stdtypes.t_double );
@@ -58,20 +64,27 @@ Lowio::Lowio()
   H5Tinsert( stdtypes.t_vec, "y", HOFFSET( vec3d, y ), stdtypes.t_double );
   H5Tinsert( stdtypes.t_vec, "z", HOFFSET( vec3d, z ), stdtypes.t_double );
 
-  // bool //hope so
-  stdtypes.t_bool = H5T_NATIVE_HBOOL;
-  // native size //also hope so
-  stdtypes.t_size = H5T_NATIVE_ULONG;
-  // unsigned int
-  stdtypes.t_uint = H5T_NATIVE_UINT;
-  // char
-  stdtypes.t_char = H5T_NATIVE_CHAR;
-  // unsigned long
-  stdtypes.t_ulong = H5T_NATIVE_ULONG;
+  // element`s gh
+  stdtypes.t_elemgh = H5Tarray_create( stdtypes.t_double, 1, laydims );
 
   // STRING?
   stdtypes.t_string = H5Tcopy( H5T_C_S1 );
   H5Tset_size( stdtypes.t_string, H5T_VARIABLE );
+
+  // info
+  stdtypes.t_info =  H5Tcreate( H5T_COMPOUND, sizeof( Info ) );
+  dtype_freg( stdtypes.t_info, Info, brief, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, date, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, name, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, rundate, stdtypes.t_string );
+  dtype_freg( stdtypes.t_info, Info, version, stdtypes.t_string );
+
+  // planet
+  stdtypes.t_planet =  H5Tcreate( H5T_COMPOUND, sizeof( Planet ) );
+  dtype_freg( stdtypes.t_planet, Planet, R, stdtypes.t_double );
+  dtype_freg( stdtypes.t_planet, Planet, R2, stdtypes.t_double );
+  dtype_freg( stdtypes.t_planet, Planet, R_rec, stdtypes.t_double );
+  dtype_freg( stdtypes.t_planet, Planet, R2_rec, stdtypes.t_double );
 
   // time
   typedef ModelTimeTypes::timestamp mytime; // for short
@@ -84,70 +97,77 @@ Lowio::Lowio()
   dtype_freg( stdtypes.t_time, mytime, seconds, stdtypes.t_int );
   dtype_freg( stdtypes.t_time, mytime, microseconds, stdtypes.t_long );
 
+  // dtstamp
   typedef ModelTimeTypes::dtstamp mydt; // for short
   stdtypes.t_dt =  H5Tcreate( H5T_COMPOUND, sizeof( mydt ) );
   dtype_freg( stdtypes.t_dt, mydt, hours, stdtypes.t_long );
   dtype_freg( stdtypes.t_dt, mydt, minutes, stdtypes.t_long );
   dtype_freg( stdtypes.t_dt, mydt, seconds, stdtypes.t_long );
   dtype_freg( stdtypes.t_dt, mydt, microseconds, stdtypes.t_long );
-  
-  // element  //!!! TESTING
-  typedef TEL myel; // for short
-  stdtypes.t_element=  H5Tcreate( H5T_COMPOUND, sizeof( myel ) );
+
+  // plain element
+  typedef PlainElement myel; // for short
+  stdtypes.t_element =  H5Tcreate( H5T_COMPOUND, sizeof( myel ) );
+  dtype_freg( stdtypes.t_element, myel, flag, stdtypes.t_uint );
+  dtype_freg( stdtypes.t_element, myel, mon_ind, stdtypes.t_size );
+  dtype_freg( stdtypes.t_element, myel, con_ind, stdtypes.t_size );
+  dtype_freg( stdtypes.t_element, myel, id, stdtypes.t_size );
+
   dtype_freg( stdtypes.t_element, myel, q, stdtypes.t_quat );
-  dtype_freg( stdtypes.t_element, myel, Glob, stdtypes.t_vec);
-  dtype_freg( stdtypes.t_element, myel, V, stdtypes.t_vec);
-  dtype_freg( stdtypes.t_element, myel, m, stdtypes.t_double);
-  dtype_freg( stdtypes.t_element, myel, I, stdtypes.t_double);
-  dtype_freg( stdtypes.t_element, myel, W, stdtypes.t_vec);
-  dtype_freg( stdtypes.t_element, myel, F, stdtypes.t_vec);
-  dtype_freg( stdtypes.t_element, myel, N, stdtypes.t_double);
+  dtype_freg( stdtypes.t_element, myel, Glob, stdtypes.t_vec );
+  dtype_freg( stdtypes.t_element, myel, V, stdtypes.t_vec );
+  dtype_freg( stdtypes.t_element, myel, m, stdtypes.t_double );
+  dtype_freg( stdtypes.t_element, myel, I, stdtypes.t_double );
+  dtype_freg( stdtypes.t_element, myel, W, stdtypes.t_vec );
+  dtype_freg( stdtypes.t_element, myel, F, stdtypes.t_vec );
+  dtype_freg( stdtypes.t_element, myel, N, stdtypes.t_double );
 
-  dtype_freg( stdtypes.t_element, myel, i, stdtypes.t_double);
-  dtype_freg( stdtypes.t_element, myel, A, stdtypes.t_double);
-  dtype_freg( stdtypes.t_element, myel, sbb_rmin, stdtypes.t_double);
-  dtype_freg( stdtypes.t_element, myel, imat, stdtypes.t_size);
-  dtype_freg( stdtypes.t_element, myel, igroup, stdtypes.t_size);
+  dtype_freg( stdtypes.t_element, myel, imat, stdtypes.t_size );
+  dtype_freg( stdtypes.t_element, myel, igroup, stdtypes.t_size );
+  dtype_freg( stdtypes.t_element, myel, i, stdtypes.t_double );
+  dtype_freg( stdtypes.t_element, myel, A, stdtypes.t_double );
+  dtype_freg( stdtypes.t_element, myel, sbb_rmin, stdtypes.t_double );
 
-  dtype_freg( stdtypes.t_element, myel, flag, stdtypes.t_uint);
-  dtype_freg( stdtypes.t_element, myel, mon_ind, stdtypes.t_size);
-  dtype_freg( stdtypes.t_element, myel, con_ind, stdtypes.t_size);
-  dtype_freg( stdtypes.t_element, myel, id, stdtypes.t_size);
+  dtype_freg( stdtypes.t_element, myel, gh, stdtypes.t_elemgh );
 
-
+  // element`s vertex
   typedef Element::vertex vert;
   stdtypes.t_vertex =  H5Tcreate( H5T_COMPOUND, sizeof( vert ) );
-  dtype_freg( stdtypes.t_vertex, vert, elem_id, stdtypes.t_size);
-  dtype_freg( stdtypes.t_vertex, vert, pos, stdtypes.t_vec);
-  //!!! TESTING -^
+  dtype_freg( stdtypes.t_vertex, vert, elem_id, stdtypes.t_size );
+  dtype_freg( stdtypes.t_vertex, vert, pos, stdtypes.t_vec );
 
+  // contact data
   typedef ContactDetector::Contact cont;
   stdtypes.t_contact =  H5Tcreate( H5T_COMPOUND, sizeof( cont ) );
-  dtype_freg( stdtypes.t_contact, cont, i1, stdtypes.t_size);
-  dtype_freg( stdtypes.t_contact, cont, i2, stdtypes.t_size);
-  dtype_freg( stdtypes.t_contact, cont, step, stdtypes.t_int);
+  dtype_freg( stdtypes.t_contact, cont, i1, stdtypes.t_size );
+  dtype_freg( stdtypes.t_contact, cont, i2, stdtypes.t_size );
+  dtype_freg( stdtypes.t_contact, cont, step, stdtypes.t_int );
 
+  // surface vector grid node
   typedef NMCVecfield::GridNode node;
   stdtypes.t_gridnode =  H5Tcreate( H5T_COMPOUND, sizeof( node ) );
-  dtype_freg( stdtypes.t_gridnode, node, lat, stdtypes.t_double);
-  dtype_freg( stdtypes.t_gridnode, node, lon, stdtypes.t_double);
-  dtype_freg( stdtypes.t_gridnode, node, value, stdtypes.t_vec);
+  dtype_freg( stdtypes.t_gridnode, node, lat, stdtypes.t_double );
+  dtype_freg( stdtypes.t_gridnode, node, lon, stdtypes.t_double) ;
+  dtype_freg( stdtypes.t_gridnode, node, value, stdtypes.t_vec );
 
+  // material`s layer
   typedef Material::Layer matlay;
   stdtypes.t_matlayer =  H5Tcreate( H5T_COMPOUND, sizeof( matlay ) );
-  dtype_freg( stdtypes.t_matlayer, matlay, thickness, stdtypes.t_double);
-  dtype_freg( stdtypes.t_matlayer, matlay, rho, stdtypes.t_double);
-  dtype_freg( stdtypes.t_matlayer, matlay, sigma_c, stdtypes.t_double);
-  dtype_freg( stdtypes.t_matlayer, matlay, sigma_t, stdtypes.t_double);
+  dtype_freg( stdtypes.t_matlayer, matlay, thickness, stdtypes.t_double );
+  dtype_freg( stdtypes.t_matlayer, matlay, rho, stdtypes.t_double );
+  dtype_freg( stdtypes.t_matlayer, matlay, sigma_c, stdtypes.t_double );
+  dtype_freg( stdtypes.t_matlayer, matlay, sigma_t, stdtypes.t_double );
 
-  hsize_t adims[] = { MAT_LAY_AMO };
-  stdtypes.t_matarr = H5Tarray_create( stdtypes.t_matlayer, 1, adims );
+  // mat layers array
+  stdtypes.t_matlayarr = H5Tarray_create( stdtypes.t_matlayer, 1, laydims );
 
+  // entire material
   typedef Material mater;
   stdtypes.t_material =  H5Tcreate( H5T_COMPOUND, sizeof( mater ) );
+  dtype_freg( stdtypes.t_material, mater, name, stdtypes.t_string );
   dtype_freg( stdtypes.t_material, mater, E, stdtypes.t_double );
   dtype_freg( stdtypes.t_material, mater, nu, stdtypes.t_double );
-  dtype_freg( stdtypes.t_material, mater, layers, stdtypes.t_matarr );
+  dtype_freg( stdtypes.t_material, mater, layers, stdtypes.t_matlayarr );
 
 }
 
@@ -156,6 +176,19 @@ Lowio::Lowio()
 Lowio::~Lowio()
 {
   H5Tclose( stdtypes.t_quat );
+  H5Tclose ( stdtypes.t_quat );
+  H5Tclose ( stdtypes.t_vec );
+  H5Tclose ( stdtypes.t_string );
+  H5Tclose ( stdtypes.t_info );
+  H5Tclose ( stdtypes.t_planet );
+  H5Tclose ( stdtypes.t_time );
+  H5Tclose ( stdtypes.t_dt );
+  H5Tclose ( stdtypes.t_element );
+  H5Tclose ( stdtypes.t_vertex );
+  H5Tclose ( stdtypes.t_contact );
+  H5Tclose ( stdtypes.t_gridnode );
+  H5Tclose ( stdtypes.t_matlayer );
+  H5Tclose ( stdtypes.t_material );
   //H5Tclose( stdtypes.t_element);
 }
 
@@ -171,27 +204,28 @@ void Lowio::init( const string& param_filename, const unsigned int access )
   if ( access == Lowio::ACCESS_F_OVERWRITE ||
        access == Lowio::ACCESS_F_EXCLUSIVE )
     {
-      fileid = H5Fcreate( filename.c_str(), access, 
+      fileid = H5Fcreate( filename.c_str(), access,
                           H5P_DEFAULT, H5P_DEFAULT);
-      group_time_id = H5Gcreate( fileid, "/Time", 
+
+      groups.time_id = H5Gcreate( fileid, "/Time",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Elements",
+      groups.elem_id = H5Gcreate( fileid, "/Elements",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Info",
+      groups.info_id = H5Gcreate( fileid, "/Info",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Wind",
+      groups.wind_id = H5Gcreate( fileid, "/Wind",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Diag",
+      groups.diag_id = H5Gcreate( fileid, "/Diag",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Diag/Meshes",
+      groups.diag_mesh_id = H5Gcreate( fileid, "/Diag/Meshes",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Diag/Windbases",
+      groups.diag_wind_id = H5Gcreate( fileid, "/Diag/Windbases",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Planet",
+      groups.plan_id = H5Gcreate( fileid, "/Planet",
                                  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Materials",
+      groups.mats_id = H5Gcreate( fileid, "/Materials",
                                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      group_data_id = H5Gcreate( fileid, "/Contacts",
+      groups.cont_id = H5Gcreate( fileid, "/Contacts",
                                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
     }
@@ -358,7 +392,7 @@ int Lowio::save_string ( const string& name,
 //---------------------------------------------------------------------
 
 int Lowio::save_astrings ( const vector<string>& strs,
-                           const string& dataname,  
+                           const string& dataname,
                            const string& description )
 {
   // We start from getting pS and N
@@ -419,8 +453,8 @@ int Lowio::save_astrings ( const vector<string>& strs,
 
 //---------------------------------------------------------------------
 
-void Lowio::save_attribute( hid_t dataset, 
-                            const string& aname, 
+void Lowio::save_attribute( hid_t dataset,
+                            const string& aname,
                             const string& s )
 {
   hid_t attr_dspace;
@@ -455,7 +489,7 @@ int Lowio::save_material( const string& location, void* pmat,
 
   /* create a string of variable length */
   hid_mat = H5Tcopy( stdtypes.t_material );
-  H5Tinsert( hid_mat, "name", HOFFSET( Material, name ), stdtypes.t_string );
+  //H5Tinsert( hid_mat, "name", HOFFSET( Material, name ), stdtypes.t_string );
   //H5Tset_size( hid_str, H5T_VARIABLE );
 
   /* dataspace for array of something of length N */
@@ -525,6 +559,8 @@ int Lowio::read( const string& name, void* buff )
 
   H5Dclose( dataset );
   return status;
+
+
 }
 
 //---------------------------------------------------------------------
@@ -532,8 +568,18 @@ int Lowio::read( const string& name, void* buff )
 void Lowio::release()
 {
   /* close the groups */
-  if ( group_time_id != EMPTY_ID ) H5Gclose( group_time_id );
-  if ( group_data_id != EMPTY_ID ) H5Gclose( group_data_id );
+  if ( groups.time_id != EMPTY_ID ) H5Gclose( groups.time_id );
+  if ( groups.data_id != EMPTY_ID ) H5Gclose( groups.data_id );
+  if ( groups.elem_id != EMPTY_ID ) H5Gclose( groups.elem_id );
+  if ( groups.info_id != EMPTY_ID ) H5Gclose( groups.info_id );
+  if ( groups.wind_id != EMPTY_ID ) H5Gclose( groups.wind_id );
+  if ( groups.diag_id != EMPTY_ID ) H5Gclose( groups.diag_id );
+  if ( groups.diag_mesh_id != EMPTY_ID ) H5Gclose( groups.diag_mesh_id );
+  if ( groups.diag_wind_id != EMPTY_ID ) H5Gclose( groups.diag_wind_id );
+  if ( groups.plan_id != EMPTY_ID ) H5Gclose( groups.plan_id );
+  if ( groups.mats_id != EMPTY_ID ) H5Gclose( groups.mats_id );
+  if ( groups.cont_id != EMPTY_ID ) H5Gclose( groups.cont_id );
+
 
   /* close the file */
   if ( fileid != EMPTY_ID ) H5Fclose( fileid );

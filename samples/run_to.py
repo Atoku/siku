@@ -34,6 +34,8 @@ from   siku import gmt_Plotter
 GMT_Plotter = gmt_Plotter.GMT_Plotter
 from   siku import poly_voronoi
 PolyVor = poly_voronoi.PolyVor
+from   siku import h5load
+hload = h5load.Loader
 
 from   siku import wnd
  
@@ -54,116 +56,59 @@ def main():
         'ice': 0,
     }
     
-    siku.defaults.wind_source_type = siku.WIND_SOURCES['NONE']
+    # ---------------------------------------------------------------------
+    #  Wind initializations (NMC grid example)
+    # ---------------------------------------------------------------------
 
+    #start time index
+    st_t_ind = 2
+    
+    siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
+    siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
+    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+
+    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+   
     # ---------------------------------------------------------------------
     # date/time settings
     # ---------------------------------------------------------------------
-    
-    hour = datetime.timedelta ( hours = 1 )
 
-    siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
-    siku.time.finish   = siku.time.start + hour * 120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
-    siku.time.last = siku.time.start
+    #siku.time.last = siku.time.start
+    hour = datetime.timedelta ( minutes = 60 )
+
+    ## time inits by NMC grid times
+    siku.time.start = siku.uw.times[st_t_ind]
+    siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-       
+    siku.time.finish = siku.uw.times[st_t_ind] + 6* hour
+    #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 66
+   
     # ---------------------------------------------------------------------
     # elements
     # ---------------------------------------------------------------------
     
     coords = []
     siku.elements = []
-## custom testing polygons for caribbeans # lon, lat convention
-   
-    coords.append( [ (267.0, 12.0),      
-                    (269.0, 12.0),
-                    (269.0, 14.0),
-                    (267.0, 14.0) ] )
-    coords.append( [ (270.0, 12.0), #2
-                     (272.0, 12.0),
-                     (272.0, 14.0),
-                     (270.0, 14.0) ] )
-    
-    coords.append( [ (265.0, 20.0), #3
-                     (267.0, 18.0),
-                     (269.0, 20.0),
-                     (267.0, 22.0) ] )
-    coords.append( [ (268.0, 18.0), #4
-                     (270.0, 16.0),
-                     (272.0, 18.0),
-                     (270.0, 20.0) ] )
-    
-    coords.append( [ (265.0, 28.0), #5
-                     (266.0, 26.5),
-                     (267.0, 28.0),
-                     (266.0, 29.5) ] )
-    coords.append( [ (267.0, 25.5), #6
-                     (268.0, 24.0),
-                     (269.0, 25.5),
-                     (268.0, 27.0) ] )
-    # ---
-    
-    coords.append( [ (281.0, 10.0), #7
-                     (282.0, 10.0),
-                     (282.0, 16.0),
-                     (281.0, 16.0) ] )
-    coords.append( [ (282.5, 10.0), #8
-                     (283.5, 10.0),
-                     (283.5, 16.0),
-                     (282.5, 16.0) ] )
-    
-    coords.append( [ (278.0, 19.5), #9
-                     (282.0, 19.5),
-                     (282.0, 20.5),
-                     (278.0, 20.5) ] )
-    coords.append( [ (281.0, 18.0), #10
-                     (285.0, 18.0),
-                     (285.0, 19.0),
-                     (281.0, 19.0) ] )
-    
-    coords.append( [ (278.0, 24.0), #11
-                     (280.0, 24.0),
-                     (280.0, 28.0),
-                     (278.0, 28.0) ] )
-    coords.append( [ (282.0, 28.0), #12
-                     (283.0, 26.0),
-                     (285.0, 26.0),
-                     (284.0, 28.0) ] )
-    coords.append( [ (282.0, 24.0), #13
-                     (284.0, 24.0),
-                     (285.0, 26.0),
-                     (283.0, 26.0) ] )
-    # --- 
 
-    coords.append( [ (293.0, 12.0), #14
-                     (294.0, 12.0),
-                     (294.0, 13.0),
-                     (293.0, 13.0) ] )
-    coords.append( [ (295.0, 10.0), #15
-                     (296.0, 10.0),
-                     (296.0, 15.0),
-                     (295.0, 15.0) ] )
+    # ---------------------- voronoi initialization ------------------------
+    print('\nLoading polygons')
+    ## North cap
+    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    ## Channel (handmade)
+    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
     
-    coords.append( [ (293.0, 21.0), #16
-                     (294.0, 21.0),
-                     (294.0, 22.0),
-                     (293.0, 22.0) ] )
-    coords.append( [ (295.0, 17.0), #17
-                     (296.0, 17.0),
-                     (296.0, 22.0),
-                     (295.0, 22.0) ] )
+    PV.filter_( 0, 360, 60, 90 )
+    PC.filter_( 179, 187, 54, 60 )
     
-    coords.append( [ (291.0, 24.0), #18
-                     (292.0, 24.0),
-                     (292.0, 29.0),
-                     (291.0, 29.0) ] )
-    coords.append( [ (293.0, 26.0), #19
-                     (294.0, 26.0),
-                     (294.0, 27.0),
-                     (293.0, 27.0) ] )
+    print('Deleting land polygons')
+    PV.clear_the_land()
+
+    coords = PV.coords
+    coords = coords + PC.coords
 
     ### Initializing elements with polygon vertices
     for c in coords:
@@ -179,43 +124,35 @@ def main():
         # all elements in the list
         siku.elements.append( E )
 
-    # ------------------------- speed settings ----------------------------
+    ## Core will mark polygons, those contain at leas one point from next
+    ## file as 'static'
+    siku.defaults.boarder_mark = 1
+    siku.defaults.boarders = 'contours.ll'
 
-######    Works with caribbean polygons after initialization
-    siku.elements[0].velo = ( 2, 0, 0 )
-##    siku.elements[1].flag_state = element.Element.f_static
-    siku.elements[2].velo = ( 2, 0, 0 )
-##    siku.elements[3].flag_state = element.Element.f_static
-    siku.elements[4].velo = ( 2, 0, 0 )
-##    siku.elements[5].flag_state = element.Element.f_static
-
-    siku.elements[6].velo = ( 0, 0, -0.00001 )
-##    siku.elements[7].flag_state = element.Element.f_static
-    siku.elements[8].velo = ( 0, 0, -0.00001 )
-##    siku.elements[9].flag_state = element.Element.f_steady
-    siku.elements[10].velo = ( 2, 0, 0 )
-##    siku.elements[11].flag_state = element.Element.f_steady
-
-    siku.elements[13].velo = ( 2, 0, 0 )
-##    siku.elements[14].flag_state = element.Element.f_steady
-    siku.elements[15].velo = ( 2, 0, 0 )
-##    siku.elements[16].flag_state = element.Element.f_steady
-    siku.elements[17].velo = ( 2, 0, 0 )
-##    siku.elements[18].flag_state = element.Element.f_steady
+    print('Marking boarders with GMT')
+    bor = PV.get_boarder_by_gmt()
+    for b in bor:
+        siku.elements[ b ].flag_state = element.Element.f_static
+    print('Done\n\n')
     
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
     ## Plotter initialization
-    siku.plotter = GMT_Plotter( 'caribbean_plot.py' )
+    siku.plotter = GMT_Plotter( 'plot_config.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 1
+    siku.diagnostics.monitor_period = 5
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
+
+    # name of file to load from
+    #siku.defaults.loadfile = 'siku-2014-01-01-12:00:00.h5'
+    siku.defaults.loadfile = 'save_test.h5'
+
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
@@ -225,7 +162,7 @@ def main():
     siku.callback.aftertimestep = aftertimestep
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
-
+    
     return 0
 
 # --------------------------------------------------------------------------
@@ -237,7 +174,7 @@ def initializations( siku, t ):
 
 def conclusions( siku, t ):
     print('creating .gif')
-    subprocess.call( "convert -density 100 -delay 10 carib*.eps caribbeans.gif", \
+    subprocess.call( "nice convert -density 300 -delay 10 drift*.eps drift.gif", \
                      shell=True )
 
 # --------------------------------------------------------------------------
@@ -248,6 +185,11 @@ def pretimestep( t, n, ns ):
 
     siku.local.poly_f = open( 'Polygons.txt', 'w' )
 
+    # step by NMC own time step
+    if t >= siku.time.last: #siku.uw.times[siku.time.update_index + 1]:
+        status += siku.MASK['WINDS']
+        siku.time.last = siku.time.finish#t
+        
     return status
 
 # --------------------------------------------------------------------------
@@ -255,18 +197,21 @@ def pretimestep( t, n, ns ):
 def aftertimestep( t, n, ns ):
     siku.local.poly_f.close()
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
-        pic_name = 'carib%03d.eps' % \
+        pic_name = 'drift%03d.eps' % \
             (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
         print('drawing ' + str( pic_name ) )
-        
-        siku.plotter.plot( pic_name, siku.time.update_index )
-        
+
+        siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
+
     #siku.local.poly_f.close()
     return 0
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, i, st ): 
+def drift_monitor( t, Q, Ps, i, st ):
+    if st & element.Element.f_errored:
+        return
+    
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -281,9 +226,11 @@ def drift_monitor( t, Q, Ps, i, st ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         poly = siku.local.poly_f
-        if st == element.Element.f_static:
+        if st & element.Element.f_special:
+            poly.write( '> -Gpink -W0.1p,purple \n' ) 
+        elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
-        elif st == element.Element.f_steady:
+        elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
             poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )

@@ -33,19 +33,29 @@ void Globals::post_init()
 
   for( size_t i =0; i < es.size(); ++i )
     {
-      // setting elements id
+      // setting new elements id
       es[i].id = i;
 
-      // setting default (loaded from .py) velocity and rotation
-      double lat, lon;
-      sph_by_quat( es[i].q, &lat, &lon );
+      vec3d temp;
 
-      vec3d temp = glob_to_loc(
-          es[i].q, geo_to_cart_surf_velo( lat, lon, es[i].V.x, es[i].V.y ) );
+      if( ! (es[i].flag & Element::F_PROCESSED) )  //only for new elements
+        {
+          // setting default (loaded from .py) velocity and rotation
+          double lat, lon;
+          sph_by_quat ( es[i].q, &lat, &lon );
 
-      // velocity must be inputed in East-North terms
+          // for new elements velocity must be inputed in East-North terms
+          temp = glob_to_loc ( es[i].q, geo_to_cart_surf_velo(
+              lat, lon, es[i].V.x, es[i].V.y ) );
+        }
+      else
+        {
+          temp = es[i].V;
+        }
+
       es[i].W = vec3d( -temp.y * planet.R_rec, temp.x * planet.R_rec,
                        es[i].V.z );
+
     }
 
   if( mark_boarders )
@@ -74,6 +84,9 @@ void Globals::post_init()
       size_t size = points.size();
       for( auto& e : es )
         {
+          if( e.flag & Element::F_PROCESSED )  // only for new elements
+            continue;
+
           for( size_t i = 0; i < size; ++i )
             {
               if( e.contains( points[i] ) )
@@ -88,6 +101,9 @@ void Globals::post_init()
         }
       cout<<"Done\n\n";
     }
+
+  // freezing start ice blocks
+  //ConDet.freeze( *this );
 }
 
 // --------------------------------------------------------------------------
