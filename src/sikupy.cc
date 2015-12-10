@@ -656,7 +656,7 @@ Sikupy::read_elements ( Globals& siku )
 
       // Additional initialization without reading
 
-      siku.es[i].W = nullvec;  // could be inited in Globals.post_init() in main()
+      siku.es[i].W = nullvec3d;  // could be inited in Globals.post_init() in main()
 
     }
 

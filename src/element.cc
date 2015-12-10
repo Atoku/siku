@@ -28,8 +28,10 @@
 
 #include "element.hh"
 #include "coordinates.hh"
+#include "geometry.hh"
 
 using namespace Coordinates;
+using namespace Geometry;
 
 bool Element::contains( const vec3d& p )
 {
@@ -60,8 +62,7 @@ bool Element::contains( const vec3d& p )
         res = PP.x * PO.y - PP.y * PO.x;
 
         if( res < 0 ) // CCW rightwards check with approximation
-          if( vec_len( PO ) + vec_len( OP ) >
-              1.2 * vec_len( PP ) )
+          if( abs( PO ) + abs( OP ) > 1.2 * abs( PP ) )
             return false;
       }
 

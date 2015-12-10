@@ -27,7 +27,15 @@
  * TODO: reconsider template usage
  */
 
+#ifndef VECTOR_ALGEBRA2D_HH
+#define VECTOR_ALGEBRA2D_HH
+
 #include <cmath>
+
+// predeclarations
+class Vector2d;
+class Point2d;
+class Matrix2d;
 
 // =========================== Class Vector2d ===============================
 
@@ -40,7 +48,8 @@ class Vector2d
   friend class Point2d;
   friend class Matrix2d;
   friend Vector2d operator * ( const Vector2d& V, const Matrix2d& M );
-protected:
+//protected:
+public:  // public or protected?
   double x;
   double y;
 
@@ -138,7 +147,7 @@ public:
  inline double abs2() const { return x*x + y*y; }
 
  // renorm vector by optional given length (1 by default) and return it
- inline Vector2d& renorm( const double& d = 1. )
+ inline Vector2d& renorm( double d = 1. )
  {
    d /= abs();
    return ( *this *= d );
@@ -166,7 +175,8 @@ class Point2d
 {
   friend class Vector2d;
   friend class Matrix2d;
-protected:
+//protected:
+  public:  // public or protected?
   Vector2d v;
 
 public:
@@ -225,7 +235,7 @@ public:
   inline Vector2d& Vector() { return v; }
 
   // ort
-  inline Vector2d& ort() const { return v.ort(); }
+  inline Vector2d ort() const { return v.ort(); }
 
 };
 
@@ -448,3 +458,4 @@ Matrix2d operator ^ ( const Vector2d& V1, const Vector2d& V2 )
   return Matrix2d( c, -s, s, c );
 }
 
+#endif

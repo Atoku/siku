@@ -14,7 +14,7 @@ using namespace std;
 void
 position ( Globals& siku, const double dt )
 {
-  static const double C = 1.0 / 16.0;
+  //static const double C = 1.0 / 16.0;  // for second order precision
   quat p;
 
   for ( auto & e : siku.es )

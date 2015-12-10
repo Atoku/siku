@@ -27,7 +27,15 @@
  * TODO: reconsider template usage
  */
 
+#ifndef VECTOR_ALGEBRA3D_HH
+#define VECTOR_ALGEBRA3D_HH
+
 #include <cmath>
+
+// predeclarations
+class Vector3d;
+class Point3d;
+class Matrix3d;
 
 // =========================== Class Vector3d ===============================
 
@@ -40,7 +48,8 @@ class Vector3d
   friend class Point3d;
   friend class Matrix3d;
   friend Vector3d operator * ( const Vector3d& V, const Matrix3d& M );
-protected:
+//protected:
+public:  // public or protected?
   double x;
   double y;
   double z;
@@ -50,7 +59,7 @@ public:
 
   // default constructor
   Vector3d( const double& X = 0., const double& Y = 0.,
-            const double& Z = 0. , ): x( X ), y( Y ), z( Z ) {}
+            const double& Z = 0. ): x( X ), y( Y ), z( Z ) {}
 
   // simple copy constructor
   Vector3d( const Vector3d& V ): x( V.x ), y( V.y ), z( V.z ) {}
@@ -145,7 +154,7 @@ public:
  inline double abs2() const { return x*x + y*y + z*z; }
 
  // renorm vector by optional given length (1 by default) and return it
- inline Vector3d& renorm( const double& d = 1. )
+ inline Vector3d& renorm( double d = 1. )
  {
    d /= abs();
    return ( *this *= d );
@@ -165,7 +174,7 @@ public:
 };
 
 // static zero-value Vector3d instance
-static const Vector3d ZeroVector2d = Vector3d();
+static const Vector3d ZeroVector3d = Vector3d();
 
 // =========================== Class Point3d ================================
 
@@ -176,7 +185,8 @@ class Point3d
 {
   friend class Vector3d;
   friend class Matrix3d;
-protected:
+//protected:
+  public:  // public or protected?
   Vector3d v;
 
 public:
@@ -235,12 +245,12 @@ public:
   inline Vector3d& Vector() { return v; }
 
   // ort
-  inline Vector3d& ort() const { return v.ort(); }
+  inline Vector3d ort() const { return v.ort(); }
 
 };
 
 // static zero-value Point3d instance
-const static Point3d ZeroPoint2d = Point3d();
+const static Point3d ZeroPoint3d = Point3d();
 
 // ============================= Class Matrix3d =============================
 
@@ -275,7 +285,7 @@ public:
             const double& A13 = 0., const double& A21 = 0.,
             const double& A22 = 0., const double& A23 = 0.,
             const double& A31 = 0., const double& A32 = 0.,
-            const double& A33 = 0., ) :
+            const double& A33 = 0. ) :
               a11( A11 ), a12( A12 ), a13( A13 ),
               a21( A21 ), a22( A22 ), a23( A23 ),
               a31( A31 ), a32( A32 ), a33( A33 ) {}
@@ -401,9 +411,9 @@ public:
 
   inline bool operator == ( const Matrix3d& M ) const
   {
-    return a11 == M.a11 && a12 == M.a12 && a13 = M.a13 &&
-           a21 == M.a21 && a22 == M.a22 && a23 = M.a23 &&
-           a31 == M.a31 && a32 == M.a32 && a33 = M.a33;
+    return a11 == M.a11 && a12 == M.a12 && a13 == M.a13 &&
+           a21 == M.a21 && a22 == M.a22 && a23 == M.a23 &&
+           a31 == M.a31 && a32 == M.a32 && a33 == M.a33;
   }
 
   inline operator bool () const
@@ -451,7 +461,7 @@ public:
 };
 
 // static zero-value Matrix3d instance
-const static Matrix3d ZeroMatrix2d = Matrix3d();
+const static Matrix3d ZeroMatrix3d = Matrix3d();
 
 // ==========================================================================
 
@@ -526,3 +536,5 @@ inline Matrix3d transpose ( const Matrix3d& M ) { return M.transpose(); }
 //  ///
 //}
 
+
+#endif

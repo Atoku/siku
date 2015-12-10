@@ -26,6 +26,7 @@ siku_SOURCES = siku.cc siku.hh \
 	element.hh element.cc \
 	errors.hh \
 	forces_mass.hh forces_mass.cc \
+	geom_types.hh \
 	geometry.hh geometry.cc \
 	globals.hh globals.cc \
 	highio.hh highio.cc \

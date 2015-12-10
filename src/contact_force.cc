@@ -115,7 +115,7 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 
       static const double kw = 0.015;
 
-      vec3d Force = nullvec;
+      vec3d Force = nullvec3d;
       // total force consists of kinetic component and overlap component
       // different force for static (means shores)
       if( (siku.es[c.i1].flag & Element::F_STATIC) ||

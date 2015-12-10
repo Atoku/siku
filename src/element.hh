@@ -44,7 +44,7 @@ public:
     unsigned long elem_id;
     vec3d pos;
 
-    vertex(const vec3d& v = nullvec, const size_t& id = 0)
+    vertex(const vec3d& v = nullvec3d, const size_t& id = 0)
     //: pos( v ), elem_id( id ) {} // <- dis spawns a lot of warnings
     {
       pos = v;
@@ -157,12 +157,12 @@ public:
   // --------------- Rapidly changing parameters ----------------------
 
   quat q;
-  vec3d Glob = nullvec;
-  vec3d V = nullvec;
+  vec3d Glob = nullvec3d;
+  vec3d V = nullvec3d;
   double m { 0 };
   double I { 0 };
-  vec3d W = nullvec;
-  vec3d F = nullvec;
+  vec3d W = nullvec3d;
+  vec3d F = nullvec3d;
   double N {0};
 
   // --------------- Not changing state parameters -------------------

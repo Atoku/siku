@@ -23,13 +23,13 @@
 // we need some sorting!
 #include <algorithm>
 
-
 #include "globals.hh"
 #include "contact_detect.hh"
 #include "geometry.hh"
+#include "siku.hh"
 using namespace Coordinates;
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~ predeclarations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~ predeclarations  and inlines ~~~~~~~~~~~~~~~~~~~~~~~
 
 inline bool el_pointers_x_compare( Element* pe1, Element* pe2 );
 
@@ -40,6 +40,13 @@ inline bool cont_compare( const ContactDetector::Contact& c1,
                           const ContactDetector::Contact& c2 );
 
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol );
+
+inline double _sqr( const double& x ) { return x*x; }
+
+inline double _dist2( const vec3d& v1, const vec3d& v2 )
+{
+  return dot( v2 - v1, v2 - v1 );
+}
 
 // =============================== Methods ==================================
 
@@ -66,8 +73,8 @@ void ContactDetector::sweep_n_prune( Globals& siku )
         {
           if( siku.pes[j]->flag & Element::F_ERRORED ) continue;
 
-          if ( sq_dist( siku.pes[i]->Glob, siku.pes[j]->Glob ) <
-              square_( siku.pes[i]->sbb_rmin + siku.pes[j]->sbb_rmin ) )
+          if ( _dist2( siku.pes[i]->Glob, siku.pes[j]->Glob ) <
+              _sqr( siku.pes[i]->sbb_rmin + siku.pes[j]->sbb_rmin ) )
             {
               add_cont( siku, siku.pes[i]->id, siku.pes[j]->id,
                         siku.time.get_n () );
@@ -91,8 +98,8 @@ void ContactDetector::find_pairs( Globals& siku )
     {
       for ( size_t j = i + 1; j < siku.es.size (); ++j )
         {
-          if ( sq_dist( siku.es[i].Glob, siku.es[j].Glob ) <
-               square_( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
+          if ( _dist2( siku.es[i].Glob, siku.es[j].Glob ) <
+              _sqr( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
             add_cont( siku, i, j, siku.time.get_n() );
         }
     }

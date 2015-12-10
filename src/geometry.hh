@@ -31,13 +31,6 @@
 
 namespace Geometry
 {
-  enum Implementation: int
-  {
-    ERROR_IMPLEMENTATION = -1,
-    BOOST = 0,
-    HANDMADE = 1
-  };
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   //! \brief Checks if the polygon given by vector of vertices contains
@@ -61,15 +54,13 @@ namespace Geometry
   //! \param size - area, perimeter or equivalent concept
   //! \param method - implementation specifier
   bool intersect( const vector<vec3d>& poly1, const vector<vec3d>& poly2,
-                  vector<vec3d>& res, vec3d& center, double& size,
-                  const Implementation& method = BOOST );
+                  vector<vec3d>& res, vec3d& center, double& size );
 
   //! \brief checks the polygon given as a vector of vertices for different
   //! errors. Returns true if errors exist, false if all is correct.
   //! If errors occur - puts some marks into 'res' argument (depend on
   //! implementation method).
-  bool errored( const vector<vec3d>& poly, int& res,
-                const Implementation& method = BOOST );
+  bool errored( const vector<vec3d>& poly, int& res );
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ inlines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -83,22 +74,22 @@ namespace Geometry
     return p1 + d * (p2 - p1);
   }
 
-  inline double modulo( const vec3d& v )
+  inline double abs( const vec3d& v )
   {
     return sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
   }
 
-  inline double modulo2( const vec3d& v )
+  inline double abs2( const vec3d& v )
   {
     return v.x*v.x + v.y*v.y + v.z*v.z;
   }
 
-  inline double moduloXY( const vec3d& v )
+  inline double absXY( const vec3d& v )
   {
     return sqrt( v.x*v.x + v.y*v.y );
   }
 
-  inline double moduloXY2( const vec3d& v )
+  inline double absXY2( const vec3d& v )
   {
     return v.x*v.x + v.y*v.y;
   }
@@ -113,5 +104,8 @@ namespace Geometry
     return v1.x*v2.y - v1.y*v2.x;
   }
 
-
+  inline vec3d rot_90_cw_XY( const vec3d& v )
+  {
+    return vec3d( v.y, -v.x, 0. );
+  }
 }

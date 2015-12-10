@@ -8,6 +8,9 @@
 
 #include "forces_mass.hh"
 #include "errors.hh"
+#include "geometry.hh"
+
+using namespace Geometry;
 
 //////testing
 #include <iostream>
@@ -39,7 +42,7 @@ void forces_mass( Globals& siku )
 
       // calculating local Force (draft)
       // V.lenght() always equals to 3 - it`s amount of components!!!
-      e.F += 0.0016 * vec_len( V ) * V * e.A * siku.planet.R2;
+      e.F += 0.0016 * abs( V ) * V * e.A * siku.planet.R2;
       //e.F = 0.0016 * sqrt( V.x*V.x + V.y*V.y + V.z*V.z ) * V * e.A;
 
       //-------- WATER (STEADY) ----------
@@ -57,7 +60,7 @@ void forces_mass( Globals& siku )
       W -= V;
 
       // applying water forces
-      e.F += 0.0045 * 1 * vec_len( W ) * W * e.A * siku.planet.R2 *test_adjuster;
+      e.F += 0.0045 * 1 * abs( W ) * W * e.A * siku.planet.R2 *test_adjuster;
 
       // experimental water torque
       //e.N += 0.0045 * e.W.z * e.W.z * e.I * test_adjuster;

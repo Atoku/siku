@@ -8,8 +8,8 @@
 
 #include "mproperties.hh"
 #include "errors.hh"
-
 #include "coordinates.hh"
+#include "siku.hh"
 
 void mproperties( Globals& siku )
 {
@@ -102,7 +102,7 @@ void mproperties( Globals& siku )
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
 
       // clearing the force and the torque
-      e.F = nullvec;
+      e.F = nullvec3d;
       e.N = 0;
 
       // marking element as it was already processed
