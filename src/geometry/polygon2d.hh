@@ -33,7 +33,7 @@
 #ifndef POLYGON2D_HH
 #define POLYGON2D_HH
 
-#include "Point2d.h"
+#include "point2d.h"
 
 class Polygon2d
 {
