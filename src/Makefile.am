@@ -1,4 +1,3 @@
-
 STYLEFLAGS = -pedantic -Wall
 SHAPELIBDIR = ../deps/shapelib
 
@@ -8,6 +7,9 @@ if FPCHECK
 else
   FPCHECK_FLAGS =
 endif
+
+# Convenience libraries
+SUBDIRS = geometry
 
 # SIMD_FLAGS is from ax_ext.m4 for sse/mmx flags
 #
