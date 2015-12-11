@@ -1,0 +1,5 @@
+Unit tests for geometry library.
+
+TODO: decide to either use direct GNU Make or include this test
+directory into confiugre.ac target and list in subdirectories in
+geometry's Makefile.am.
