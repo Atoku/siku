@@ -28,7 +28,6 @@
 
 #include "element.hh"
 #include "coordinates.hh"
-#include "geometry.hh"
 
 using namespace Coordinates;
 using namespace Geometry;

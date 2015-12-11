@@ -25,7 +25,6 @@
 
 #include "globals.hh"
 #include "contact_detect.hh"
-#include "geometry.hh"
 #include "siku.hh"
 using namespace Coordinates;
 

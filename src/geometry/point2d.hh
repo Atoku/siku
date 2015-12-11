@@ -28,14 +28,112 @@
  *
  */
 
-
 #ifndef POINT2D_HH
 #define POINT2D_HH
 
+#include "vector2d.hh"
+
+// ============================ BOOST implementation ========================
+#ifdef SIKU_2D_BOOST
+
+//! Boost point 2D (double)
+typedef boost::geometry::model::d2::point_xy<double> pnt2d;
+
+// zero-point2d for fast cleaning
+static const pnt2d nullpnt2d = pnt2d( 0., 0. );
+
+
+#else
+// ========================== Local implementation =========================
+
+// Class represents a point in 2d space. Provides generic point algebra based
+// on Vector2d class with point-vector difference preservation.
+// TODO: template?
 class Point2d
 {
-private:
-  double p[2];
+  friend class Vector2d;
+  friend class Matrix2d;
+//protected:
+  public:  // public or protected?
+  vec2d v;
+
+public:
+// ------------------------ constructors/destructor -------------------------
+
+  // default constructor
+  Point2d( const vec2d& V = vec2d() ) : v( V ) {}
+
+  // simple copy constructor
+  Point2d( const Point2d& P ) : v( P.v ) {}
+
+  // destructor (boring)
+  ~Point2d() = default;
+
+// ----------------------------- assignments -------------------------------
+
+  inline Point2d& operator = ( const Point2d& P )
+  {
+    v = P.v;
+    return *this;
+  }
+
+  inline Point2d& operator += ( const vec2d& V )
+  {
+    v += V;
+    return *this;
+  }
+  inline Point2d& operator -= ( const vec2d& V )
+  {
+    v -= V;
+    return *this;
+  }
+
+// ---------------------------- basic algebra -------------------------------
+
+  inline vec2d operator - ( const Point2d& P ) const { return v - P.v; }
+
+  inline Point2d operator + ( const vec2d& V ) const
+  {
+    return Point2d( v + V );
+  }
+  inline Point2d operator - ( const vec2d& V ) const
+  {
+    return Point2d( v - V );
+  }
+
+// ------------------------------ comparison --------------------------------
+
+  inline bool operator == ( const Point2d& P ) const { return v == P.v; }
+
+  inline operator bool () const { return v; }
+
+// ------------------------- various functionality --------------------------
+
+  // simple access
+  inline vec2d& Vector() { return v; }
+
+  // ort
+  inline vec2d ort() const { return v.ort(); }
+
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~~~~~~~~~
+
+inline Point2d operator + ( const vec2d& V, const Point2d& P )
+{
+  return P + V;
 }
+
+inline vec2d ort ( const Point2d& P ) { return P.ort(); }
+
+// static zero-value Point2d instance
+const static Point2d ZeroPoint2d = Point2d();
+
+// =========================================================================
+
+// naming the type
+typedef Point2d pnt2d;
+
+#endif
 
 #endif      /* POINT2D_HH */

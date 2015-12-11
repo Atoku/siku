@@ -33,12 +33,31 @@
 #ifndef POLYGON2D_HH
 #define POLYGON2D_HH
 
-#include "point2d.h"
+#include "point2d.hh"
+//#include "matrix2d.hh"  // vec->pnt->mat includes interact as russian doll
+
+// ======================== Boost implementation ============================
+#ifdef SIKU_2D_BOOST
+
+//! Boost polygon 2D (double). false for 'clockwise'
+typedef boost::geometry::model::polygon< pnt2d, false, false > poly2d;
+
+
+// ======================== Local implementation ============================
+#else
+
+#include <vector>
 
 class Polygon2d
 {
 private:
-  vector<Point2d> verts;
-}
+  std::vector<Point2d> verts;
+};
+
+// ==========================================================================
+
+typedef Polygon2d poly2d;
+
+#endif
 
 #endif      /* POLYGON2D_HH */

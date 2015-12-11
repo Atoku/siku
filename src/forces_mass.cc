@@ -8,7 +8,6 @@
 
 #include "forces_mass.hh"
 #include "errors.hh"
-#include "geometry.hh"
 
 using namespace Geometry;
 

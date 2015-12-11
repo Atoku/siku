@@ -23,7 +23,6 @@
 #include <cmath>
 
 #include "contact_force.hh"
-#include "geometry.hh"
 
 /*
  * TODO: discuss threading VS static

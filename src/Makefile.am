@@ -28,8 +28,6 @@ siku_SOURCES = siku.cc siku.hh \
 	element.hh element.cc \
 	errors.hh \
 	forces_mass.hh forces_mass.cc \
-	geom_types.hh \
-	geometry.hh geometry.cc \
 	globals.hh globals.cc \
 	highio.hh highio.cc \
 	info.hh \
@@ -41,13 +39,10 @@ siku_SOURCES = siku.cc siku.hh \
 	nmc_reader.hh nmc_reader.cc \
 	options.cc options.hh \
 	planet.hh \
-	polygon2d.hh \
 	position.hh position.cc \
 	scheduler.hh scheduler.cc \
 	sikupy.hh sikupy.cc \
-	vecfield.cc vecfield.hh \
-	vector_algebra2d.hh \
-	vector_algebra3d.hh
+	vecfield.cc vecfield.hh
 
 
 siku_CXXFLAGS = -I$(SHAPELIBDIR) $(AM_CXXFLAGS)
