@@ -11,71 +11,8 @@
 
 #include <iostream>
 
-// ============================ BOOST implementation ========================
-#ifdef SIKU_2D_BOOST
-
-//! General boost includes
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-
-//! boost::geometry namespace shortcut
-namespace BG = boost::geometry;
-
-//! 2d vector type
-typedef BG::model::d2::point_xy<double> vec2d;
-
-//! zero-value vector for clean instantiations
-static const vec2d nullvec2d = vec2d( 0., 0. );
-
-// ----------------------- functionality simplification ---------------------
-
-inline double dot( const vec2d& v1, const vec2d& v2 )
+class Vector2d: Object2d
 {
-  return v1.x() * v2.x() + v1.y() * v2.y();
-}
-
-inline double cross( const vec2d& v1, const vec2d& v2 )
-{
-  return v1.x() * v2.y() - v1.y() * v2.x();
-}
-
-// TODO: !!replace with boost implementation
-inline vec2d operator + ( const vec2d& v1, const vec2d& v2 )
-{
-  return vec2d( v1.x() + v2.x(), v1.y() + v2.y() );
-}
-inline vec2d operator - ( const vec2d& v1, const vec2d& v2 )
-{
-  return vec2d( v1.x() - v2.x(), v1.y() - v2.y() );
-}
-
-inline void print( const vec2d& p )
-{
-  std::cout<<p.x()<<"\t"<<p.y()<<std::endl;
-}
-
-#else
-// ========================== Local implementation =========================
-
-// predeclarations
-// class Point2d;
-// class Matrix2d;
-
-// Basic class for vector algebra library. Should be a template.
-// Contains two double (yet not templated) values. Provides generic algebra
-// and transformation functionality.
-// TODO: template?
-class Vector2d
-{
-  friend class Point2d;
-  friend class Matrix2d;
-  friend Vector2d operator * ( const Vector2d& V, const Matrix2d& M );
-//protected:
-public:  // public or protected?
-  double x;
-  double y;
-
 public:
 // ------------------ simple constructors & destructor ----------------------
 
@@ -225,11 +162,7 @@ typedef Vector2d vec2d;
 
 inline void print( const vec2d& v )
 {
-  std::cout<<v.x<<"\t"<<v.y<<std::endl;
+  std::cout<<v.data[0]<<"\t"<<v.data[1]<<std::endl;
 }
-
-// ==========================================================================
-
-#endif
 
 #endif  /* VECTOR2D_HH */
