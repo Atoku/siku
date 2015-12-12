@@ -1,4 +1,10 @@
+/*!
 
+  \file vector2d.hh
+
+  \brief 2D vector type
+
+*/
 
 #ifndef VECTOR2D_HH
 #define VECTOR2D_HH
@@ -53,8 +59,8 @@ inline void print( const vec2d& p )
 // ========================== Local implementation =========================
 
 // predeclarations
-class Point2d;
-class Matrix2d;
+// class Point2d;
+// class Matrix2d;
 
 // Basic class for vector algebra library. Should be a template.
 // Contains two double (yet not templated) values. Provides generic algebra
