@@ -1,7 +1,7 @@
 STYLEFLAGS = -pedantic -Wall
 
-noinst_PROGRAMS = testvector2d
+noinst_PROGRAMS = testobject2d
 
-testvector2d_SOURCES = testvector2d.cc
+testobject2d_SOURCES = testobject2d.cc
 
 
