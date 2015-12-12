@@ -33,87 +33,179 @@
 
 #include "vector2d.hh"
 
-// ============================ BOOST implementation ========================
-#ifdef SIKU_2D_BOOST
+// =============================== Old =====================================
+//
+//// Class represents a point in 2d space. Provides generic point algebra based
+//// on Vector2d class with point-vector difference preservation.
+//// TODO: template?
+//class Point2d
+//{
+//  friend class Vector2d;
+//  friend class Matrix2d;
+////protected:
+//  public:  // public or protected?
+//  vec2d v;
+//
+//public:
+//// ------------------------ constructors/destructor -------------------------
+//
+//  // default constructor
+//  Point2d( const vec2d& V = vec2d() ) : v( V ) {}
+//
+//  // simple copy constructor
+//  Point2d( const Point2d& P ) : v( P.v ) {}
+//
+//  // destructor (boring)
+//  ~Point2d() = default;
+//
+//// ----------------------------- assignments -------------------------------
+//
+//  inline Point2d& operator = ( const Point2d& P )
+//  {
+//    v = P.v;
+//    return *this;
+//  }
+//
+//  inline Point2d& operator += ( const vec2d& V )
+//  {
+//    v += V;
+//    return *this;
+//  }
+//  inline Point2d& operator -= ( const vec2d& V )
+//  {
+//    v -= V;
+//    return *this;
+//  }
+//
+//// ---------------------------- basic algebra -------------------------------
+//
+//  inline vec2d operator - ( const Point2d& P ) const { return v - P.v; }
+//
+//  inline Point2d operator + ( const vec2d& V ) const
+//  {
+//    return Point2d( v + V );
+//  }
+//  inline Point2d operator - ( const vec2d& V ) const
+//  {
+//    return Point2d( v - V );
+//  }
+//
+//// ------------------------------ comparison --------------------------------
+//
+//  inline bool operator == ( const Point2d& P ) const { return v == P.v; }
+//
+//  inline operator bool () const { return v; }
+//
+//// ------------------------- various functionality --------------------------
+//
+//  // simple access
+//  inline vec2d& Vector() { return v; }
+//
+//  // ort
+//  inline vec2d ort() const { return v.ort(); }
+//
+//};
+//
+//// ~~~~~~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~~~~~~~~~
+//
+//inline Point2d operator + ( const vec2d& V, const Point2d& P )
+//{
+//  return P + V;
+//}
+//
+//inline vec2d ort ( const Point2d& P ) { return P.ort(); }
+//
+//// static zero-value Point2d instance
+//const static Point2d ZeroPoint2d = Point2d();
 
-//! Boost point 2D (double)
-typedef boost::geometry::model::d2::point_xy<double> pnt2d;
+// ========================== New (hardly differs) ==========================
 
-// zero-point2d for fast cleaning
-static const pnt2d nullpnt2d = pnt2d( 0., 0. );
-
-
-#else
-// ========================== Local implementation =========================
 
 // Class represents a point in 2d space. Provides generic point algebra based
 // on Vector2d class with point-vector difference preservation.
 // TODO: template?
-class Point2d
+class Point2d : public Object2d
 {
   friend class Vector2d;
   friend class Matrix2d;
-//protected:
-  public:  // public or protected?
-  vec2d v;
 
 public:
 // ------------------------ constructors/destructor -------------------------
 
   // default constructor
-  Point2d( const vec2d& V = vec2d() ) : v( V ) {}
+  Point2d( const double& X, const double& Y )
+  {
+    data[0] = X;
+    data[1] = Y;
+  }
+
+  Point2d( const vec2d& v = vec2d() )
+  {
+    memcpy( data, v.data, sizeof(v.data) );
+  }
 
   // simple copy constructor
-  Point2d( const Point2d& P ) : v( P.v ) {}
+  Point2d( const Point2d& p )
+  {
+    memcpy( data, p.data, sizeof(p.data) );
+  }
 
   // destructor (boring)
   ~Point2d() = default;
 
 // ----------------------------- assignments -------------------------------
 
-  inline Point2d& operator = ( const Point2d& P )
+  inline Point2d& operator = ( const Point2d& p )
   {
-    v = P.v;
+    memcpy( data, p.data, sizeof(p.data) );
     return *this;
   }
 
   inline Point2d& operator += ( const vec2d& V )
   {
-    v += V;
+    data[0] += V.data[0];
+    data[1] += V.data[1];
     return *this;
   }
   inline Point2d& operator -= ( const vec2d& V )
   {
-    v -= V;
+    data[0] -= V.data[0];
+    data[1] -= V.data[1];
     return *this;
   }
 
 // ---------------------------- basic algebra -------------------------------
 
-  inline vec2d operator - ( const Point2d& P ) const { return v - P.v; }
+  inline vec2d operator - ( const Point2d& P ) const
+  {
+    return vec2d( data[0] - P.data[0], data[1] - P.data[1] );
+  }
 
   inline Point2d operator + ( const vec2d& V ) const
   {
-    return Point2d( v + V );
+    return Point2d( data[0] + V.data[0], data[1] + V.data[1] );
   }
   inline Point2d operator - ( const vec2d& V ) const
   {
-    return Point2d( v - V );
+    return Point2d( data[0] - V.data[0], data[1] - V.data[1] );
   }
 
 // ------------------------------ comparison --------------------------------
 
-  inline bool operator == ( const Point2d& P ) const { return v == P.v; }
+  inline bool operator == ( const Point2d& P ) const
+  {
+    return data[0] == P.data[0] && data[1] == P.data[1];
+  }
 
-  inline operator bool () const { return v; }
+  inline operator bool () const { return data[0] || data[1]; }
 
 // ------------------------- various functionality --------------------------
 
   // simple access
-  inline vec2d& Vector() { return v; }
+  inline vec2d Vector() const { return vec2d( data[0], data[1] ); }
 
   // ort
-  inline vec2d ort() const { return v.ort(); }
+  //inline vec2d ort() const { return v.ort(); }
 
 };
 
@@ -124,16 +216,15 @@ inline Point2d operator + ( const vec2d& V, const Point2d& P )
   return P + V;
 }
 
-inline vec2d ort ( const Point2d& P ) { return P.ort(); }
+//inline vec2d ort ( const Point2d& P ) { return P.ort(); }
 
 // static zero-value Point2d instance
 const static Point2d ZeroPoint2d = Point2d();
 
-// =========================================================================
+
+// ==========================================================================
 
 // naming the type
 typedef Point2d pnt2d;
-
-#endif
 
 #endif      /* POINT2D_HH */

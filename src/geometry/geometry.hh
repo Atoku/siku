@@ -57,8 +57,8 @@ const double POINT_SCALE = 1. ;
 typedef glm::dquat quat;
 //#endif
 
-// ----------------------------- Boost 2d utils -----------------------------
-#ifdef SIKU_2D_BOOST
+
+// ------------------------------- 2d utils ---------------------------------
 
 // two ways transforming
 inline vec3d vec2_to_vec3( const vec2d& v2 )
@@ -67,23 +67,8 @@ inline vec3d vec2_to_vec3( const vec2d& v2 )
 }
 inline vec2d vec3_to_vec2( const vec3d& v3 )
 {
-  return vec2d( v3.x * POINT_SCALE , v3.y * POINT_SCALE );
-}
-
-// ---------------------------- NOboost 2d utils ----------------------------
-#else
-
-// two ways transforming
-inline vec3d vec2_to_vec3( const vec2d& v2 )
-{
-  return vec3d( v2.x / POINT_SCALE, v2.y / POINT_SCALE, 0. );
-}
-inline vec2d vec3_to_vec2( const vec3d& v3 )
-{
   return vec2d( vec2d(  v3.x * POINT_SCALE , v3.y * POINT_SCALE ) );
 }
-
-#endif
 
 // ------------------------ Manual debug checks -----------------------------
 
