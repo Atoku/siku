@@ -2,39 +2,74 @@
 
   \file vector2d.hh
 
-  \brief 2D vector type
+  \brief 2D vector type class
 
 */
+
+/*
+ * Siku: Discrete element method sea-ice model: siku.cc
+ *
+ * Copyright (C) 2015-2016 UAF.
+ * Authors: Anton Kulchitsky, Gleb Velikhovskiy
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+ */
 
 #ifndef VECTOR2D_HH
 #define VECTOR2D_HH
 
-#include "object2d.hh"
+extern "C" {
+#include <string.h>
+#include <math.h>
+#include <stdio.h>
+}
 
-class Vector2d: public Object2d
+class Vector2d
 {
-  friend class Point2d;
+
+private:
+  double x{ 0 };
+  double y{ 0 };
+  
 public:
-// ------------------ simple constructors & destructor ----------------------
+  
+  // ------------------ simple constructors & destructor -------------
 
-  // default constructor
-  Vector2d( const double& X = 0., const double& Y = 0. )
+  //! default constructor
+  Vector2d( const double& X = 0., const double& Y = 0. ) :
+    x( X ), y( Y ) {}
+  
+  //! simple copy
+  Vector2d( const Vector2d& o )
   {
-    x = X;
-    y = Y;
+    memcpy( &x, &o.x, 2 * sizeof(double) );
   }
 
-  // simple copy constructor
-  Vector2d( const Vector2d& V )
-  {
-    memcpy( &x, &V.x, 2 * sizeof(V.x) );
-  }
-
-  // default destructor
+  //! default destructor
   ~Vector2d() = default;
 
-// ------------------------ assignments and access --------------------------
+  // ------------------------ assignments and access -----------------
 
+  // basic access
+  inline double getx() const { return x; }
+  inline double gety() const { return y; }
+  
+  // ------------------------ assignments and access -----------------
+  
   // simple assignment operator
   inline Vector2d& operator= ( const Vector2d& V )
   {
@@ -42,101 +77,123 @@ public:
     return *this;
   }
 
+  //------------------------------------------------------------------
+  // Basic operations  
+  //------------------------------------------------------------------
+
+  //! addition by a vector 
   inline Vector2d& operator += ( const Vector2d& V )
   {
     x += V.x;
     y += V.y;
     return *this;
   }
+
+  //! subtraction by a vector
   inline Vector2d& operator -= ( const Vector2d& V )
   {
     x -= V.x;
     y -= V.y;
     return *this;
   }
+
+  //! multiplication by a number
   inline Vector2d& operator *= ( const double& d )
   {
     x *= d;
     y *= d;
     return *this;
   }
+  
+  //! division by a number 
   inline Vector2d& operator /= ( const double& d )
   {
     x /= d;
     y /= d;
     return *this;
   }
+  
+  inline Vector2d operator + ( const Vector2d& V ) const
+  {
+    return Vector2d( x + V.x, y + V.y );
+  }
+  
+  inline Vector2d operator - ( const Vector2d& V ) const
+  {
+    return Vector2d( x - V.x, y - V.y );
+  }
+  
+  inline Vector2d operator * ( const double& d ) const
+  {
+    return Vector2d( x * d, y * d);
+  }
+  
+  //! division by number (TODO: we don't need it)
+  inline Vector2d operator / ( const double& d ) const
+  {
+    return Vector2d( x / d, y / d );
+  }
 
-// -------------------------- algebraic operators ---------------------------
-
- inline Vector2d operator + ( const Vector2d& V ) const
- {
-   return Vector2d( x + V.x, y + V.y );
- }
- inline Vector2d operator - ( const Vector2d& V ) const
- {
-   return Vector2d( x - V.x, y - V.y );
- }
- inline Vector2d operator * ( const double& d ) const
- {
-   return Vector2d( x * d, y * d);
- }
- inline Vector2d operator / ( const double& d ) const
- {
-   return Vector2d( x / d, y / d );
- }
-
- // scalar multiplication
- inline double operator * ( const Vector2d& V ) const
- {
+  //! scalar (dot) multiplication
+  inline double operator * ( const Vector2d& V ) const
+  {
    return x * V.x + y * V.y;
- }
+  }
 
-// ------------------------------ comparison---------------------------------
+  // ------------------------------ comparison------------------------
 
- inline bool operator== (const Vector2d &V) const
- {
-   return x == V.x && y == V.y;
- }
+  inline bool operator== (const Vector2d &V) const
+  {
+    return x == V.x && y == V.y;
+  }
+  
+  inline operator bool () const { return x || y; }
+  
+  // --------------------------- various methods ---------------------
 
- inline operator bool () const { return x || y; }
+  //! absolute value
+  inline double abs() const
+  {
+    return sqrt( x * x + y * y );
+  }
+  
+  //! squared absolute value
+  inline double abs2() const { return x * x + y * y; }
+  
+  //! renorm vector by optional given length (1 by default) and
+  //! return it
+  inline Vector2d& renorm( double d = 1. )
+  {
+    d /= abs();
+    return ( *this *= d );
+  }
 
-// --------------------------- various methods ------------------------------
+  // return ort of vector
+  inline Vector2d ort() const { return ( *this / abs() ); }
 
-// // simple access
-// inline double& X() { return x; }
-// // simple access
-// inline double& Y() { return y; }
+  // dot product
+  inline double dot( const Vector2d& V ) const
+  { return ( *this * V ); }
+  
+  //cross product
+  inline double cross( const Vector2d& V ) const
+  {
+    return x * V.y - y * V.x;
+  }
 
- // absolute value
- inline double abs() const
- {
-   return sqrt( x * x + y * y );
- }
- // squared absolute value
- inline double abs2() const { return x * x + y * y; }
+  //------------------------------------------------------------------
+  //! pretty print
+  inline void print() const
+  {
+    cout << x << '\t' <<  y << endl;
+  }
 
- // renorm vector by optional given length (1 by default) and return it
- inline Vector2d& renorm( double d = 1. )
- {
-   d /= abs();
-   return ( *this *= d );
- }
-
- // return ort of vector
- inline Vector2d ort() const { return ( *this / abs() ); }
-
- // dot product
- inline double dot( const Vector2d& V ) const { return ( *this * V ); }
- //cross product
- inline double cross( const Vector2d& V ) const
- {
-   return x * V.y - y * V.x;
- }
-
+  
 };
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~~~~~~~~~
+//-------------------------------------------------------------------
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~
+//--------------------------------------------------------------------
 
 inline Vector2d operator * ( const double& d, const Vector2d& V )
 {
@@ -155,6 +212,7 @@ inline double dot( const Vector2d& V1, const Vector2d& V2 )
 {
   return V1.dot( V2 );
 }
+
 inline double cross ( const Vector2d& V1, const Vector2d& V2 )
 {
   return V1.cross( V2 );
@@ -163,19 +221,23 @@ inline double cross ( const Vector2d& V1, const Vector2d& V2 )
 inline Vector2d ort ( const Vector2d& V ) { return V.ort(); }
 
 // static zero-value Vector2d instance
-static const Vector2d ZeroVector2d = Vector2d();
+//static const Vector2d ZeroVector2d = Vector2d();
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Utils ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 //! 2d vector type
-typedef Vector2d vec2d;
+//typedef Vector2d vec2d;
 
 //! zero-value vector for clean instantiations
-#define nullvec2d ZeroVector2d
+//#define nullvec2d ZeroVector2d
 
-inline void print( const vec2d& v )
-{
-  v.print();
-}
+//! Pretty print with standard %f format
+#define Vector2d_print( v ) \
+  printf( #v " = ( %f, %f )\n", (v).getx(), (v).gety() )
+
+//! Pretty pring with custom format
+//! Sample:   Vector2d_printf( vec, "%2.2f" );
+#define Vector2d_printf( v, f ) \
+  printf( #v " = ( " f", " f" )\n", (v).getx(), (v).gety() )
 
 #endif  /* VECTOR2D_HH */

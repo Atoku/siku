@@ -1,7 +1,9 @@
 STYLEFLAGS = -pedantic -Wall
+INCLUDEFLAGS = -I..
 
-noinst_PROGRAMS = testobject2d
+AM_CXXFLAGS = $(SIMD_FLAGS) $(PROFILE_FLAGS) \
+$(STYLEFLAGS) $(FPCHECK_FLAGS) ${BOOST_CPPFLAGS} $(INCLUDEFLAGS)
 
-testobject2d_SOURCES = testobject2d.cc
+noinst_PROGRAMS = testvector2d
 
-
+testvector2d_SOURCES = testvector2d.cc

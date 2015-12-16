@@ -15,42 +15,74 @@ using namespace std;
 
 extern "C" {
 #include <string.h>
+#include <math.h>
 }
 
-//---------------------------------------------------------------------------
+//--------------------------------------------------------------------
 
 class Object2d
 {
-public:
+  
+private:
   double x{ 0 };
   double y{ 0 };
 
-  // default constructor
-  Object2d( const double& X = 0., const double& Y = 0. ) : x( X ), y( Y ) {}
+public:
   
-  // simple copy
+  //! default constructor
+  Object2d( const double& X = 0., const double& Y = 0. ) :
+    x( X ), y( Y ) {}
+
+  //! simple copy
   Object2d( const Object2d& o )
   {
     memcpy( &x, &o.x, 2 * sizeof(double) );
   }
 
-// ------------------------ assignments and access --------------------------
+  // ------------------------ assignments and access -----------------
 
-//  // basic access
-//  inline double x() const { return data[0]; }
-//  inline double y() const { return data[1]; }
-//
-//  // just in case
-//  inline double& x( const double& X ) { return ( data[0] = X ); }
-//  inline double& y( const double& Y ) { return ( data[0] = Y ); }
+  // basic access
+  inline double getx() const { return x; }
+  inline double gety() const { return y; }
 
   inline Object2d& operator= ( const Object2d& o )
   {
-    memcpy( &x, &o.x, 2 * sizeof(double) );
+    x = o.x;
+    y = o.y;
     return *this;
   }
 
-// --------------------------------- misc -----------------------------------
+  inline Object2d& operator += ( const Object2d& o )
+  {
+    x += o.x;
+    y += o.y;
+    return *this;
+  }
+
+  inline Object2d& operator -= ( const Object2d& o )
+  {
+    x += o.x;
+    y += o.y;
+    return *this;
+  }
+
+  // ------------------------ component operators --------------------
+
+  inline vec2d operator - ( const Point2d& P ) const
+  {
+    return vec2d( x - P.x, y - P.y );
+  }
+
+  inline Point2d operator + ( const vec2d& V ) const
+  {
+    return Point2d( x + V.x, y + V.y );
+  }
+  inline Point2d operator - ( const vec2d& V ) const
+  {
+    return Point2d( x - V.x, y - V.y );
+  }
+  
+  // --------------------------------- misc --------------------------
 
   inline void print() const
   {
@@ -62,7 +94,7 @@ public:
 
 };
 
-// ----------------------- Exterior functionality ---------------------------
+// ----------------------- Exterior functionality --------------------
 
 inline void print( const Object2d& o ) { o.print(); }  // syntax sugar
 

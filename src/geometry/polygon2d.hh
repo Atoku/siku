@@ -11,7 +11,8 @@
 /*
  * Siku: Discrete element method sea-ice model: siku.cc
  *
- * Copyright (C) 2015-2016 UAF. Author: Anton Kulchitsky, Gleb Velikhovskiy
+ * Copyright (C) 2015-2016 UAF.
+ * Authors: Anton Kulchitsky, Gleb Velikhovskiy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -174,7 +175,7 @@ pnt2d line_seg_inter( const pnt2d& ta1, const pnt2d& ta2,
     double nb = ( a2.x - a1.x ) * ( a1.y - b1.y )
         - ( a2.y - a1.y ) * ( a1.x - b1.x );
 
-    double ua = 0;  // line parameter for intersection point
+    //    double ua = 0;  // line parameter for intersection point
 
     if ( d == 0. )  // lines are parallel
       {
