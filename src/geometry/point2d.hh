@@ -33,6 +33,6 @@
 
 #include "vector2d.hh"
 
-typedef Vector2d Point2d
+typedef Vector2d Point2d;
 
 #endif      /* POINT2D_HH */
