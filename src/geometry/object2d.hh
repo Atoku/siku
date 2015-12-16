@@ -21,34 +21,32 @@ extern "C" {
 
 class Object2d
 {
-protected:
-  double data[2];
-
 public:
+  double x{ 0 };
+  double y{ 0 };
 
   // default constructor
-  Object2d( const double& X = 0., const double& Y = 0. )
-  { data[0] = X;  data[1] = Y; };
+  Object2d( const double& X = 0., const double& Y = 0. ) : x( X ), y( Y ) {}
   
   // simple copy
   Object2d( const Object2d& o )
   {
-    memcpy( data, o.data, sizeof(o.data) );
+    memcpy( &x, &o.x, 2 * sizeof(double) );
   }
 
 // ------------------------ assignments and access --------------------------
 
-  // basic access
-  inline double x() const { return data[0]; }
-  inline double y() const { return data[1]; }
-
-  // just in case
-  inline double& x( const double& X ) { return ( data[0] = X ); }
-  inline double& y( const double& Y ) { return ( data[0] = Y ); }
+//  // basic access
+//  inline double x() const { return data[0]; }
+//  inline double y() const { return data[1]; }
+//
+//  // just in case
+//  inline double& x( const double& X ) { return ( data[0] = X ); }
+//  inline double& y( const double& Y ) { return ( data[0] = Y ); }
 
   inline Object2d& operator= ( const Object2d& o )
   {
-    memcpy( data, o.data, sizeof(o.data) );
+    memcpy( &x, &o.x, 2 * sizeof(double) );
     return *this;
   }
 
@@ -56,7 +54,7 @@ public:
 
   inline void print() const
   {
-    cout << x() << '\t' <<  y() << endl;
+    cout << x << '\t' <<  y << endl;
   }
 
   // for future

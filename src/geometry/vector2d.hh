@@ -20,14 +20,14 @@ public:
   // default constructor
   Vector2d( const double& X = 0., const double& Y = 0. )
   {
-    data[0] = X;
-    data[1] = Y;
+    x = X;
+    y = Y;
   }
 
   // simple copy constructor
   Vector2d( const Vector2d& V )
   {
-    memcpy( data, V.data, sizeof(V.data) );
+    memcpy( &x, &V.x, 2 * sizeof(V.x) );
   }
 
   // default destructor
@@ -38,32 +38,32 @@ public:
   // simple assignment operator
   inline Vector2d& operator= ( const Vector2d& V )
   {
-    memcpy( data, V.data, sizeof(V.data) );
+    memcpy( &x, &V.x, 2 * sizeof(V.x) );
     return *this;
   }
 
   inline Vector2d& operator += ( const Vector2d& V )
   {
-    data[0] += V.data[0];
-    data[1] += V.data[1];
+    x += V.x;
+    y += V.y;
     return *this;
   }
   inline Vector2d& operator -= ( const Vector2d& V )
   {
-    data[0] -= V.data[0];
-    data[1] -= V.data[1];
+    x -= V.x;
+    y -= V.y;
     return *this;
   }
   inline Vector2d& operator *= ( const double& d )
   {
-    data[0] *= d;
-    data[1] *= d;
+    x *= d;
+    y *= d;
     return *this;
   }
   inline Vector2d& operator /= ( const double& d )
   {
-    data[0] /= d;
-    data[1] /= d;
+    x /= d;
+    y /= d;
     return *this;
   }
 
@@ -71,50 +71,50 @@ public:
 
  inline Vector2d operator + ( const Vector2d& V ) const
  {
-   return Vector2d( data[0] + V.data[0], data[1] + V.data[1] );
+   return Vector2d( x + V.x, y + V.y );
  }
  inline Vector2d operator - ( const Vector2d& V ) const
  {
-   return Vector2d( data[0] - V.data[0], data[1] - V.data[1] );
+   return Vector2d( x - V.x, y - V.y );
  }
  inline Vector2d operator * ( const double& d ) const
  {
-   return Vector2d( data[0] * d, data[1] * d);
+   return Vector2d( x * d, y * d);
  }
  inline Vector2d operator / ( const double& d ) const
  {
-   return Vector2d( data[0] / d, data[1] / d );
+   return Vector2d( x / d, y / d );
  }
 
  // scalar multiplication
  inline double operator * ( const Vector2d& V ) const
  {
-   return data[0] * V.data[0] + data[1] * V.data[1];
+   return x * V.x + y * V.y;
  }
 
 // ------------------------------ comparison---------------------------------
 
  inline bool operator== (const Vector2d &V) const
  {
-   return data[0] == V.data[0] && data[1] == V.data[1];
+   return x == V.x && y == V.y;
  }
 
- inline operator bool () const { return data[0] || data[1]; }
+ inline operator bool () const { return x || y; }
 
 // --------------------------- various methods ------------------------------
 
 // // simple access
-// inline double& X() { return data[0]; }
+// inline double& X() { return x; }
 // // simple access
-// inline double& Y() { return data[1]; }
+// inline double& Y() { return y; }
 
  // absolute value
  inline double abs() const
  {
-   return sqrt( data[0] * data[0] + data[1] * data[1] );
+   return sqrt( x * x + y * y );
  }
  // squared absolute value
- inline double abs2() const { return data[0] * data[0] + data[1] * data[1]; }
+ inline double abs2() const { return x * x + y * y; }
 
  // renorm vector by optional given length (1 by default) and return it
  inline Vector2d& renorm( double d = 1. )
@@ -131,7 +131,7 @@ public:
  //cross product
  inline double cross( const Vector2d& V ) const
  {
-   return data[0] * V.data[1] - data[1] * V.data[0];
+   return x * V.y - y * V.x;
  }
 
 };

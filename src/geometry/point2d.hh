@@ -135,19 +135,19 @@ public:
   // default constructor
   Point2d( const double& X, const double& Y )
   {
-    data[0] = X;
-    data[1] = Y;
+    x = X;
+    y = Y;
   }
 
   Point2d( const vec2d& v = vec2d() )
   {
-    memcpy( data, v.data, sizeof(v.data) );
+    memcpy( &x, &v.x, 2 * sizeof(v.x) );
   }
 
   // simple copy constructor
   Point2d( const Point2d& p )
   {
-    memcpy( data, p.data, sizeof(p.data) );
+    memcpy( &x, &p.x, 2 * sizeof(p.x) );
   }
 
   // destructor (boring)
@@ -157,20 +157,20 @@ public:
 
   inline Point2d& operator = ( const Point2d& p )
   {
-    memcpy( data, p.data, sizeof(p.data) );
+    memcpy( &x, &p.x, 2 * sizeof(p.x) );
     return *this;
   }
 
   inline Point2d& operator += ( const vec2d& V )
   {
-    data[0] += V.data[0];
-    data[1] += V.data[1];
+    x += V.x;
+    y += V.y;
     return *this;
   }
   inline Point2d& operator -= ( const vec2d& V )
   {
-    data[0] -= V.data[0];
-    data[1] -= V.data[1];
+    x -= V.x;
+    y -= V.y;
     return *this;
   }
 
@@ -178,31 +178,31 @@ public:
 
   inline vec2d operator - ( const Point2d& P ) const
   {
-    return vec2d( data[0] - P.data[0], data[1] - P.data[1] );
+    return vec2d( x - P.x, y - P.y );
   }
 
   inline Point2d operator + ( const vec2d& V ) const
   {
-    return Point2d( data[0] + V.data[0], data[1] + V.data[1] );
+    return Point2d( x + V.x, y + V.y );
   }
   inline Point2d operator - ( const vec2d& V ) const
   {
-    return Point2d( data[0] - V.data[0], data[1] - V.data[1] );
+    return Point2d( x - V.x, y - V.y );
   }
 
 // ------------------------------ comparison --------------------------------
 
   inline bool operator == ( const Point2d& P ) const
   {
-    return data[0] == P.data[0] && data[1] == P.data[1];
+    return x == P.x && y == P.y;
   }
 
-  inline operator bool () const { return data[0] || data[1]; }
+  inline operator bool () const { return x || y; }
 
 // ------------------------- various functionality --------------------------
 
   // simple access
-  inline vec2d Vector() const { return vec2d( data[0], data[1] ); }
+  inline vec2d Vector() const { return vec2d( x, y ); }
 
   // ort
   //inline vec2d ort() const { return v.ort(); }
@@ -220,7 +220,7 @@ inline Point2d operator + ( const vec2d& V, const Point2d& P )
 
 // static zero-value Point2d instance
 const static Point2d ZeroPoint2d = Point2d();
-
+#define nullpnt2d ZeroPoint2d;
 
 // ==========================================================================
 
