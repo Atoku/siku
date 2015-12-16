@@ -35,4 +35,7 @@
 
 typedef Vector2d Point2d;
 
+#define Point2d_print Vector2d_print
+#define Point2d_printf Vector2d_printf
+
 #endif      /* POINT2D_HH */
