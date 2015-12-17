@@ -1,0 +1,12 @@
+* General gelp file
+
+** Configure line for ubuntu and mint lunuces.
+
+./configure --with-boost-libdir=/usr/lib/x86_64-linux-gnu PYTHON=/usr/bin/python3
+
+** Bulk section: for emacs to automatically use outline mode
+
+--- Local Variables:
+--- mode: outline
+--- comment-start: "---"
+--- End:
