@@ -19,14 +19,14 @@
   \param[in] A1 second vertex of the first segment
   \param[in] B0 first vertex of the second segment
   \param[in] B1 second vertex of the second segment
-  \param[out] X the point where the lines intersect
+  \param[out] X the point where the lines intersect (underfined is not
+  intersect)
   
   \return True on intersection, False otherwise
 
  */
-bool segment_intersect ( const Point2d& A0, const Point2d& A1,
-                         const Point2d& B0, const Point2d& B1,
-                         Point2d& X );
-
+bool segment2d_intersect ( const Point2d& A0, const Point2d& A1,
+                           const Point2d& B0, const Point2d& B1,
+                           Point2d& X );
 
 #endif      /* SEGMENT_HH */

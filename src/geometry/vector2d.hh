@@ -32,10 +32,15 @@
 #ifndef VECTOR2D_HH
 #define VECTOR2D_HH
 
+#include <vector>
+#include <iostream>
+using namespace std;
+
 extern "C" {
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
 }
 
 class Vector2d
@@ -67,6 +72,9 @@ public:
   // basic access
   inline double getx() const { return x; }
   inline double gety() const { return y; }
+
+  inline void setx( const double X ) { x = X; }
+  inline void sety( const double Y ) { y = Y; }
   
   // ------------------------ assignments and access -----------------
   
