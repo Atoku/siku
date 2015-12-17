@@ -29,9 +29,9 @@ int main()
     }
 
   Vector2d_print( vec[0] );
-  Vector2d_printf( vec[0], "%2.2f" );
+  Vector2d_printf( vec[1], "%2.2f" );
 
-  cout << "---------- copied from old test --------" << endl;
+  cout << "\n---------- copied from old test --------" << endl;
 
   Vector2d v1( 1, 2 );
   Vector2d v2( 3, 4 );
@@ -44,12 +44,16 @@ int main()
   Vector2d_print( v4 );
 
   Vector2d_print( v1 + v2 );
+  Vector2d_print( v2 -= v3 );
+  print( v2 );  //compare this and previous line
 
-  Vector2d_print( v2 -= v3);
+  V2print( v1 *= 2. );
 
   Vector2d_print( v3 / 3. );
 
   cout<< "\nv2 * v1:\n" << v2 * v1 << endl;
+
+  // ----------
 
   cout<< "\ncross( v3, v1) :\n" << cross( v3, v1 ) << endl;
   cout<< "\ncross( v1, v3) :\n" << cross( v1, v3 ) << endl;

@@ -32,7 +32,7 @@
 #ifndef VECTOR2D_HH
 #define VECTOR2D_HH
 
-#include <vector>
+//#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -45,8 +45,8 @@ extern "C" {
 
 class Vector2d
 {
-
-private:
+//private:
+public:
   double x{ 0 };
   double y{ 0 };
   
@@ -73,10 +73,10 @@ public:
   inline double getx() const { return x; }
   inline double gety() const { return y; }
 
-  inline void setx( const double X ) { x = X; }
-  inline void sety( const double Y ) { y = Y; }
+  inline void setx( const double& X ) { x = X; }
+  inline void sety( const double& Y ) { y = Y; }
   
-  // ------------------------ assignments and access -----------------
+  // ------------------------ assignment ----------------------------
   
   // simple assignment operator
   inline Vector2d& operator= ( const Vector2d& V )
@@ -136,13 +136,15 @@ public:
     return Vector2d( x * d, y * d);
   }
   
-  //! division by number (TODO: we don't need it)
+  //! division by number (TODO: we don't need it) Why? Renormalization, ort
+  // retrieving and mean value calculation depends on this division. If
+  // multiply by reversed number - some fails may occur.
   inline Vector2d operator / ( const double& d ) const
   {
     return Vector2d( x / d, y / d );
   }
 
-  //! scalar (dot) multiplication
+  //! scalar (dot) product
   inline double operator * ( const Vector2d& V ) const
   {
    return x * V.x + y * V.y;
@@ -181,7 +183,9 @@ public:
 
   // dot product
   inline double dot( const Vector2d& V ) const
-  { return ( *this * V ); }
+  {
+    return ( *this * V );
+  }
   
   //cross product
   inline double cross( const Vector2d& V ) const
@@ -196,7 +200,6 @@ public:
     cout << x << '\t' <<  y << endl;
   }
 
-  
 };
 
 //-------------------------------------------------------------------
@@ -228,6 +231,11 @@ inline double cross ( const Vector2d& V1, const Vector2d& V2 )
 
 inline Vector2d ort ( const Vector2d& V ) { return V.ort(); }
 
+inline void print( const Vector2d& v )  //experimental
+{
+  v.print();
+}
+
 // static zero-value Vector2d instance
 //static const Vector2d ZeroVector2d = Vector2d();
 
@@ -242,6 +250,10 @@ inline Vector2d ort ( const Vector2d& V ) { return V.ort(); }
 //! Pretty print with standard %f format
 #define Vector2d_print( v ) \
   printf( #v " = ( %f, %f )\n", (v).getx(), (v).gety() )
+
+//! improved printer
+#define V2print( v ) \
+  cout<< #v << ":  "; (v).print();
 
 //! Pretty pring with custom format
 //! Sample:   Vector2d_printf( vec, "%2.2f" );
