@@ -16,7 +16,7 @@
     \param[in] A1 2st vertex of the 1st segment
     \param[in] B0 1st vertex of the 2st segment
     \param[in] B1 2st vertex of the 2st segment
-    \param[out] X intersection point. Underfined is return value is 
+    \param[out] X intersection point. Underfined if return value is 
                false
 
     \return true if segments intersect, false otherwise
