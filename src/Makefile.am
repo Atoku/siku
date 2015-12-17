@@ -47,4 +47,4 @@ siku_SOURCES = siku.cc siku.hh \
 
 siku_CXXFLAGS = -I$(SHAPELIBDIR) $(AM_CXXFLAGS)
 siku_LDFLAGS = $(AM_LDFLAGS)
-siku_LDADD = $(SHAPELIBDIR)/libshp.a
+siku_LDADD = $(SHAPELIBDIR)/libshp.a geometry/libgeometry.a
