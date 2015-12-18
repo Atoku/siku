@@ -12,5 +12,3 @@ libgeometry_a_SOURCES = \
 #	matrix3d.hh
 #	point3d.hh
 # vector3d.hh
-
-SUBDIRS = tests
