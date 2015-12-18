@@ -13,20 +13,19 @@
 
 // returns point on line given by two points, which is calculated as a
 // scaled vector between those two points
-inline Point2d pnt_on_line ( const Point2d& p1, const Point2d& p2, const double& d )
+inline pnt2d pnt_on_line ( const pnt2d& p1, const pnt2d& p2, const double& d )
 {
   return p1 + d * ( p2 - p1 );
 }
 
 // ~~~~~~~~~~~~~~~~~~~~ segment2d implementations ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-bool line_seg_inter( const Point2d& a1, const Point2d& a2,
-                      const Point2d& b1, const Point2d& b2, Point2d& X )
+bool line_seg_inter( const pnt2d& a1, const pnt2d& a2,
+                      const pnt2d& b1, const pnt2d& b2, pnt2d& X )
 {
-    // algorithm taken from
-    // http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
+    // algorithm taken from http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
 
-    Vector2d a = a2 - a1, b = b2 - b1, ab = a1 - b1;
+    vec2d a = a2 - a1, b = b2 - b1, ab = a1 - b1;
 
     // denominator, signifies if lines are parallel
     double d = cross( b, a );
@@ -122,11 +121,11 @@ bool line_seg_inter( const Point2d& a1, const Point2d& a2,
     \return true if segments intersect, false otherwise
 
  */
-bool segment2d_intersect ( const Point2d& A0, const Point2d& A1,
-                           const Point2d& B0, const Point2d& B1,
-                           Point2d& X )
+bool segment2d_intersect ( const pnt2d& A0, const pnt2d& A1,
+                           const pnt2d& B0, const pnt2d& B1,
+                           pnt2d& X )
 {
-  Vector2d a(A1-A0), b(B1-B0), c(B0-A0); // connection vectors
+  vec2d a(A1-A0), b(B1-B0), c(B0-A0); // connection vectors
 
   double D1, D2, D;             // Cramer's rule determinants
   double s, t;                  // parameters of the params eq.

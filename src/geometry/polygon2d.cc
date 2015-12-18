@@ -10,13 +10,13 @@
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~ external functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-int intersect( const ConvexPoly2d& poly1, const ConvexPoly2d& poly2,
-                std::vector<Point2d>& res, Point2d& cen, double& size )
+int intersect( const cvpoly2d& poly1, const cvpoly2d& poly2,
+                std::vector<pnt2d>& res, pnt2d& cen, double& size )
 {
   res.clear();
-  vector<Point2d> tempVerts;
-  Point2d a1, a2, b1, b2, tp;
-  Vector2d tv1, tv2, tv3 = Vector2d();// nullvec2d;
+  vector<pnt2d> tempVerts;
+  pnt2d a1, a2, b1, b2, tp;
+  vec2d tv1, tv2, tv3 = vec2d();// nullvec2d;
   size_t n, s;
   double* prods;
 
@@ -70,7 +70,7 @@ int intersect( const ConvexPoly2d& poly1, const ConvexPoly2d& poly2,
   if( s > 2 )
     {
       // intersection center
-      tv1 = Vector2d();//nullvec2d;
+      tv1 = vec2d();//nullvec2d;
 
       for ( size_t i = 0; i < s; ++i )
         tv1 += tempVerts[i];// vec=pnt
@@ -141,15 +141,15 @@ int intersect( const ConvexPoly2d& poly1, const ConvexPoly2d& poly2,
 
 // returns polygon center. Optional parameter 'a' - area of polygon, gives
 // almost twice speed-up of calculation
-Point2d ConvexPoly2d::center( double a ) const
+pnt2d cvpoly2d::center( double a ) const
 {
   // default check
-  if( verts.size() < 3 ) return Point2d( Vector2d() );//nullvec2d
+  if( verts.size() < 3 ) return pnt2d( vec2d() );//nullvec2d
 
   if( ! a )  a = area();  // if no arg is passed
 
-  Point2d o = verts[0];
-  Vector2d tv1, tv2 = verts[1] - o, cen = Vector2d();//nullvec2d;
+  pnt2d o = verts[0];
+  vec2d tv1, tv2 = verts[1] - o, cen = vec2d();//nullvec2d;
 
   // triangulation method [source: http://e-maxx.ru/algo/gravity_center]
   for(size_t i = 2; i < verts.size(); ++i )
@@ -167,13 +167,13 @@ Point2d ConvexPoly2d::center( double a ) const
 // --------------------------------------------------------------------------
 
 // returns area of polygon. Should also work for non-convex polygons.
-double ConvexPoly2d::area() const
+double cvpoly2d::area() const
 {
   // default check
   if( verts.size() < 3 ) return 0.;
 
   double a = 0.;
-  Point2d o = verts[0];
+  pnt2d o = verts[0];
 
   // triangulation method
   for(size_t i = 1; i < verts.size() - 1; ++i )
@@ -185,15 +185,15 @@ double ConvexPoly2d::area() const
 // --------------------------------------------------------------------------
 
 // returns a moment of inertia of convex polygon
-double ConvexPoly2d::mom_of_ine() const
+double cvpoly2d::mom_of_ine() const
 {
   // default check
   if( verts.size() < 3 ) return 0.;
 
   size_t size = verts.size();
 
-  Point2d o = center();
-  Vector2d tv1, tv2;
+  pnt2d o = center();
+  vec2d tv1, tv2;
   double res = 0., S = 0., a = area();
 
   for(size_t i = 0; i < size; ++i )
@@ -216,15 +216,15 @@ double ConvexPoly2d::mom_of_ine() const
 // --------------------------------------------------------------------------
 
 // check if polygon is convex
-bool ConvexPoly2d::is_convex() const
+bool cvpoly2d::is_convex() const
 {
   // default check
   if( verts.size() < 3 ) return 0.;
 
   size_t size = verts.size();
 
-  Vector2d tv1 = verts[ 1 ] - verts[ 0 ];
-  Vector2d tv2 = verts[ 2 ] - verts[ 1 ];
+  vec2d tv1 = verts[ 1 ] - verts[ 0 ];
+  vec2d tv2 = verts[ 2 ] - verts[ 1 ];
   double td1 = cross( tv1, tv2 );
   double td2;
 
@@ -247,15 +247,15 @@ bool ConvexPoly2d::is_convex() const
 // --------------------------------------------------------------------------
 
 // check if vertices are given in counter-clockwise order for convex polygons
-bool ConvexPoly2d::is_CCW_oriented() const
+bool cvpoly2d::is_CCW_oriented() const
 {
   // default check
   if( verts.size() < 3 ) return 0.;
 
   size_t size = verts.size();
 
-  Point2d o = center();
-  Vector2d tv1, tv2 = verts[0] - o;
+  pnt2d o = center();
+  vec2d tv1, tv2 = verts[0] - o;
 
   for(size_t i = 0; i < size; ++i )
     {
@@ -274,15 +274,15 @@ bool ConvexPoly2d::is_CCW_oriented() const
 // slower check if vertices are given in counter-clockwise order for any kind
 // of polygons
 // TODO: check this
-bool ConvexPoly2d::is_CCW_oriented_NC() const
+bool cvpoly2d::is_CCW_oriented_NC() const
 {
   // default check
   if( verts.size() < 3 ) return 0.;
 
   size_t size = verts.size();
 
-  Vector2d tv1;
-  Vector2d tv2 = ort( verts[1] - verts[0] );
+  vec2d tv1;
+  vec2d tv2 = ort( verts[1] - verts[0] );
   double res = 0.;
 
   for(size_t i = 0; i < size; ++i )
@@ -300,10 +300,10 @@ bool ConvexPoly2d::is_CCW_oriented_NC() const
 // --------------------------------------------------------------------------
 
 //! \brief Checks if the polygon contains a point2d. !! CCW polygons only
-bool ConvexPoly2d::contains( const Point2d& point ) const
+bool cvpoly2d::contains( const pnt2d& point ) const
 {
-  Vector2d PP;
-  Vector2d PO;
+  vec2d PP;
+  vec2d PO;
   //Vector2d OP;
   double res;
 

@@ -13,12 +13,12 @@ using namespace std;
 
 int main()
 {
-  cout << "--------- Test for Vector2d  -----------" << endl;
+  cout << "--------- Test for vec2d  -----------" << endl;
 
   const size_t S = 4;
-  Vector2d vec[ S ];
-  Vector2d vec1 ( 1, 2 );
-  Vector2d vec2;
+  vec2d vec[ S ];
+  vec2d vec1 ( 1, 2 );
+  vec2d vec2;
 
   vec[0] = vec1;
   vec[1] = 1;
@@ -33,42 +33,53 @@ int main()
 
   cout << "\n---------- copied from old test --------" << endl;
 
-  Vector2d v1( 1, 2 );
-  Vector2d v2( 3, 4 );
-  Vector2d v3( 5, 6 );
-  Vector2d v4( 5, 5 );
+  vec2d v1( 1, 2 );
+  vec2d v2( 3, 4 );
+  vec2d v3( 5, 6 );
+  vec2d v4( 5, 5 );
 
   Vector2d_print( v1 );
   Vector2d_print( v2 );
   Vector2d_print( v3 );
   Vector2d_print( v4 );
 
-  Vector2d_print( v1 + v2 );
-  Vector2d_print( v2 -= v3 );
-  print( v2 );  //compare this and previous line
+  cout<<"\nv1 + v2, correct: ( 4, 6 ):\n";
+  print( v1 + v2 );
+  cout<<"\nv2 -= v3, correct: ( -2, -2 ): \n";
+  print( v2 -= v3 );
 
-  V2print( v1 *= 2. );
+  cout<<"\nv1 *= 2, correct: ( 2, 4 ):\n";
+  print( v1 *= 2. );
 
-  Vector2d_print( v3 / 3. );
+  cout<<"\n v3 / 3., correct: ( 1.6.., 2 ):\n";
+  print( v3 / 3. );
 
-  cout<< "\nv2 * v1:\n" << v2 * v1 << endl;
+  cout<< "\nv2 * v1, correct: 4 :\n"
+      << v2 * v1 << endl;
 
   // ----------
 
-  cout<< "\ncross( v3, v1) :\n" << cross( v3, v1 ) << endl;
-  cout<< "\ncross( v1, v3) :\n" << cross( v1, v3 ) << endl;
+  cout<< "\ncross( v3, v1 ), correct 8 :\n"
+      << cross( v3, v1 ) << endl;
+  cout<< "\ncross( v1, v3 ), correct -8 :\n"
+      << cross( v1, v3 ) << endl;
 
-  Vector2d_print( ort( v4 ) );
+  cout<<"\nort( v3), correct: ( 1.41.., 1.41.. ) :\n";
+  print( ort( v4 ) );
 
-  cout<< "\nabs( v4 ) :\n" << abs( v4 ) << endl;
+  cout<< "\nabs( v4 ), correct: 7.0.. :\n"
+      << abs( v4 ) << endl;
 
-  cout<< "\nabs2( v4 ) :\n" << abs2( v4 ) << endl;
+  cout<< "\nabs2( v4 ), correct: 50 :\n"
+      << abs2( v4 ) << endl;
 
-  Vector2d_print( renorm( v4, 5 ) );
+  cout<<"\nrenorm( v3, 5 ), correct: ( 3.5.., 3.5.. ) :\n";
+  print( renorm( v4, 5 ) );
 
-  cout<< "\nabs( v4 ) :\n" << abs( v4 ) << endl;
+  cout<< "\nabs( v4 ), correct: 5 :\n"
+      << abs( v4 ) << endl;
 
-  cout<< "\n(bool)v1; (bool)(v1.renorm( 0 ));\n";
+  cout<< "\n(bool)v1; (bool)(v1.renorm( 0 )), correct: 1, 0 :\n";
   cout<< (bool)v1 << "\t";
   cout<< (bool)(v1.renorm( 0 )) << endl;
 

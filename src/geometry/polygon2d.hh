@@ -43,13 +43,13 @@
 
 // -------------------------- predeclaretions -------------------------------
 
-class ConvexPoly2d;
+class cvpoly2d;
 
 // ------------------------------ Utils -------------------------------------
 
 // add point to collection only if it is not there already ( O (N) )
 // returns true if successfully added, false otherwise
-inline bool add_point( const Point2d& p, vector<Point2d>& v )
+inline bool add_point( const pnt2d& p, vector<pnt2d>& v )
 {
   for (size_t i = 0; i < v.size(); ++i )
     if( v[i] == p ) return false;
@@ -66,17 +66,17 @@ inline bool add_point( const Point2d& p, vector<Point2d>& v )
 //! \param[out] center - center of intersection (whatever it is).
 //! \param[out] size - area, perimeter or equivalent concept
 //! \return amount of intersection vertices. Zero if no intersection
-int intersect( const ConvexPoly2d& poly1, const ConvexPoly2d& poly2,
-                std::vector<Point2d>& res, Point2d& center, double& size );
+int intersect( const cvpoly2d& poly1, const cvpoly2d& poly2,
+                std::vector<pnt2d>& res, pnt2d& center, double& size );
 
 // ============================== Polygon ===================================
 
-class ConvexPoly2d
+class cvpoly2d
 {
-  friend int intersect( const ConvexPoly2d& , const ConvexPoly2d& ,
-                         std::vector<Point2d>& , Point2d& , double& );
+  friend int intersect( const cvpoly2d& , const cvpoly2d& ,
+                         std::vector<pnt2d>& , pnt2d& , double& );
 protected:
-  std::vector<Point2d> verts;
+  std::vector<pnt2d> verts;
 
   // may be this should be polygon`s template parameter)
   //bool CCW{ true };
@@ -84,16 +84,16 @@ protected:
 public:
 // ------------------------- constructor/destructor -------------------------
 
-  ConvexPoly2d() = default;
+  cvpoly2d() = default;
 
-  ConvexPoly2d( const std::vector<Point2d>& v )
+  cvpoly2d( const std::vector<pnt2d>& v )
   {
     //verts.resize( v.size() );
     //memcpy( verts.data(), v.data(), v.size() );// <- DOES NOT WORK!
     verts = v;
   }
 
-  ConvexPoly2d( const ConvexPoly2d& p )
+  cvpoly2d( const cvpoly2d& p )
   {
     verts.resize( p.verts.size() );
     memcpy( verts.data(), p.verts.data(), p.verts.size() );
@@ -101,7 +101,7 @@ public:
 
 // -------------------------------- bool ------------------------------------
 
-  inline bool operator == ( const ConvexPoly2d& p ) const
+  inline bool operator == ( const cvpoly2d& p ) const
   {
     return verts == p.verts;
   }
@@ -113,7 +113,7 @@ public:
 
   // mass center of polygon. Optional argument - area of polygon: speeds-up
   // the calculation in about 2X
-  Point2d center( double area = 0. ) const;
+  pnt2d center( double area = 0. ) const;
 
   // returns area of polygon. Should also work for non-convex polygons.
   double area() const;
@@ -133,7 +133,7 @@ public:
   bool is_CCW_oriented_NC() const;
 
   //! \brief Checks if the polygon contains a point2d.
-  bool contains( const Point2d& point ) const;
+  bool contains( const pnt2d& point ) const;
 
 };
 

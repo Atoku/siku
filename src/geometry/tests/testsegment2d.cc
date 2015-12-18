@@ -32,43 +32,161 @@
 #include <iostream>
 using namespace std;
 
-#include "point2d.hh"
+//#include "point2d.hh"
 #include "segment2d.hh"
+
+void INTER_RES( int n, bool i, vec2d x )
+{
+  cout << "\n#" << n << ": Does intersect? - "
+        << ( (i) ? "yes, result point: " : "no\n" );
+  if( i )  x.print();
+}
+
 
 int main()
 {
+
   cout << "Testing segment2d library" << endl;
 
-  Point2d A, B, C, D;
-  Point2d X;                    // result
+  cout << "____________ Next section has NO intersections _____________";
 
-  // 1. Simple case
-  
+  pnt2d A, B, C, D;
+  pnt2d X;                    // result
+
+  // 1. " L " figure --------------------------------------------------
+
   A = { 1, 0 };
-  B = {-1, 0 };
+  B = { 1, 3 };
 
-  C = { 0.5, -1};
-  D = { 0.5, 1 };
-  
-  bool is_intersect = segment2d_intersect ( A, B, C, D, X );
+  C = { 1.0001, 0.0001 };
+  D = { 3, 0 };
 
-  cout << "Intersect? " << is_intersect << endl;
-  Point2d_print( X );
-  cout << "Correct answer: yes, " << " X = ( 0.5, 0 ) " << endl;
+  INTER_RES ( 1, segment2d_intersect ( A, B, C, D, X ), X );
 
-  // 2. Rather random example of intersecting segments
-  
-  A = { 2, 2 };
-  B = { 0, -1};
+  // 2. " L " figure --------------------------------------------------
 
-  C = { 0, 2 };
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 1, -0.0001 };
+  D = { 3, 0 };
+
+  INTER_RES ( 2, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 3. " L " figure --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 0.9999, -0.0001 };
+  D = { 3, 0 };
+
+  INTER_RES ( 3, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 4. " V " figure --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 1, -0.0001 };
+  D = { 1.1, 3 };
+
+  INTER_RES ( 4, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 5. almost on one line --------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 0.9999, 0.0001 };
+  D = { 2, -3 };
+
+  INTER_RES ( 5, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 6. parallel ------------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 1.0001, 0 };
+  D = { 1.0001, 3 };
+
+  INTER_RES ( 6, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 7. on one line --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 1, -0.0001};
+  D = { 1, -3 };
+
+  INTER_RES ( 7, segment2d_intersect ( A, B, C, D, X ), X );
+
+  cout<<"_______ in next section ALL cases have intersection ____________\n";
+
+  // 8. " L " figure --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 1, 0 };
+  D = { 3, 0 };
+
+  INTER_RES ( 8, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 9. " + " figure --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 0, 1 };
   D = { 2, 1 };
 
-  is_intersect = segment2d_intersect( A, B, C, D, X );
+  INTER_RES ( 9, segment2d_intersect ( A, B, C, D, X ), X );
 
-  cout << "Intersect? " << is_intersect << endl;
-  Point2d_print( X );
-  cout << "Correct answer: yes, " << " X = ( 1.5, 1.25 ) " << endl;
-  
+  // 10. almost on one line -------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 0.9999, 0.0005};
+  D = { 2, -2 };
+
+  INTER_RES ( 10, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 11. " V " figure --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 0.9999, 0.0001};
+  D = { 2, 3 };
+
+  INTER_RES ( 11, segment2d_intersect ( A, B, C, D, X ), X );
+
+  // 12. " X " almost on one line --------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 0.9999, 0 };
+  D = { 1.0001, 3 };
+
+  INTER_RES ( 12, segment2d_intersect ( A, B, C, D, X ), X );
+
+  cout<<"\n_________ this case can either intersect or not _____________\n";
+
+  // 13. On one line --------------------------------------------------
+
+  A = { 1, 0 };
+  B = { 1, 3 };
+
+  C = { 1, 0 };
+  D = { 1, -2 };
+
+  cout<<"\nTwo segments on one line with mutual point:\n";
+  INTER_RES ( 13, segment2d_intersect ( A, B, C, D, X ), X );
+
   return 0;
 }
