@@ -23,7 +23,8 @@ inline Point2d pnt_on_line ( const Point2d& p1, const Point2d& p2, const double&
 bool line_seg_inter( const Point2d& a1, const Point2d& a2,
                       const Point2d& b1, const Point2d& b2, Point2d& X )
 {
-    // algorithm taken from http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
+    // algorithm taken from
+    // http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
 
     Vector2d a = a2 - a1, b = b2 - b1, ab = a1 - b1;
 
