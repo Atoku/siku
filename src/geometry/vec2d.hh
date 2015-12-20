@@ -1,6 +1,6 @@
 /*!
 
-  \file vector2d.hh
+  \file vec2d.hh
 
   \brief 2D vector type class
 
@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef VECTOR2D_HH
-#define VECTOR2D_HH
+#ifndef VEC2D_HH
+#define VEC2D_HH
 
 //#include <vector>
 #include <iostream>
@@ -236,28 +236,15 @@ inline void print( const vec2d& v )  //experimental
   v.print();
 }
 
-// static zero-value Vector2d instance
-//static const Vector2d ZeroVector2d = Vector2d();
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Utils ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//! 2d vector type
-//typedef Vector2d vec2d;
-
-//! zero-value vector for clean instantiations
-//#define nullvec2d ZeroVector2d
-
 //! Pretty print with standard %f format
-#define Vector2d_print( v ) \
-  printf( #v " = ( %f, %f )\n", (v).getx(), (v).gety() )
-
-//! improved printer
-#define V2print( v ) \
-  cout<< #v << ":  "; (v).print();
+#define vec2d_print( v ) \
+  cout << #v << ":  "; (v).print();
 
 //! Pretty pring with custom format
 //! Sample:   Vector2d_printf( vec, "%2.2f" );
-#define Vector2d_printf( v, f ) \
+#define vec2d_printf( v, f ) \
   printf( #v " = ( " f", " f" )\n", (v).getx(), (v).gety() )
 
 #endif  /* VECTOR2D_HH */

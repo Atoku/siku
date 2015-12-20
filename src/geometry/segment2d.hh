@@ -9,7 +9,7 @@
 #ifndef SEGMENT_HH
 #define SEGMENT_HH
 
-#include "point2d.hh"
+#include "pnt2d.hh"
 
 // TODO: deprecate dis mess
 //! \brief checks if two line segments intersect.
@@ -20,7 +20,7 @@
 //! \param[out] X - point where the segments intersect (if they do)
 //! \return true if segments intersect, false if not
 bool line_seg_inter( const pnt2d& a1, const pnt2d& a2,
-                      const pnt2d& b1, const pnt2d& b2, pnt2d& X );
+                     const pnt2d& b1, const pnt2d& b2, pnt2d& X );
 
 /*!
   \brief finds the intersection of two segments

@@ -2,14 +2,14 @@
 
   \file testvector.cc
 
-  \brief Simple test for vector2d class
+  \brief Simple test for vec2d class
 
 */
 
 #include <iostream>
 using namespace std;
 
-#include "vector2d.hh"
+#include "vec2d.hh"
 
 int main()
 {
@@ -28,8 +28,8 @@ int main()
       vec[i].print();
     }
 
-  Vector2d_print( vec[0] );
-  Vector2d_printf( vec[1], "%2.2f" );
+  vec2d_print( vec[0] );
+  vec2d_printf( vec[1], "%2.2f" );
 
   cout << "\n---------- copied from old test --------" << endl;
 
@@ -38,10 +38,10 @@ int main()
   vec2d v3( 5, 6 );
   vec2d v4( 5, 5 );
 
-  Vector2d_print( v1 );
-  Vector2d_print( v2 );
-  Vector2d_print( v3 );
-  Vector2d_print( v4 );
+  vec2d_print( v1 );
+  vec2d_print( v2 );
+  vec2d_print( v3 );
+  vec2d_print( v4 );
 
   cout<<"\nv1 + v2, correct: ( 4, 6 ):\n";
   print( v1 + v2 );

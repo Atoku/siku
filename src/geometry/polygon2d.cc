@@ -299,7 +299,7 @@ bool cvpoly2d::is_CCW_oriented_NC() const
 
 // --------------------------------------------------------------------------
 
-//! \brief Checks if the polygon contains a point2d. !! CCW polygons only
+//! \brief Checks if the polygon contains a pnt2d. !! CCW polygons only
 bool cvpoly2d::contains( const pnt2d& point ) const
 {
   vec2d PP;

@@ -1,6 +1,6 @@
 /*!
 
-  \file point2d.hh
+  \file pnt2d.hh
 
   \brief 2D Point class with appropriate methods.
   Provides class for generic concept of spatial point.
@@ -31,14 +31,14 @@
  *
  */
 
-#ifndef POINT2D_HH
-#define POINT2D_HH
+#ifndef PNT2D_HH
+#define PNT2D_HH
 
-#include "vector2d.hh"
+#include "vec2d.hh"
 
 typedef vec2d pnt2d;
 
-#define Point2d_print Vector2d_print
-#define Point2d_printf Vector2d_printf
+#define pnt2d_print  vec2d_print
+#define pnt2d_printf vec2d_printf
 
-#endif      /* POINT2D_HH */
+#endif      /* PNT2D_HH */

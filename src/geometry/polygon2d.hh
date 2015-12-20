@@ -37,7 +37,7 @@
 #include <vector>
 #include <cmath>
 
-#include "point2d.hh"
+#include "pnt2d.hh"
 #include "segment2d.hh"
 //#include "matrix2d.hh"  // vec->pnt->mat includes interact as nesting doll
 
