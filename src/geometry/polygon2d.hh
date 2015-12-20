@@ -88,13 +88,14 @@ public:
 
   cvpoly2d( const std::vector<pnt2d>& v )
   {
-    //verts.resize( v.size() );
-    //memcpy( verts.data(), v.data(), v.size() );// <- DOES NOT WORK!
+    //TODO: find method of copying v into verts, otherwise we depend
+    //on external data
     verts = v;
   }
 
   cvpoly2d( const cvpoly2d& p )
   {
+    // TODO: also check for vector copying
     verts.resize( p.verts.size() );
     memcpy( verts.data(), p.verts.data(), p.verts.size() );
   }
@@ -113,12 +114,16 @@ public:
 
   // mass center of polygon. Optional argument - area of polygon: speeds-up
   // the calculation in about 2X
+  //
+  // TODO: maybe it worth storing area into the polygon field, same
+  // with center, moments etc
   pnt2d center( double area = 0. ) const;
 
   // returns area of polygon. Should also work for non-convex polygons.
   double area() const;
 
   // returns a moment of inertia of convex polygon
+  // TODO: rename
   double mom_of_ine() const;
 
   // check if polygon is convex
