@@ -1,0 +1,53 @@
+% FILE: geometry2d.tex
+
+\chapter{2D Geometry}\label{ch:geometry2d}
+
+%----------------------------------------------------------------------
+\section{Convex Polygon Intersection}
+
+The method implements O'Rourke's approach from his
+book~\cite{bib:orourke}. The notation and some details were updated to
+make the method easy to describe.
+
+Let $\bm{P}=\{P_1,P_2,\dots,P_N\}$ and $\bm{Q}=\{Q_1,Q_2,\dots,Q_M\}$
+be two convex polygons. We need to find another convex polygon
+$\bm{X}=\bm{P}\bm{Q}$.
+
+Initially we choose (arbitrary) a side $\bm{p}=[P_1,P_2]$ and a side
+$\bm{q}=[Q_1,Q_2]$. We use indices $i_p$ and $i_q$ to indicate the
+first vertex of $\bm{p}$ and $\bm{q}$ correspondingly. 
+
+We say that point $X\in {\cal L}(\bm{p})$ if $X$ lies on the left side
+(half-plane) of the directed segment $\bm{p}=[P_i,P_{i+1\mod N}]$. This
+condition is easy to check as follows:
+\begin{equation}
+  X \in {\cal L}(\bm{p}) = {\cal H}\left( { \bm{p} \times (X-P_i)
+  }\right),
+\end{equation}
+where ${\cal H}$ is Heavyside function:
+\begin{equation}
+  {\cal H}(x) = \left\{
+  \begin{aligned}
+    1, &\quad \text{if}\,\,x > 0,\\
+    0, &\quad  \text{if}\,\,x \le 0.\\
+  \end{aligned}\right.
+\end{equation}
+
+O'Rourke derives the ``advance rule'', e.g. the rule which polygon to
+choose next for advancing the side. The rule can be summarized as the
+Table~\ref{tab:arule}.
+%
+\begin{table}
+  \center
+  \caption{O'Rourke's ``Advance rule''.}
+  \begin{tabular}{c|c|c}
+    \hline
+    $\bm{p}\times\bm{q} > 0$ & Halfplane condition & Advance rule \\
+    \hline
+    1 & $Q_j\in {\cal L}(\bm{p})$ & P \\
+    %
+    1 & $Q_j\in {\cal L}(\bm{p})$ & Q \\
+    \hline
+  \end{tabular}
+  \label{tab:arule}
+\end{table}

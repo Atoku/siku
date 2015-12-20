@@ -146,3 +146,4 @@ bool segment2d_intersect ( const pnt2d& A0, const pnt2d& A1,
 
   return true;
 }
+

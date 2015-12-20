@@ -65,7 +65,7 @@ inline bool add_point( const pnt2d& p, vector<pnt2d>& v )
 //! implementation. Generally - vertices of intersection area.
 //! \param[out] center - center of intersection (whatever it is).
 //! \param[out] size - area, perimeter or equivalent concept
-//! \return amount of intersection vertices. Zero if no intersection
+//! \return number of intersection vertices. Zero if no intersection
 int intersect( const cvpoly2d& poly1, const cvpoly2d& poly2,
                 std::vector<pnt2d>& res, pnt2d& center, double& size );
 
@@ -138,7 +138,16 @@ public:
   bool is_CCW_oriented_NC() const;
 
   //! \brief Checks if the polygon contains a point2d.
+  // TODO: check for better name
   bool contains( const pnt2d& point ) const;
+
+  //! \brief builds the current polygon as an intersection of two
+  //! other polygons P and Q. We assume that both polygons are convex
+  //! and CCW oriented. We do not check on these facts to be true.
+  //! \param[in] P first polygon
+  //! \param[in] Q second polygon
+  //! \return true on intersection
+  bool intersect( const cvpoly2d& P, const cvpoly2d& Q );
 
 };
 

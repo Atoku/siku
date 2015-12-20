@@ -145,7 +145,7 @@ pnt2d cvpoly2d::center( double a ) const
 {
   // default check
   if( verts.size() < 3 ) return pnt2d( vec2d() );//nullvec2d
-
+ 
   if( ! a )  a = area();  // if no arg is passed
 
   pnt2d o = verts[0];
@@ -321,3 +321,17 @@ bool cvpoly2d::contains( const pnt2d& point ) const
     }
   return true;
 }
+
+//---------------------------------------------------------------------
+
+bool cvpoly2d::intersect( const cvpoly2d& P, const cvpoly2d& Q )
+{
+  // clear the content of the current polygon
+  verts.clear();
+
+  // we a
+
+  
+  return true;
+}
+  

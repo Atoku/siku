@@ -6,7 +6,7 @@ INKSCAPE = inkscape
 
 MAINFILE = developer
 TEXFILES = introduction coordinates polygon quats dynamics formulas \
-diagnostics mesh
+diagnostics mesh geometry2d
 BIBFILES = siku
 HEADERS  = titlepage date acknowledgements
 

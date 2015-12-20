@@ -1,6 +1,6 @@
 /*!
 
-  \file testvector.cc
+  \file testvct2d.cc
 
   \brief Simple test for vec2d class
 
@@ -10,6 +10,7 @@
 using namespace std;
 
 #include "vec2d.hh"
+#include "pnt2d.hh"
 
 int main()
 {
@@ -82,6 +83,19 @@ int main()
   cout<< "\n(bool)v1; (bool)(v1.renorm( 0 )), correct: 1, 0 :\n";
   cout<< (bool)v1 << "\t";
   cout<< (bool)(v1.renorm( 0 )) << endl;
+
+  // -------
+  // cout << "check for leftiness of the point" << endl;
+  // pnt2d O  ( 0, 0 );
+  // pnt2d X1 ( 1, 1 );
+  // pnt2d X2 ( -1, 1 );
+  // vct2d direction( 1, 1.5 );
+
+  // pnt2d_print( X1 );
+  // pnt2d_print( X2 );
+  // vec2d_print( direction );
+  // cout << "X1 is on the left side: " << direction.is_left( O, X1 ) << endl;
+  // cout << "X1 is on the left side: " << direction.is_left( O, X2 ) << endl;
 
   return 0;
 }
