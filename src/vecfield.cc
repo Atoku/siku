@@ -110,7 +110,7 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
   lat_size = NMCVec->get_lat_size ();
 
   /*
-   * TODO: CHECK DIS F***N INDEXES!
+   * TODO: CHECK DIS DAM INDEXES!
    */
   // calculating current cell indexes
   int lat_ind = norm_lat_ind( ((double)lat / nmc_grid_step) );

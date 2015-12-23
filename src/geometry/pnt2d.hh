@@ -36,9 +36,14 @@
 
 #include "vec2d.hh"
 
-typedef vec2d pnt2d;
+namespace Geometry
+{
 
-#define pnt2d_print  vec2d_print
-#define pnt2d_printf vec2d_printf
+  typedef vec2d pnt2d;
+
+  #define pnt2d_print  vec2d_print
+  #define pnt2d_printf vec2d_printf
+
+}
 
 #endif      /* PNT2D_HH */

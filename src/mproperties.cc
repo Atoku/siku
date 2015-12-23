@@ -11,6 +11,8 @@
 #include "coordinates.hh"
 #include "siku.hh"
 
+using namespace Geometry;
+
 void mproperties( Globals& siku )
 {
 //  size_t size = siku.es.size();

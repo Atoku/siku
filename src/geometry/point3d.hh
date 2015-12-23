@@ -74,12 +74,6 @@ public:
   // simple access
   inline vec3d& Vector() { return v; }
 
-  // TODO: fix this
-//#ifndef SIKU_3D_GLM
-//  // ort // only for local implementation
-//  inline vec3d ort() const { return ort( v ); }
-//#endif
-
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,11 +82,6 @@ inline Point3d operator + ( const vec3d& V, const Point3d& P )
 {
   return P + V;
 }
-
-//#ifndef SIKU_3D_GLM
-//// only for local implementation
-//inline vec3d ort ( const Point3d& P ) { return P.ort(); }
-//#endif
 
 // static zero-value Point3d instance
 const static Point3d ZeroPoint3d = Point3d();

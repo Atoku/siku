@@ -6,7 +6,7 @@
 #include <cmath>
 
 // ============================== GLM implementation ========================
-#ifdef SIKU_3D_GLM
+#ifndef SIKU_3D_NOT_GLM
 
 #include <glm/vec3.hpp>
 

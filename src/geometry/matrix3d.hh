@@ -6,7 +6,7 @@
 #include "point3d.hh"
 
 // =========================== GLM implementation ===========================
-#ifdef SIKU_3D_GLM
+#ifndef SIKU_3D_NOT_GLM
 
 //! Main matrix types
 #include <glm/mat3x3.hpp>

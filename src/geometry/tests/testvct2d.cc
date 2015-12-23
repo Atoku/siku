@@ -9,8 +9,8 @@
 #include <iostream>
 using namespace std;
 
-#include "vec2d.hh"
 #include "pnt2d.hh"
+using namespace Geometry;
 
 int main()
 {

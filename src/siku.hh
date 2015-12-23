@@ -52,8 +52,7 @@ static const unsigned int MAT_LAY_AMO = 10; // WTF size_t does not work?!
 
 
 // geometry implementations
-#define SIKU_2D_BOOST
-#define SIKU_3D_GLM
+//#define SIKU_3D_NOT_GLM
 
 #include "geometry/geometry.hh"
 

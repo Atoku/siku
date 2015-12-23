@@ -7,6 +7,7 @@
 */
 
 #include "./polygon2d.hh"
+using namespace Geometry;
 
 int main()
 {

@@ -12,6 +12,7 @@ using namespace std;
 #include <typeinfo>
 
 #include "pnt2d.hh"
+using namespace Geometry;
 
 int main()
 {

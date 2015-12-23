@@ -37,61 +37,64 @@
 
 //#include "coordinates.hh"
 
+
+
 // ====================== Implementation black magic ========================
 
-// converting scale for vec3d <-> point2d  // for debug
-// TODO: remove this
-const double POINT_SCALE = 1. ;
+  // converting scale for vec3d <-> point2d  // for debug
+  // TODO: remove this
+  const double POINT_SCALE = 1. ;
 
 
-//===== GLM =====
-// removing degrees support to avoid warning message
-#define GLM_FORCE_RADIANS
+  //===== GLM =====
+  // removing degrees support to avoid warning message
+  #define GLM_FORCE_RADIANS
 
-//! Main quaternion types
-#include <glm/gtc/quaternion.hpp>
-////// temporally disabled to avoid ambiguities in H5 save/load
-//#ifdef SIKU_QUATF
-//typedef glm::fquat quat;
-//#else
-typedef glm::dquat quat;
-//#endif
+  //! Main quaternion types
+  #include <glm/gtc/quaternion.hpp>
+  ////// temporally disabled to avoid ambiguities in H5 save/load
+  //#ifdef SIKU_QUATF
+  //typedef glm::fquat quat;
+  //#else
+  typedef glm::dquat quat;
+  //#endif
 
+namespace Geometry
+{
 
 // ------------------------------- 2d utils ---------------------------------
 
-// two ways transforming
-inline vec3d vec2_to_vec3( const vec2d& v2 )
-{
-  return vec3d( v2.x() / POINT_SCALE, v2.y() / POINT_SCALE, 0. );
-}
-inline vec2d vec3_to_vec2( const vec3d& v3 )
-{
-  return vec2d( vec2d(  v3.x * POINT_SCALE , v3.y * POINT_SCALE ) );
-}
+  // two ways transforming
+  inline vec3d vec2_to_vec3( const vec2d& v2 )
+  {
+    return vec3d( v2.x / POINT_SCALE, v2.y / POINT_SCALE, 0. );
+  }
+  inline vec2d vec3_to_vec2( const vec3d& v3 )
+  {
+    return vec2d( vec2d(  v3.x * POINT_SCALE , v3.y * POINT_SCALE ) );
+  }
 
 // ------------------------ Manual debug checks -----------------------------
 
-inline void print(const quat& q)
-{
-  std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
-}
+  inline void print(const quat& q)
+  {
+    std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
+  }
 
-// NaN quat
-inline bool NaN_q( const quat& q )
-{
-  return ( q.w != q.w || q.x != q.x || q.y != q.y || q.z != q.z );
-}
+  // NaN quat
+  inline bool NaN_q( const quat& q )
+  {
+    return ( q.w != q.w || q.x != q.x || q.y != q.y || q.z != q.z );
+  }
 
-// NaN vec3d
-inline bool NaN_v( const vec3d& v )
-{
-  return ( v.x != v.x || v.y != v.y || v.z != v.z );
-}
+  // NaN vec3d
+  inline bool NaN_v( const vec3d& v )
+  {
+    return ( v.x != v.x || v.y != v.y || v.z != v.z );
+  }
 
 // ============================== Functions =================================
-namespace Geometry
-{
+
   //! \brief Checks if the polygon given by vector of vertices contains
   //! a point. Z-coordinate is ignored -> works with projection on xOy.
   bool contains( const std::vector<vec3d>& poly, const vec3d& point );
@@ -100,21 +103,20 @@ namespace Geometry
   //! or nullvec if they don`t intersect. Work with xOy projection, z - omitted.
   //! \param a1, a2 - two points of segment 'a'; b1, b2 - two points of
   //! segment 'b'
-  vec3d line_seg_inter( const vec3d& a1, const vec3d& a2,
-                        const vec3d& b1, const vec3d& b2 );
+//  vec3d line_seg_inter( const vec3d& a1, const vec3d& a2,
+//                        const vec3d& b1, const vec3d& b2 );
 
-  //! \brief calculates intersection of two polygons. If polygons intersect
-  //! returns true and puts all data into matching arguments, if not -
-  //! returns false.
-  //! \param poly1, poly2 - vectors of vertices
-  //! \param res - resulting vector of points. Caption depends on
+  //! \brief calculates intersection of two polygons.
+  //! \param[in] poly1 - first ConvexPoly2d
+  //! \param[in] poly2 - first ConvexPoly2d
+  //! \param[out] res - resulting vector of points. Caption depends on
   //! implementation. Generally - vertices of intersection area.
-  //! \param center - center of intersection (whatever it is).
-  //! \param size - area, perimeter or equivalent concept
-  //! \param method - implementation specifier
-  bool intersect( const std::vector<vec3d>& poly1,
-                  const std::vector<vec3d>& poly2,
-                  std::vector<vec3d>& res, vec3d& center, double& size );
+  //! \param[out] center - center of intersection (whatever it is).
+  //! \param[out] size - area, perimeter or equivalent concept
+  //! \return number of intersection vertices. Zero if no intersection
+  int intersect( const std::vector<vec3d>& poly1,
+                 const std::vector<vec3d>& poly2,
+                 std::vector<vec3d>& res, vec3d& center, double& size );
 
   //! \brief checks the polygon given as a vector of vertices for different
   //! errors. Returns true if errors exist, false if all is correct.
@@ -123,6 +125,9 @@ namespace Geometry
   bool errored( const std::vector<vec3d>& poly, int& res );
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ inlines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  // stupid inlines. Privide some functions helping to work with vec3d objects
+  // as if they were vec2d objects (Z-component ignored)
 
   // vec3d-to-bool conversion with wierd name
   inline bool is( const vec3d& v)  { return v.x || v.y || v.z; }

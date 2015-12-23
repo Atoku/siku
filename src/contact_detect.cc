@@ -27,6 +27,7 @@
 #include "contact_detect.hh"
 #include "siku.hh"
 using namespace Coordinates;
+using namespace Geometry;
 
 // ~~~~~~~~~~~~~~~~~~~~~ predeclarations  and inlines ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -231,7 +232,7 @@ void add_cont( Globals& siku, const size_t& i1, const size_t& i2, const int& t )
 
 // --------------------------------------------------------------------------
 
-using namespace BG;
+//using namespace BG;
 // perform freezing on two elements by contact
 // implementation copied from 'contact_force'
 // TODO: move to 'geometric' module
@@ -253,7 +254,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
   for( auto& p : siku.es[c.i2].P )
     loc_P2.push_back( src_to_dest * p * tol );
 
-  if( Geometry::intersect( siku.es[c.i1].P, loc_P2, loc_P2, center, dump ) )
+  if( Geometry::intersect( siku.es[c.i1].P, loc_P2 , loc_P2, center, dump ) )
     c.type = ContType::JOINT;
 }
 

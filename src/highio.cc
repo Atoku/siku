@@ -130,7 +130,7 @@ void Highio::save_elements( const Globals& siku )
       El[i].q = siku.es[i].q;
       El[i].Glob = siku.es[i].Glob;
 
-      El[i].V = siku.es[i].V; // TODO: velo should be saved in global coords
+      El[i].V = siku.es[i].V; // TODO: shouldnt velo be saved in global coords?
 
       El[i].m = siku.es[i].m;
       El[i].I = siku.es[i].I;

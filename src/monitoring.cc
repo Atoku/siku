@@ -13,9 +13,6 @@
 
 void monitoring( Globals& siku, Sikupy& sikupy )
 {
-  // stupid method for now: full loop. TODO: in the future to create a
-  // list of monitored functions and use them
-
   // Monitoring the elements
 
   for ( size_t i = 0; i < siku.es.size(); ++i )

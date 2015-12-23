@@ -1,35 +1,33 @@
-///*
-// * Siku: Discrete element method sea-ice model
-// *
-// * Copyright (C) 2013 UAF. Author: Anton Kulchitsky
-// *
-// * This program is free software; you can redistribute it and/or
-// * modify it under the terms of the GNU General Public License as
-// * published by the Free Software Foundation; either version 3 of the
-// * License, or (at your option) any later version.
-// *
-// * This program is distributed in the hope that it will be useful, but
-// * WITHOUT ANY WARRANTY; without even the implied warranty of
-// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// * General Public License for more details.
-// *
-// * You should have received a copy of the GNU General Public License
-// * along with this program; if not, write to the Free Software
-// * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-// * 02110-1301 USA
-// *
-// */
-//
-///*! \file geometry.cc
-// *  \brief Implementation of geometry utilities
-// */
-//
-//#define SIKU_2D_BOOST
-//#define SIKU_3D_GLM
-//#include "geometry.hh"
-//
-//using namespace std;
-//
+/*
+ * Siku: Discrete element method sea-ice model
+ *
+ * Copyright (C) 2013 UAF. Author: Anton Kulchitsky
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+ */
+
+/*! \file geometry.cc
+ *  \brief Implementation of geometry utilities
+ */
+
+#include "geometry.hh"
+
+using namespace std;
+
 //// ~~~~~~~~~~~~~~~~~~~~~~~~~~ predeclarations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 //#ifdef SIKU_2D_BOOST
@@ -47,10 +45,10 @@
 //                       vector<vec3d>& res, vec3d& center, double& size );
 //
 //
-//// ========================== Geometry methods =============================
-//
-//namespace Geometry
-//{
+// ========================== Geometry methods =============================
+
+namespace Geometry
+{
 //  bool contains ( const vector < vec3d >& poly, const vec3d& point )
 //  {
 //    vec3d PP;
@@ -159,34 +157,57 @@
 //  }
 //
 //// --------------------------------------------------------------------------
-//
-//  bool intersect ( const vector < vec3d >& poly1,
-//                   const vector < vec3d >& poly2,
-//                   vector < vec3d >& res, vec3d& center, double& size )
-//  {
-//#ifdef SIKU_2D_BOOST
-//    return _boost_intersect ( poly1, poly2, res, center, size );
-//
-//#else
-//    return _manual_intersect ( poly1, poly2, res, center, size );
-//
-//#endif
-//  }
-//
-//// --------------------------------------------------------------------------
-//
-//  bool errored ( const vector < vec3d >& poly, int& res )
-//  {
-//#ifdef SIKU_2D_BOOST
-//    return _boost_errored ( poly );
-//
-//#else
-//    return false; //_manual_intersect( poly, res );
-//
-//#endif
-//  }
-//
-//}
+
+  int intersect ( const vector < vec3d >& poly1,
+                   const vector < vec3d >& poly2,
+                   vector < vec3d >& res, vec3d& center, double& size )
+  {
+
+    vector<pnt2d> vec1 ( poly1.size() );
+    vector<pnt2d> vec2 ( poly2.size() );
+    vector<vec2d> _res;
+    vec2d _cen;
+
+    for( size_t i = 0; i < poly1.size(); ++i )
+      vec1[i] = vec3_to_vec2(  poly1[i] );
+
+    for( size_t i = 0; i < poly2.size(); ++i )
+      vec2[i] = vec3_to_vec2( poly2[i] );
+
+    return Geometry::intersect( cvpoly2d( vec1 ), cvpoly2d( vec2 ),
+                                _res, _cen, size );
+
+  }
+
+// --------------------------------------------------------------------------
+
+  bool errored ( const vector < vec3d >& poly, int& res )
+  {
+    vector<pnt2d> vec ( poly.size() );
+
+    for( size_t i = 0; i < poly.size(); ++i )
+      vec[i] = vec3_to_vec2( poly[i] );
+
+    cvpoly2d tp( vec );
+
+//    if( ! tp.is_CCW_oriented() )
+//      {
+//        if( ! tp.is_convex() )
+//          cout<<"neither CCW nor conv"<<endl;
+//        else
+//          cout<<"not CCW"<<endl;
+//        cin.get();
+//      }
+//    else if( ! tp.is_convex() )
+//      {
+//        cout<<"not convex"<<endl;
+//        cin.get();
+//      }
+
+    return ! ( tp.is_convex() && tp.is_CCW_oriented() );
+  }
+
+}
 //
 //// ==================== Local implementations and utils =====================
 //
@@ -240,7 +261,6 @@
 //      cen = vec2_to_vec3 ( center );
 //
 //      res.clear ();
-//      // TODO: check for proper field of polygon!! 'inners' may be wrong one!
 //
 //      ///poly_res[0].outer().at(0)
 //      for ( auto& p : poly_res[0].outer () )
@@ -307,10 +327,9 @@
 //        }
 //    }
 //
-//  ///////////////////////////// UNDONE HERE
-//  //UNDONE!
 //
 //  return false;
 //}
 //
 //
+

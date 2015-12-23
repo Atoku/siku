@@ -34,6 +34,7 @@ using namespace std;
 
 //#include "point2d.hh"
 #include "segment2d.hh"
+using namespace Geometry;
 
 void INTER_RES( int n, bool i, vec2d x )
 {

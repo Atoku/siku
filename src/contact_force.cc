@@ -28,7 +28,7 @@
  * TODO: discuss threading VS static
  */
 
-using namespace BG;
+//using namespace BG;
 using namespace Coordinates;
 using namespace Geometry;
 
@@ -69,7 +69,7 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
   double area;
 
   // calculating center of intersection
-  if( Geometry::intersect( siku.es[c.i1].P, loc_P2, loc_P2, center, area ) )
+  if( Geometry::intersect( siku.es[c.i1].P, loc_P2, loc_P2, center, area ) > 2 )
     {
       // mark contact as a 'collision'
       if( c.type != ContType::JOINT )  c.type = ContType::COLLISION;
