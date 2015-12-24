@@ -157,54 +157,61 @@ namespace Geometry
 //  }
 //
 //// --------------------------------------------------------------------------
+//
+//  int intersect ( const vector < vec3d >& poly1,
+//                   const vector < vec3d >& poly2,
+//                   vector < vec3d >& res, vec3d& center, double& size )
+//  {
+//
+//    vector<pnt2d> vec1 ( poly1.size() );
+//    vector<pnt2d> vec2 ( poly2.size() );
+//    vector<vec2d> _res;
+//    vec2d _cen;
+//
+//    for( size_t i = 0; i < poly1.size(); ++i )
+//      vec1[i] = vec3_to_vec2(  poly1[i] );
+//
+//    for( size_t i = 0; i < poly2.size(); ++i )
+//      vec2[i] = vec3_to_vec2( poly2[i] );
+//
+//    return Geometry::intersect( cvpoly2d( vec1 ), cvpoly2d( vec2 ),
+//                                _res, nullptr, nullptr, &size );
+//
+//  }
+//
+//// --------------------------------------------------------------------------
+//
+//  bool errored ( const vector < vec3d >& poly, int& res )
+//  {
+//    vector<pnt2d> vec ( poly.size() );
+//
+//    for( size_t i = 0; i < poly.size(); ++i )
+//      vec[i] = vec3_to_vec2( poly[i] );
+//
+//    cvpoly2d tp( vec );
+//
+////    if( ! tp.is_CCW_oriented() )
+////      {
+////        if( ! tp.is_convex() )
+////          cout<<"neither CCW nor conv"<<endl;
+////        else
+////          cout<<"not CCW"<<endl;
+////        cin.get();
+////      }
+////    else if( ! tp.is_convex() )
+////      {
+////        cout<<"not convex"<<endl;
+////        cin.get();
+////      }
+//
+//    return ! ( tp.is_convex() && tp.is_CCW_oriented() );
+//  }
 
-  int intersect ( const vector < vec3d >& poly1,
-                   const vector < vec3d >& poly2,
-                   vector < vec3d >& res, vec3d& center, double& size )
+  // --------------------------------------------------------------------------
+
+  bool errored( const cvpoly2d& poly )
   {
-
-    vector<pnt2d> vec1 ( poly1.size() );
-    vector<pnt2d> vec2 ( poly2.size() );
-    vector<vec2d> _res;
-    vec2d _cen;
-
-    for( size_t i = 0; i < poly1.size(); ++i )
-      vec1[i] = vec3_to_vec2(  poly1[i] );
-
-    for( size_t i = 0; i < poly2.size(); ++i )
-      vec2[i] = vec3_to_vec2( poly2[i] );
-
-    return Geometry::intersect( cvpoly2d( vec1 ), cvpoly2d( vec2 ),
-                                _res, _cen, size );
-
-  }
-
-// --------------------------------------------------------------------------
-
-  bool errored ( const vector < vec3d >& poly, int& res )
-  {
-    vector<pnt2d> vec ( poly.size() );
-
-    for( size_t i = 0; i < poly.size(); ++i )
-      vec[i] = vec3_to_vec2( poly[i] );
-
-    cvpoly2d tp( vec );
-
-//    if( ! tp.is_CCW_oriented() )
-//      {
-//        if( ! tp.is_convex() )
-//          cout<<"neither CCW nor conv"<<endl;
-//        else
-//          cout<<"not CCW"<<endl;
-//        cin.get();
-//      }
-//    else if( ! tp.is_convex() )
-//      {
-//        cout<<"not convex"<<endl;
-//        cin.get();
-//      }
-
-    return ! ( tp.is_convex() && tp.is_CCW_oriented() );
+    return ! ( poly.is_convex() && poly.is_CCW_oriented() );
   }
 
 }

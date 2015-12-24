@@ -383,11 +383,18 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##    #static polygons (generally shores) may be simply passed
 ##    if st & element.Element.f_static:
 ##        return
-    if st & element.Element.f_errored:
-        return
+    
+##    if st & element.Element.f_errored:
+##        return
 
 ##    print(st)
 ##    input()
+
+##    #errored export x-y:
+##    if st & element.Element.f_errored:
+##        with open("errored"+str(i)+".txt", 'w') as erf:
+##            for p in Ps:
+##                erf.write( str( p[0] ) +'\t'+ str( p[1] )+'\n' )
     
     # create actual quaternion
     q = mathutils.Quaternion( Q )
@@ -403,7 +410,16 @@ def drift_monitor( t, Q, Ps, i, st ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         poly = siku.local.poly_f
-        if st & element.Element.f_special:
+        if st & element.Element.f_errored: ##
+            poly.write( '> -Gred -W0.1p,red \n' ) ##
+
+##            #errored export lon-lat:
+##            with open("errored"+str(i)+".txt", 'w') as erf:
+##                for v in vert:
+##                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+##                        str( v[1] )+'\n' )
+            
+        elif st & element.Element.f_special: ## elif -> if
             poly.write( '> -Gpink -W0.1p,purple \n' ) 
         elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )

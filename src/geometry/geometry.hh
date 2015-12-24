@@ -76,6 +76,7 @@ namespace Geometry
 
 // ------------------------ Manual debug checks -----------------------------
 
+  // for tests. IMPROVE this or remove if necessary
   inline void print(const quat& q)
   {
     std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
@@ -106,23 +107,28 @@ namespace Geometry
 //  vec3d line_seg_inter( const vec3d& a1, const vec3d& a2,
 //                        const vec3d& b1, const vec3d& b2 );
 
-  //! \brief calculates intersection of two polygons.
-  //! \param[in] poly1 - first ConvexPoly2d
-  //! \param[in] poly2 - first ConvexPoly2d
-  //! \param[out] res - resulting vector of points. Caption depends on
-  //! implementation. Generally - vertices of intersection area.
-  //! \param[out] center - center of intersection (whatever it is).
-  //! \param[out] size - area, perimeter or equivalent concept
-  //! \return number of intersection vertices. Zero if no intersection
-  int intersect( const std::vector<vec3d>& poly1,
-                 const std::vector<vec3d>& poly2,
-                 std::vector<vec3d>& res, vec3d& center, double& size );
+////DEPRECATED!
+//  //! \brief calculates intersection of two polygons.
+//  //! \param[in] poly1 - first ConvexPoly2d
+//  //! \param[in] poly2 - first ConvexPoly2d
+//  //! \param[out] res - resulting vector of points. Caption depends on
+//  //! implementation. Generally - vertices of intersection area.
+//  //! \param[out] center - center of intersection (whatever it is).
+//  //! \param[out] size - area, perimeter or equivalent concept
+//  //! \return number of intersection vertices. Zero if no intersection
+//  int intersect( const std::vector<vec3d>& poly1,
+//                 const std::vector<vec3d>& poly2,
+//                 std::vector<vec3d>& res, vec3d& center, double& size );
+//
+//  //! \brief checks the polygon given as a vector of vertices for different
+//  //! errors. Returns true if errors exist, false if all is correct.
+//  //! If errors occur - puts some marks into 'res' argument (depend on
+//  //! implementation method).
+//  bool errored( const std::vector<vec3d>& poly, int& res );
 
-  //! \brief checks the polygon given as a vector of vertices for different
-  //! errors. Returns true if errors exist, false if all is correct.
-  //! If errors occur - puts some marks into 'res' argument (depend on
-  //! implementation method).
-  bool errored( const std::vector<vec3d>& poly, int& res );
+  //! \brief reloaded error check for a set of 2d verts
+  //! \param[in] poly2d - polygon that is being checked
+  bool errored( const cvpoly2d& poly );
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ inlines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -163,6 +169,12 @@ namespace Geometry
   {
     return vec3d( v.y, -v.x, 0. );
   }
+
+  inline vec2d rot_90_cw( const vec2d& v )
+  {
+    return vec2d( v.y, -v.x );
+  }
+
 }
 
 #endif /* GEOMETRY_HH */

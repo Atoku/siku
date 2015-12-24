@@ -44,6 +44,14 @@
 namespace Geometry
 {
 
+  enum PointStatus : int
+  {
+    UNKNOWN = -1,
+    SIMPLE = 0,
+    EDGE,
+    VERTEX
+  };
+
   // -------------------------- predeclaretions -----------------------------
 
   class cvpoly2d;
@@ -64,20 +72,32 @@ namespace Geometry
   //! \brief calculates intersection of two polygons.
   //! \param[in] poly1 - first ConvexPoly2d
   //! \param[in] poly2 - first ConvexPoly2d
-  //! \param[out] res - resulting vector of points. Caption depends on
-  //! implementation. Generally - vertices of intersection area.
-  //! \param[out] center - center of intersection (whatever it is).
-  //! \param[out] size - area, perimeter or equivalent concept
+  //! \param[out] verts - resulting vector of points. Caption
+  //! depends on implementation. Generally - vertices of intersection area.
+  //! \param[out] flags (optional) - vector of 'PointStatus' for storing
+  //! vertices` flags
+  //! \param[out] center (optional) - center of intersection (whatever it is).
+  //! \param[out] size (optional) - area, perimeter or equivalent concept
   //! \return number of intersection vertices. Zero if no intersection
   int intersect( const cvpoly2d& poly1, const cvpoly2d& poly2,
-                  std::vector<pnt2d>& res, pnt2d& center, double& size );
+                  std::vector<pnt2d>& verts,
+                  std::vector<PointStatus>* flags = nullptr,
+                  pnt2d* center = nullptr, double* size = nullptr );
+
+  /* source:
+https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain
+  */
+  vector<vec2d> convex_hull( vector<vec2d> P );  // test
 
   // ============================== Polygon =================================
 
   class cvpoly2d
   {
-    friend int intersect( const cvpoly2d& , const cvpoly2d& ,
-                           std::vector<pnt2d>& , pnt2d& , double& );
+//    friend int intersect( const cvpoly2d& , const cvpoly2d& ,
+//                           std::vector<pnt2d>& , pnt2d& , double& );
+    friend int intersect( const cvpoly2d&, const cvpoly2d&,
+                          std::vector<pnt2d>&, std::vector<PointStatus>*,
+                          pnt2d*, double* );
   protected:
     std::vector<pnt2d> verts;
 

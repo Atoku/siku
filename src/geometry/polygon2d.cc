@@ -8,16 +8,27 @@
 
 #include "polygon2d.hh"
 
+#include <algorithm>
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~ local utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+bool operator< (const Geometry::vec2d& v1, const Geometry::vec2d& v2 )
+{
+  return v1.x < v2.x || ( v1.x == v2.x && v1.y < v2.y );
+}
+
 namespace Geometry
 {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~ external functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   int intersect( const cvpoly2d& poly1, const cvpoly2d& poly2,
-                  std::vector<pnt2d>& res, pnt2d& cen, double& size )
+                  std::vector<pnt2d>& verts,
+                  std::vector<PointStatus>* pflags,
+                  pnt2d* pcen, double* psize )
   {
-    res.clear();
     vector<pnt2d> tempVerts;
+    vector<PointStatus> tempFlags;
     pnt2d a1, a2, b1, b2, tp;
     vec2d tv1, tv2, tv3 = vec2d();// nullvec2d;
     size_t n, s;
@@ -26,11 +37,17 @@ namespace Geometry
     // search for inner points
     for( size_t i = 0; i < poly1.verts.size(); ++i )
       if( poly2.contains( poly1.verts[i] ) )
-        add_point( poly1.verts[i], tempVerts );
+        {
+          add_point( poly1.verts[i], tempVerts );
+          tempFlags.push_back( PointStatus::VERTEX );
+        }
 
     for( size_t i = 0; i < poly2.verts.size(); ++i )
       if( poly1.contains( poly2.verts[i] ) )
-        add_point( poly2.verts[i], tempVerts );
+        {
+          add_point( poly2.verts[i], tempVerts );
+          tempFlags.push_back( PointStatus::VERTEX );
+        }
 
     // edges` intersections
     for( size_t i = 0; i < poly1.verts.size(); ++i )
@@ -43,7 +60,10 @@ namespace Geometry
             b2 = poly2.verts[ (j+1) % poly2.verts.size() ];
 
             if( segment2d_intersect( a1, a2, b1, b2, tp ) )// vec=pnt
-              add_point( tp, tempVerts );
+              {
+                add_point( tp, tempVerts );
+                tempFlags.push_back( PointStatus::EDGE );
+              }
           }
       }
 
@@ -57,22 +77,21 @@ namespace Geometry
     // single point touch
     if( s == 1 )
       {
-        size = 0.;
-        cen = tempVerts[ 0 ];
+        if( psize )  *psize = 0.;
+        if( pcen )  *pcen = tempVerts[ 0 ];
         return 1;
       }
 
     // line intersection
     if( s == 2 )
       {
-        size = (tempVerts[ 1 ] - tempVerts[ 0 ]).abs();
-        cen =  (tempVerts[ 1 ] + tempVerts[ 0 ]) / 2.;// vec=pnt
+        if( psize )  *psize = (tempVerts[ 1 ] - tempVerts[ 0 ]).abs();
+        if( pcen )  *pcen =  (tempVerts[ 1 ] + tempVerts[ 0 ]) / 2.;// vec=pnt
         return 2;
       }
 
     if( s > 2 )
       {
-        // intersection center
         tv1 = vec2d();//nullvec2d;
 
         for ( size_t i = 0; i < s; ++i )
@@ -89,6 +108,8 @@ namespace Geometry
           }
 
         // forming the 'result' vector of points
+        verts.clear();
+        if( pflags )  (*pflags).clear();
         while ( s )
           {
             n = 0;
@@ -96,48 +117,89 @@ namespace Geometry
               if ( prods[i] < prods[n] )
                 n = i;
 
-            // moving matching vertex into 'res'
-            res.push_back ( tempVerts[n] );
+            // moving matching vertex into 'verts'
+            verts.push_back ( tempVerts[n] );
             tempVerts[n] = tempVerts.back ();
             tempVerts.pop_back ();
+            if( pflags )
+              {
+                (*pflags).push_back( tempFlags[n] );
+                tempFlags[n] = tempFlags.back ();
+                tempFlags.pop_back ();
+              }
             prods[n] = prods[s - 1];
             --s;
           }
 
         delete[] prods;
 
-        tp = res[0];
-        tv2 = res[1] - tp;
-        size = 0.;
+        tp = (verts)[0];
+        tv2 = (verts)[1] - tp;
 
         // area calculation (triangulation method)
-        for(size_t i = 2; i < res.size(); ++i )
+        if( psize )
           {
-            tv1 = tv2;
-            tv2 = res[i] - tp;
+            *psize = 0.;
+            for(size_t i = 2; i < verts.size(); ++i )
+              {
+                tv1 = tv2;
+                tv2 = (verts)[i] - tp;
 
-            size += cross( tv1, tv2 );
+                *psize += cross( tv1, tv2 );
+              }
+            *psize /= 2.;
           }
-        size /= 2.;
-
-        tv2 = res[1] - tp;
+        tv2 = (verts)[1] - tp;
 
         // centroid
         // triangulation method [source: http://e-maxx.ru/algo/gravity_center]
-        for(size_t i = 2; i < res.size(); ++i )
+        if( psize && pcen )
           {
-            tv1 = tv2;
-            tv2 = res[i] - tp;
+            for(size_t i = 2; i < verts.size(); ++i )
+              {
+                tv1 = tv2;
+                tv2 = (verts)[i] - tp;
 
-            // (tv1 + tv2 + 0)/3  *  [tv1 x tv2]/2
-            tv3 += ( tv1 + tv2 ) * cross( tv1 , tv2 ) / 6. ;
+                // (tv1 + tv2 + 0)/3  *  [tv1 x tv2]/2
+                tv3 += ( tv1 + tv2 ) * cross( tv1 , tv2 ) / 6. ;
+              }
+            *pcen = tp + tv3 / *psize;
           }
-        cen = tp + tv3 / size;
 
-        return res.size();
+        return verts.size();
       }
 
     return 0;
+  }
+
+// --------------------------------------------------------------------------
+
+  vector<vec2d> convex_hull( vector<vec2d> P )
+  {
+      int n = P.size(), k = 0;
+      vector<vec2d> H( 2*n );
+
+      // Sort points lexicographically
+      sort( P.begin(), P.end() );
+
+      // Build lower hull
+      for ( int i = 0; i < n; ++i )
+        {
+          while ( k >= 2 && cross( H[k-1] - H[k-2], P[i] - H[k-2] ) <= 0 )
+            k--;
+          H[k++] = P[i];
+        }
+
+      // Build upper hull
+      for ( int i = n-2, t = k+1; i >= 0; i-- )
+        {
+          while ( k >= t && cross( H[k-1] - H[k-2], P[i] - H[k-2] ) <= 0)
+            k--;
+          H[k++] = P[i];
+        }
+
+      H.resize(k);
+      return H;
   }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ConvexPoly2d ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -241,12 +303,15 @@ namespace Geometry
 
         // UNDONE: this section contains hardcoded tolerance. It should be
         // rewritten
-        if( td2 * td1 < -1e-14 ) return false;  // if different signs - not convex
+        if( td2 * td1 < -1e-10 ) return false;  // if different signs - not convex
 
         td1 = td2;
       }
 
     return true;
+
+//    //test // BUG
+//    return verts.size() == convex_hull( verts ).size();
   }
 
 // --------------------------------------------------------------------------

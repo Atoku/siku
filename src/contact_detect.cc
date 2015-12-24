@@ -117,10 +117,10 @@ void ContactDetector::clear()
           if( cont[i].durability < 0.05 )  // destruction
             cont[i].type = ContType::COLLISION;
         }
-      else
+      else  // deleting contact
         {
-          cont[i] = cont[--size];
-          cont.pop_back();
+          cont[i] = cont[--size];  // replacing current with last
+          cont.pop_back();         // and deleting last
         }
     }
 
@@ -165,8 +165,6 @@ void ContactDetector::freeze( Globals& siku, double tol )
     _freeze( c, siku, tol );
 
 }
-
-
 
 // ============================ Local utilities =============================
 
@@ -239,10 +237,10 @@ void add_cont( Globals& siku, const size_t& i1, const size_t& i2, const int& t )
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 {
   int ires;  // !static? temporal variable to store geometry results
-  vec3d center; // !static
-  double dump;  // !static? temporal dump
-  std::vector<vec3d> loc_P1;  // e1.P vertices in local coords
-  std::vector<vec3d> loc_P2;  // e2.P vertices in local coords
+  //vec3d center; // !static
+  //double dump;  // !static? temporal dump
+  std::vector<vec2d> loc_P1;  // e1.P vertices in local coords
+  std::vector<vec2d> loc_P2;  // e2.P vertices in local coords
 
   mat3d src_to_dest = loc_to_loc_mat( siku.es[c.i1].q, siku.es[c.i2].q );
       // !static
@@ -250,11 +248,11 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
       // !static
 
   for( auto& p : siku.es[c.i1].P )
-    loc_P1.push_back( p * tol );
+    loc_P1.push_back( vec3_to_vec2( p * tol ) );
   for( auto& p : siku.es[c.i2].P )
-    loc_P2.push_back( src_to_dest * p * tol );
+    loc_P2.push_back( vec3_to_vec2( src_to_dest * p * tol ) );
 
-  if( Geometry::intersect( siku.es[c.i1].P, loc_P2 , loc_P2, center, dump ) )
+  if( Geometry::intersect( loc_P1, loc_P2 , loc_P2 ) )
     c.type = ContType::JOINT;
 }
 

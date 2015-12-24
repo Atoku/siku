@@ -49,103 +49,156 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
   mat3d dest_to_src = loc_to_loc_mat( siku.es[c.i2].q, siku.es[c.i1].q );
       // !static
 
-  std::vector<vec3d> loc_P2;  // e2.P vertices in local coords
+  std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
+  std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
+  for( auto& p : siku.es[c.i1].P )
+    loc_P1.push_back( vec3_to_vec2( p ) );
   for( auto& p : siku.es[c.i2].P )
-    loc_P2.push_back( src_to_dest * p );
+    loc_P2.push_back( vec3_to_vec2( src_to_dest * p ) );
 
-  if( errored( siku.es[c.i1].P, ires ) )
+  if( errored( loc_P1 ) )
     {
-      //cout<<"e1 self-intersects ---\n";
+
       siku.es[c.i1].flag |= Element::F_ERRORED;
     }
-  if( errored( loc_P2, ires) )
+  if( errored( loc_P2 ) )
     {
-      //cout<<"e2 self-intersects ---\n";
+
       siku.es[c.i2].flag |= Element::F_ERRORED;
     }
 
   ///*static*/ point2d center( 0, 0 ); // !static
-  vec3d center;
+  vec2d center;
   double area;
+  std::vector<PointStatus> stats;
 
-  // calculating center of intersection
-  if( Geometry::intersect( siku.es[c.i1].P, loc_P2, loc_P2, center, area ) > 2 )
+  if( c.type != ContType::JOINT )
     {
-      // mark contact as a 'collision'
-      if( c.type != ContType::JOINT )  c.type = ContType::COLLISION;
+      vector<vec2d> interPoly;
 
-      //!!!! further point2d algebra operators ('+', '-', ...) are my selfmade
-
-      // 'center' vec is the same as r1, because local origin stays in e1 mass
-      // center
-
-      double Area = area * siku.planet.R2;
-      //double A = 2 * area / ( e1.A + e2.A );
-      double force  = pow( area, 0.5 ) * siku.planet.R2;
-      double dt = siku.time.get_dt();
-
-      // point from e1 center to e2 center
-      tv = src_to_dest * NORTH;
-      vec3d r12 ( tv.x, tv.y, 0. );
-
-      // and its ort
-      vec3d ort ( r12 / sqrt( tv.x*tv.x + tv.y*tv.y ) );
-
-      // point from e2 center to aim
-      //point2d r2 ( center.x()-r12.x(), center.y()-r12.y() );
-      vec3d r2 ( center - r12 );
-
-      // e1 aim speed (coz of spin + propagation)
-      //point2d v1 ( center.y(), -center.x() );
-      vec3d v1 ( siku.es[c.i1].V +
-          rot_90_cw_XY( center ) * ( - siku.es[c.i2].W.z  * siku.planet.R ) );
-
-      // e2 aim speed (spin + propagation)
-      vec3d v2 ( src_to_dest * siku.es[c.i2].V + rot_90_cw_XY( center - r12 ) *
-                 ( - siku.es[c.i2].W.z * siku.planet.R ) );
-
-      // velocity difference at aim point
-      vec3d v12 ( v1 - v2 );
-
-      // force and torques components coefficients (fitted manually and wrong)
-      // should depend from dt, ice properties, earth radius and so on...
-      static const double kv = 0.0005;
-      static const double kr = 0.002;
-
-      static const double kw = 0.015;
-
-      vec3d Force = nullvec3d;
-      // total force consists of kinetic component and overlap component
-      // different force for static (means shores)
-      if( (siku.es[c.i1].flag & Element::F_STATIC) ||
-          (siku.es[c.i2].flag & Element::F_STATIC) )
+      // calculating intersection zone and properties
+      if( intersect( loc_P1, loc_P2, interPoly, &stats, &center, &area ) > 2 )
         {
-          Force = ( kv * Area * dt ) * v12 +
-              5. * kr * force * ort /
-              ( 1. - sqrt( 2.*area / ( siku.es[c.i1].A + siku.es[c.i2].A ) ) );
+          // mark contact as a 'collision'
+          c.type = ContType::COLLISION;
+
+////  OLD
+//          // 'center' vec is the same as r1, because local origin stays in e1
+//          // mass center
+//          double Area = area * siku.planet.R2;
+//          //double A = 2 * area / ( e1.A + e2.A );
+//          double force  = pow( area, 0.5 ) * siku.planet.R2;
+//          double dt = siku.time.get_dt();
+//
+//          // point from e1 center to e2 center
+//          tv = src_to_dest * NORTH;
+//          vec2d r12 ( tv.x, tv.y );
+//
+//          // and its ort
+//          vec2d ort ( r12 / sqrt( tv.x*tv.x + tv.y*tv.y ) );
+//
+//          // point from e2 center to aim
+//          vec2d r2 ( center - r12 );
+//
+//          // e1 aim speed (coz of spin + propagation)
+//          vec2d v1 ( vec3_to_vec2( siku.es[c.i1].V ) +
+//              rot_90_cw( center ) * ( - siku.es[c.i2].W.z  * siku.planet.R ) );
+//
+//          // e2 aim speed (spin + propagation)
+//          vec2d v2 ( vec3_to_vec2( src_to_dest * siku.es[c.i2].V )
+//                     + rot_90_cw( center - r12 ) *
+//                     ( - siku.es[c.i2].W.z * siku.planet.R ) );
+//
+//          // velocity difference at aim point
+//          vec2d v12 ( v1 - v2 );
+//
+//          // force and torques components coefficients (fitted manually and
+//          // wrong) should depend from dt, ice properties, earth radius and
+//          // so on...
+//          static const double kv = 0.0005;
+//          static const double kr = 0.002;
+//
+//          static const double kw = 0.015;
+//
+//          vec2d Force = vec2d();//nullvec2d;
+//          // total force consists of kinetic component and overlap component
+//          // different force for static (means shores)
+//          if( (siku.es[c.i1].flag & Element::F_STATIC) ||
+//              (siku.es[c.i2].flag & Element::F_STATIC) )
+//            {
+//              Force = ( kv * Area * dt ) * v12 +
+//                  5. * kr * force * ort / ( 1. -
+//                  sqrt( 2.*area / ( siku.es[c.i1].A + siku.es[c.i2].A )
+//                      )
+//                      );
+//            }
+//          else
+//            {
+//
+//              Force = ( kv * Area * dt ) * v12 +
+//                  kr * force * ort;
+//            }
+//
+//          // same as torques ( calculated like [r x v] )
+//          double torque1 =
+//              kw * siku.planet.R_rec * cross( center, Force );
+//          double torque2 =
+//              kw * siku.planet.R_rec * cross( r2, Force );
+//          // distance from point to line
+//          // http://algolist.manual.ru/maths/geom/distance/pointline.php
+//
+//          // signs are fitted manually
+//          siku.es[c.i1].F -= vec2_to_vec3( Force );
+//          siku.es[c.i1].N -= torque1;
+//
+//          siku.es[c.i2].F += dest_to_src * vec2_to_vec3( Force );
+//          siku.es[c.i2].N += torque2;
+
+          //TODO: clean this mess
+          vec2d p1p2 [2];  // p1p2 = two points: p1 and p2
+          size_t np = 0;
+
+          // noob search for p1 and p2
+          for(size_t i = 0; i < stats.size() && np < 2; ++i )
+            if( stats[i] == PointStatus::EDGE )
+              p1p2[ np++ ] == interPoly[ i ];
+
+          if( np < 2 )  // inapplicable
+            {
+              c.type = ContType::NONE;
+              return ;
+            }
+
+          // directions and applying point
+          vec2d dp = p1p2[1] - p1p2[0];
+          vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
+          vec2d norm ( tau.y, -tau.x );
+          vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
+
+          double Kne = 1.1, /*Kni = 1.,*/ Kw = 0.01;
+          double Asqrt = sqrt( area );
+
+          vec2d F = Kne * Asqrt * siku.planet.R;
+
+          double torque1 =
+              Kw * siku.planet.R_rec * cross( center, F );
+
+          double torque2 =
+              Kw * siku.planet.R_rec * cross( center -
+              vec3_to_vec2( src_to_dest * NORTH ), F );
+
+          // signs are fitted manually
+          siku.es[c.i1].F -= vec2_to_vec3( F );
+          siku.es[c.i1].N -= torque1;
+
+          siku.es[c.i2].F += dest_to_src * vec2_to_vec3( F );
+          siku.es[c.i2].N += torque2;
+
         }
-      else
-        {
-
-          Force = ( kv * Area * dt ) * v12 +
-              kr * force * ort;
-        }
-
-      // same as torques ( calculated like [r x v] )
-      double torque1 =
-          kw * siku.planet.R_rec * crossXY( center, Force );
-      double torque2 =
-          kw * siku.planet.R_rec * crossXY( r2, Force );
-      // distance from point to line
-      // http://algolist.manual.ru/maths/geom/distance/pointline.php
-
-      // signs are fitted manually
-      siku.es[c.i1].F -= Force;
-      siku.es[c.i1].N -= torque1;
-
-      siku.es[c.i2].F += dest_to_src * Force;
-      siku.es[c.i2].N += torque2;
-
+    }
+  else  // = if( c.type == ContType::JOINT )
+    {
+      c.type = ContType::NONE;
     }
 //  P1.clear();
 //  P2.clear();
