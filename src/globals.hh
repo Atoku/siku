@@ -64,6 +64,10 @@ struct Globals
   //! a list of wind source files` names
   std::vector < std::string > wind_crs;
 
+  // IMPROVE: reconsider this mechanism
+  //! physical constants
+  std::vector <double> phys_consts;
+
   //! model time 
   ModelTime time;
 

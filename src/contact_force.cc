@@ -169,13 +169,17 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
               return ;
             }
 
+          c.generation = 0;  // refreshing contact for avoiding deletion
+
           // directions and applying point
           vec2d dp = p1p2[1] - p1p2[0];
           vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
           vec2d norm ( tau.y, -tau.x );
           vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
 
-          double Kne = 1.1, /*Kni = 1.,*/ Kw = 0.01;
+          double Kne = siku.phys_consts[0],
+                 Kni = siku.phys_consts[1],
+                 Kw = siku.phys_consts[2];
           double Asqrt = sqrt( area );
 
           vec2d F = Kne * Asqrt * siku.planet.R;

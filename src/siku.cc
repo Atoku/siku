@@ -140,7 +140,7 @@ main ( int argc, char* argv[] )
       //sikupy.fcall_winds ( siku ); //<- GONE to _pretimestep
 
       // --- Searching for interaction pairs
-            siku.ConDet.detect( siku );
+      siku.ConDet.detect( siku );
 
       // --- Broad Phase Contact Detection if necessary
 

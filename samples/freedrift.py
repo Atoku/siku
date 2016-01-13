@@ -89,9 +89,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + 6* hour
+    siku.time.finish = siku.uw.times[st_t_ind] + hour
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 143
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 13
    
     # ---------------------------------------------------------------------
     # elements
@@ -289,6 +289,11 @@ def main():
     # name of file to load from
     #siku.defaults.loadfile = 'siku-2014-01-01-12:00:00.h5'
     siku.defaults.loadfile = 'save_test.h5'
+
+    siku.defaults.phys_consts = [ 1.1, 1, 0.01 ]
+
+    #siku.defaults.contact_freq_met = siku.CONTACT_DET_FREQ_MET['tick']
+    #siku.defaults.contact_value = 3
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds

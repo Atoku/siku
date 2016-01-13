@@ -36,8 +36,9 @@ inline bool el_pointers_x_compare( Element* pe1, Element* pe2 );
 void add_cont( Globals& siku, const size_t& i1, const size_t& i2,
                const int& t );
 
-inline bool cont_compare( const ContactDetector::Contact& c1,
-                          const ContactDetector::Contact& c2 );
+// merge lists of old and new contacts
+void merge_contacts( vector<ContactDetector::Contact>& olds,
+                     const vector<ContactDetector::Contact>& news );
 
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol );
 
@@ -50,9 +51,11 @@ inline double _dist2( const vec3d& v1, const vec3d& v2 )
 
 // =============================== Methods ==================================
 
-// For sorting watch https://s-media-cache-ak0.pinimg.com/originals/5f/fc/42/5ffc4224b938d1fb0abee887e4add84b.jpg
+// For sorting watch
+// https://s-media-cache-ak0.pinimg.com/originals/5f/fc/42/5ffc4224b938d1fb0abee887e4add84b.jpg
 // Yet simple 'sort' from <algorithm> is used.
 
+// IMPROVE: remove code duplication in 'find_pairs'
 void ContactDetector::sweep_n_prune( Globals& siku )
 {
   // preparing additional vector:
@@ -63,6 +66,9 @@ void ContactDetector::sweep_n_prune( Globals& siku )
 
   // sorting
   std::sort( siku.pes.begin(), siku.pes.end(), el_pointers_x_compare );
+
+  // IMPROVE: need to create empty vector of instantly large capacity
+  static std::vector<ContactDetector::Contact> news;
 
   // contact search
   for ( size_t i = 0; i < siku.pes.size () - 1; ++i )
@@ -76,8 +82,12 @@ void ContactDetector::sweep_n_prune( Globals& siku )
           if ( _dist2( siku.pes[i]->Glob, siku.pes[j]->Glob ) <
               _sqr( siku.pes[i]->sbb_rmin + siku.pes[j]->sbb_rmin ) )
             {
-              add_cont( siku, siku.pes[i]->id, siku.pes[j]->id,
-                        siku.time.get_n () );
+              //// deprecated
+              //add_cont( siku, siku.pes[i]->id, siku.pes[j]->id,
+              //          siku.time.get_n () );
+
+              news.push_back( ContactDetector::Contact( siku.pes[i]->id,
+                    siku.pes[j]->id, siku.time.get_n(), NONE ) );
             }
           // should not this be placed in loop condition check?
           if ( (siku.pes[i]->Glob.x + siku.pes[i]->sbb_rmin) <
@@ -88,12 +98,20 @@ void ContactDetector::sweep_n_prune( Globals& siku )
         }
     }
 
+  std::sort( news.begin(), news.end() );
+
+  merge_contacts( siku.ConDet.cont, news );
+
+  news.clear();  // should be O(1) without deallocation
 }
 
 //---------------------------------------------------------------------
 
 void ContactDetector::find_pairs( Globals& siku )
 {
+  // IMPROVE: need to create empty vector of instantly large capacity
+  static std::vector<ContactDetector::Contact> news;
+
   for ( size_t i = 0; i < siku.es.size () - 1; ++i )
     {
       for ( size_t j = i + 1; j < siku.es.size (); ++j )
@@ -103,6 +121,12 @@ void ContactDetector::find_pairs( Globals& siku )
             add_cont( siku, i, j, siku.time.get_n() );
         }
     }
+
+  std::sort( news.begin(), news.end() );
+
+  merge_contacts( siku.ConDet.cont, news );
+
+  news.clear();  // should be O(1) without deallocation
 }
 
 // --------------------------------------------------------------------------
@@ -119,13 +143,18 @@ void ContactDetector::clear()
         }
       else  // deleting contact
         {
-          cont[i] = cont[--size];  // replacing current with last
-          cont.pop_back();         // and deleting last
+          if( cont[i].generation > 1 )  // IMPROVE
+            {
+              cont[i] = cont[--size];  // replacing current with last
+              cont.pop_back();         // and deleting last
+            }
+          else
+            cont[i].generation++;
         }
     }
 
   // sorting of remains. Required by contact_exist check
-  std::sort( cont.begin(), cont.end(), cont_compare );
+  std::sort( cont.begin(), cont.end() );
 }
 
 //---------------------------------------------------------------------
@@ -133,7 +162,7 @@ void ContactDetector::clear()
 void ContactDetector::detect( Globals& siku )
 {
   // elements amount check: less then 2 - contacts are impossible
-  if( siku.es.size() < 2 )
+  if( siku.es.size() < 2 || !is_detect_time( siku ) )
     return;
 
   // smart clearing: joints remain untouched
@@ -166,6 +195,39 @@ void ContactDetector::freeze( Globals& siku, double tol )
 
 }
 
+// --------------------------------------------------------------------------
+
+bool ContactDetector::is_detect_time( Globals& siku )
+{
+  switch( det_freq_t )
+  {
+    case 0:  // always
+      //return true; // same as default
+      break;
+    case 1:  // by ticks
+      if( siku.time.get_n() > size_t( det_last + det_value ) )
+        {
+          det_last = siku.time.get_n();
+          return true;
+        }
+      return false;
+      break;
+    case 2:  // by seconds
+      // BUG: this does not work. Bad cast (double)boost::posix_time::ptime
+//      if( (double)siku.time.get_current() > det_last + det_value )
+//        {
+//          det_last = (double)siku.time.get_current();
+//          return true;
+//        }
+//      return false;
+      break;
+    case 3:  // by speed (automatic)
+      //UNDONE
+      break;
+  }
+  return true;
+}
+
 // ============================ Local utilities =============================
 
 // comparator for sorting algorithm
@@ -189,11 +251,40 @@ inline bool el_pointers_x_compare( Element* pe1, Element* pe2 )
 
 // --------------------------------------------------------------------------
 
-// comparator for sorting contacts
-inline bool cont_compare( const ContactDetector::Contact& c1,
-                          const ContactDetector::Contact& c2 )
+void merge_contacts( vector<ContactDetector::Contact>& olds,
+                     const vector<ContactDetector::Contact>& news )
 {
-  return c1.i1 < c2.i1;
+  static std::vector<ContactDetector::Contact> temp;
+  size_t oi = 0, ni = 0;
+  while( true ) //oi < olds.size() || ni < news.size() )
+    {
+      // IMPROVE: remove unnecessary conditions
+      if( ni < news.size() )
+        {
+
+          if( oi < olds.size() )
+//            {
+//              if( news[ni] < olds[oi] )
+//                temp.push_back( news[ni++] );
+//              else
+//                temp.push_back( olds[oi++] );
+//            }
+            temp.push_back( news[ni] < olds[oi] ? news[ni++] : olds[oi++] );
+          else
+            temp.push_back( news[ni++] );
+
+        }
+      else if( oi < olds.size() )
+        temp.push_back( olds[oi++] );
+      else
+        break; // instead of 'while' args
+
+    }
+
+  temp.swap( olds );  // now siku.ConDet.conts must be refreshed list
+
+  temp.clear();  // if all is correct - size will be 0, but no deallocation
+                 // would be called
 }
 
 // --------------------------------------------------------------------------

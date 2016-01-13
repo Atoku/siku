@@ -161,11 +161,33 @@ Sikupy::read_default( Globals& siku )
   pDef = PyObject_GetAttrString ( pSiku, "defaults" );
   assert( pDef );
 
+  // IMPROVE: reconsider this mechanism
+  // read physical constants
+  pTemp = PyObject_GetAttrString ( pDef, "phys_consts" );
+  assert( pTemp );
+
+  success &= read_double_vector( pTemp, siku.phys_consts );
+  Py_DECREF( pTemp );
+
   // read contact detection method
   pTemp = PyObject_GetAttrString ( pDef, "contact_method" );
   assert( pTemp );
 
   success &= read_ulong( pTemp, siku.ConDet.det_meth );
+  Py_DECREF( pTemp );
+
+  // read contact detection frequency type
+  pTemp = PyObject_GetAttrString ( pDef, "contact_freq_met" );
+  assert( pTemp );
+
+  success &= read_ulong( pTemp, siku.ConDet.det_freq_t );
+  Py_DECREF( pTemp );
+
+  // read contact detection value (speed, period, etc.)
+  pTemp = PyObject_GetAttrString ( pDef, "contact_value" );
+  assert( pTemp );
+
+  success &= read_double( pTemp, siku.ConDet.det_value );
   Py_DECREF( pTemp );
 
   // read wind source
