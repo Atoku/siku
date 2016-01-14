@@ -9,146 +9,170 @@
 #include "./polygon2d.hh"
 using namespace Geometry;
 
+void single_poly_test( const cvpoly2d& p )
+{
+  cout<< "\n Single poly test.\npoly:\n";
+
+  for( size_t i = 0; i < p.vertices().size(); i++ )
+    {
+      print( p.vertices()[i] );
+    }
+  cout<<"\n---\n";
+
+  cout<<"\np.center(), correct: (~1.5, ~1.5):\n";
+  print( p.center() );
+
+  cout<<"\np.is_convex()\n"
+      << p.is_convex() << endl;
+
+  cout<<"\np.area(), correct (for CCW): ~1\n"
+      << p.area()<< endl;
+
+  cout<<"\np.mom_of_ine(), correct: ~1.66(6)\n"
+      << p.mom_of_ine() << endl;
+
+  cout<<"\np.is_CCW_oriented()\n"
+      << p.is_CCW_oriented() << endl;
+
+  cout<<"\np.is_CCW_oriented_NC()\n"
+      << p.is_CCW_oriented_NC() << endl;
+}
+
+void poly_inter_test( const cvpoly2d& p1, const cvpoly2d& p2,
+                      int n, double s, vec2d c )
+{
+  cout<<"\n Intersection poly test:\npolygons:\n";
+  for( size_t i = 0; i < p1.vertices().size(); i++ )
+    {
+      print( p1.vertices()[i] );
+    }
+  cout<<"---\n";
+  for( size_t i = 0; i < p1.vertices().size(); i++ )
+    {
+      print( p1.vertices()[i] );
+    }
+
+  double size;
+  vec2d cen;
+  static vector<vec2d> res;
+  cout<<"-----\ncorrect: n = " << n << ", s ~= " << s << ", c ~= ";
+  print( c );
+  cout<<"res: n = " << intersect(p1, p2, res, 0, &cen, &size);
+  cout<<", s = "<< size <<", c = ";
+  print( cen );
+  cout << endl;
+
+}
+
+
 int main()
 {
   cout << "---------- Test for cvpoly2d ----------" << endl;
 
-   cout<<"poly 1:"<<endl;
-   pnt2d p3( 1, 1 );
-   pnt2d p4( 2, 1 );
-   pnt2d p5( 2, 2 );
-   pnt2d p6( 1, 2 );
+    vector<pnt2d> vec1, vec2;
 
-   print( p3 );
-   print( p4 );
-   print( p5 );
-   print( p6 );
+    vec1.push_back( { 1, 1 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 1, 2 } );
+    single_poly_test( { vec1 } );
 
-   cout << "\npoly 2 is the same, but CW oriented" << endl;
+    cvpoly2d pol1( vec1 );
 
-   vector<pnt2d> vec1, vec2;
+    vec1.clear();
+    vec1.push_back( { 1, 2 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 1, 1 } );
+    single_poly_test( { vec1 } );
 
-   vec1.push_back( p3 );
-   vec1.push_back( p4 );
-   vec1.push_back( p5 );
-   vec1.push_back( p6 );
 
-   vec2.push_back( p6 );
-   vec2.push_back( p5 );
-   vec2.push_back( p4 );
-   vec2.push_back( p3 );
+    vec1.clear();
+    vec1.push_back( { 1, 1 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 1, 2 } );
+    vec1.push_back( { 1, 1 } );
+    single_poly_test( { vec1 } );
 
-   cvpoly2d pol1( vec1 );
-   cvpoly2d pol2( vec2 );
 
-   // -------------------
+    vec1.clear();
+    vec1.push_back( { 1, 1 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 1.5, 2 } );
+    vec1.push_back( { 1, 2 } );
+    single_poly_test( { vec1 } );
 
-   cout<<"\n pol1 = cvpoly2d( vec( p3->p4->p5->p6 ) )," << endl
-       <<" pol2 = cvpoly2d( vec( p6->p5->p4->p3 ) )," << endl;
 
-   cout<<"\npol1.center(), correct: (1.5, 1.5):\n";
-     print( pol1.center() );
-     cout<<"pol2.center(), correct: (1.5, 1.5):\n";
-     print( pol2.center() );
+    vec1.clear();
+    vec1.push_back( { 1, 1 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 1.5, 1.9999999999 } );
+    vec1.push_back( { 1, 2 } );
+    single_poly_test( { vec1 } );
 
-   cout<<"\npol1.is_convex(), pol2.is_convex():\n"
-       <<"correct: 1,\t1\n"
-       << pol1.is_convex()<< "\t" << pol2.is_convex() << endl;
 
-   cout<<"\npol1.area(), pol2.area():\n"
-       <<"correct (for CCW): 1\t1\n"
-       << pol1.area()<< "\t" << pol2.area() << endl;
+    vec1.clear();
+    vec1.push_back( { 1, 1 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 1.5, 2.000000000001 } );
+    vec1.push_back( { 1, 2 } );
+    single_poly_test( { vec1 } );
 
-   cout<<"\npol1.mom_of_ine(), pol2.mom_of_ine():\n"
-       <<"correct: 1.66(6),\t166(6)\n"
-       << pol1.mom_of_ine()<< "\t" << pol2.mom_of_ine() << endl;
 
-   cout<<"\npol1.is_CCW_oriented(), pol2.is_CCW_oriented():\n"
-       <<"correct: 1\t0\n"
-       << pol1.is_CCW_oriented()<< "\t" << pol2.is_CCW_oriented() << endl;
+    vec1.clear();
+    vec1.push_back( { 1, 1 } );
+    vec1.push_back( { 1.25, 1 } );
+    vec1.push_back( { 1.5, 1 } );
+    vec1.push_back( { 1.75, 1 } );
+    vec1.push_back( { 2, 1 } );
+    vec1.push_back( { 2, 2 } );
+    vec1.push_back( { 1, 2 } );
+    single_poly_test( { vec1 } );
 
-   cout<<"\npol1.is_CCW_oriented_NC(), pol2.is_CCW_oriented_NC():\n"
-       <<"correct: 1\t0\n"
-       << pol1.is_CCW_oriented_NC()<< "\t" << pol2.is_CCW_oriented_NC() << endl;
+    cout<<"\n----------------- intersection ------------------\n";
 
-   cout<<"\n----------------- intersection ------------------\n";
+    vec2.clear();
+    vec2.push_back( { 1, 1 } );
+    vec2.push_back( { 2, 1 } );
+    vec2.push_back( { 2, 2 } );
+    vec2.push_back( { 1, 2 } );
+    poly_inter_test( pol1, { vec2 }, 4, 1, { 1.5, 1.5 } );
 
-   pnt2d p7( 1.5, 1 );
-   pnt2d p8( 2.5, 1 );
-   pnt2d p9( 2.5, 2 );
-   pnt2d p10( 1.5, 2 );
+    vec2.clear();
+    vec2.push_back( { 1.5, 1 } );
+    vec2.push_back( { 2.5, 1 } );
+    vec2.push_back( { 2.5, 2 } );
+    vec2.push_back( { 1.5, 2 } );
+    poly_inter_test( pol1, { vec2 }, 4, 0.5, { 1.75, 1.5 } );
 
-   pnt2d p11( 2, 1 );
-   pnt2d p12( 3, 1 );
-   pnt2d p13( 3, 2 );
-   pnt2d p14( 2, 2 );
+    vec2.clear();
+    vec2.push_back( { 2, 1 } );
+    vec2.push_back( { 3, 1 } );
+    vec2.push_back( { 3, 2 } );
+    vec2.push_back( { 2, 2 } );
+    poly_inter_test( pol1, { vec2 }, 2, 1, { 2, 1.5 } );
 
-   pnt2d p15 ( 2, 2 );
-   pnt2d p16 ( 3, 2 );
-   pnt2d p17 ( 3, 3 );
-   pnt2d p18 ( 2, 3 );
+    vec2.clear();
+    vec2.push_back( { 2, 2 } );
+    vec2.push_back( { 3, 2 } );
+    vec2.push_back( { 3, 3 } );
+    vec2.push_back( { 2, 3 } );
+    poly_inter_test( pol1, { vec2 }, 1, 0, { 2, 2 } );
 
-   cout<<"poly 3:"<<endl;
-   print( p7 );
-   print( p8 );
-   print( p9 );
-   print( p10 );
-   cout<<"\npoly 4:"<<endl;
-   print( p11 );
-   print( p12 );
-   print( p13 );
-   print( p14 );
-   cout<<"\npoly 5:"<<endl;
-   print( p15 );
-   print( p16 );
-   print( p17 );
-   print( p18 );
 
-   vector<pnt2d> vec3, vec4, vec5, res;
-
-   vec3.push_back( p7 );
-   vec3.push_back( p8 );
-   vec3.push_back( p9 );
-   vec3.push_back( p10 );
-
-   vec4.push_back ( p11 );
-   vec4.push_back ( p12 );
-   vec4.push_back ( p13 );
-   vec4.push_back ( p14 );
-
-   vec5.push_back ( p15 );
-   vec5.push_back ( p16 );
-   vec5.push_back ( p17 );
-   vec5.push_back ( p18 );
-
-   cvpoly2d pol3( vec3 );
-   cvpoly2d pol4( vec4 );
-   cvpoly2d pol5( vec5 );
-
-   pnt2d cen;
-   double size = 0;
-
-   cout<<"\nintersection: poly1, poly5:\n"
-       <<" correct: n = 1, s = 0, c = (2, 2)"
-       <<"\n inter vertices: "
-       <<intersect(pol1, pol5,res, cen, size) << endl;
-   cout<<" size: "<< size <<"\n center: ";
-   print( cen );
-
-   cout<<"\nintersection: poly1, poly3:\n"
-       <<" correct: n = 4, s = 0.5, c = (1.75, 1.5)"
-       <<"\n inter vertices: "
-       <<intersect(pol1, pol3,res, cen, size) << endl;
-   cout<<" size: "<< size <<"\n center: ";
-   print( cen );
-
-   cout<<"\nintersection: poly1, poly4:\n"
-       <<" correct: n = 2, s = 1, c = (2, 1.5)"
-       <<"\n inter vertices: "
-       <<intersect(pol1, pol4,res, cen, size) << endl;
-   cout<<" size: "<< size <<"\n center: ";
-   print( cen );
-
+    /////////////////////
+//    vec2.clear();
+//    vec2.push_back( { ,  } );
+//    vec2.push_back( { ,  } );
+//    vec2.push_back( { ,  } );
+//    vec2.push_back( { ,  } );
+//    poly_inter_test( pol1, { vec2 }, , , { ,  } );
+    /////////////////////
 
   return 0;
 }
+

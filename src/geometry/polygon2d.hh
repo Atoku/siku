@@ -111,9 +111,12 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
 
     cvpoly2d( const std::vector<vec2d>& v )
     {
-      //TODO: find method of copying v into verts, otherwise we depend
-      //on external data
+      // TODO: reconsider Closeness of polygon
       verts = v;
+//      if( verts.back() == verts.front() )
+//        {
+//          verts.pop_back();
+//        }
     }
 
     cvpoly2d( const cvpoly2d& p )
@@ -134,6 +137,9 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     inline operator bool () const  { return verts.size() > 2; }
 
   // -------------------------------- misc ----------------------------------
+
+    // copy of vertices for access
+    std::vector<pnt2d> vertices() const { return verts; }
 
     // mass center of polygon. Optional argument - area of polygon: speeds-up
     // the calculation in about 2X

@@ -626,6 +626,14 @@ Sikupy::read_elements ( Globals& siku )
 
       Py_DECREF( pobj );
 
+      /////////////////////////////////////////////////////////////////////////////////////////
+      // TODO: reconsider Closeness of polygon
+//      if( siku.es[i].P.back() == siku.es[i].P.front() )
+//        {
+//          cout<<"fixing\n";
+//          siku.es[i].P.pop_back();
+//        }
+
       // reading material index
 
       pobj = PyObject_GetAttrString ( pitem, "imat" );
@@ -657,7 +665,8 @@ Sikupy::read_elements ( Globals& siku )
 
       if ( read_string ( pobj, stmp ) )
         {
-//          siku.es[i].monitor = string( stmp.c_str() ); //strdup ( stmp.c_str () );
+//          siku.es[i].monitor = string( stmp.c_str() );
+//                              //instead //strdup ( stmp.c_str () );
 //          assert( siku.es[i].monitor );
           siku.add_monit( stmp, siku.es[i] );
 
@@ -678,7 +687,8 @@ Sikupy::read_elements ( Globals& siku )
 
       // Additional initialization without reading
 
-      siku.es[i].W = nullvec3d;  // could be inited in Globals.post_init() in main()
+      // could be inited in Globals.post_init() in main()
+      siku.es[i].W = nullvec3d;
 
     }
 

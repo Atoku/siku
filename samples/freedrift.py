@@ -418,11 +418,11 @@ def drift_monitor( t, Q, Ps, i, st ):
         if st & element.Element.f_errored: ##
             poly.write( '> -Gred -W0.1p,red \n' ) ##
 
-##            #errored export lon-lat:
-##            with open("errored"+str(i)+".txt", 'w') as erf:
-##                for v in vert:
-##                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
-##                        str( v[1] )+'\n' )
+            #errored export lon-lat:
+            with open("err/errored"+str(i)+".txt", 'w') as erf:
+                for v in vert:
+                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+                        str( v[1] )+'\n' )
             
         elif st & element.Element.f_special: ## elif -> if
             poly.write( '> -Gpink -W0.1p,purple \n' ) 
