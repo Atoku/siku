@@ -189,63 +189,65 @@ def main():
 ##                     (293.0, 27.0) ] )
 
     # ---------------------- voronoi initialization ------------------------
-##    print('\nLoading polygons')
-##    ## North cap
-##    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-##    ## Channel (handmade)
-##    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
-##    
-##    PV.filter_( 0, 360, 60, 90 )
-##    PC.filter_( 179, 187, 54, 60 )
-##    
-##    print('Deleting land polygons')
-##    PV.clear_the_land()
-##
-##    coords = PV.coords
-##    coords = coords + PC.coords
+    print('\nLoading polygons')
+    ## North cap
+    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    ## Channel (handmade)
+    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    
+    PV.filter_( 0, 360, 60, 90 )
+    PC.filter_( 179, 187, 54, 60 )
+    
+    print('Deleting land polygons')
+    PV.clear_the_land()
+
+    coords = PV.coords
+    coords = coords + PC.coords
+
+    siku.tempc = coords # for debug
 
     ### Initializing elements with polygon vertices
-##    for c in coords:
-##        siku.P.update( c )
-##     
-##        # Element declaration
-##        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
-##        E.monitor = "drift_monitor"
-##        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
-##               0.0, 0.0, 0.0, 0.0, 0.0 ]
-##        E.set_gh( gh, ice )
-##        
-##        # all elements in the list
-##        siku.elements.append( E )
+    for c in coords:
+        siku.P.update( c )
+     
+        # Element declaration
+        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
+        E.monitor = "drift_monitor"
+        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
+               0.0, 0.0, 0.0, 0.0, 0.0 ]
+        E.set_gh( gh, ice )
+        
+        # all elements in the list
+        siku.elements.append( E )
 
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
-##    siku.defaults.boarder_mark = 1
-##    siku.defaults.boarders = 'contours.ll'
-##
-##    print('Marking boarders with GMT')
-##    bor = PV.get_boarder_by_gmt()
-##    for b in bor:
-##        siku.elements[ b ].flag_state = element.Element.f_static
-##    print('Done\n\n')
+    siku.defaults.boarder_mark = 1
+    siku.defaults.boarders = 'contours.ll'
+
+    print('Marking boarders with GMT')
+    bor = PV.get_boarder_by_gmt()
+    for b in bor:
+        siku.elements[ b ].flag_state = element.Element.f_static
+    print('Done\n\n')
 
     # ---------------------- loading from file ----------------------------
 
-    print('file start atempt\n')
-    
-    hl = hload('save_test.h5')
-##    #hl = hload('siku-2014-01-01-12:50:46.h5')
+##    print('file start atempt\n')
+##    
+##    hl = hload('save_test.h5')
+####    #hl = hload('siku-2014-01-01-12:50:46.h5')
+####
+####    #hl.load()
+##    hl.load_fnames()
+##    hl.load_mats()
+##    hl.load_els()
+##    print('\n')
 ##
-##    #hl.load()
-    hl.load_fnames()
-    hl.load_mats()
-    hl.load_els()
-    print('\n')
-
-    siku.elements = hl.extract_els()
-    siku.materials = hl.extract_mats()
-          
-    hl = None
+##    siku.elements = hl.extract_els()
+##    siku.materials = hl.extract_mats()
+##          
+##    hl = None
 
 
     # ------------------------- speed sattings ----------------------------
@@ -292,12 +294,12 @@ def main():
 
     siku.defaults.phys_consts = [ 1.1, 1, 0.01 ]
 
-    #siku.defaults.contact_freq_met = siku.CONTACT_DET_FREQ_MET['tick']
-    #siku.defaults.contact_value = 3
+##    siku.defaults.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
+##    siku.defaults.contact_value = 1000
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds
-    # ---------------------------------------------------------------------
+    # ------------------------------abs2( e.V )---------------------------------------
     
 ##    # We create a grid and append it to monitor grids
 ##    siku.diagnostics.wind_counter = 0
@@ -418,11 +420,20 @@ def drift_monitor( t, Q, Ps, i, st ):
         if st & element.Element.f_errored: ##
             poly.write( '> -Gred -W0.1p,red \n' ) ##
 
+## for debug
             #errored export lon-lat:
             with open("err/errored"+str(i)+".txt", 'w') as erf:
                 for v in vert:
                     erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
                         str( v[1] )+'\n' )
+            #errored original export lon-lat:
+            with open("err/original"+str(i)+".txt", 'w') as erf:
+                #for v in siku.elements[i].verts_xyz_loc:
+                for v in siku.tempc[i]:
+                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+                        str( v[1] )+'\n' )
+## /for debug
+                    
             
         elif st & element.Element.f_special: ## elif -> if
             poly.write( '> -Gpink -W0.1p,purple \n' ) 

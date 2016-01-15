@@ -165,6 +165,8 @@ void ContactDetector::detect( Globals& siku )
   if( siku.es.size() < 2 || !is_detect_time( siku ) )
     return;
 
+  cout<<"DETECT-----------------"<<endl;  // for tests, IMPROVE:remove this
+
   // smart clearing: joints remain untouched
   clear();
 
@@ -213,16 +215,30 @@ bool ContactDetector::is_detect_time( Globals& siku )
       return false;
       break;
     case 2:  // by seconds
-      // BUG: this does not work. Bad cast (double)boost::posix_time::ptime
-//      if( (double)siku.time.get_current() > det_last + det_value )
-//        {
-//          det_last = (double)siku.time.get_current();
-//          return true;
-//        }
-//      return false;
+      if( (double)siku.time.get_total_microseconds() * 0.000001 >
+          det_last + det_value )
+        {
+          det_last = (double)siku.time.get_total_microseconds() * 0.000001;
+          return true;
+        }
+      return false;
       break;
     case 3:  // by speed (automatic)
-      //UNDONE
+
+      // searching max p speed
+      double maxs = 0;
+      for( auto& e : siku.es )
+        if( abs2( e.V ) > maxs ) maxs = abs2( e.V );
+      maxs = sqrt( maxs );
+
+      det_last += siku.time.get_dt() * maxs;  // accumulate displacement
+
+      if( det_last > det_value )
+        {
+          det_last = 0.;
+          return true;
+        }
+      return false;
       break;
   }
   return true;
