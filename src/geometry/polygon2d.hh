@@ -180,6 +180,15 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     //! \return true on intersection
     bool intersect( const cvpoly2d& P, const cvpoly2d& Q );
 
+    //! \brief builds the current polygon as an intersection of two
+    //! other polygons P and Q. We assume that both polygons are convex
+    //! and CCW oriented. We do not check on these facts to be true.
+    //! \param[in] P first polygon
+    //! \param[in] Q second polygon
+    //! \return true on intersection
+    bool intersect_rourke( const cvpoly2d& P, const cvpoly2d& Q );
+
+    
   };
 
   // ========================================================================

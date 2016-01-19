@@ -11,18 +11,18 @@ make the method easy to describe.
 
 Let $\bm{P}=\{P_1,P_2,\dots,P_N\}$ and $\bm{Q}=\{Q_1,Q_2,\dots,Q_M\}$
 be two convex polygons. We need to find another convex polygon
-$\bm{X}=\bm{P}\bm{Q}$.
+$\bm{X}=\bm{P}\cap\bm{Q}$.
 
 Initially we choose (arbitrary) a side $\bm{p}=[P_1,P_2]$ and a side
-$\bm{q}=[Q_1,Q_2]$. We use indices $i_p$ and $i_q$ to indicate the
+$\bm{q}=[Q_1,Q_2]$. We use indices $i$ and $j$ to indicate the
 first vertex of $\bm{p}$ and $\bm{q}$ correspondingly. 
 
 We say that point $X\in {\cal L}(\bm{p})$ if $X$ lies on the left side
 (half-plane) of the directed segment $\bm{p}=[P_i,P_{i+1\mod N}]$. This
 condition is easy to check as follows:
 \begin{equation}
-  X \in {\cal L}(\bm{p}) = {\cal H}\left( { \bm{p} \times (X-P_i)
-  }\right),
+  X \in {\cal L}(\bm{p}) =
+  \left[ {\cal H}\left( { \bm{p} \times (X-P_i) } \right) = 1 \right]
 \end{equation}
 where ${\cal H}$ is Heavyside function:
 \begin{equation}
@@ -33,6 +33,9 @@ where ${\cal H}$ is Heavyside function:
   \end{aligned}\right.
 \end{equation}
 
+We introduce a function $L(\bm{p},X) = \left[{\cal H}\left( { \bm{p} \times
+  (X-P_i) } \right) = 1\right]$ for convenience.
+
 O'Rourke derives the ``advance rule'', e.g. the rule which polygon to
 choose next for advancing the side. The rule can be summarized as the
 Table~\ref{tab:arule}.
@@ -40,18 +43,20 @@ Table~\ref{tab:arule}.
 \begin{table}
   \center
   \caption{O'Rourke's ``Advance rule''.}
-  \begin{tabular}{c|c|c}
+  \begin{tabular}{c|c|c|c}
     \hline
-    $\bm{p}\times\bm{q} > 0$ & Halfplane condition & Advance rule \\
+    $\bm{p}\times\bm{q} > 0$ & Halfplane condition & Programming rule & Advance rule \\
     \hline
-    1 & $Q_j\in {\cal L}(\bm{p})$ & P \\
+    true & $Q_j\in {\cal L}(\bm{p})$     & $L(\bm{p},Q_j)=\text{true}$ & P \\
     %
-    1 & $Q_j\in {\cal L}(\bm{p})$ & Q \\
+         & $Q_j\notin {\cal L}(\bm{p})$  & $L(\bm{p},Q_j)=\text{false}$ & Q \\
     \hline
-    1 & $Q_j\in {\cal L}(\bm{p})$ & P \\
+    false & $P_i\in {\cal L}(\bm{q})$    & $L(\bm{q},P_i)=\text{true}$ & P \\
     %
-    1 & $Q_j\in {\cal L}(\bm{p})$ & Q \\
+          & $P_i\notin {\cal L}(\bm{q})$ & $L(\bm{q},P_i)=\text{false}$ & Q \\
     \hline
   \end{tabular}
   \label{tab:arule}
 \end{table}
+
+The algorithm

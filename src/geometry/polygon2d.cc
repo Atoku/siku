@@ -22,6 +22,15 @@ namespace Geometry
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~ external functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  bool intersect_rourke( const cvpoly2d& P, const cvpoly2d& Q )
+  {
+    
+    
+    return false;
+  }
+  
+//---------------------------------------------------------------------
+  
   int intersect( const cvpoly2d& poly1, const cvpoly2d& poly2,
                   std::vector<pnt2d>& verts,
                   std::vector<PointStatus>* pflags,

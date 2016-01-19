@@ -6,7 +6,7 @@
 
 */
 
-#include "./polygon2d.hh"
+#include "polygon2d.hh"
 using namespace Geometry;
 
 void single_poly_test( const cvpoly2d& p )
