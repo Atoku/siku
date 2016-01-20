@@ -312,7 +312,7 @@ namespace Geometry
 
         // UNDONE: this section contains hardcoded tolerance. It should be
         // rewritten
-        static const double tolerance = -1e-12;
+        static const double tolerance = 0;//-1e-12;
         if( td2 * td1 < tolerance ) return false;  // if different signs - not convex
 
         td1 = td2;

@@ -122,7 +122,7 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     cvpoly2d( const cvpoly2d& p )
     {
       // TODO: also check for vector copying
-      verts = v;
+      verts = p.verts;
 //      verts.resize( p.verts.size() );
 //      memcpy( verts.data(), p.verts.data(), p.verts.size() );
     }
