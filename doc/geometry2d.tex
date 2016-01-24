@@ -5,58 +5,77 @@
 %----------------------------------------------------------------------
 \section{Convex Polygon Intersection}
 
+\subsection{Advance rule}
+
 The method implements O'Rourke's approach from his
 book~\cite{bib:orourke}. The notation and some details were updated to
 make the method easy to describe.
 
-Let $\bm{P}=\{P_1,P_2,\dots,P_N\}$ and $\bm{Q}=\{Q_1,Q_2,\dots,Q_M\}$
-be two convex polygons. We need to find another convex polygon
+Let $\bm{P}=\{P_0,P_2,\dots,P_{N-1}\}$ and
+$\bm{Q}=\{Q_0,Q_2,\dots,Q_{M-1}\}$ be two convex polygons, vertices
+ordered counter-clockwise. We need to find another convex polygon
 $\bm{X}=\bm{P}\cap\bm{Q}$.
 
-Initially we choose (arbitrary) a side $\bm{p}=[P_1,P_2]$ and a side
-$\bm{q}=[Q_1,Q_2]$. We use indices $i$ and $j$ to indicate the
+Initially we choose (arbitrary) a side $\bm{p}=[P_0,P_1]$ and a side
+$\bm{q}=[Q_0,Q_1]$. We use indices $i$ and $j$ to indicate the
 first vertex of $\bm{p}$ and $\bm{q}$ correspondingly. 
-
 We say that point $X\in {\cal L}(\bm{p})$ if $X$ lies on the left side
-(half-plane) of the directed segment $\bm{p}=[P_i,P_{i+1\mod N}]$. This
+(half-plane) of the directed segment
+$\bm{p}=[P_i,P_{i+1}]$\footnote{Everywhere we assume $i+1$ is actually
+$(i+1) \mod N$, and $j+1$ is actually $(j+1)\mod M$. We omit it here
+  for briefty}. This
 condition is easy to check as follows:
 \begin{equation}
   X \in {\cal L}(\bm{p}) =
-  \left[ {\cal H}\left( { \bm{p} \times (X-P_i) } \right) = 1 \right]
+  \left[ \left( { \bm{p} \times (X-P_i) } \right) > 0 \right]
+  = L ( \bm{p}, X ).
 \end{equation}
-where ${\cal H}$ is Heavyside function:
-\begin{equation}
-  {\cal H}(x) = \left\{
-  \begin{aligned}
-    1, &\quad \text{if}\,\,x > 0,\\
-    0, &\quad  \text{if}\,\,x \le 0.\\
-  \end{aligned}\right.
-\end{equation}
-
-We introduce a function $L(\bm{p},X) = \left[{\cal H}\left( { \bm{p} \times
-  (X-P_i) } \right) = 1\right]$ for convenience.
+Where we introduced a function $L(\bm{p},X) = \left[\left( { \bm{p}
+    \times (X-P_i) } \right) > 0\right]$ for convenience.
 
 O'Rourke derives the ``advance rule'', e.g. the rule which polygon to
 choose next for advancing the side. The rule can be summarized as the
 Table~\ref{tab:arule}.
+
+The algorithm described in the table also uses a special $\chi$ inside
+status. It may have 3 values: ``U'' (for unknown), ``P'' (for inside
+polygon P), and ``Q'' (for inside polygon Q). The value of $\chi$
+changes when an intersecton of two segments detected. It is set as
+described also in Table~\ref{tab:arule}.  It does not change if both
+conditions are not true.
 %
 \begin{table}
   \center
   \caption{O'Rourke's ``Advance rule''.}
-  \begin{tabular}{c|c|c|c}
+  \begin{tabular}{c|c|c|c|c}
     \hline
-    $\bm{p}\times\bm{q} > 0$ & Halfplane condition & Programming rule & Advance rule \\
+    $\bm{p}\times\bm{q} > 0$ & Programming rule & Advance rule & Add
+    vertex condition & Vertex to add\\
     \hline
-    true & $Q_j\in {\cal L}(\bm{p})$     & $L(\bm{p},Q_j)=\text{true}$ & P \\
+    true  & $L(\bm{p},Q_{j+1})=\text{true}$ & P & $\chi=P$ & $P_{i+1}$ \\
     %
-         & $Q_j\notin {\cal L}(\bm{p})$  & $L(\bm{p},Q_j)=\text{false}$ & Q \\
+          & $L(\bm{p},Q_{j+1})=\text{false}$ & Q & $\chi=Q$ & $Q_{j+1}$ \\
     \hline
-    false & $P_i\in {\cal L}(\bm{q})$    & $L(\bm{q},P_i)=\text{true}$ & Q \\
+    false & $L(\bm{q},P_{i+1})=\text{true}$ & Q & $\chi=Q$& $Q_{j+1}$ \\
     %
-          & $P_i\notin {\cal L}(\bm{q})$ & $L(\bm{q},P_i)=\text{false}$ & P \\
+          & $L(\bm{q},P_{i+1})=\text{false}$ & P & $\chi=P$ & $P_{i+1}$ \\
     \hline
+  \end{tabular}
+  On intersection only $\chi$-rule:
+  \begin{tabular}{rll}
+    $L(\bm{q},P_{i+1})=\text{true}$ & $\Rightarrow$ & $\chi=P$, \\
+    $L(\bm{p},Q_{j+1})=\text{true}$ & $\Rightarrow$ & $\chi=Q$.
   \end{tabular}
   \label{tab:arule}
 \end{table}
 
-The algorithm
+\subsection{Termination and continuation condition}
+
+Let $i_x$ be the number of advances of $P$ since first intersection,
+and $j_x$ be the number of advances of $Q$ since first
+intersection. In this case, the loop continuation condition is
+\begin{equation}
+  \left( [i_x < N] \lor [j_x < M] \right) \land [i_x < 2N] \land [i_y < 2M].
+\end{equation}
+
+
