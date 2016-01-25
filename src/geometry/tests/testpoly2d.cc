@@ -43,6 +43,9 @@ static int intercount = 0;
 void poly_inter_test( const cvpoly2d& p1, const cvpoly2d& p2,
                       int n, double s, vec2d c )
 {
+  cvpoly2d P( p1 );
+  cvpoly2d Q( p2 );
+  
   cout<<"\n Intersection poly test #"<< (++intercount) <<":\npolygons:\n";
   for( size_t i = 0; i < p1.vertices().size(); i++ )
     {
@@ -63,6 +66,11 @@ void poly_inter_test( const cvpoly2d& p1, const cvpoly2d& p2,
   cout<<", s = "<< size <<", c = ";
   print( cen );
   cout << endl;
+
+  cout << "=== Rourke's test: === " << endl;
+  cvpoly2d X;
+  bool is_intersect = X.intersect( P, Q );
+  cout << "res: n = " << X.size() << endl;
 
 }
 

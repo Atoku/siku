@@ -403,15 +403,106 @@ namespace Geometry
   }
 
 //---------------------------------------------------------------------
+
+  //! \brief Function L(x,Y), checks if point Y is on the left side of x.
+  //! \param[in] x vector,
+  //! \param[in] X starting point of x,
+  //! \param[in] Y point to check.
+  //! \return true if point Y is on the left side of x
+  inline static bool L( const vec2d& x, const pnt2d& X, const pnt2d& Y )
+  {
+    return x.cross( Y - X );
+  }
   
-  bool cvpoly2d::intersect( const cvpoly2d& P, const cvpoly2d& Q )
+  bool cvpoly2d::intersect( cvpoly2d& P, cvpoly2d& Q )
   {
     // clear the content of the current polygon
     verts.clear();
 
-    // we a
+    // definitions
+    enum pq_status { inP, inQ, Unknown }; // in what poly we are or
+                                          // what poly we advance
+      
+    // variables
+    const size_t N = P.size();  // number of points in P
+    const size_t M = Q.size();  // number of points in Q
+    size_t i = 0, j = 0;        // indices, points to the beginning of
+                                // a side p and q, respectively
+    size_t xi = 0, xj = 0;      // number of advances for P and for Q,
+                                // respectively, after the first
+                                // intersection.
+    pq_status chi = Unknown;    // shows the status of the process,
+                                // what polygon is considered to be
+                                // inside
+    pq_status adv = Unknown;    // shows what polygon side we advance
+    bool is_first_X = false;    // was a fist intersection between
+                                // sides found?
 
+    do {
+      // i + 1 and j + 1, all mod by size
+      size_t I = ( i + 1 ) % N;
+      size_t J = ( j + 1 ) % M;
 
+      const vec2d p = P[I] - P[i];
+      const vec2d q = Q[J] - Q[j];
+      
+      bool LpQ = L( p, P[i], Q[J] );
+      bool LqP = L( q, Q[j], P[I] );
+
+      pnt2d X;                  // intersection point
+
+      // intersection of segments
+      bool is_X = segment2d_intersect( P[i], P[I],
+                                       Q[j], Q[J], X );
+
+      if ( is_X )
+        {
+          // add point
+          verts.push_back( X );
+
+          // rule to change inflag
+          chi = LqP ? inP : ( LpQ ? inQ : chi );
+
+          // start counting number of advances
+          if ( ! is_first_X )
+            {
+              xi = xj = 0;
+              is_first_X = true;
+            }
+        }
+
+      // getting p x q
+      double pxq = p.cross( q );
+
+      // advance rule by Rourke
+      if ( pxq > 0 )
+        {
+          if ( LpQ )
+            {
+              i = ( i + 1 ) % N; I = ( I + 1 ) % N; xi++; // P
+            }
+          else
+            {
+              j = ( j + 1 ) % M; J = ( J + 1 ) % M; xj++; // Q
+            }
+        }
+      else // if ( pxq < 0 ) => we neglect special cases for now
+        {
+          if ( LqP )
+            {
+              j = ( j + 1 ) % M; J = ( J + 1 ) % M; xj++; // Q
+            }
+          else
+            {
+              i = ( i + 1 ) % N; I = ( I + 1 ) % N; xi++; // P
+            }
+        }
+
+      // we add a vertex if it is inside of advancing polygon
+      if ( adv == chi ) verts.push_back( adv == inP ? P[i] : Q[j] );
+
+    } while( ( xi < N || xj < M ) && ( xi < 2*N ) && ( xj < 2*M ) );
+    
     return true;
   }
 

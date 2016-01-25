@@ -119,6 +119,7 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
 //        }
     }
 
+    // we want a real deep copy!
     cvpoly2d( const cvpoly2d& p )
     {
       // TODO: also check for vector copying
@@ -127,7 +128,12 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
 //      memcpy( verts.data(), p.verts.data(), p.verts.size() );
     }
 
-  // -------------------------------- bool ----------------------------------
+    // ----------------------------- verts params----------------------------
+
+    //! \brief number of vertices 
+    inline size_t size() const { return verts.size(); }
+    
+    // ------------------------------ bool ----------------------------------
 
     inline bool operator == ( const cvpoly2d& p ) const
     {
@@ -137,7 +143,12 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     // if there are at least 3 vertices
     inline operator bool () const  { return verts.size() > 2; }
 
-  // -------------------------------- misc ----------------------------------
+    // ------------------------------ access --------------------------------
+
+    //! \brief direct access to a vertex by index
+    inline pnt2d& operator[]  ( size_t n ) { return verts.at(n); }
+
+    // -------------------------------- misc --------------------------------
 
     // copy of vertices for access
     std::vector<pnt2d> vertices() const { return verts; }
@@ -173,23 +184,17 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     // TODO: check for better name
     bool contains( const pnt2d& point ) const;
 
-    //! \brief builds the current polygon as an intersection of two
-    //! other polygons P and Q. We assume that both polygons are convex
-    //! and CCW oriented. We do not check on these facts to be true.
-    //! \param[in] P first polygon
-    //! \param[in] Q second polygon
-    //! \return true on intersection
-    bool intersect( const cvpoly2d& P, const cvpoly2d& Q );
-
-    //! \brief builds the current polygon as an intersection of two
-    //! other polygons P and Q. We assume that both polygons are convex
-    //! and CCW oriented. We do not check on these facts to be true.
-    //! \param[in] P first polygon
-    //! \param[in] Q second polygon
-    //! \return true on intersection
-    bool intersect_rourke( const cvpoly2d& P, const cvpoly2d& Q );
-
+    // ------------------------------ intersection ---------------------------
     
+    //! \brief builds the current polygon as an intersection of two
+    //! other polygons P and Q. We assume that both polygons are
+    //! convex and CCW oriented. We do not check on these facts to be
+    //! true. This is Rourke's method.
+    //! \param[in] P first polygon
+    //! \param[in] Q second polygon
+    //! \return true on intersection
+    bool intersect( cvpoly2d& P, cvpoly2d& Q );
+
   };
 
   // ========================================================================
