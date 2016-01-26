@@ -353,7 +353,7 @@ int main()
 
 
   // ---------------------------
-  // Test 1 for Rourke
+  // Test 1R for Rourke
   
   cout << endl << " ==== Rourke's test ======" << endl;
   

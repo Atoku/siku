@@ -504,6 +504,10 @@ namespace Geometry
         }
 
     } while( ( xi < N || xj < M ) && ( xi < 2*N ) && ( xj < 2*M ) );
+
+    if ( chi == Unknown ) return false; // no intersections (TODO:
+                                        // what about inclusions? --
+                                        // there is the method
     
     return true;
   }
