@@ -3,7 +3,7 @@
 #ifndef MATRIX3D_HH
 #define MATRIX3D_HH
 
-#include "point3d.hh"
+#include "pnt3d.hh"
 
 // =========================== GLM implementation ===========================
 #ifndef SIKU_3D_NOT_GLM

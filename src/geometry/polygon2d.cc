@@ -414,7 +414,7 @@ namespace Geometry
     return x.cross( Y - X ) > 0;
   }
   
-  bool cvpoly2d::intersect( cvpoly2d& P, cvpoly2d& Q )
+  bool cvpoly2d::intersect( const cvpoly2d& P, const cvpoly2d& Q )
   {
     // clear the content of the current polygon
     verts.clear();

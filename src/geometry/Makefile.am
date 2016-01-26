@@ -10,5 +10,5 @@ libgeometry_a_SOURCES = \
 	geometry.hh geometry.cc
 	
 #	matrix3d.hh
-#	point3d.hh
-# vector3d.hh
+#	pnt3d.hh
+# 	vec3d.hh

@@ -3,7 +3,7 @@
 #ifndef POINT3D_HH
 #define POINT3D_HH
 
-#include "vector3d.hh"
+#include "vec3d.hh"
 
 // SIKU_ED_GLB - independent!
 // ============================ Class Point3d ===============================

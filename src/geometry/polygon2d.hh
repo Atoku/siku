@@ -148,6 +148,9 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     //! \brief direct access to a vertex by index
     inline pnt2d& operator[]  ( size_t n ) { return verts.at(n); }
 
+    //! \brief direct safe access to a vertex by index
+    inline const pnt2d& operator[]  ( size_t n ) const { return verts.at(n); }
+
     // -------------------------------- misc --------------------------------
 
     // copy of vertices for access
@@ -193,7 +196,7 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     //! \param[in] P first polygon
     //! \param[in] Q second polygon
     //! \return true on intersection
-    bool intersect( cvpoly2d& P, cvpoly2d& Q );
+    bool intersect( const cvpoly2d& P, const cvpoly2d& Q );
 
     //---------------------------------------------------------------------
     // Pretty print
