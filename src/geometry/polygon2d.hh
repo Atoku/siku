@@ -132,7 +132,7 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
 
     //! \brief number of vertices 
     inline size_t size() const { return verts.size(); }
-    
+
     // ------------------------------ bool ----------------------------------
 
     inline bool operator == ( const cvpoly2d& p ) const
@@ -194,6 +194,11 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     //! \param[in] Q second polygon
     //! \return true on intersection
     bool intersect( cvpoly2d& P, cvpoly2d& Q );
+
+    //---------------------------------------------------------------------
+    // Pretty print
+    //---------------------------------------------------------------------
+    void print();
 
   };
 

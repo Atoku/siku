@@ -351,6 +351,32 @@ int main()
   pnt2d cen;
   double size = 0;
 
+
+  // ---------------------------
+  // Test 1 for Rourke
+  
+  cout << endl << " ==== Rourke's test ======" << endl;
+  
+  cvpoly2d P, Q;
+  vec1.clear();
+  vec1.push_back({  10,  20 });
+  vec1.push_back({ -20,  12 });
+  vec1.push_back({ -13, -20 });
+  vec1.push_back({  15, -20 });
+  P = cvpoly2d( vec1 );
+
+  vec2.clear();
+  vec2.push_back({   0, -30 });
+  vec2.push_back({  25, -30 });
+  vec2.push_back({  25,   5 });
+  vec2.push_back({   0,   5 });
+  vec2.push_back({ -10, -10 });
+  Q = cvpoly2d( vec2 );
+
+  cvpoly2d X;
+  X.intersect( P, Q );
+  X.print();
+
   return 0;
 }
 

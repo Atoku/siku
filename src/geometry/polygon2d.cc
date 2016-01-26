@@ -411,7 +411,7 @@ namespace Geometry
   //! \return true if point Y is on the left side of x
   inline static bool L( const vec2d& x, const pnt2d& X, const pnt2d& Y )
   {
-    return x.cross( Y - X );
+    return x.cross( Y - X ) > 0;
   }
   
   bool cvpoly2d::intersect( cvpoly2d& P, cvpoly2d& Q )
@@ -434,7 +434,9 @@ namespace Geometry
     pq_status chi = Unknown;    // shows the status of the process,
                                 // what polygon is considered to be
                                 // inside
-    pq_status adv = Unknown;    // shows what polygon side we advance
+    pq_status adv = inP;        // shows what polygon side we advance,
+                                // default value is chosen to be
+                                // different with chi
     bool is_first_X = false;    // was a fist intersection between
                                 // sides found?
 
@@ -477,33 +479,43 @@ namespace Geometry
       // advance rule by Rourke
       if ( pxq > 0 )
         {
-          if ( LpQ )
-            {
-              i = ( i + 1 ) % N; I = ( I + 1 ) % N; xi++; // P
-            }
-          else
-            {
-              j = ( j + 1 ) % M; J = ( J + 1 ) % M; xj++; // Q
-            }
+          if ( LpQ ) adv = inP;
+          else       adv = inQ;
         }
       else // if ( pxq < 0 ) => we neglect special cases for now
         {
-          if ( LqP )
-            {
-              j = ( j + 1 ) % M; J = ( J + 1 ) % M; xj++; // Q
-            }
-          else
-            {
-              i = ( i + 1 ) % N; I = ( I + 1 ) % N; xi++; // P
-            }
+          if ( LqP ) adv = inQ;
+          else       adv = inP;
         }
 
       // we add a vertex if it is inside of advancing polygon
-      if ( adv == chi ) verts.push_back( adv == inP ? P[i] : Q[j] );
+      if ( adv == chi ) verts.push_back( adv == inP ? P[I] : Q[J] );
+
+      // moving indexes accordingly
+      switch( adv )
+        {
+        case inP:
+          i = ( i + 1 ) % N; I = ( I + 1 ) % N; xi++;
+          break;
+        case inQ:
+          j = ( j + 1 ) % M; J = ( J + 1 ) % M; xj++;
+          break;
+        default: break;         // to avoid warnings
+        }
 
     } while( ( xi < N || xj < M ) && ( xi < 2*N ) && ( xj < 2*M ) );
     
     return true;
   }
 
-}
+  //---------------------------------------------------------------------
+  
+  void cvpoly2d::print()
+  {
+    for ( auto& v : verts )
+      v.print();
+  }
+  
+  
+} // namespace Geometry
+
