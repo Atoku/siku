@@ -39,7 +39,7 @@ namespace Geometry
     vector<pnt2d> tempVerts;
     vector<PointStatus> tempFlags;
     pnt2d a1, a2, b1, b2, tp;
-    vec2d tv1, tv2, tv3 = vec2d();// nullvec2d;
+    vec2d tv1, tv2, tv3{};// = vec2d();// nullvec2d;
     size_t n, s;
     double* prods;
 
@@ -47,15 +47,15 @@ namespace Geometry
     for( size_t i = 0; i < poly1.verts.size(); ++i )
       if( poly2.contains( poly1.verts[i] ) )
         {
-          add_point( poly1.verts[i], tempVerts );
-          tempFlags.push_back( PointStatus::VERTEX );
+          if( add_point( poly1.verts[i], tempVerts ) )
+            tempFlags.push_back( PointStatus::VERTEX );
         }
 
     for( size_t i = 0; i < poly2.verts.size(); ++i )
       if( poly1.contains( poly2.verts[i] ) )
         {
-          add_point( poly2.verts[i], tempVerts );
-          tempFlags.push_back( PointStatus::VERTEX );
+          if( add_point( poly2.verts[i], tempVerts ) )
+            tempFlags.push_back( PointStatus::VERTEX );
         }
 
     // edges` intersections
@@ -70,8 +70,8 @@ namespace Geometry
 
             if( segment2d_intersect( a1, a2, b1, b2, tp ) )// vec=pnt
               {
-                add_point( tp, tempVerts );
-                tempFlags.push_back( PointStatus::EDGE );
+                if( add_point( tp, tempVerts ) )
+                  tempFlags.push_back( PointStatus::EDGE );
               }
           }
       }
@@ -271,7 +271,7 @@ namespace Geometry
     double res = 0., S = 0., a = area();
 
     for(size_t i = 0; i < size; ++i )
-      S += abs( cross( verts[i] - o, verts[ (i+1)%size ] - o ) );
+      S += fabs( cross( verts[i] - o, verts[ (i+1)%size ] - o ) );
 
     // source: wiki
     // TODO: check

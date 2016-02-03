@@ -1441,11 +1441,15 @@ Sikupy::read_double_vector ( PyObject* plist, vector < double >& xs )
       PyObject* pitem;
       pitem = PyList_GetItem ( plist, i ); // borrowed
 
-      // check if it is a number
-      if ( !PyFloat_Check( pitem ) )
+      if( !read_double( pitem, xs[i] ) )
         return false;
 
-      xs[i] = PyFloat_AS_DOUBLE( pitem );
+//// Deprecated due to a bug!
+//      // check if it is a number
+//      if ( !PyFloat_Check( pitem ) )
+//        return false;
+//
+//      xs[i] = PyFloat_AS_DOUBLE( pitem );
     }
 
   return true;

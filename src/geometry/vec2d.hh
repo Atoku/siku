@@ -46,26 +46,28 @@ extern "C" {
 namespace Geometry
 {
 
-    class vec2d
+    struct vec2d
     {
     //private:
     public:
-      double x{ 0 };
-      double y{ 0 };
+      double x;
+      double y;
 
     public:
 
       // ------------------ simple constructors & destructor -------------
 
-      //! default constructor
-      vec2d( const double& X = 0., const double& Y = 0. ) :
-        x( X ), y( Y ) {}
+      //vec2d() = default; // POD-style, discuss this and clean.
 
-      //! simple copy
-      vec2d( const vec2d& o )
-      {
-        memcpy( &x, &o.x, 2 * sizeof(double) );
-      }
+//      //! default constructor
+//      vec2d( const double& X = 0., const double& Y = 0. ) :
+//        x( X ), y( Y ) {}
+//
+//      //! simple copy
+//      vec2d( const vec2d& o )
+//      {
+//        memcpy( &x, &o.x, 2 * sizeof(double) );
+//      }
 
       //! default destructor
       ~vec2d() = default;
@@ -126,17 +128,17 @@ namespace Geometry
 
       inline vec2d operator + ( const vec2d& V ) const
       {
-        return vec2d( x + V.x, y + V.y );
+        return { x + V.x, y + V.y };
       }
 
       inline vec2d operator - ( const vec2d& V ) const
       {
-        return vec2d( x - V.x, y - V.y );
+        return { x - V.x, y - V.y };
       }
 
       inline vec2d operator * ( const double& d ) const
       {
-        return vec2d( x * d, y * d);
+        return { x * d, y * d };
       }
 
       //! division by number (TODO: we don't need it) Why? Renormalization, ort
@@ -144,7 +146,7 @@ namespace Geometry
       // multiply by reversed number - some fails may occur.
       inline vec2d operator / ( const double& d ) const
       {
-        return vec2d( x / d, y / d );
+        return { x / d, y / d };
       }
 
       //! scalar (dot) product
@@ -196,11 +198,11 @@ namespace Geometry
         return x * V.y - y * V.x;
       }
 
-      //------------------------------------------------------------------
+      //---------------------------------------------------------------------
 
 
 
-      //------------------------------------------------------------------
+      //---------------------------------------------------------------------
       //! pretty print
       inline void print() const
       {
@@ -209,9 +211,9 @@ namespace Geometry
 
     };
 
-    //-------------------------------------------------------------------
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~
-    //--------------------------------------------------------------------
+    //-----------------------------------------------------------------------
+    // ~~~~~~~~~~~~~~~~~~~~~ Exterior functionality ~~~~~~~~~~~~~~~~~~~~~~~~~
+    //-----------------------------------------------------------------------
 
     inline vec2d operator * ( const double& d, const vec2d& V )
     {
@@ -243,7 +245,7 @@ namespace Geometry
       v.print();
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Utils ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     //! Pretty print with standard %f format
     #define vec2d_print( v ) \

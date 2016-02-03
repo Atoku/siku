@@ -65,7 +65,7 @@ def main():
     siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     siku.time.finish   = siku.time.start + hour * 120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 60
+    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 60 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     siku.time.last = siku.time.start
     siku.time.last_update = siku.time.last
@@ -217,6 +217,8 @@ def main():
 
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
+    siku.defaults.phys_consts = [ 1000 , 1000  , 2 ]
+
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
     # ---------------------------------------------------------------------
@@ -226,7 +228,13 @@ def main():
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
 
+    ##
+    siku.callback.presave = presave
+
     return 0
+
+def presave( t, n, ns ):
+    return
 
 # --------------------------------------------------------------------------
 

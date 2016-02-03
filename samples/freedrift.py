@@ -91,7 +91,7 @@ def main():
     siku.time.last_update = siku.time.last
     siku.time.finish = siku.uw.times[st_t_ind] + hour
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 13
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 3
    
     # ---------------------------------------------------------------------
     # elements
@@ -417,28 +417,30 @@ def drift_monitor( t, Q, Ps, i, st ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         poly = siku.local.poly_f
-        if st & element.Element.f_errored: ##
-            poly.write( '> -Gred -W0.1p,red \n' ) ##
+##        if st & element.Element.f_errored: ##
+##            poly.write( '> -Gred -W0.1p,red \n' ) ##
 
 ## for debug
-            #errored export lon-lat:
-            with open("err/errored"+str(i)+".txt", 'w') as erf:
-                for v in vert:
-                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
-                        str( v[1] )+'\n' )
-            #errored original export lon-lat:
-            with open("err/original"+str(i)+".txt", 'w') as erf:
-                #for v in siku.elements[i].verts_xyz_loc:
-                for v in siku.tempc[i]:
-                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
-                        str( v[1] )+'\n' )
+##            #errored export lon-lat:
+##            with open("err/errored"+str(i)+".txt", 'w') as erf:
+##                for v in vert:
+##                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+##                        str( v[1] )+'\n' )
+##            #errored original export lon-lat:
+##            with open("err/original"+str(i)+".txt", 'w') as erf:
+##                #for v in siku.elements[i].verts_xyz_loc:
+##                for v in siku.tempc[i]:
+##                    erf.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
+##                        str( v[1] )+'\n' )
 ## /for debug
                     
             
-        elif st & element.Element.f_special: ## elif -> if
+##        elif
+        if st & element.Element.f_special: ## elif -> if
             poly.write( '> -Gpink -W0.1p,purple \n' ) 
         elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:

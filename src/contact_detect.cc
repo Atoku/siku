@@ -165,7 +165,7 @@ void ContactDetector::detect( Globals& siku )
   if( siku.es.size() < 2 || !is_detect_time( siku ) )
     return;
 
-  cout<<"DETECT-----------------"<<endl;  // for tests, IMPROVE:remove this
+  //cout<<"DETECT-----------------"<<endl;  // for tests, IMPROVE:remove this
 
   // smart clearing: joints remain untouched
   clear();

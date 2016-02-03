@@ -58,23 +58,21 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 
   if( errored( loc_P1 ) )
     {
-
       siku.es[c.i1].flag |= Element::F_ERRORED;
     }
   if( errored( loc_P2 ) )
     {
-
       siku.es[c.i2].flag |= Element::F_ERRORED;
     }
 
   ///*static*/ point2d center( 0, 0 ); // !static
   vec2d center;
   double area;
-  std::vector<PointStatus> stats;
+  vector<PointStatus> stats;
+  vector<vec2d> interPoly;
 
   if( c.type != ContType::JOINT )
     {
-      vector<vec2d> interPoly;
 
       // calculating intersection zone and properties
       if( intersect( loc_P1, loc_P2, interPoly, &stats, &center, &area ) > 2 )
@@ -156,14 +154,17 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 
           //TODO: clean this mess
           vec2d p1p2 [2];  // p1p2 = two points: p1 and p2
-          size_t np = 0;
+          size_t np = 0;  // amount of edge-edge intersections
 
           // noob search for p1 and p2
-          for(size_t i = 0; i < stats.size() && np < 2; ++i )
+          for(size_t i = 0; i < stats.size(); ++i )
             if( stats[i] == PointStatus::EDGE )
-              p1p2[ np++ ] == interPoly[ i ];
+              {
+                if( np < 2 )  p1p2[ np ] = interPoly[ i ];
+                np++;
+              }
 
-          if( np < 2 )  // inapplicable
+          if( np != 2 )  // inapplicable
             {
               c.type = ContType::NONE;
               return ;
@@ -174,15 +175,24 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
           // directions and applying point
           vec2d dp = p1p2[1] - p1p2[0];
           vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
-          vec2d norm ( tau.y, -tau.x );
+          vec2d norm { tau.y, -tau.x };
           vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
 
           double Kne = siku.phys_consts[0],
                  Kni = siku.phys_consts[1],
                  Kw = siku.phys_consts[2];
+
           double Asqrt = sqrt( area );
 
-          vec2d F = Kne * Asqrt * siku.planet.R;
+          double da_dt = siku.time.get_dt() ?
+              ( Asqrt - sqrt( c.area ) ) / siku.time.get_dt() : 0.;
+
+          vec2d F = ( Kne * Asqrt  +
+                      Kni * da_dt ) * siku.planet.R * norm;
+
+          //cout<<"---"<<Kne<<" "<<Kni<<" "<<Kw<<" - "<< Asqrt<<" "<<da_dt<<endl;
+          //print( norm);
+          //print( F);
 
           double torque1 =
               Kw * siku.planet.R_rec * cross( center, F );
@@ -198,15 +208,13 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
           siku.es[c.i2].F += dest_to_src * vec2_to_vec3( F );
           siku.es[c.i2].N += torque2;
 
+          c.area = area;
+
         }
     }
-  else  // = if( c.type == ContType::JOINT )
+  else  // <=> if( c.type == ContType::JOINT )
     {
       c.type = ContType::NONE;
     }
-//  P1.clear();
-//  P2.clear();
-//  poly1.clear();
-//  poly2.clear();
-//  poly_res.clear();
+
 }

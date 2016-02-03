@@ -71,7 +71,7 @@ namespace Geometry
   }
   inline vec2d vec3_to_vec2( const vec3d& v3 )
   {
-    return vec2d( vec2d(  v3.x * POINT_SCALE , v3.y * POINT_SCALE ) );
+    return { v3.x * POINT_SCALE , v3.y * POINT_SCALE };
   }
 
 // ------------------------ Manual debug checks -----------------------------
@@ -172,7 +172,7 @@ namespace Geometry
 
   inline vec2d rot_90_cw( const vec2d& v )
   {
-    return vec2d( v.y, -v.x );
+    return { v.y, -v.x };
   }
 
 }

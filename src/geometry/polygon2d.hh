@@ -48,8 +48,8 @@ namespace Geometry
   {
     UNKNOWN = -1,
     SIMPLE = 0,
-    EDGE,
-    VERTEX
+    EDGE = 1,
+    VERTEX = 2
   };
 
   // -------------------------- predeclaretions -----------------------------
