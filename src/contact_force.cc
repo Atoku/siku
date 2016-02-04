@@ -172,6 +172,30 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 
           c.generation = 0;  // refreshing contact for avoiding deletion
 
+////////////////////////
+          // point from e1 center to e2 center
+          tv = src_to_dest * NORTH;
+          vec2d r12 { tv.x, tv.y };
+
+          // and its ort
+          vec2d ort { r12 / sqrt( tv.x*tv.x + tv.y*tv.y ) };
+
+          // point from e2 center to aim
+          vec2d r2 { center - r12 };
+
+          // e1 aim speed (coz of spin + propagation)
+          vec2d v1 { vec3_to_vec2( siku.es[c.i1].V ) +
+              rot_90_cw( center ) * ( - siku.es[c.i2].W.z  * siku.planet.R ) };
+
+          // e2 aim speed (spin + propagation)
+          vec2d v2 { vec3_to_vec2( src_to_dest * siku.es[c.i2].V )
+                     + rot_90_cw( center - r12 ) *
+                     ( - siku.es[c.i2].W.z * siku.planet.R ) };
+
+          // velocity difference at aim point
+          vec2d v12 { v1 - v2 };
+////////////////////////
+
           // directions and applying point
           vec2d dp = p1p2[1] - p1p2[0];
           vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
@@ -180,7 +204,8 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 
           double Kne = siku.phys_consts[0],
                  Kni = siku.phys_consts[1],
-                 Kw = siku.phys_consts[2];
+                 Kw = siku.phys_consts[2],
+                 Kt = siku.phys_consts[3];
 
           double Asqrt = sqrt( area );
 
@@ -190,9 +215,8 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
           vec2d F = ( Kne * Asqrt  +
                       Kni * da_dt ) * siku.planet.R * norm;
 
-          //cout<<"---"<<Kne<<" "<<Kni<<" "<<Kw<<" - "<< Asqrt<<" "<<da_dt<<endl;
-          //print( norm);
-          //print( F);
+          //////////  testing tangential force
+          F += tau * ( tau * v12 ) * Asqrt * Kt * siku.planet.R2;
 
           double torque1 =
               Kw * siku.planet.R_rec * cross( center, F );

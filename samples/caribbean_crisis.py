@@ -63,9 +63,9 @@ def main():
     hour = datetime.timedelta ( hours = 1 )
 
     siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
-    siku.time.finish   = siku.time.start + hour * 120
+    siku.time.finish   = siku.time.start + hour * 120 #120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 60 #60
+    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 600 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     siku.time.last = siku.time.start
     siku.time.last_update = siku.time.last
@@ -211,13 +211,13 @@ def main():
     siku.plotter = GMT_Plotter( 'caribbean_plot.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 1
+    siku.diagnostics.monitor_period = 30
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
-    siku.defaults.phys_consts = [ 1000 , 1000  , 2 ]
+    siku.defaults.phys_consts = [ 5000 , 10000000  , 0.75, -0.01, 1 ]
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
@@ -234,6 +234,9 @@ def main():
     return 0
 
 def presave( t, n, ns ):
+##    if n%siku.diagnostics.monitor_period ==0:
+##        fname = 'siku-' + t.strftime("%Y-%m-%d-%H:%M:%S") + '.h5'
+##        return fname
     return
 
 # --------------------------------------------------------------------------
