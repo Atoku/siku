@@ -86,12 +86,20 @@ defaults = Defaults()
 defaults.contact_method = CONTACT_METHODS['sweep']
 defaults.contact_freq_met = CONTACT_DET_FREQ_MET['always']
 defaults.contact_value = 1
+
 defaults.wind_source_type = WIND_SOURCES['TEST']
 defaults.wind_source_names = []
+
 defaults.loadfile = ''
+
 defaults.boarders = 'boarders.ll'
 defaults.boarder_mark = 0
-defaults.phys_consts = [ 1, 1, 1, 1, 1 ] # yet senseless
+
+defaults.phys_consts = [ 1, 1, 1, 1, 1,\
+                         1, 1, 1, 1, 1 ] # yet senseless
+
+defaults.manual_inds = []
+defaults.manual_forces = []
 
 planet = earth.Earth()
 

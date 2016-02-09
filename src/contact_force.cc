@@ -164,7 +164,8 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
                 np++;
               }
 
-          if( np != 2 )  // inapplicable
+          if( np != 2 )  // inapplicable  //UNDONE: add solution for 'fencing'
+                                          // intersections
             {
               c.type = ContType::NONE;
               return ;
@@ -238,7 +239,33 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
     }
   else  // <=> if( c.type == ContType::JOINT )
     {
-      c.type = ContType::NONE;
+      double K = siku.phys_consts[5];
+      double Kw = siku.phys_consts[6];
+      double sigma = siku.phys_consts[7];
+
+      vec2d p1 = c.p1;
+      vec2d p2 = - vec3_to_vec2( src_to_dest * vec2_to_vec3( c.p2 ) );
+
+//      print( p1);
+//      print(p2);
+//      print( p2 - p1 );
+//      cout<<"---\n";
+      vec2d F = ( p2 - p1 ) * siku.planet.R * K;
+
+      double torque1 =
+          Kw * cross( p1, F );
+
+      double torque2 =
+          Kw * cross( F, p2 );
+
+      // signs are fitted manually
+      siku.es[c.i1].F -= vec2_to_vec3( F );
+      siku.es[c.i1].N -= torque1;
+
+      siku.es[c.i2].F += dest_to_src * vec2_to_vec3( F );
+      siku.es[c.i2].N += torque2;
+
+//      c.type = ContType::NONE;
     }
 
 }

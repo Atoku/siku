@@ -292,7 +292,8 @@ def main():
     #siku.defaults.loadfile = 'siku-2014-01-01-12:00:00.h5'
     siku.defaults.loadfile = 'save_test.h5'
 
-    siku.defaults.phys_consts = [ 5000 , 10000000  , 0.75, 1, 1 ]
+    siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
+                                  1, 1, 1, 1, 1 ]
 
 ##    siku.defaults.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
 ##    siku.defaults.contact_value = 1000

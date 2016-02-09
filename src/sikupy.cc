@@ -161,6 +161,20 @@ Sikupy::read_default( Globals& siku )
   pDef = PyObject_GetAttrString ( pSiku, "defaults" );
   assert( pDef );
 
+
+  // read manual forces
+  // read physical constants
+  pTemp = PyObject_GetAttrString ( pDef, "manual_inds" );
+  assert( pTemp );
+  success &= read_long_vector( pTemp, siku.man_inds );
+  Py_DECREF( pTemp );
+
+  pTemp = PyObject_GetAttrString ( pDef, "manual_forces" );
+  assert( pTemp );
+  success &= read_vec3d_vector( pTemp, siku.man_forces );
+  Py_DECREF( pTemp );
+
+
   // IMPROVE: reconsider this mechanism
   // read physical constants
   pTemp = PyObject_GetAttrString ( pDef, "phys_consts" );
@@ -1427,6 +1441,28 @@ Sikupy::read_string_vector ( PyObject* pstrlist, vector < string >& strv )
 }
 
 bool
+Sikupy::read_long_vector ( PyObject* plist, vector < long >& xs )
+{
+  assert( PyList_Check( plist ) );
+  Py_ssize_t N = PyList_Size ( plist );
+
+  // array sets length
+  xs.resize ( N );
+
+  // reading all the materials in this loop
+  for ( Py_ssize_t i = 0; i < N; ++i )
+    {
+      PyObject* pitem;
+      pitem = PyList_GetItem ( plist, i ); // borrowed
+
+      if( !read_long( pitem, xs[i] ) )
+        return false;
+    }
+
+  return true;
+}
+
+bool
 Sikupy::read_double_vector ( PyObject* plist, vector < double >& xs )
 {
   assert( PyList_Check( plist ) );
@@ -1486,9 +1522,13 @@ Sikupy::read_vec3d_vector ( PyObject* plist, vector < vec3d >& vs )
         {
           PyObject* psubitem;
           psubitem = PyTuple_GetItem ( pitem, k ); // borrowed
-          if ( !PyFloat_Check( psubitem ) )
-            return false;
-          vs[i][k] = PyFloat_AS_DOUBLE( psubitem );
+
+          read_double( psubitem, vs[i][k] );
+
+//// deprecated!
+//          if ( !PyFloat_Check( psubitem ) )
+//            return false;
+//          vs[i][k] = PyFloat_AS_DOUBLE( psubitem );
         }
     }
 

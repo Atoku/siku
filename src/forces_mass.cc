@@ -8,8 +8,10 @@
 
 #include "forces_mass.hh"
 #include "errors.hh"
+#include "coordinates.hh"
 
 using namespace Geometry;
+using namespace Coordinates;
 
 //////testing
 #include <iostream>
@@ -66,4 +68,24 @@ void forces_mass( Globals& siku )
 
     }
   
+  // manual forces
+  for( size_t i = 0; i < siku.man_inds.size(); ++i )
+    {
+      size_t I = siku.man_inds[i];
+      vec3d tv;
+
+      double lat, lon;
+      sph_by_quat ( siku.es[I].q, &lat, &lon );
+
+      tv = glob_to_loc ( siku.es[I].q, geo_to_cart_surf_velo(
+          lat, lon, siku.man_forces[i].x, siku.man_forces[i].y ) );
+
+      vec3d F = tv;
+      double trq = siku.man_forces[I].z;
+
+      siku.es[I].flag |= Element::F_SPECIAL;
+      siku.es[I].F += F * siku.planet.R;
+      siku.es[I].N += trq * siku.planet.R;
+    }
+
 }

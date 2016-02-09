@@ -120,6 +120,12 @@ main ( int argc, char* argv[] )
   // yet it is here, but I think it should be somewhere in mproperties or close
   siku.ConDet.freeze( siku );
 
+//  for( auto a : siku.ConDet.cont )
+//    {
+//      cout<<a.type<<" "<<a.durability<<"\t";
+//      cout<<a.i1<<" - "<<a.i2<<endl;
+//    }
+
   cout<<"Elements: "<<siku.es.size()<<endl;
 
   // Main Time Loop
@@ -141,6 +147,15 @@ main ( int argc, char* argv[] )
 
       // --- Searching for interaction pairs
       siku.ConDet.detect( siku );
+
+//      for( auto a : siku.ConDet.cont )
+//        {
+//          cout<<a.type<<" "<<a.durability<<"\t";
+//          cout<<a.i1<<" - "<<a.i2<<"\t";
+//          cout<<a.generation<<"\t"<<a.step<<"\t";
+//          cout<<endl;
+//        }
+//      cout<<endl;
 
       // --- Broad Phase Contact Detection if necessary
 

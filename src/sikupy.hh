@@ -266,6 +266,13 @@ private:
   bool
   read_string_vector ( PyObject* pstrlist, vector < string >& strv );
 
+  //! \brief Reads vector of long integers from a list
+  //! \param plist an Python object to read from
+  //! \param xs where to read to
+  //! \return true on success, false on fail
+  bool
+  read_long_vector ( PyObject* plist, vector < long >& xs );
+
   //! \brief Reads vector of doubles from a list
   //! \param plist an Python object to read from
   //! \param xs where to read to

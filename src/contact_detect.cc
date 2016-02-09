@@ -271,6 +271,7 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
                      const vector<ContactDetector::Contact>& news )
 {
   static std::vector<ContactDetector::Contact> temp;
+  temp.clear();
   size_t oi = 0, ni = 0;
   while( true ) //oi < olds.size() || ni < news.size() )
     {
@@ -279,13 +280,17 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
         {
 
           if( oi < olds.size() )
-//            {
-//              if( news[ni] < olds[oi] )
-//                temp.push_back( news[ni++] );
-//              else
-//                temp.push_back( olds[oi++] );
-//            }
-            temp.push_back( news[ni] < olds[oi] ? news[ni++] : olds[oi++] );
+            {
+              if( news[ni] < olds[oi] )
+                temp.push_back( news[ni++] );
+              else if( olds[oi] < news[ni] )
+                temp.push_back( olds[oi++] );
+              else // <=> equal contacts
+                {
+                  temp.push_back( olds[oi++] );
+                  ni++;
+                }
+            }
           else
             temp.push_back( news[ni++] );
 
@@ -344,23 +349,39 @@ void add_cont( Globals& siku, const size_t& i1, const size_t& i2, const int& t )
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 {
   int ires;  // !static? temporal variable to store geometry results
-  //vec3d center; // !static
-  //double dump;  // !static? temporal dump
+  vec2d center; // !static
+  double size;  // !static? temporal dump
   std::vector<vec2d> loc_P1;  // e1.P vertices in local coords
   std::vector<vec2d> loc_P2;  // e2.P vertices in local coords
+  std::vector<vec2d> dump;
 
   mat3d src_to_dest = loc_to_loc_mat( siku.es[c.i1].q, siku.es[c.i2].q );
       // !static
   mat3d dest_to_src = loc_to_loc_mat( siku.es[c.i2].q, siku.es[c.i1].q );
       // !static
 
-  for( auto& p : siku.es[c.i1].P )
-    loc_P1.push_back( vec3_to_vec2( p * tol ) );
-  for( auto& p : siku.es[c.i2].P )
-    loc_P2.push_back( vec3_to_vec2( src_to_dest * p * tol ) );
+  vec2d r2 = - vec3_to_vec2( dest_to_src * NORTH );
 
-  if( Geometry::intersect( loc_P1, loc_P2 , loc_P2 ) )
-    c.type = ContType::JOINT;
+  for( auto& p : siku.es[c.i1].P )
+    loc_P1.push_back( vec3_to_vec2( p ) * (1.+tol) );
+  for( auto& p : siku.es[c.i2].P )
+    loc_P2.push_back( r2 +
+         ( vec3_to_vec2( src_to_dest * p ) - r2 ) * (1.+tol) );
+
+  if( Geometry::intersect( loc_P1, loc_P2 , dump, nullptr, &center, &size ) )
+    {
+      c.type = ContType::JOINT;
+      c.p1 = center;
+      vec2d r12 = vec3_to_vec2( src_to_dest * NORTH );
+      vec2d r2 = center - r12;
+      c.p2 = vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) );
+//      print(center);
+//      print(r12);
+//      print(c.p1);
+//      print(c.p2);
+//      cout<<"===\n";
+      c.durability = 1.;
+    }
 }
 
 // --------------------------------------------------------------------------

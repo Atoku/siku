@@ -61,6 +61,10 @@ struct Globals
   //! Controls
   std::vector < std::string > cons;
 
+  //! manual forces
+  std::vector < long > man_inds;
+  std::vector < vec3d > man_forces;
+
   //! a list of wind source files` names
   std::vector < std::string > wind_crs;
 

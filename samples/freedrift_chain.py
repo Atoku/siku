@@ -172,10 +172,10 @@ def main():
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-                                  1000.0, 0.0, 1, 1, 1 ]
+                                  1000000.0, 0.0, 1, 1, 1 ]
 
     siku.defaults.manual_inds = [7]
-    siku.defaults.manual_forces = [ (10.0, 0.0, 0.0) ]
+    siku.defaults.manual_forces = [ (100.0, 0.0, 0.0) ]
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator

@@ -72,6 +72,8 @@ public:
     int step{ -1 };  // step when was created. -1 marks default object
     double durability{ 1. };  // must be discussed
     double area{ 0. };  // area of contact
+    Geometry::vec2d p1{}, p2{};  // positions of joint center in local
+                                 // coords of contacting polygons
 
     Contact(){}
     Contact(const size_t& i1_, const size_t& i2_, const int& s,

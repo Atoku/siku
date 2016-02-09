@@ -94,6 +94,18 @@ namespace Geometry
       // Basic operations
       //------------------------------------------------------------------
 
+      //! unary minus = inversion
+      inline vec2d operator - ()
+      {
+        return { -x, -y };
+      }
+
+      //! promotion
+      inline vec2d operator + ()
+      {
+        return { x, y };
+      }
+
       //! addition by a vector
       inline vec2d& operator += ( const vec2d& V )
       {

@@ -50,11 +50,13 @@ static const unsigned int MAT_LAY_AMO = 10; // WTF size_t does not work?!
 //! Default name for Lua configuration file
 #define SIKU_DEFAULT_PYTHON "sikucfg.py"
 
-
 // geometry implementations
 //#define SIKU_3D_NOT_GLM
 
 #include "geometry/geometry.hh"
+
+// TODO: clear this
+typedef Geometry::vec2d vec2d;
 
 
 
