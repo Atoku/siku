@@ -186,7 +186,7 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 
           // e1 aim speed (coz of spin + propagation)
           vec2d v1 { vec3_to_vec2( siku.es[c.i1].V ) +
-              rot_90_cw( center ) * ( - siku.es[c.i2].W.z  * siku.planet.R ) };
+              rot_90_cw( center ) * ( - siku.es[c.i1].W.z  * siku.planet.R ) };
 
           // e2 aim speed (spin + propagation)
           vec2d v2 { vec3_to_vec2( src_to_dest * siku.es[c.i2].V )
@@ -242,21 +242,26 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
       double K = siku.phys_consts[5];
       double Kw = siku.phys_consts[6];
       double sigma = siku.phys_consts[7];
+      double epsilon = siku.phys_consts[8];
 
       vec2d p1 = c.p1;
-      vec2d p2 = - vec3_to_vec2( src_to_dest * vec2_to_vec3( c.p2 ) );
-
+      vec3d tv = vec2_to_vec3( c.p2 );
+      tv.z = sqrt(1. - tv.x*tv.x - tv.y*tv.y);
+      vec2d p2 = vec3_to_vec2( src_to_dest * tv );
+//
 //      print( p1);
 //      print(p2);
-//      print( p2 - p1 );
+      print( p2 - p1 );
 //      cout<<"---\n";
       vec2d F = ( p2 - p1 ) * siku.planet.R * K;
+//      print (F);
 
       double torque1 =
-          Kw * cross( p1, F );
+          Kw * siku.planet.R_rec * cross( p1, F );
 
       double torque2 =
-          Kw * cross( F, p2 );
+          Kw * siku.planet.R_rec * cross( p2 -
+             vec3_to_vec2( src_to_dest * NORTH) , F );
 
       // signs are fitted manually
       siku.es[c.i1].F -= vec2_to_vec3( F );
@@ -265,7 +270,8 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i2].F += dest_to_src * vec2_to_vec3( F );
       siku.es[c.i2].N += torque2;
 
-//      c.type = ContType::NONE;
+      double t = (p2-p1).abs() / ( vec3_to_vec2(src_to_dest * NORTH).abs() );
+      c.durability -= t > epsilon ? t * sigma : 0.;
     }
 
 }

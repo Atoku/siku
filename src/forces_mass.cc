@@ -81,11 +81,11 @@ void forces_mass( Globals& siku )
           lat, lon, siku.man_forces[i].x, siku.man_forces[i].y ) );
 
       vec3d F = tv;
-      double trq = siku.man_forces[I].z;
+      double trq = siku.man_forces[i].z;
 
       siku.es[I].flag |= Element::F_SPECIAL;
       siku.es[I].F += F * siku.planet.R;
-      siku.es[I].N += trq * siku.planet.R;
+      siku.es[I].N += trq;
     }
 
 }

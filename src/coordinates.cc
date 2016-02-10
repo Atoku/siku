@@ -59,7 +59,7 @@ namespace Coordinates
 
 //---------------------------------------------------------------------
 
-  vec3d xyz_loc_to_en_geo( const quat& q, const vec3d& xyz )  // incomplete
+  vec3d xyz_loc_to_en_geo( const quat& q, const vec3d& xyz )  // UNDONE
   {
     vec3d v = loc_to_glob( q, xyz );
 //    double lon, lat;
