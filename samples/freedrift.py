@@ -36,6 +36,7 @@ from   siku import poly_voronoi
 PolyVor = poly_voronoi.PolyVor
 
 from   siku import wnd
+from   siku import noisy_grid as NG
  
 def main():
 
@@ -63,9 +64,9 @@ def main():
     hour = datetime.timedelta ( hours = 1 )
 
     siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
-    siku.time.finish   = siku.time.start + hour * 360 #120
+    siku.time.finish   = siku.time.start + hour * 720 #120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 600 #60
+    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 1200 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     siku.time.last = siku.time.start
     siku.time.last_update = siku.time.last
@@ -77,46 +78,16 @@ def main():
     coords = []
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
-   
-    coords.append( [ (267.0, 12.0),      
-                     (269.0, 12.0),
-                     (269.0, 14.0),
-                     (267.0, 14.0) ] )
-    coords.append( [ (269.0, 12.0), #2
-                     (271.0, 12.0),
-                     (271.0, 14.0),
-                     (269.0, 14.0) ] )
-    
-    coords.append( [ (271.0, 12.0),                    
-                     (273.0, 12.0),
-                     (273.0, 14.0),
-                     (271.0, 14.0) ] )
-    coords.append( [ (273.0, 12.0), #4
-                     (275.0, 12.0),
-                     (275.0, 14.0),
-                     (273.0, 14.0) ] )
-    
-    coords.append( [ (275.0, 12.0),    #5  
-                     (277.0, 12.0),
-                     (277.0, 14.0),
-                     (275.0, 14.0) ] )
-    coords.append( [ (277.0, 12.0),    #6  
-                     (279.0, 12.0),
-                     (279.0, 14.0),
-                     (277.0, 14.0) ] )
 
-    coords.append( [ (279.0, 12.0),    #7  
-                     (281.0, 12.0),
-                     (281.0, 14.0),
-                     (279.0, 14.0) ] )
-    coords.append( [ (281.0, 12.0),    #8  
-                     (283.0, 12.0),
-                     (283.0, 14.0),
-                     (281.0, 14.0) ] )
+    nx = 23
+    ny = 22
+    coords = NG.generate( 267.0, 12.0, 295.0, 29.0, nx, ny, 0., 0. )
+##    nx = 8
+##    ny = 3
+##    coords = NG.generate( 267.0, 12.0, 281.0, 14.0, nx, ny, 0.0, 0.0 )
 
     # ---
-   
-
+    
     ### Initializing elements with polygon vertices
     for c in coords:
         siku.P.update( c )
@@ -133,30 +104,12 @@ def main():
 
     # ------------------------- speed settings ----------------------------
 
-    siku.elements[0].flag_state = element.Element.f_static
+    #left boarder is static
+    left_inds = [ i*nx for i in range(ny) ]
+ 
+    for i in left_inds:
+        siku.elements[i].flag_state = element.Element.f_static
 
-######    Works with caribbean polygons after initialization
-##    siku.elements[0].velo = ( 2, 0, 0 )
-####    siku.elements[1].flag_state = element.Element.f_static
-##    siku.elements[2].velo = ( 2, 0, 0 )
-####    siku.elements[3].flag_state = element.Element.f_static
-##    siku.elements[4].velo = ( 2, 0, 0 )
-####    siku.elements[5].flag_state = element.Element.f_static
-##
-##    siku.elements[6].velo = ( 0, 0, -0.00001 )
-####    siku.elements[7].flag_state = element.Element.f_static
-##    siku.elements[8].velo = ( 0, 0, -0.00001 )
-####    siku.elements[9].flag_state = element.Element.f_steady
-##    siku.elements[10].velo = ( 2, 0, 0 )
-####    siku.elements[11].flag_state = element.Element.f_steady
-##
-##    siku.elements[13].velo = ( 2, 0, 0 )
-####    siku.elements[14].flag_state = element.Element.f_steady
-##    siku.elements[15].velo = ( 2, 0, 0 )
-####    siku.elements[16].flag_state = element.Element.f_steady
-##    siku.elements[17].velo = ( 2, 0, 0 )
-####    siku.elements[18].flag_state = element.Element.f_steady
-    
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
@@ -172,10 +125,14 @@ def main():
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-                                  -300000.0, 1, 0.3, 0.01, 1 ]
+                                  -100000.0, 1, 0.2, 0.02, 1 ]
 
-    siku.defaults.manual_inds = [7]
-    siku.defaults.manual_forces = [ (100.0, 0.0, 0.1) ]
+
+    right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
+    
+    siku.defaults.manual_inds = right_inds
+    siku.defaults.manual_forces = [ ((i/nx)*5.0, -15.0, -0.2*(i/ny/nx))
+                                    for i in right_inds ]
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator

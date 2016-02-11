@@ -44,7 +44,7 @@ public:
     unsigned long elem_id;
     vec3d pos;
 
-    vertex(const vec3d& v = nullvec3d, const size_t& id = 0)
+    vertex(const vec3d& v = {}, const size_t& id = 0)
     //: pos( v ), elem_id( id ) {} // <- dis spawns a lot of warnings
     {
       pos = v;

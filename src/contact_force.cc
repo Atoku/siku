@@ -251,7 +251,7 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 //
 //      print( p1);
 //      print(p2);
-      print( p2 - p1 );
+//      print( p2 - p1 );
 //      cout<<"---\n";
       vec2d F = ( p2 - p1 ) * siku.planet.R * K;
 //      print (F);
