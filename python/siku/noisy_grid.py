@@ -52,7 +52,7 @@ def generate( left, bottom, right, top, nx, ny, dx, dy ):
     Params:
     left, bottom, right, top - boarders of geterating area
     nx, ny - amounts of lines and coloumns ( >= 1)
-    dx, dy - displacement ranges
+    dx, dy - displacement ranges (relative value) 
 
     Return: [ [ (x, y) ] ]
     '''
@@ -66,7 +66,7 @@ def generate( left, bottom, right, top, nx, ny, dx, dy ):
         for i in range(nx+1):
             x = left+i*stepx
             y = bottom+j*stepy
-            line.append( shift(x, y, dx, dy) )
+            line.append( shift(x, y, stepx*dx, stepy*dy) )
             
         verts.append( line )
 

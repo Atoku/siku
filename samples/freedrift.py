@@ -79,12 +79,27 @@ def main():
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
 
-    nx = 23
-    ny = 22
-    coords = NG.generate( 267.0, 12.0, 295.0, 29.0, nx, ny, 0., 0. )
+    nx = 23 #23
+    ny = 22 #22
+    coords = NG.generate( 267.0, 12.0, 295.0, 29.0, nx, ny, 0.15, 0.15 )
 ##    nx = 8
 ##    ny = 3
 ##    coords = NG.generate( 267.0, 12.0, 281.0, 14.0, nx, ny, 0.0, 0.0 )
+
+    # ---
+
+    coords.append( [
+        (280.0, 30.0),
+        (283.0, 30.0),
+        (283.0, 33.0),
+        (280.0, 33.0)
+        ] )
+##    coords.append( [
+##        (282.5, 33.0),
+##        (283.0, 30.0),
+##        (286.0, 33.0),
+##        (283.0, 36.0)
+##        ] )
 
     # ---
     
@@ -103,6 +118,9 @@ def main():
         siku.elements.append( E )
 
     # ------------------------- speed settings ----------------------------
+
+    siku.elements[-1].velo = (0.0, -1.0, 0.000005)
+    siku.elements[-1].flag_state = element.Element.f_steady
 
     #left boarder is static
     left_inds = [ i*nx for i in range(ny) ]
@@ -125,14 +143,18 @@ def main():
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-                                  -100000.0, 1, 0.2, 0.02, 1 ]
+                                  -10000.0, 1, 0.2, 0.1, 1 ]
 
 
     right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
     
     siku.defaults.manual_inds = right_inds
-    siku.defaults.manual_forces = [ ((i/nx)*5.0, -15.0, -0.2*(i/ny/nx))
+    siku.defaults.manual_forces = [ (10.0, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
                                     for i in right_inds ]
+
+##    for i in right_inds:
+##        siku.elements[i].velo = (1.0, -0.01, 0.0)
+##        siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
