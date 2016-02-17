@@ -251,7 +251,7 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
 //
 //      print( p1);
 //      print(p2);
-      print( p2 - p1 );
+//      print( p2 - p1 );
 //      cout<<"---\n";
       vec2d F = ( p2 - p1 ) * siku.planet.R * K;
 //      print (F);
@@ -270,8 +270,11 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i2].F += dest_to_src * vec2_to_vec3( F );
       siku.es[c.i2].N += torque2;
 
-      double t = (p2-p1).abs() / ( vec3_to_vec2(src_to_dest * NORTH).abs() );
-      c.durability -= t > epsilon ? t * sigma : 0.;
+      double t = (p2-p1).abs() *
+          1. / ( vec3_to_vec2(src_to_dest * NORTH).abs() );
+          //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( src_to_dest * NORTH)).abs() );
+
+      c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
 
 }

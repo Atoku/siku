@@ -139,7 +139,10 @@ void ContactDetector::clear()
       if( cont[i].type == ContType::JOINT )  // joints untouched
         {
           if( cont[i].durability < 0.05 )  // destruction
-            cont[i].type = ContType::COLLISION;
+            {
+              cont[i].type = ContType::COLLISION;
+              cont[i].generation = 0;
+            }
         }
       else  // deleting contact
         {
@@ -273,6 +276,7 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
   static std::vector<ContactDetector::Contact> temp;
   temp.clear();
   size_t oi = 0, ni = 0;
+
   while( true ) //oi < olds.size() || ni < news.size() )
     {
       // IMPROVE: remove unnecessary conditions
@@ -283,8 +287,10 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
             {
               if( news[ni] < olds[oi] )
                 temp.push_back( news[ni++] );
+
               else if( olds[oi] < news[ni] )
                 temp.push_back( olds[oi++] );
+
               else // <=> equal contacts
                 {
                   temp.push_back( olds[oi++] );
@@ -297,6 +303,7 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
         }
       else if( oi < olds.size() )
         temp.push_back( olds[oi++] );
+
       else
         break; // instead of 'while' args
 

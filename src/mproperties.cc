@@ -6,6 +6,8 @@
 
 */
 
+#include <assert.h>
+
 #include "mproperties.hh"
 #include "errors.hh"
 #include "coordinates.hh"
@@ -65,8 +67,9 @@ void mproperties( Globals& siku )
         {
           cout<<"NaN element "<<e.id<<endl;
           e.flag |= Element::F_ERRORED;
-          //fatal( 1, "NaN value in element");
+          fatal( 1, "NaN value in element");
         }
+      assert( nan_flag ); // somehow - does not work!
 
 //      if( e.flag & Element::F_SPECIAL )
 //        {
