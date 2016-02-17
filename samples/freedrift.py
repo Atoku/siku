@@ -175,7 +175,8 @@ def main():
                                   -300000.0, 1, 0.3, 0.01, 1 ]
 
     siku.defaults.manual_inds = [7]
-    siku.defaults.manual_forces = [ (100.0, 0.0, 0.1) ]
+#    siku.defaults.manual_forces = [ (100.0, 0.0, 0.1) ]
+    siku.defaults.manual_forces = [ (10.0, 0.0, 0.1) ]
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
