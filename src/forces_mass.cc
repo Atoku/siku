@@ -43,7 +43,8 @@ void forces_mass( Globals& siku )
 
       // calculating local Force (draft)
       // V.lenght() always equals to 3 - it`s amount of components!!!
-      e.F += 0.0016 * abs( V ) * V * e.A * siku.planet.R2;
+      e.F += 0.0016 * abs( V ) * V * e.A * siku.planet.R2 *
+          siku.phys_consts.back(); // runtime adjustment
       //e.F = 0.0016 * sqrt( V.x*V.x + V.y*V.y + V.z*V.z ) * V * e.A;
 
       //-------- WATER (STEADY) ----------
