@@ -25,6 +25,17 @@ namespace Geometry
   bool line_seg_inter( const pnt2d& a1, const pnt2d& a2,
                        const pnt2d& b1, const pnt2d& b2, pnt2d& X );
 
+  //! \brief checks if two lines intersect.
+  //! \param[in] a1 first point of line 'a'
+  //! \param[in] a2 second point of line 'a'
+  //! \param[in] b1 first point of line 'b'
+  //! \param[in] b2 second point of line 'b'
+  //! \param[out] X - point where the lines intersect (if they do)
+  //! \return: 0 - no intersection, 1 - simple intersection,
+  //!          2 - lines are the same
+  int line_inter( const pnt2d& a1, const pnt2d& a2,
+                       const pnt2d& b1, const pnt2d& b2, pnt2d& X );
+
   /*!
     \brief finds the intersection of two segments
 

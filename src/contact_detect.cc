@@ -41,6 +41,7 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
                      const vector<ContactDetector::Contact>& news );
 
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol );
+void _share( ContactDetector::Contact& c, Globals& siku, const double& tol );
 
 inline double _sqr( const double& x ) { return x*x; }
 
@@ -140,6 +141,7 @@ void ContactDetector::clear()
         {
           if( cont[i].durability < 0.05 )  // destruction
             {
+              cout<<"CRACK!"<<endl;
               cont[i].type = ContType::COLLISION;
               cont[i].generation = 0;
             }
@@ -195,8 +197,18 @@ void ContactDetector::freeze( Globals& siku, double tol )
   detect( siku );
 
   // actual freezing
-  for( auto& c : cont )
-    _freeze( c, siku, tol );
+  switch( siku.cont_force_model )
+  {
+    case CF_DEFAULT : // same as CF_TEST_SPRINGS
+      for( auto& c : cont )
+        _freeze( c, siku, tol );
+      break;
+
+    case CF_HOPKINS :
+      for( auto& c : cont )
+        _share( c, siku, tol );
+      break;
+  }
 
 }
 
@@ -382,6 +394,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
       vec2d r12 = vec3_to_vec2( src_to_dest * NORTH );
       vec2d r2 = center - r12;
       c.p2 = vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) );
+      //c._F = { center, vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) ) };
 //      print(center);
 //      print(r12);
 //      print(c.p1);
@@ -393,3 +406,37 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 
 // --------------------------------------------------------------------------
 
+void _share( ContactDetector::Contact& c, Globals& siku, const double& tol )
+{
+  Element& e1 = siku.es[c.i1];
+  Element& e2 = siku.es[c.i2];
+
+  static const double tolerance = 0.01; // TODO: clean this
+
+  for( size_t i = 0; i < e1.P.size(); ++i )
+    for( size_t j = 0; j < e2.P.size(); ++j )
+      if( abs2(e1.P[i]-e2.P[j]) < tolerance )
+        {
+          size_t jm1 = ( j + e2.P.size() - 1 ) % e2.P.size(); // j-1 mod size
+          size_t ip1 = (i+1) % e1.P.size();
+
+          //cout<<"prejoint "<<i<<"-"<<ip1<<":"<<e1.P.size()<<" | "<<j<<"-"<<jm1<<":"<<e2.P.size()<<endl;
+          if( abs2(e1.P[ ip1 ] - e2.P[ jm1 ]) < tolerance )
+            {
+              //cout<<"joint"<<endl;
+              c.v11 = i;
+              c.v12 = ip1;
+              c.v21 = jm1;
+              c.v22 = j;
+
+              c.type = JOINT;
+              c.step = siku.time.get_n();
+              c.durability = 1.;
+
+              return;
+            }
+        }
+
+}
+
+// --------------------------------------------------------------------------

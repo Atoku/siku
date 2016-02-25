@@ -45,6 +45,11 @@ CONTACT_DET_FREQ_MET = {
     'speed' : 3, 'auto' : 3
     }
 
+CONTACT_FORCE_MODEL = {
+    'default' : 0, 'test_springs' : 0,
+    'Hopkins_Frankenstein' : 1
+    }
+
 WIND_SOURCES = {
     'NONE' : 0,
     'TEST' : 1,
@@ -86,6 +91,8 @@ defaults = Defaults()
 defaults.contact_method = CONTACT_METHODS['sweep']
 defaults.contact_freq_met = CONTACT_DET_FREQ_MET['always']
 defaults.contact_value = 1
+
+defaults.force_model = CONTACT_FORCE_MODEL['default']
 
 defaults.wind_source_type = WIND_SOURCES['TEST']
 defaults.wind_source_names = []

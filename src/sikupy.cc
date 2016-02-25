@@ -183,7 +183,7 @@ Sikupy::read_default( Globals& siku )
   success &= read_double_vector( pTemp, siku.phys_consts );
   Py_DECREF( pTemp );
 
-  // read contact detection method
+  // read contact freezing method
   pTemp = PyObject_GetAttrString ( pDef, "contact_method" );
   assert( pTemp );
 
@@ -202,6 +202,14 @@ Sikupy::read_default( Globals& siku )
   assert( pTemp );
 
   success &= read_double( pTemp, siku.ConDet.det_value );
+  Py_DECREF( pTemp );
+
+  // read contact force model flag
+  pTemp = PyObject_GetAttrString ( pDef, "force_model" );
+  assert( pTemp );
+
+  success &= read_ulong( pTemp, i );
+  siku.cont_force_model = CONTACT_FORCE_MODEL( i );
   Py_DECREF( pTemp );
 
   // read wind source

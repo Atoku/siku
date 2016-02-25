@@ -61,6 +61,20 @@ enum ContType: unsigned long
 //! storage and history access
 class ContactDetector
 {
+//public:
+//  struct _Frozen
+//  {
+//
+//  };
+//  struct _Shared
+//  {
+//
+//  };
+//  struct _Collision
+//  {
+//
+//  };
+
 public:
   //! \brief Inner structure for holding interaction pairs metadata
   struct Contact
@@ -68,12 +82,27 @@ public:
     ContType type { NONE };
     size_t i1 { 0 };
     size_t i2 { 0 };
-    int generation{ 0 };  //
+
     int step{ -1 };  // step when was created. -1 marks default object
-    double durability{ 1. };  // must be discussed
     double area{ 0. };  // area of contact
+    double durability{ 1. };  // must be discussed
+    int generation{ 0 };  // 'oldness'
+
     Geometry::vec2d p1{}, p2{};  // positions of joint center in local
                                  // coords of contacting polygons
+    size_t v11 {};  // indexes of vertices of shearing edge
+    size_t v12 {};
+    size_t v21 {};
+    size_t v22 {};
+
+//    union
+//    {
+//      _Frozen _F;
+//      _Shared _S;
+//      _Collision _C;
+//    };
+
+    // -------------------------------
 
     Contact(){}
     Contact(const size_t& i1_, const size_t& i2_, const int& s,

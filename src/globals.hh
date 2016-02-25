@@ -31,6 +31,13 @@ enum : unsigned long
   STATUS_EXIT = 0x80 // aka 128
 };
 
+enum CONTACT_FORCE_MODEL : unsigned long
+{
+  CF_DEFAULT = 0,
+  CF_TEST_SPRINGS = 0,
+  CF_HOPKINS = 1
+};
+
 //! \brief Structure to keep all "global" data here. This namespace
 //! (will have the name siku) contains all the variables being
 //! initialized from the config file and computed or re-computed.
@@ -102,8 +109,10 @@ struct Globals
   unsigned long mark_boarders { 0 };
 
   //! Callback-returned status (masked flags)
-  unsigned long callback_status
-    { STATUS_NONE };
+  unsigned long callback_status { STATUS_NONE };
+
+  //! contact force model
+  CONTACT_FORCE_MODEL cont_force_model { CF_DEFAULT };
 
   // ------------------------------ METHODS ---------------------------------
 

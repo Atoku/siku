@@ -21,6 +21,38 @@ namespace Geometry
 
 // ~~~~~~~~~~~~~~~~~~~~ segment2d implementations ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  int line_inter( const pnt2d& a1, const pnt2d& a2,
+                        const pnt2d& b1, const pnt2d& b2, pnt2d& X )
+  {
+      // algorithm taken from http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
+
+    vec2d a = a2 - a1, b = b2 - b1, ab = a1 - b1;
+
+    double d = cross( b, a ); // denominator, signifies if lines are parallel
+    double na = cross ( b, ab ); // numerator of a
+    double nb = cross( a, ab ); // numerator of b
+
+
+    if ( d == 0. )  // lines are parallel
+      {
+        if ( na == 0. || nb == 0. )  // lines are the same
+          {
+            X = ( a1 + a2 + b1 + b2 ) / 4.; // middle point
+            return 2;
+          }
+        else
+          return 0;  // lines don`t cross
+      }
+    else  // lines are NOT parallel
+      {
+        double ua = na / d;
+        //double ub = nb / d;
+        X = pnt_on_line ( a1, a2, ua );
+        return 1;
+      }
+    return 0;
+  }
+
   bool line_seg_inter( const pnt2d& a1, const pnt2d& a2,
                         const pnt2d& b1, const pnt2d& b2, pnt2d& X )
   {
@@ -69,25 +101,32 @@ namespace Geometry
                   if ( ab2 <= 0. )  // 'b' backwards from a1
                     return false;
                   if ( ab2 > 0. && ab2 < aa )  // b2 within 'a'
-                    return pnt_on_line ( a1, a2, ab2 / ( 2. * aa ) );
+                    { X = pnt_on_line ( a1, a2, ab2 / ( 2. * aa ) );
+                    return true; }
                   if ( ab2 >= aa )  // 'a' within 'b'
-                    return pnt_on_line ( a1, a2, 0.5 );
+                    { X = pnt_on_line ( a1, a2, 0.5 );
+                    return true; }
                 }
               if ( ab1 > 0. && ab1 < aa )  // b1 within 'a' segment
                 {
                   if ( ab2 <= 0. )  // b2 backwards from a1
-                    return pnt_on_line ( a1, a2, ab1 / ( 2. * aa ) );
+                    { X = pnt_on_line ( a1, a2, ab1 / ( 2. * aa ) );
+                    return true; }
                   if ( ab2 > 0. && ab2 < aa )  // b2 within 'a' segment
-                    return pnt_on_line ( a1, a2, ( ab1 + ab2 ) / ( 2. * aa ) );
+                    { X = pnt_on_line ( a1, a2, ( ab1 + ab2 ) / ( 2. * aa ) );
+                    return true; }
                   if ( ab2 >= aa )  // b2 further than a2
-                    return pnt_on_line ( a1, a2, ( aa + ab1 ) / ( 2. * aa ) );
+                    { X = pnt_on_line ( a1, a2, ( aa + ab1 ) / ( 2. * aa ) );
+                    return true; }
                 }
               if ( ab1 >= aa )  // b1 further than a2
                 {
                   if ( ab2 <= 0. )  // 'a' within 'b'
-                    return pnt_on_line ( a1, a2, 0.5 );
+                    { X = pnt_on_line ( a1, a2, 0.5 );
+                    return true; }
                   if ( ab2 > 0. && ab2 < aa )  // b2 within 'a' segment
-                    return pnt_on_line ( a1, a2, ( aa + ab2 ) / ( 2. * aa ) );
+                    { X = pnt_on_line ( a1, a2, ( aa + ab2 ) / ( 2. * aa ) );
+                    return true; }
                   if ( ab2 >= aa )  // 'b' further then a2
                     return false;
                 }
@@ -102,7 +141,10 @@ namespace Geometry
 
           // intersection located within segments
           if ( ua >= 0. && ua <= 1. && ub >= 0. && ub <= 1. )
-            return pnt_on_line ( a1, a2, ua );
+            {
+              X = pnt_on_line ( a1, a2, ua );
+              return true;
+            }
         }
       return false;
     }

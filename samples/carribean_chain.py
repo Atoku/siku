@@ -71,7 +71,7 @@ def main():
     #siku.defaults.wind_source_type = siku.WIND_SOURCES['TEST']
     siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
     w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w.make_test_field( 5.0,0. )
+    w.make_test_field( -5.0,0.3 )
     siku.wind = w
 
     # ---------------------------------------------------------------------
@@ -97,9 +97,9 @@ def main():
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
 
-    nx = 7 #23
-    ny = 1 #22
-    coords = NG.generate( 267.0, 12.0, 280.0, 14.0, nx, ny, 0., 0. )
+    nx = 50 #23
+    ny = 50 #22
+    coords = NG.generate( 267.0, 12.0, 295.0, 29.0, nx, ny, 0.15, 0.15 )
 ##    nx = 8
 ##    ny = 3
 ##    coords = NG.generate( 267.0, 12.0, 281.0, 14.0, nx, ny, 0.0, 0.0 )
@@ -158,13 +158,10 @@ def main():
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
-    siku.defaults.force_model = \
-                    siku.CONTACT_FORCE_MODEL['Hopkins_Frankenstein']
-
     siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
 
     siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-                                  100000.0, 0.00, 0.2, 0.1, \
+                                  -10000.0, 1, 0.2, 0.1, \
                                   0.01 ] #wind interaction adjuster
 
 
