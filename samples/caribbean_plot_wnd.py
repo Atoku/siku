@@ -9,3 +9,7 @@ vector_scaling = 3
 inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.525p,forestgreen \
 -A2.5p+e -L -Se'
 grid_wind = 'psvelo grid.txt -R -J -W0.25p,blue -L -A1.50p+e+gblue -Se'
+
+
+##coasts = ' '
+##ground_colr = '109/202/255'

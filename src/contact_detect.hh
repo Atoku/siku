@@ -57,6 +57,33 @@ enum ContType: unsigned long
   JOINT = 2  // aka coalesced
 };
 
+//! \brief utility struct: pairs of indexes of initially connected polygons.
+//! Is used for loading from python and initial freezing method.
+struct Link
+{
+  unsigned long i1;
+  unsigned long i2;
+  Link() = default;
+  Link( unsigned long _i1, unsigned long _i2 )
+  {
+    if( _i1 < _i2 )
+      {
+        i1 = _i1;
+        i2 = _i2;
+      }
+    else
+      {
+        i1 = _i2;
+        i2 = _i1;
+      }
+  }
+
+  inline bool operator < ( const Link& L ) const
+  {
+    return i1 < L.i1 || ( i1 == L.i1 && i2 < L.i2 );
+  }
+};
+
 //! \brief Functions class: provides several methods for contact detection,
 //! storage and history access
 class ContactDetector
@@ -133,8 +160,13 @@ public:
   //! \brief detection frequency type
   unsigned long det_freq_t{ ALWAYS };
 
+  //! \brief flag for inital freezing options
+  unsigned long inital_freeze{ 0 };
+
   //! \brief contact detection XX value (XX may be period, speed, etc)
   double det_value;
+
+  std::vector<Link> links;
 
 private:
   //! \brief util value to store previous 'det_value'
@@ -153,6 +185,10 @@ public:
   //! Second optional argument - tolerance of ice elements size. It is actually
   //! a scaling factor for temporal resizing for overlap detection.
   void freeze( Globals& siku, double tolerance = 0.01 );
+
+  //! \brief Method for generating initial connections of polygons based on
+  //! hit data in scenario script
+  void freeze_links( Globals& siku );
 
 private:
   //! \brief method to check if it is time to update contacts

@@ -66,10 +66,10 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-######    siku.defaults.wind_source_type = siku.WIND_SOURCES['NONE']
-    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
-    #siku.defaults.wind_source_type = siku.WIND_SOURCES['TEST']
-    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+######    siku.settings.wind_source_type = siku.WIND_SOURCES['NONE']
+    siku.settings.wind_source_type = siku.WIND_SOURCES['NMC']
+    #siku.settings.wind_source_type = siku.WIND_SOURCES['TEST']
+    siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
     w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
     w.make_test_field( -5.0,0.3 )
     siku.wind = w
@@ -158,17 +158,17 @@ def main():
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
-    siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
+    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
 
-    siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
+    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
                                   -10000.0, 1, 0.2, 0.1, \
                                   0.01 ] #wind interaction adjuster
 
 
     right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
     
-##    siku.defaults.manual_inds = right_inds
-##    siku.defaults.manual_forces = [ (10.0, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
+##    siku.settings.manual_inds = right_inds
+##    siku.settings.manual_forces = [ (10.0, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
 ##                                    for i in right_inds ]
 
 ##    for i in right_inds:

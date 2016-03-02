@@ -67,8 +67,8 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
-    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+    siku.settings.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
 ##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 ##    w.make_test_field( 0.,0. )
 ##    siku.wind = w
@@ -222,8 +222,8 @@ def main():
 
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
-    siku.defaults.boarder_mark = 1
-    siku.defaults.boarders = 'contours.ll'
+    siku.settings.boarder_mark = 1
+    siku.settings.boarders = 'contours.ll'
 
     print('Marking boarders with GMT')
     bor = PV.get_boarder_by_gmt()
@@ -286,17 +286,17 @@ def main():
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
-    siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
+    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
 
     # name of file to load from
-    #siku.defaults.loadfile = 'siku-2014-01-01-12:00:00.h5'
-    siku.defaults.loadfile = 'save_test.h5'
+    #siku.settings.loadfile = 'siku-2014-01-01-12:00:00.h5'
+    siku.settings.loadfile = 'save_test.h5'
 
-    siku.defaults.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
+    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
                                   1, 1, 1, 1, 1 ]
 
-##    siku.defaults.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
-##    siku.defaults.contact_value = 1000
+##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
+##    siku.settings.contact_value = 1000
 
     # ---------------------------------------------------------------------
     #  Diagnostics function for the winds
@@ -311,11 +311,11 @@ def main():
 ##        ( winds_diag, 0, siku.time.start, 2*siku.time.dt ) )
 
     # ---------------------------------------------------------------------
-    #  Defaults
+    #  Settings
     # ---------------------------------------------------------------------
 
 ##    # without this - no wind will be added to calculations
-##    siku.defaults.wind_source = siku.WIND_SOURCES['NMC']
+##    siku.settings.wind_source = siku.WIND_SOURCES['NMC']
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator

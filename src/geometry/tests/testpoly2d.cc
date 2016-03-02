@@ -39,6 +39,7 @@ void single_poly_test( const cvpoly2d& p )
 }
 
 static int intercount = 0;
+vector<PointStatus> ps;
 
 void poly_inter_test( const cvpoly2d& p1, const cvpoly2d& p2,
                       int n, double s, vec2d c )
@@ -66,6 +67,14 @@ void poly_inter_test( const cvpoly2d& p1, const cvpoly2d& p2,
   cout<<", s = "<< size <<", c = ";
   print( cen );
   cout << endl;
+
+  int vi = 0, ei = 0;
+  for(auto& a : ps)
+    {
+      if(a == PointStatus::VERTEX) vi++;
+      if(a == PointStatus::EDGE) ei++;
+    }
+  cout<<"edge p: "<<ei<<",  vert p: "<<vi<<endl;
 
   cout << "=== Rourke's test: === " << endl;
   cvpoly2d X;

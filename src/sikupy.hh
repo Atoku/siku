@@ -180,7 +180,11 @@ private:
 
   //! \brief Reading default values and settings
   int
-  read_default ( Globals& siku );
+  read_settings ( Globals& siku );
+
+  //! \brief Reading array of inital links of polygons (pairs of indexes)
+  int
+  read_links ( Globals& siku );
 
   //! \brief Reading info data
   int

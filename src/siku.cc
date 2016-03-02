@@ -118,7 +118,11 @@ main ( int argc, char* argv[] )
   // siku.time.print ();
 
   // yet it is here, but I think it should be somewhere in mproperties or close
-  siku.ConDet.freeze( siku );
+  if( siku.ConDet.links.size() )
+    siku.ConDet.freeze_links( siku );
+  else if( siku.ConDet.inital_freeze )
+    siku.ConDet.freeze( siku );
+
 
 //  for( auto a : siku.ConDet.cont )
 //    {

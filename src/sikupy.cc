@@ -89,7 +89,9 @@ void Sikupy::initialize(Globals &siku)
     int success
       { 0 }; // success code
 
-    success = read_default( siku );
+    success = read_settings( siku );
+    assert(success);
+    success = read_links( siku );
     assert(success);
     success = read_info(siku.info);
     assert(success);
@@ -148,7 +150,7 @@ Sikupy::~Sikupy ()
 //---------------------------------------------------------------------
 
 int
-Sikupy::read_default( Globals& siku )
+Sikupy::read_settings( Globals& siku )
 {
   int success = 1;
 
@@ -156,9 +158,9 @@ Sikupy::read_default( Globals& siku )
   PyObject* pTemp;
   unsigned long int i;
 
-  // Defaults handler
+  // Settings handler
   PyObject* pDef;
-  pDef = PyObject_GetAttrString ( pSiku, "defaults" );
+  pDef = PyObject_GetAttrString ( pSiku, "settings" );
   assert( pDef );
 
 
@@ -221,6 +223,13 @@ Sikupy::read_default( Globals& siku )
   Py_DECREF( pTemp );
 
   // read boarder marking mask
+  pTemp = PyObject_GetAttrString ( pDef, "inital_freeze" );
+  assert( pTemp );
+
+  success &= read_ulong( pTemp, siku.ConDet.inital_freeze );
+  Py_DECREF( pTemp );
+
+  // read boarder marking mask
   pTemp = PyObject_GetAttrString ( pDef, "boarder_mark" );
   assert( pTemp );
 
@@ -240,6 +249,60 @@ Sikupy::read_default( Globals& siku )
 
   // cleaning
   Py_DECREF( pTemp );
+  Py_DECREF( pDef );
+
+  return success;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::read_links ( Globals& siku )
+{
+  int success = 1;
+
+  // Settings handler
+  PyObject* pDef;
+  pDef = PyObject_GetAttrString ( pSiku, "settings" );
+  assert( pDef );
+
+  PyObject* pLinks;  // list of links
+  PyObject* pTemp;  // temporal object for reading
+  unsigned long i1, i2;
+
+
+  pLinks = PyObject_GetAttrString ( pDef, "links" );
+  assert( pLinks );
+  assert( PyList_Check( plist ) );
+  Py_ssize_t N = PyList_Size ( pLinks );
+
+  //PyObject* plist, vector < long >& xs;
+
+  // array sets length
+  siku.ConDet.links.resize ( N );
+
+  // reading all links in this loop
+  for ( Py_ssize_t i = 0; i < N; ++i )
+    {
+      PyObject* pitem;
+      pitem = PyList_GetItem ( pLinks, i ); // borrowed
+
+      // check if it is a list
+      if ( !PyTuple_Check( pitem ) ) return false;
+
+      Py_ssize_t K = PyTuple_Size ( pitem );
+      if ( K != 2 ) return false; // must be pair (2)
+
+      pTemp = PyTuple_GetItem ( pitem, 0 ); // borrowed
+      success &= read_ulong( pTemp, i1 );
+
+      pTemp = PyTuple_GetItem ( pitem, 1 ); // borrowed
+      success &= read_ulong( pTemp, i2 );
+
+      siku.ConDet.links[i] = Link( i1, i2 );
+    }
+
+
   Py_DECREF( pDef );
 
   return success;
@@ -1076,7 +1139,7 @@ Sikupy::fcall_update_wind ( Globals& siku )
 
       // read wind source names
       PyObject* pDef;
-      pDef = PyObject_GetAttrString ( pSiku, "defaults" ); // Defaults handler
+      pDef = PyObject_GetAttrString ( pSiku, "settings" ); // Settings handler
       assert( pDef );
 
       pTemp = PyObject_GetAttrString ( pDef, "wind_source_names" ); // List
@@ -1520,11 +1583,10 @@ Sikupy::read_vec3d_vector ( PyObject* plist, vector < vec3d >& vs )
       pitem = PyList_GetItem ( plist, i ); // borrowed
 
       // check if it is a list
-      if ( !PyTuple_Check( pitem ) )
-        return false;
+      if ( !PyTuple_Check( pitem ) ) return false;
+
       Py_ssize_t K = PyTuple_Size ( pitem );
-      if ( K != 3 )
-        return false; // must be 3D vector
+      if ( K != 3 ) return false; // must be 3D vector
 
       for ( Py_ssize_t k = 0; k < K; ++k )
         {

@@ -79,34 +79,37 @@ info = {
     'copyright': bootstrap_config.COPYRIGHT }
 
 # ---------------------------------------------------------------------
-# miscellanous default parameters
+# miscellanous parameters
 # ---------------------------------------------------------------------
 
-class Defaults:
+class Settings:
     pass
 
-defaults = Defaults()
+settings = Settings()
 
 # contact detection default method
-defaults.contact_method = CONTACT_METHODS['sweep']
-defaults.contact_freq_met = CONTACT_DET_FREQ_MET['always']
-defaults.contact_value = 1
+settings.contact_method = CONTACT_METHODS['sweep']
+settings.contact_freq_met = CONTACT_DET_FREQ_MET['always']
+settings.contact_value = 1
 
-defaults.force_model = CONTACT_FORCE_MODEL['default']
+settings.force_model = CONTACT_FORCE_MODEL['default']
 
-defaults.wind_source_type = WIND_SOURCES['TEST']
-defaults.wind_source_names = []
+settings.wind_source_type = WIND_SOURCES['TEST']
+settings.wind_source_names = []
 
-defaults.loadfile = ''
+settings.loadfile = ''
 
-defaults.boarders = 'boarders.ll'
-defaults.boarder_mark = 0
+settings.boarders = 'boarders.ll'
+settings.boarder_mark = 0
 
-defaults.phys_consts = [ 1, 1, 1, 1, 1,\
+settings.phys_consts = [ 1, 1, 1, 1, 1,\
                          1, 1, 1, 1, 1 ] # yet senseless
 
-defaults.manual_inds = []
-defaults.manual_forces = []
+settings.manual_inds = []
+settings.manual_forces = []
+
+settings.inital_freeze = 1
+settings.links = []
 
 planet = earth.Earth()
 

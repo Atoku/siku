@@ -141,7 +141,7 @@ void ContactDetector::clear()
         {
           if( cont[i].durability < 0.05 )  // destruction
             {
-              cout<<"CRACK!"<<endl;
+              //cout<<"CRACK!"<<endl;
               cont[i].type = ContType::COLLISION;
               cont[i].generation = 0;
             }
@@ -209,6 +209,22 @@ void ContactDetector::freeze( Globals& siku, double tol )
         _share( c, siku, tol );
       break;
   }
+
+}
+
+// --------------------------------------------------------------------------
+
+void ContactDetector::freeze_links( Globals& siku )
+{
+  cont.clear();
+
+  for( auto& a : links )
+    cont.push_back( Contact( a.i1, a.i2, 0, JOINT ) );
+
+  std::sort( cont.begin(), cont.end() );
+
+  for( auto& c : cont )
+    _freeze( c, siku, 0.1 );
 
 }
 
@@ -373,6 +389,17 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
   std::vector<vec2d> loc_P1;  // e1.P vertices in local coords
   std::vector<vec2d> loc_P2;  // e2.P vertices in local coords
   std::vector<vec2d> dump;
+  std::vector<PointStatus> ps;
+//  auto count = [&ps]()->bool  // lambda for counting points` statuses
+//      {
+//        int vi{}, ei{};
+//        for(auto& a : ps)
+//          {
+//            if(a==PointStatus::EDGE) ++ei;
+//            if(a==PointStatus::VERTEX) ++vi;
+//          }
+//        return ei==2 && vi ==2;
+//      };
 
   mat3d src_to_dest = loc_to_loc_mat( siku.es[c.i1].q, siku.es[c.i2].q );
       // !static
@@ -387,7 +414,8 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
     loc_P2.push_back( r2 +
          ( vec3_to_vec2( src_to_dest * p ) - r2 ) * (1.+tol) );
 
-  if( Geometry::intersect( loc_P1, loc_P2 , dump, nullptr, &center, &size ) )
+  if( Geometry::intersect( loc_P1, loc_P2 , dump, &ps, &center, &size ) )
+      //&& count() ) // corner intersections are ignored
     {
       c.type = ContType::JOINT;
       c.p1 = center;

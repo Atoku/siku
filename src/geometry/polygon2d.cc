@@ -86,6 +86,11 @@ namespace Geometry
     // single point touch
     if( s == 1 )
       {
+        if( pflags )
+          {
+            (*pflags).clear();
+            pflags->push_back( PointStatus::VERTEX );
+          }
         if( psize )  *psize = 0.;
         if( pcen )  *pcen = tempVerts[ 0 ];
         return 1;
@@ -94,6 +99,11 @@ namespace Geometry
     // line intersection
     if( s == 2 )
       {
+        if( pflags )
+          {
+            (*pflags).clear();
+            (*pflags) = { PointStatus::VERTEX, PointStatus::VERTEX };
+          }
         if( psize )  *psize = (tempVerts[ 1 ] - tempVerts[ 0 ]).abs();
         if( pcen )  *pcen =  (tempVerts[ 1 ] + tempVerts[ 0 ]) / 2.;// vec=pnt
         return 2;

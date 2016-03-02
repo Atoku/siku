@@ -11,16 +11,55 @@ try:
     from siku import geocoords
     from siku import element
     from siku import geofiles
+    from siku import polygon
 except ImportError:
     import geocoords
     import element
     import geofiles
+    import polygon
 
 import mathutils
+import math
 
 Vec = mathutils.Vector
 latlon = geocoords.lonlat_deg_norm
 norm = geocoords.norm_deg
+Poly = polygon.Polygon
+Quat = mathutils.Quaternion
+
+#-----------------------------------------------------------------------------
+
+def make_pairs( lst ):
+    '''Utility: generates sorted list of pairs of indexes from raw list'''
+    l = len(lst)
+    res = []
+    for i in range( l-1 ):
+        for j in range(i+1, l):
+            res.append( ( min(lst[i], lst[j]), max(lst[i], lst[j]) ) )
+    res.sort()
+    
+    return res
+
+def find_h( rc, r1, r2 ):
+    '''Utility: find the altitude of triangle''' 
+    d1 = (rc - r1).length
+    d2 = (rc - r2).length
+    d = (r2 - r1).length
+    if d == 0.0:
+        return d1
+    s = (d+d1+d2)*0.5
+    return 2 * math.sqrt( s*(s-d)*(s-d1)*(s-d2) ) / d
+    
+def find_delta( poly ):
+    '''Utility: calculates the radius of largest inscribed circle'''
+    l = len(poly.poly_xyz)
+    
+    r = find_h( poly.C, poly.poly_xyz[-1], poly.poly_xyz[0] )
+    for i in range(1, l):
+        tr = find_h( poly.C, poly.poly_xyz[i-1], poly.poly_xyz[i] )
+        if tr < r:
+            r = tr
+    return r
 
 #------------------------------------------------------------------------------
 # Class Vert. Loads and contains vertices coords
@@ -89,6 +128,10 @@ class PolyVor:
         self.coords = [] #list of lists of verts` coord: [ [ (lon, lat) ] ]
         self.verts = Vert() #list of vertices` coords (x, y, z)
         self.seq = Seq() #list of lists of verts` indexes
+        self.links = []
+        self.init_links = [] #PRIVATE
+        self.init_inds = [] #PRIVATE
+        self.delta = None #PRIVATE
         if coords_f and seq_f:
             self.load( coords_f, seq_f )
         return
@@ -99,11 +142,61 @@ class PolyVor:
         self.verts.load( coords_f )
         self.seq.load( seq_f )
 
+        ViP = [ [] for i in range(len(self.verts.coords)) ]
+        c = 0
+
         for l in self.seq.inds:
             self.coords.append(
                 [ latlon( Vec( self.verts.coords[ i-1 ] ) ) for i in l ]
                 )
+
+            ###all next is for inital links          
+            for j in l:           
+                ViP[j-1].append(c)
+            c += 1
+
+        #generating inital links       
+        temp = { i:{} for i in range(len(self.coords)) }
+        for v in ViP:
+            l = make_pairs( v )
+            for i in l:
+                temp[i[0]][i[1]] = i[1] # temp =
+                                        #{ poly1ID: { poly2ID: poly2ID } } 
+
+        p = Poly()
+        R = []
+        IL = []
+        for i1 in temp:
+            p.update( self.coords[i1][:] )
+            R.append( find_delta( p ) )
+            IL.append( ( p.C, temp[i1] ) ) # [ (Vec, { p2ID:p2ID } ) ]
+
+##            for i2 in temp[i1]: #making pairs !???
+##                links.append( (i1, i2) )
+##        links.sort()
+        self.delta = min( R )
+        self.init_links = IL
+        
         return
+
+    def generate_links( self, Els ):
+        '''Generates links (based upon init_links) from Els - list of
+        Elements'''
+        links = []
+
+        for i in range(len(Els)):
+            c = Quat(Els[i].q).conjugated().to_matrix() * Vec( (0.0, 0.0, 1.0) )
+##            print(c)
+##            input()
+            for l in self.init_links:
+                if (c - l[0]).length < self.delta:
+                    for t in l[1]:
+                        links.append( (i, t) )
+
+        links.sort()
+        
+        self.links = links
+        return links
 
     def filter_( self, minlon, maxlon, minlat, maxlat ):
         '''Excludes all polygons, that have at least one vertex, located
