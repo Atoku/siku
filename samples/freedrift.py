@@ -283,7 +283,7 @@ def main():
 
     print('Generating links from inital polygons')
     siku.settings.links = PV.generate_links( siku.elements )
-    print('Done\n')
+    print('Done\n')    
 
     ### period of picturing
     siku.diagnostics.monitor_period = 6

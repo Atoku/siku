@@ -206,6 +206,7 @@ main ( int argc, char* argv[] )
 
       // --- END OF LOOP ---
       siku.time.increment ();
+//cout<<"======= "<<siku.ConDet.cont.size()<<" ==================\n";
 
       // ------------------------------------------------------------------
     }

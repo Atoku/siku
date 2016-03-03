@@ -184,15 +184,22 @@ class PolyVor:
         Elements'''
         links = []
 
+        reindex = {}
         for i in range(len(Els)):
-            c = Quat(Els[i].q).conjugated().to_matrix() * Vec( (0.0, 0.0, 1.0) )
-##            print(c)
-##            input()
-            for l in self.init_links:
+            c = Quat(Els[i].q).to_matrix() * Vec( (0.0, 0.0, 1.0) )
+            for j in range(len(self.init_links)):
+                l = self.init_links[j]
                 if (c - l[0]).length < self.delta:
-                    for t in l[1]:
-                        links.append( (i, t) )
+                    reindex[j] = i
 
+        for i in range(len(Els)):
+            l = self.init_links[i]
+            for o in l[1]:
+                t = reindex.get( o, None )
+                if t != None:
+                    links.append( (min(i, t), max(i, t)) )
+
+        links = list(set(links)) #getting unique (for sure)
         links.sort()
         
         self.links = links
