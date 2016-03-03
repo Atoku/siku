@@ -152,29 +152,30 @@ class PolyVor:
 
             ###all next is for inital links          
             for j in l:           
-                ViP[j-1].append(c)
+                ViP[j-1].append(c)  ## adding poly index to each point of it
             c += 1
 
         #generating inital links       
-        temp = { i:{} for i in range(len(self.coords)) }
+        temp = { i:{} for i in range(len(self.coords)) } #preparing dict of
+                                                         #dicts - polygon and
+                                                         #it`s neighbours
         for v in ViP:
-            l = make_pairs( v )
+            l = make_pairs( v ) #raw pairs of contacting polygons
             for i in l:
-                temp[i[0]][i[1]] = i[1] # temp =
-                                        #{ poly1ID: { poly2ID: poly2ID } } 
+                temp[i[0]][i[1]] = i[1] #temp =
+                                        #= { poly1ID: { poly2ID: poly2ID } } 
 
         p = Poly()
         R = []
         IL = []
         for i1 in temp:
-            p.update( self.coords[i1][:] )
-            R.append( find_delta( p ) )
+            p.update( self.coords[i1][:] ) #calculating polygon props
+            R.append( find_delta( p ) ) #accumulating radiuses of 'inscribed'
+                                        #circles
+
             IL.append( ( p.C, temp[i1] ) ) # [ (Vec, { p2ID:p2ID } ) ]
 
-##            for i2 in temp[i1]: #making pairs !???
-##                links.append( (i1, i2) )
-##        links.sort()
-        self.delta = min( R )
+        self.delta = min( R ) #delta = minimum circle
         self.init_links = IL
         
         return
@@ -184,14 +185,19 @@ class PolyVor:
         Elements'''
         links = []
 
-        reindex = {}
+        reindex = {} #new indexes of old polygons (aftes all filters)
+
         for i in range(len(Els)):
+            #props of new polygon
             c = Quat(Els[i].q).to_matrix() * Vec( (0.0, 0.0, 1.0) )
+
+            #serching for 'new' polygons matching to 'old' ones
             for j in range(len(self.init_links)):
                 l = self.init_links[j]
                 if (c - l[0]).length < self.delta:
                     reindex[j] = i
 
+        #reindexing Elements` links
         for i in range(len(Els)):
             l = self.init_links[i]
             for o in l[1]:
@@ -199,7 +205,7 @@ class PolyVor:
                 if t != None:
                     links.append( (min(i, t), max(i, t)) )
 
-        links = list(set(links)) #getting unique (for sure)
+        links = list(set(links)) #getting unique pairs (for sure)
         links.sort()
         
         self.links = links
