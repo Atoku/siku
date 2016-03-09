@@ -67,8 +67,8 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
-    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+    siku.settings.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -126,11 +126,11 @@ def main():
 
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
-    siku.defaults.boarder_mark = 1
-    siku.defaults.boarders = 'contours.ll'
+    siku.settings.border_mark = 1
+    siku.settings.borders = 'contours.ll'
 
-    print('Marking boarders with GMT')
-    bor = PV.get_boarder_by_gmt()
+    print('Marking borders with GMT')
+    bor = PV.get_border_by_gmt()
     for b in bor:
         siku.elements[ b ].flag_state = element.Element.f_static
     print('Done\n\n')
@@ -147,11 +147,11 @@ def main():
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
-    siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
+    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
 
     # name of file to load from
-    #siku.defaults.loadfile = 'siku-2014-01-01-12:00:00.h5'
-    siku.defaults.loadfile = 'save_test.h5'
+    #siku.settings.loadfile = 'siku-2014-01-01-12:00:00.h5'
+    siku.settings.loadfile = 'save_test.h5'
 
 
     # ---------------------------------------------------------------------

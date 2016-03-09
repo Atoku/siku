@@ -222,25 +222,25 @@ Sikupy::read_settings( Globals& siku )
   siku.wind.FIELD_SOURCE_TYPE = Vecfield::Source_Type( i );
   Py_DECREF( pTemp );
 
-  // read boarder marking mask
-  pTemp = PyObject_GetAttrString ( pDef, "inital_freeze" );
+  // read initial freezing mask
+  pTemp = PyObject_GetAttrString ( pDef, "initial_freeze" );
   assert( pTemp );
 
   success &= read_ulong( pTemp, siku.ConDet.inital_freeze );
   Py_DECREF( pTemp );
 
-  // read boarder marking mask
-  pTemp = PyObject_GetAttrString ( pDef, "boarder_mark" );
+  // read border marking mask
+  pTemp = PyObject_GetAttrString ( pDef, "border_mark" );
   assert( pTemp );
 
-  success &= read_ulong( pTemp, siku.mark_boarders );
+  success &= read_ulong( pTemp, siku.mark_borders );
   Py_DECREF( pTemp );
 
-  // read boarders file name
-  pTemp = PyObject_GetAttrString ( pDef, "boarders" );
+  // read borders file name
+  pTemp = PyObject_GetAttrString ( pDef, "borders" );
   assert( pTemp );
 
-  success &= read_string( pTemp, siku.board_file );
+  success &= read_string( pTemp, siku.bord_file );
 
   // read load file name. zero-length string for no load
   pTemp = PyObject_GetAttrString ( pDef, "loadfile" );

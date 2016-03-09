@@ -142,7 +142,7 @@ def main():
 ##    siku.elements[-1].velo = (0.0, -1.0, 0.000005)
 ##    siku.elements[-1].flag_state = element.Element.f_steady
 
-    #left boarder is static
+    #left border is static
     left_inds = [ i*nx for i in range(ny) ]
  
     for i in left_inds:

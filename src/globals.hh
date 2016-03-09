@@ -94,9 +94,9 @@ struct Globals
   //! Contact detector and store
   ContactDetector ConDet;
 
-  //! Boarders` points file name
-  string board_file
-      { "NO BOARDERS" };
+  //! Borders` points file name
+  string bord_file
+      { "NO BORDERS" };
 
   //! Current filename to save to
   string savefile
@@ -105,8 +105,8 @@ struct Globals
   //! Filename to load from
   string loadfile;
 
-  //! Flag for marking boarder polygons as 'static' or else
-  unsigned long mark_boarders { 0 };
+  //! Flag for marking border polygons as 'static' or else
+  unsigned long mark_borders { 0 };
 
   //! Callback-returned status (masked flags)
   unsigned long callback_status { STATUS_NONE };

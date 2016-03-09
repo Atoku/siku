@@ -222,11 +222,11 @@ def main():
 
     ## Core will mark polygons, those contain at leas one point from next
     ## file as 'static'
-    siku.settings.boarder_mark = 1
-    siku.settings.boarders = 'contours.ll'
+    siku.settings.border_mark = 1
+    siku.settings.borders = 'contours.ll'
 
-    print('Marking boarders with GMT')
-    bor = PV.get_boarder_by_gmt()
+    print('Marking borders with GMT')
+    bor = PV.get_border_by_gmt()
     for b in bor:
         siku.elements[ b ].flag_state = element.Element.f_static
     print('Done\n\n')
@@ -281,7 +281,7 @@ def main():
     ## Plotter initialization
     siku.plotter = GMT_Plotter( 'plot_config.py' )
 
-    print('Generating links from inital polygons')
+    print('Generating links from initial polygons')
     siku.settings.links = PV.generate_links( siku.elements )
     print('Done\n')    
 

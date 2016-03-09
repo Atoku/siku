@@ -99,8 +99,8 @@ settings.wind_source_names = []
 
 settings.loadfile = ''
 
-settings.boarders = 'boarders.ll'
-settings.boarder_mark = 0
+settings.borders = 'borders.ll'
+settings.border_mark = 0
 
 settings.phys_consts = [ 1, 1, 1, 1, 1,\
                          1, 1, 1, 1, 1 ] # yet senseless
@@ -108,7 +108,7 @@ settings.phys_consts = [ 1, 1, 1, 1, 1,\
 settings.manual_inds = []
 settings.manual_forces = []
 
-settings.inital_freeze = 1
+settings.initial_freeze = 1
 settings.links = []
 
 planet = earth.Earth()

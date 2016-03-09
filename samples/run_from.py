@@ -67,8 +67,8 @@ def main():
     siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
-    siku.defaults.wind_source_type = siku.WIND_SOURCES['NMC']
-    siku.defaults.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+    siku.settings.wind_source_type = siku.WIND_SOURCES['NMC']
+    siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
    
     # ---------------------------------------------------------------------
     # date/time settings
@@ -125,7 +125,7 @@ def main():
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
-    siku.defaults.contact_method = siku.CONTACT_METHODS['sweep']
+    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator

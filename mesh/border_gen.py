@@ -1,9 +1,9 @@
-'''File: boarder_gen.py
-Module: boarder_gen
+'''File: border_gen.py
+Module: border_gen
 
-Class: Boarder
+Class: Border
 
-Provides functionality for generating lists and files of land boarders` vertices
+Provides functionality for generating lists and files of land borders` vertices
 based upon shapefiles and GMT filtering inside specified domain.
 '''
 
@@ -19,16 +19,16 @@ from siku import geocoords
 from siku import geofiles
 GC = geocoords
 
-import ExtBoards
+import ExtBords
 
 # -------------------------------------------------------------------------
 # In this module all fields named exactly as 'domain' have to be 4-tuple in
 # convension (minlon, maxlon, minlat, maxlat), or None if it`s indefinite
 # -------------------------------------------------------------------------
 
-class Boarder:
+class Border:
     '''A class that provides functionality for generating lists and files of
-    land boarders` vertices based upon shapefiles and GMT filtering inside
+    land borders` vertices based upon shapefiles and GMT filtering inside
     specified domain.
     '''
     def __init__( self, sfile = None ):
@@ -37,7 +37,7 @@ class Boarder:
         self.shapes = None
         self.verts = [] #in (x, y, z)
         self.contour = [] #in (lon, lat)
-        self.boarders = [] #in (x, y, z)
+        self.borders = [] #in (x, y, z)
         
         if sfile:
             self.load( sfile )
@@ -100,7 +100,7 @@ class Boarder:
 ##        self.contour = self.contour + verts
         if domain == None:
             domain = (0.0, 360.0, -90.0, 90.0)
-        self.contour = ExtBoards.filter_contours( self.contour[:], dens, domain )
+        self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )
 
     def add_hp_verts( self, gen_dens, fil_dens, domain = None ):
         '''Generates and appends vertices using hpgrid monule'''
@@ -118,8 +118,8 @@ class Boarder:
         grid.points_filter( fil_dens )
         self.verts = self.verts + grid.points
 
-    def gener_boarders( self, thick, dens = None, domain = None, \
-                        file_b = 'boarders.ll' ):#, file_s = 'shapes' ):
+    def gener_borders( self, thick, dens = None, domain = None, \
+                        file_b = 'borders.ll' ):#, file_s = 'shapes' ):
         '''Generates files:
         -'file_b.ll' (lon-lat convension) list of points filtered by
         optional 'dens' density (hpgrid method) and located whithin 'thick'
@@ -164,7 +164,7 @@ class Boarder:
 ##        points = geofiles.xyz_to_lonlat( points )
 ##        geofiles.w_lonlat( file_s + '.ll', points )
 
-        #creating boarders with GMT
+        #creating borders with GMT
         ts = str( thick )
 ##        subprocess.call( 'gmt gmtselect ' + file_s + '.ll -fg -C' + ts + \
 ##                         'k/contours.ll > ' + file_b + '.ll', shell=True )
@@ -175,12 +175,12 @@ class Boarder:
 
         return
 
-    def merge_boarders( self, file1, file2, thick, file_out='merged.ll' ):
-        '''Merges two presumably boarder files into 'file_out' by
+    def merge_borders( self, file1, file2, thick, file_out='merged.ll' ):
+        '''Merges two presumably border files into 'file_out' by
         placing all points from second file and that very points from file1
         those are out of file2 'cover area'
         '''
-        self.extract_boarders_from_v( file1, file2, thick, 'temp' )
+        self.extract_borders_from_v( file1, file2, thick, 'temp' )
         verts = geofiles.r_lonlat( file1 )
         app = geofiles.r_lonlat( file2 )
         
@@ -189,7 +189,7 @@ class Boarder:
 
         return
 
-    def extract_boarders_from_v( self, file_v, file_b, thick, \
+    def extract_borders_from_v( self, file_v, file_b, thick, \
                                  file_out='extrd.ll'):
         '''Select all points from 'file_v' those are out of file_b 'cover area'
         and place them into file_out.

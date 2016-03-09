@@ -58,12 +58,12 @@ void Globals::post_init()
 
     }
 
-  if( mark_boarders )
+  if( mark_borders )
     {
-      cout<<"Marking boarders with points\n";
+      cout<<"Marking borders with points\n";
 
-      // reading boarders
-      std::ifstream in( board_file.c_str() );
+      // reading borders
+      std::ifstream in( bord_file.c_str() );
       std::vector<vec3d> points; // global (x,y,z)
       double d1, d2;
       vec3d point;
@@ -80,7 +80,7 @@ void Globals::post_init()
 
       in.close();
 
-      // marking boarders by boarder points (2d approximation)
+      // marking borders by border points (2d approximation)
       size_t size = points.size();
       for( auto& e : es )
         {

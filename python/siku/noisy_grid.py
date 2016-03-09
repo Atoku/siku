@@ -84,7 +84,7 @@ def generate_plus( left, bottom, right, top, nx, ny, dx, dy ):
     AND a list of indexes of connected polygons aka 'list of links'.
 
     Params:
-    left, bottom, right, top - boarders of geterating area
+    left, bottom, right, top - borders of geterating area
     nx, ny - amounts of lines and coloumns ( >= 1)
     dx, dy - displacement ranges (relative value) 
 
@@ -114,7 +114,7 @@ def generate( left, bottom, right, top, nx, ny, dx, dy ):
     Yj = bottom + j*(top-bottom)/ny  -/+ dy
 
     Params:
-    left, bottom, right, top - boarders of geterating area
+    left, bottom, right, top - borders of geterating area
     nx, ny - amounts of lines and coloumns ( >= 1)
     dx, dy - displacement ranges (relative value) 
 

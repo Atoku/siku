@@ -118,7 +118,7 @@ class PolyVor:
     '''A class for retrieving list of lists of polygon vertices from
     .voronoi.* files
     '''
-    #default filters for GMT boarders forming
+    #default filters for GMT borders forming
     default_ocean = 'gmt gmtselect temp.lli -Dl -Nk/s/s/s/s > oceanf.lli'
     default_land = 'gmt gmtselect temp.lli -Dl -Ns/k/k/k/k > landf.lli'
     
@@ -150,12 +150,12 @@ class PolyVor:
                 [ latlon( Vec( self.verts.coords[ i-1 ] ) ) for i in l ]
                 )
 
-            ###all next is for inital links          
+            ###all next is for iniital links          
             for j in l:           
                 ViP[j-1].append(c)  ## adding poly index to each point of it
             c += 1
 
-        #generating inital links       
+        #generating initial links       
         temp = { i:{} for i in range(len(self.coords)) } #preparing dict of
                                                          #dicts - polygon and
                                                          #it`s neighbours
@@ -230,12 +230,12 @@ class PolyVor:
         self.coords = temp
         return
 
-    def mark_boarders( self, Els, file_b, minlon = 0, maxlon = 360, \
+    def mark_borders( self, Els, file_b, minlon = 0, maxlon = 360, \
                        minlat = -90, maxlat = 90 ):
         '''Marks all elements in 'Els' which contain at least one point from
         file_b as 'f_static'
         '''
-        #board = Vert( file_b )
+        #bord = Vert( file_b )
         verts = geofiles.r_lonlat( file_b )
 
         for v in verts:
@@ -251,7 +251,7 @@ class PolyVor:
                     break
         return 
 
-    def get_boarder_by_gmt( self, land_filter=None, ocean_filter=None, \
+    def get_border_by_gmt( self, land_filter=None, ocean_filter=None, \
                             vert_f='temp.lli', oceanf='oceanf.lli', \
                             landf='landf.lli' ):
         '''Returns list of border polygon indexes. Uses GMT for searching

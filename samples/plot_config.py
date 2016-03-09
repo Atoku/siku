@@ -20,13 +20,18 @@ vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation
 #inter_domain = ( 330, 350, 50, 60 )
 #inter_domain = ( -10, 10, -10, 10 )
 
+inter_domain = ( 170, 240, 55, 85 )
+
 #interpolation grid resolution in degrees (average).
 #Zero means 'no additional interpolation for output'
 #inter_density = 0 # average=5.
+#inter_density = 0.5
+inter_density = 0
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #Beaufort-Chukchi sea, Lambert Equal Area (seems to be)
-view = '-R190/65/240/75r -JA205/71/15 -Bag30 '
+##view = '-R190/65/240/75r -JA205/71/15 -Bag30 '
+view = '-R185/62/240/75r -JA205/71/15 -Bag30 '
 ##view = '-Rg -JA205/71/15 -Bag30 '
 
 #Polar Stereographic (hope that is really stereo)
@@ -48,14 +53,17 @@ view = '-R190/65/240/75r -JA205/71/15 -Bag30 '
 #vector_scaling = 0.01
 #vector_scaling = 5.5
 
-inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.25p,green -L\
--A3.0p+e+ggreen -Se'
-grid_wind = 'psvelo grid.txt -R -J -W0.25p,blue -L -A1.0p+e+gblue -Se'
+overlays = [
+##'psxy shapes.ll -R -J -Sc0.01 -B -Gred'
+    ]
+##inter_wind = 'psvelo interpolated_vectors.txt -R -J -W0.525p,forestgreen \
+##-A2.5p+e -L -Se'
+grid_wind = 'psvelo grid.txt -R -J -W0.25p,blue -L -A1.50p+e+gblue -Se'
 
 #any underlays (right after coasts, befor winds)
-#underlays = [
-#        'psxy Poly*.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
-#    ]
+underlays = [
+        'psxy Poly*.txt -R -J -B -Gred -L '#draw poly for freedrift-monitor
+    ]
 
 #any additional overlays
 #overlays = [

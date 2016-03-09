@@ -277,7 +277,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
 //      print(p2);
 //      print( p2 - p1 );
 //      cout<<"---\n";
-      vec2d F = ( p2 - p1 ) * siku.planet.R * K;
+      vec2d F = ( p2 - p1 ) * siku.planet.R * K;// * c.init_size;
 //      print (F);
 
       double torque1 =

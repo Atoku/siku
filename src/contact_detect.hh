@@ -112,7 +112,8 @@ public:
 
     int step{ -1 };  // step when was created. -1 marks default object
     double area{ 0. };  // area of contact
-    double durability{ 1. };  // must be discussed
+    double durability{ 1. };  // IMPROVE: must be discussed
+    double init_size{ 0. };  // initial size. Must be discussed
     int generation{ 0 };  // 'oldness'
 
     Geometry::vec2d p1{}, p2{};  // positions of joint center in local

@@ -429,6 +429,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 //      print(c.p2);
 //      cout<<"===\n";
       c.durability = 1.;
+      if( dump.size() > 2 ) c.init_size = size;  // only if size is area
     }
 }
 

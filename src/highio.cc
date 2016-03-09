@@ -75,14 +75,14 @@ int Highio::save( const Globals& siku )
                       verts.data(), verts.size(), "TODO: fill", "TODO: fill" );
 
   // saving flags and names
-  lowio.save_string( string("Boarder File"), siku.board_file,  "TODO: fill",
+  lowio.save_string( string("Border File"), siku.bord_file,  "TODO: fill",
                      "TODO: fill" );
 
   lowio.save_string( string("Save File"), siku.savefile,  "TODO: fill",
                      "TODO: fill" );
 
-  lowio.save_value( lowio.stdtypes.t_ulong, string("Boarders flag"),
-                    &siku.mark_boarders,  "TODO: fill", "TODO: fill" );
+  lowio.save_value( lowio.stdtypes.t_ulong, string("Borders flag"),
+                    &siku.mark_borders,  "TODO: fill", "TODO: fill" );
 
   //-------------------------------- sup calls ----------------------------
 

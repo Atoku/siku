@@ -4,36 +4,37 @@ import sys
 
 from siku import hpgrid
 from siku import geofiles
-import boarder_gen as BG
+import border_gen as BG
 
 def main():
-    print( 'Generating boarders:' )
+    print( 'Generating borders:' )
 
     print('-loading shapes')
-    board = BG.Boarder( '/home/gleb/Documents/GMT_DATA/gshhg-shp-2.3.4/GSHHS_shp/l/GSHHS_l_L1' )
+    bord = BG.Border( '/home/gleb/Documents/GMT_DATA/gshhg-shp-2.3.4/GSHHS_shp/l/GSHHS_l_L1' )
 
     print('-preparing contours')
     #better use all shapes, but that takes time
-    board.make_shapes_contour( domain = (45, 315, 50, 90) )
+    bord.make_shapes_contour( domain = (45, 315, 50, 90) )
 
     print('-adding verts')
-    board.add_hp_verts( 15.0, 14.0 )
-    board.add_hp_verts( 2., 1., (0, 360, 60, 90) ) #0.5 0.9
+    bord.add_hp_verts( 5.0, 4.0 )
+    bord.add_hp_verts( 0.5, 0.5, (0, 360, 60, 90) ) #0.5 0.9
     print('  high resolution domain')
-    board.add_hp_verts( 0.1, 0.1, (170, 210, 60, 70) )
-    board.add_hp_verts( 0.02, 0.01, (200, 220, 69, 72) )
+    bord.add_hp_verts( 0.1, 0.1, (170, 210, 60, 80) )
+    bord.add_hp_verts( 0.02, 0.01, (200, 220, 69, 72) )
+    bord.add_hp_verts( 0.1, 0.1, (220, 240, 65, 80) )
 
-    #canal
-    print('-adding `canal` high resolution domain')
-    board.add_contour( 'canal.ll' )
-    board.add_hp_verts( 0.07, 0.07, (175, 190, 55, 60) )
+##    #canal
+##    print('-adding `canal` high resolution domain')
+##    bord.add_contour( 'canal.ll' )
+##    bord.add_hp_verts( 0.07, 0.07, (175, 190, 55, 60) )
 
     print('-filtering contours')
-    board.filter_contour( 0.15, (0, 360, 50, 90) )
+    bord.filter_contour( 0.15, (0, 360, 50, 90) )
 
-    print('-actually generating boarders` file')
-    board.gener_boarders( 100, domain=(90, 270, 50, 90) )
-    board.filter_v_by_b( 'boarders.ll', 'contours.ll', 50, 'marks.ll' ) 
+    print('-actually generating borders` file')
+    bord.gener_borders( 100, domain=(90, 270, 50, 90) )
+    bord.filter_v_by_b( 'borders.ll', 'contours.ll', 150, 'marks.ll' ) 
 
     print('-adding coverage')
     grid = hpgrid.Grid()
@@ -41,28 +42,30 @@ def main():
     grid.points_filter( 4. )
 
     pol = hpgrid.Grid( hpgrid.Domain( theta = (0, 0.44) ) )
-    pol.points_gen( 2. )
-    pol.points_filter( 2. )
+    pol.points_gen( 1. )
+    pol.points_filter( 1. )
 
-    hig = hpgrid.Grid( hpgrid.Domain( units=0, phi = (170,210), \
-                                    theta = (20, 30) ) )
-    hig.points_gen( 1. )
-    hig.points_filter( 1. )
+    hig = hpgrid.Grid( hpgrid.Domain( units=0, phi = (170,240), \
+                                    theta = (14, 30) ) )
+    hig.points_gen( 0.15 )
+    hig.points_filter( 0.15 )
 
-    can = hpgrid.Grid( hpgrid.Domain( units=0, phi = (180,185), \
-                                    theta = (30, 40) ) )
-    can.points_gen( 1. )
-    can.points_filter( 1. )
+    #alaska north shores
+    can = hpgrid.Grid( hpgrid.Domain( units=0, phi = (200,220), \
+                                      theta = (15, 25) ) )
+    # (0 (180 185) (30 40) )
+    can.points_gen( 0.1 )
+    can.points_filter( 0.1 )
 
     verts = geofiles.xyz_to_lonlat( grid.points + pol.points + hig.points + \
                                     can.points )
     geofiles.w_lonlat( 'verts.ll', verts )
 
     print('\n-file gen')
-    board.extract_boarders_from_v( 'verts.ll', 'boarders.ll', 50 )
+    bord.extract_borders_from_v( 'verts.ll', 'borders.ll', 1 )
     verts = geofiles.r_lonlat( 'extrd.ll' )
-    boards = geofiles.r_lonlat( 'boarders.ll' )
-    geofiles.w_xyz( 'shapes.xyz', geofiles.lonlat_to_xyz( verts + boards ) )
+    bords = geofiles.r_lonlat( 'borders.ll' )
+    geofiles.w_xyz( 'shapes.xyz', geofiles.lonlat_to_xyz( verts + bords ) )
 
     #os.remove( 'verts.ll' )
 
