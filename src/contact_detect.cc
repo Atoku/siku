@@ -430,6 +430,20 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 //      cout<<"===\n";
       c.durability = 1.;
       if( dump.size() > 2 ) c.init_size = size;  // only if size is area
+
+      //search for length of original mutual edge
+      vec2d tv1 = vec3_to_vec2( siku.es[c.i1].P[ siku.es[c.i1].P.size()-1 ] );
+      vec2d tv2 = {};
+      for( size_t i = 0; i< siku.es[c.i1].P.size(); i++)
+        {
+          tv2 = tv1;
+          tv1 = vec3_to_vec2( siku.es[c.i1].P[i] );
+          if( line_seg_inter( {0.,0.}, r12, tv1, tv2, center )  && tv1 != tv2 )
+            {
+              c.init_len = (tv2 - tv1).abs();
+              break;
+            }
+        }
     }
 }
 

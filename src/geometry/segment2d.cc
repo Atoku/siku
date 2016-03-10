@@ -66,11 +66,11 @@ namespace Geometry
   //        - ( b2.x - b1.x ) * ( a2.y - a1.y );
 
       // numerator of a
-      double na = cross ( b, ab );
+      double na = cross ( b, -ab );
   //        ( b2.x - b1.x ) * ( a1.y - b1.y )
   //        - ( b2.y - b1.y ) * ( a1.x - b1.x );
       // numerator of b
-      double nb = cross( a, ab );
+      double nb = cross( a, -ab );
   //        ( a2.x - a1.x ) * ( a1.y - b1.y )
   //        - ( a2.y - a1.y ) * ( a1.x - b1.x );
 

@@ -174,6 +174,11 @@ namespace Geometry
         return x == V.x && y == V.y;
       }
 
+      inline bool operator!= (const vec2d &V) const
+      {
+        return x != V.x || y != V.y;
+      }
+
       inline operator bool () const { return x || y; }
 
       // --------------------------- various methods ---------------------

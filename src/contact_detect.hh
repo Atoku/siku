@@ -114,6 +114,7 @@ public:
     double area{ 0. };  // area of contact
     double durability{ 1. };  // IMPROVE: must be discussed
     double init_size{ 0. };  // initial size. Must be discussed
+    double init_len{ 0. }; // initial length. Must be discussed
     int generation{ 0 };  // 'oldness'
 
     Geometry::vec2d p1{}, p2{};  // positions of joint center in local
