@@ -143,8 +143,20 @@ def main():
 
     siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
 
-    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-                                  -10000.0, 1, 0.2, 0.1, 1 ]
+##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
+##                                  -10000.0, 1, 0.2, 0.1, 1 ]
+    siku.settings.phys_consts = { 'rigidity' : 5000,
+                                  'viscosity' : 10000000,
+                                  'rotatability' : 0.75,
+                                  'tangency' : -0.00003,
+                                  
+                                  'elasticity' : -10000.0,
+                                  'bendability' : 1.0,
+                                  'solidity' : 0.2,
+                                  'tensility' : 0.1,
+
+                                  'windage': 0.01
+                                  }
 
 
     right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]

@@ -177,12 +177,18 @@ Sikupy::read_settings( Globals& siku )
   Py_DECREF( pTemp );
 
 
-  // IMPROVE: reconsider this mechanism
+  // TODO: clear
   // read physical constants
+//  pTemp = PyObject_GetAttrString ( pDef, "phys_consts" );
+//  assert( pTemp );
+//
+//  success &= read_double_vector( pTemp, siku.phys_consts );
+//  Py_DECREF( pTemp );
+
   pTemp = PyObject_GetAttrString ( pDef, "phys_consts" );
   assert( pTemp );
 
-  success &= read_double_vector( pTemp, siku.phys_consts );
+  success &= read_str_doub_map( pTemp, siku.phys_consts );
   Py_DECREF( pTemp );
 
   // read contact freezing method
@@ -1557,6 +1563,31 @@ Sikupy::read_double_vector ( PyObject* plist, vector < double >& xs )
 //        return false;
 //
 //      xs[i] = PyFloat_AS_DOUBLE( pitem );
+    }
+
+  return true;
+}
+
+//---------------------------------------------------------------------
+
+bool Sikupy::read_str_doub_map ( PyObject* pDict, map < string, double >& m )
+{
+  assert( PyDict_Check( pDict ) );
+  PyObject *key, *value;
+  Py_ssize_t pos = 0;
+  string str;
+  double d;
+  PyErr_Clear ();
+
+  while ( PyDict_Next( pDict, &pos, &key, &value ) )
+    {
+      d = PyFloat_AsDouble ( value );
+      if ( PyErr_Occurred () )  return false;
+
+      str = string ( PyUnicode_AsUTF8 ( key ) );
+      if ( PyErr_Occurred () )  return false;
+
+      m[str] = d;
     }
 
   return true;

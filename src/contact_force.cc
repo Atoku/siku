@@ -227,10 +227,14 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
           vec2d norm { tau.y, -tau.x };
           vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
 
-          double Kne = siku.phys_consts[0],
-                 Kni = siku.phys_consts[1],
-                 Kw = siku.phys_consts[2],
-                 Kt = siku.phys_consts[3];
+//          double Kne = siku.phys_consts[0],
+//                 Kni = siku.phys_consts[1],
+//                 Kw = siku.phys_consts[2],
+//                 Kt = siku.phys_consts[3];
+          double Kne = siku.phys_consts["rigidity"],
+                 Kni = siku.phys_consts["viscosity"],
+                 Kw = siku.phys_consts["rotatability"],
+                 Kt = siku.phys_consts["tangency"];
 
           double Asqrt = sqrt( area );
 
@@ -263,10 +267,14 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
     }
   else  // <=> if( c.type == ContType::JOINT )
     {
-      double K = siku.phys_consts[5];
-      double Kw = siku.phys_consts[6];
-      double sigma = siku.phys_consts[7];
-      double epsilon = siku.phys_consts[8];
+//      double K = siku.phys_consts[5];
+//      double Kw = siku.phys_consts[6];
+//      double sigma = siku.phys_consts[7];
+//      double epsilon = siku.phys_consts[8];
+      double K = siku.phys_consts["elasticity"],
+             Kw = siku.phys_consts["bendability"],
+             sigma = siku.phys_consts["solidity"],
+             epsilon = siku.phys_consts["tensility"];
 
       vec2d p1 = c.p1;
       vec3d tv = vec2_to_vec3( c.p2 );
@@ -277,7 +285,8 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
 //      print(p2);
 //      print( p2 - p1 );
 //      cout<<"---\n";
-      vec2d F = ( p2 - p1 ) * siku.planet.R * K;// * c.init_size;
+      vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability;
+      // * c.init_size OR c.init_len;
 //      print (F);
 
       double torque1 =
@@ -404,10 +413,14 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
           vec2d norm { tau.y, -tau.x };
           vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
 
-          double Kne = siku.phys_consts[0],
-                 Kni = siku.phys_consts[1],
-                 Kw = siku.phys_consts[2],
-                 Kt = siku.phys_consts[3];
+//          double Kne = siku.phys_consts[0],
+//                 Kni = siku.phys_consts[1],
+//                 Kw = siku.phys_consts[2],
+//                 Kt = siku.phys_consts[3];
+          double Kne = siku.phys_consts["rigidity"],
+                 Kni = siku.phys_consts["viscosity"],
+                 Kw = siku.phys_consts["rotatability"],
+                 Kt = siku.phys_consts["tangency"];
 
           double Asqrt = sqrt( area );
 
@@ -440,10 +453,14 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
     }
   else  // <=> if( c.type == ContType::JOINT ) // Hopkins` physics
     {
-      double K = siku.phys_consts[5];
-      double Kw = siku.phys_consts[6];
-      double sigma = siku.phys_consts[7];
-      double epsilon = siku.phys_consts[8];
+//      double K = siku.phys_consts[5];
+//      double Kw = siku.phys_consts[6];
+//      double sigma = siku.phys_consts[7];
+//      double epsilon = siku.phys_consts[8];
+      double K = siku.phys_consts["elasticity"],
+             Kw = siku.phys_consts["bendability"],
+             sigma = siku.phys_consts["solidity"],
+             epsilon = siku.phys_consts["tensility"];
 
       vec2d p11 = vec3_to_vec2( siku.es[c.i1].P[c.v11] );
       vec2d p12 = vec3_to_vec2( siku.es[c.i1].P[c.v12] );
@@ -454,7 +471,7 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       double sinX;
       double cosX;
 
-      if( line_inter( p11, p12, p21, p22, X ) ) /// or line_seg_inter
+      if( segment2d_line_inter( p11, p12, p21, p22, X ) ) /// or line_seg_inter
         {
           sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
           cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );

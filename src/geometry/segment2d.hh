@@ -22,7 +22,7 @@ namespace Geometry
   //! \param[in] b2 second point of segment 'b'
   //! \param[out] X - point where the segments intersect (if they do)
   //! \return true if segments intersect, false if not
-  bool line_seg_inter( const pnt2d& a1, const pnt2d& a2,
+  bool segment2d_old_inter( const pnt2d& a1, const pnt2d& a2,
                        const pnt2d& b1, const pnt2d& b2, pnt2d& X );
 
   //! \brief checks if two lines intersect.
@@ -33,7 +33,7 @@ namespace Geometry
   //! \param[out] X - point where the lines intersect (if they do)
   //! \return: 0 - no intersection, 1 - simple intersection,
   //!          2 - lines are the same
-  int line_inter( const pnt2d& a1, const pnt2d& a2,
+  int segment2d_line_inter( const pnt2d& a1, const pnt2d& a2,
                        const pnt2d& b1, const pnt2d& b2, pnt2d& X );
 
   /*!

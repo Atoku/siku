@@ -102,8 +102,21 @@ settings.loadfile = ''
 settings.borders = 'borders.ll'
 settings.border_mark = 0
 
-settings.phys_consts = [ 1, 1, 1, 1, 1,\
-                         1, 1, 1, 1, 1 ] # yet senseless
+##settings.phys_consts = [ 1, 1, 1, 1, 1,\
+##                         1, 1, 1, 1, 1 ] # yet senseless
+### YET IS FOR TEST
+settings.phys_consts = { 'rigidity' : 1.0,
+                      'viscosity' : 1.0,
+                      'rotatability' : 1.0,
+                      'tangency' : 1.0,
+                      
+                      'elasticity' : 1.0,
+                      'bendability' : 1.0,
+                      'solidity' : 1.0,
+                      'tensility' : 1.0,
+
+                      'windage': 1.0
+                      }
 
 settings.manual_inds = []
 settings.manual_forces = []

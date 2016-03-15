@@ -383,6 +383,7 @@ void add_cont( Globals& siku, const size_t& i1, const size_t& i2, const int& t )
 // TODO: move to 'geometric' module
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 {
+  Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
   int ires;  // !static? temporal variable to store geometry results
   vec2d center; // !static
   double size;  // !static? temporal dump
@@ -401,16 +402,16 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 //        return ei==2 && vi ==2;
 //      };
 
-  mat3d src_to_dest = loc_to_loc_mat( siku.es[c.i1].q, siku.es[c.i2].q );
+  mat3d src_to_dest = loc_to_loc_mat( e1.q, e2.q );
       // !static
-  mat3d dest_to_src = loc_to_loc_mat( siku.es[c.i2].q, siku.es[c.i1].q );
+  mat3d dest_to_src = loc_to_loc_mat( e2.q, e1.q );
       // !static
 
   vec2d r2 = - vec3_to_vec2( dest_to_src * NORTH );
 
-  for( auto& p : siku.es[c.i1].P )
+  for( auto& p : e1.P )
     loc_P1.push_back( vec3_to_vec2( p ) * (1.+tol) );
-  for( auto& p : siku.es[c.i2].P )
+  for( auto& p : e2.P )
     loc_P2.push_back( r2 +
          ( vec3_to_vec2( src_to_dest * p ) - r2 ) * (1.+tol) );
 
@@ -432,18 +433,25 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
       if( dump.size() > 2 ) c.init_size = size;  // only if size is area
 
       //search for length of original mutual edge
-      vec2d tv1 = vec3_to_vec2( siku.es[c.i1].P[ siku.es[c.i1].P.size()-1 ] );
+      vec2d tv1 = vec3_to_vec2( e1.P[ e1.P.size()-1 ] );
       vec2d tv2 = {};
-      for( size_t i = 0; i< siku.es[c.i1].P.size(); i++)
+      c.init_len = 0.;
+      for( size_t i = 0; i< e1.P.size(); i++)
         {
           tv2 = tv1;
-          tv1 = vec3_to_vec2( siku.es[c.i1].P[i] );
-          if( line_seg_inter( {0.,0.}, r12, tv1, tv2, center )  && tv1 != tv2 )
+          tv1 = vec3_to_vec2( e1.P[i] );
+          if( segment2d_old_inter( {0.,0.}, r12, tv1, tv2, center )
+              && tv1 != tv2 )
             {
               c.init_len = (tv2 - tv1).abs();
               break;
             }
         }
+
+      // if no edges such edges detected: L = S / Re, Re - radius of equivalent
+      // circle of geometric mean of areas
+      if( !c.init_len && dump.size() > 2 )
+        c.init_len = size * sqrt( M_PI / sqrt( e1.A * e2.A ) );
     }
 }
 
@@ -463,7 +471,8 @@ void _share( ContactDetector::Contact& c, Globals& siku, const double& tol )
           size_t jm1 = ( j + e2.P.size() - 1 ) % e2.P.size(); // j-1 mod size
           size_t ip1 = (i+1) % e1.P.size();
 
-          //cout<<"prejoint "<<i<<"-"<<ip1<<":"<<e1.P.size()<<" | "<<j<<"-"<<jm1<<":"<<e2.P.size()<<endl;
+          //cout<<"prejoint "<<i<<"-"<<ip1<<":"<<e1.P.size()
+          //    <<" | "<<j<<"-"<<jm1<<":"<<e2.P.size()<<endl;
           if( abs2(e1.P[ ip1 ] - e2.P[ jm1 ]) < tolerance )
             {
               //cout<<"joint"<<endl;

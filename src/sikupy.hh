@@ -257,45 +257,52 @@ private:
   read_long ( PyObject* pint, long& x );
 
   //! \brief Reads string
-  //! \param pstr an Python object to read from
+  //! \param pstr a Python object to read from
   //! \param str where to read to
   //! \return true on success, false on fail
   bool
   read_string ( PyObject* pstr, string& str );
 
   //! \brief Reads vector of strings
-  //! \param pstrlist an Python object to read from
+  //! \param pstrlist a Python object to read from
   //! \param strv where to read to
   //! \return true on success, false on fail
   bool
   read_string_vector ( PyObject* pstrlist, vector < string >& strv );
 
   //! \brief Reads vector of long integers from a list
-  //! \param plist an Python object to read from
+  //! \param plist a Python object to read from
   //! \param xs where to read to
   //! \return true on success, false on fail
   bool
   read_long_vector ( PyObject* plist, vector < long >& xs );
 
   //! \brief Reads vector of doubles from a list
-  //! \param plist an Python object to read from
+  //! \param plist a Python object to read from
   //! \param xs where to read to
   //! \return true on success, false on fail
   bool
   read_double_vector ( PyObject* plist, vector < double >& xs );
 
   //! \brief Reads vec3d from python tuple
-  //! \param pVec an Python object to read from
+  //! \param pVec a Python object to read from
   //! \param v where to read to
   //! \return true on success, false on fail
   bool read_vec3d ( PyObject* pVec, vec3d& v );
 
   //! \brief Reads vector of vec3d from a list of 3 element lists
-  //! \param plist an Python object to read from
+  //! \param plist a Python object to read from
   //! \param vs where to read to
   //! \return true on success, false on fail
   bool
   read_vec3d_vector ( PyObject* plist, vector < vec3d >& vs );
+
+  //! \brief Reads map, in which: key = string, value = double from 'dict'
+  //! \param pDict a Python object of type 'dict' to read from
+  //! \param m a map with key = string, value = double to read to
+  //! return true on success, false on fail
+  bool
+  read_str_doub_map ( PyObject* pDict, map < string, double >& m );
 
   //! \brief reading time_duration object
   //! \param[in] pobj a Python object to read from

@@ -10,6 +10,7 @@
 #ifndef GLOBALS_HH
 #define GLOBALS_HH
 
+#include <map>
 #include <vector>
 #include <string>
 
@@ -77,7 +78,8 @@ struct Globals
 
   // IMPROVE: reconsider this mechanism
   //! physical constants
-  std::vector <double> phys_consts;
+  //std::vector <double> phys_consts;
+  std::map <std::string, double> phys_consts;
 
   //! model time 
   ModelTime time;

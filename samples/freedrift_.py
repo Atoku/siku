@@ -292,8 +292,21 @@ def main():
     #siku.settings.loadfile = 'siku-2014-01-01-12:00:00.h5'
     siku.settings.loadfile = 'save_test.h5'
 
-    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-                                  1, 1, 1, 1, 1 ]
+##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
+##                                  1, 1, 1, 1, 1 ]
+    
+    siku.settings.phys_consts = { 'rigidity' : 5000,
+                                  'viscosity' : 10000000,
+                                  'rotatability' : 0.75,
+                                  'tangency' : -0.00003,
+                                  
+                                  'elasticity' : -10000.0,
+                                  'bendability' : 1.0,
+                                  'solidity' : 0.2,
+                                  'tensility' : 0.1,
+
+                                  'windage': 0.01
+                                  }
 
 ##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
 ##    siku.settings.contact_value = 1000
