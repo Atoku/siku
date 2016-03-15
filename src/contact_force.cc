@@ -285,7 +285,8 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
 //      print(p2);
 //      print( p2 - p1 );
 //      cout<<"---\n";
-      vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability;
+      vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability *
+          c.init_len;
       // * c.init_size OR c.init_len;
 //      print (F);
 
@@ -471,11 +472,8 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       double sinX;
       double cosX;
 
-      if( segment2d_line_inter( p11, p12, p21, p22, X ) ) /// or line_seg_inter
-        {
-          sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
-          cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );
-        }
+      sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
+      cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );
 
       double Al = 0.5 * cross( p12 - X, p21 - X );
       double Ar = 0.5 * cross( p22 - X, p11 - X );

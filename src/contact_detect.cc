@@ -440,7 +440,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
         {
           tv2 = tv1;
           tv1 = vec3_to_vec2( e1.P[i] );
-          if( segment2d_old_inter( {0.,0.}, r12, tv1, tv2, center )
+          if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, center )
               && tv1 != tv2 )
             {
               c.init_len = (tv2 - tv1).abs();

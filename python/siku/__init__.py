@@ -105,17 +105,17 @@ settings.border_mark = 0
 ##settings.phys_consts = [ 1, 1, 1, 1, 1,\
 ##                         1, 1, 1, 1, 1 ] # yet senseless
 ### YET IS FOR TEST
-settings.phys_consts = { 'rigidity' : 1.0,
-                      'viscosity' : 1.0,
-                      'rotatability' : 1.0,
-                      'tangency' : 1.0,
+settings.phys_consts = { 'rigidity' : 1.0,  #'bouncing' on impact
+                      'viscosity' : 1.0,    #'sticking' on impact
+                      'rotatability' : 1.0, #part of Force applied to rotation
+                      'tangency' : 1.0,     #part of Force applied to sliding
                       
-                      'elasticity' : 1.0,
-                      'bendability' : 1.0,
-                      'solidity' : 1.0,
-                      'tensility' : 1.0,
+                      'elasticity' : 1.0,   #hardness of spring in joints
+                      'bendability' : 1.0,  #prt f sprng frc ap to rotation
+                      'solidity' : 1.0,     #part of extension ap to damage
+                      'tensility' : 1.0,    #extension-without-damage cap
 
-                      'windage': 1.0
+                      'windage': 1.0        #part of wind applied to force
                       }
 
 settings.manual_inds = []

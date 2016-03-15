@@ -10,78 +10,33 @@
 
 namespace Geometry
 {
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~ local utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-////Deprecated!
-//  // returns point on line given by two points, which is calculated as a
-//  // scaled vector between those two points
-//  inline pnt2d pnt_on_line ( const pnt2d& p1, const pnt2d& p2, const double& d )
-//  {
-//    return p1 + d * ( p2 - p1 );
-//  }
 
 // ~~~~~~~~~~~~~~~~~~~~ segment2d implementations ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  int segment2d_line_inter( const pnt2d& a1, const pnt2d& a2,
+
+  bool segment2d_intersect( const pnt2d& a1, const pnt2d& a2,
                         const pnt2d& b1, const pnt2d& b2, pnt2d& X )
   {
       // algorithm taken from
       // http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
 
-    vec2d a = a2 - a1, b = b2 - b1, ab = a1 - b1;
+      vec2d a = a2 - a1, b = b2 - b1, ab = b1 - a1;
 
-    double d = cross( b, a ); // denominator, signifies if lines are parallel
-    double na = cross ( b, ab ); // numerator of a
-    double nb = cross( a, ab ); // numerator of b
+      // Cramer's rule determinants
+      double D = cross( b, a ),  // signifies if lines are parallel
+            Da = cross( b, ab ),
+            Db = cross( a, ab );
 
-
-    if ( d == 0. )  // lines are parallel
-      {
-        if ( na == 0. || nb == 0. )  // lines are the same
-          {
-            X = ( a1 + a2 + b1 + b2 ) / 4.; // middle point
-            return 2;
-          }
-        else
-          return 0;  // lines don`t cross
-      }
-    else  // lines are NOT parallel
-      {
-        double ua = na / d;
-        //double ub = nb / d;
-        //X = pnt_on_line ( a1, a2, ua );
-        X = a1 + ua * a;
-        return 1;
-      }
-    return 0;
-  }
-
-  bool segment2d_old_inter( const pnt2d& a1, const pnt2d& a2,
-                        const pnt2d& b1, const pnt2d& b2, pnt2d& X )
-  {
-      // algorithm taken from
-      // http://algolist.manual.ru/maths/geom/intersect/lineline2d.php
-
-      vec2d a = a2 - a1, b = b2 - b1, ab = a1 - b1;
-
-      // denominator, signifies if lines are parallel
-      double d = cross( b, a );
-
-      // numerator of a
-      double na = cross ( b, -ab );
-
-      // numerator of b
-      double nb = cross( a, -ab );
-
-      if ( d == 0. )  // lines are parallel
+      if ( D == 0. )  // lines are parallel
         {
-          if ( na == 0. || nb == 0. )  // lines are the same
+          if ( Da == 0. || Db == 0. )  // lines are the same
             {
               double aa;  // a1-a2 distance
               double ab1;  // a1-b1 distance
               double ab2;  // a1-b2 distance
 
-              if ( a1.getx() == a2.getx() )  // if lines are vertical - set interposition
+              if ( a1.getx() == a2.getx() )  // if lines are vertical -
+                                             // set interposition
                 {
                   aa = a2.gety() - a1.gety();
                   ab1 = b1.gety() - a1.gety();
@@ -101,13 +56,11 @@ namespace Geometry
                     return false;
                   if ( ab2 > 0. && ab2 < aa )  // b2 within 'a'
                     {
-                      //X = pnt_on_line ( a1, a2, ab2 / ( 2. * aa ) );
                       X = a1 + a * ( ab2 / ( 2. * aa ) );
                       return true;
                     }
                   if ( ab2 >= aa )  // 'a' within 'b'
                     {
-                      //X = pnt_on_line ( a1, a2, 0.5 );
                       X = a1 + a * 0.5;
                       return true;
                     }
@@ -116,19 +69,16 @@ namespace Geometry
                 {
                   if ( ab2 <= 0. )  // b2 backwards from a1
                     {
-                      //X = pnt_on_line ( a1, a2, ab1 / ( 2. * aa ) );
                       X = a1 + a * ( ab1 / ( 2. * aa ) );
                       return true;
                     }
                   if ( ab2 > 0. && ab2 < aa )  // b2 within 'a' segment
                     {
-                      //X = pnt_on_line ( a1, a2, ( ab1 + ab2 ) / ( 2. * aa ) );
                       X = a1 + a * ( ( ab1 + ab2 ) / ( 2. * aa ) );
                       return true;
                     }
                   if ( ab2 >= aa )  // b2 further than a2
                     {
-                      //X = pnt_on_line ( a1, a2, ( aa + ab1 ) / ( 2. * aa ) );
                       X = a1 + a * ( ( aa + ab1 ) / ( 2. * aa ) );
                       return true;
                     }
@@ -137,13 +87,11 @@ namespace Geometry
                 {
                   if ( ab2 <= 0. )  // 'a' within 'b'
                     {
-                      //X = pnt_on_line ( a1, a2, 0.5 );
                       X = a1 + a * 0.5;
                       return true;
                     }
                   if ( ab2 > 0. && ab2 < aa )  // b2 within 'a' segment
                     {
-                      //X = pnt_on_line ( a1, a2, ( aa + ab2 ) / ( 2. * aa ) );
                       X = a1 + a * ( ( aa + ab2 ) / ( 2. * aa ) );
                       return true;
                     }
@@ -156,14 +104,13 @@ namespace Geometry
         }
       else  // lines are NOT parallel
         {
-          double ua = na / d;
-          double ub = nb / d;
+          double pa = Da / D;
+          double pb = Db / D;
 
           // intersection located within segments
-          if ( ua >= 0. && ua <= 1. && ub >= 0. && ub <= 1. )
+          if ( pa >= 0. && pa <= 1. && pb >= 0. && pb <= 1. )
             {
-              //X = pnt_on_line ( a1, a2, ua );
-              X = a1 + ua * a;
+              X = a1 + pa * a;
               return true;
             }
         }
@@ -172,43 +119,5 @@ namespace Geometry
 
 // --------------------------------------------------------------------------
   
-  /*! \brief Determine the intersection of two segments defined by their
-      vertices
-
-      \param[in] A0 1st vertex of the 1st segment
-      \param[in] A1 2st vertex of the 1st segment
-      \param[in] B0 1st vertex of the 2st segment
-      \param[in] B1 2st vertex of the 2st segment
-      \param[out] X intersection point. Underfined if return value is
-                 false
-
-      \return true if segments intersect, false otherwise
-
-   */
-  bool segment2d_intersect ( const pnt2d& A0, const pnt2d& A1,
-                             const pnt2d& B0, const pnt2d& B1,
-                             pnt2d& X )
-  {
-    vec2d a(A1-A0), b(B1-B0), c(B0-A0); // connection vectors
-
-    double D1, D2, D;             // Cramer's rule determinants
-    double s, t;                  // parameters of the params eq.
-
-    D = b.cross(a);
-
-    // break if denominator 0, parallel guys.
-    if ( D == 0 ) return false;
-
-    D1 = b.cross(c);
-    D2 = a.cross(c);
-
-    s = D1 / D;
-    t = D2 / D;
-
-    X = A0 + s * a;
-    if ( s < 0 || 1 < s || t < 0 || 1 < t ) return false;
-
-    return true;
-  }
 
 }
