@@ -503,6 +503,6 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i2].N += torque2;
 
       double t = (abs(Al) + abs(Ar)) / ( siku.es[c.i1].A + siku.es[c.i2].A );
-      //c.durability -= (t > epsilon) ? t * sigma : 0.;
+      c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
 }

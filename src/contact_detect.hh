@@ -124,6 +124,10 @@ public:
     size_t v21 {};
     size_t v22 {};
 
+    //! \brief Search for common (the closest) edge of two elements in contact.
+    //! \return: mean length of edges on success, 0 on failure
+    double find_edges( Globals& siku );
+
 //    union
 //    {
 //      _Frozen _F;

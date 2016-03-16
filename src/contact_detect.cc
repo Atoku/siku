@@ -56,6 +56,61 @@ inline double _dist2( const vec3d& v1, const vec3d& v2 )
 // https://s-media-cache-ak0.pinimg.com/originals/5f/fc/42/5ffc4224b938d1fb0abee887e4add84b.jpg
 // Yet simple 'sort' from <algorithm> is used.
 
+double ContactDetector::Contact::find_edges( Globals& siku )
+{
+  if( !i1 && !i2 ) return 0.; // if no elements were set
+
+  //search for mutual edge
+  Element& e1 = siku.es[i1], & e2 = siku.es[i2];
+
+  bool first_found = false, second_found = false;
+  double l1 =0, l2 =0;
+
+  mat3d src_to_dest = loc_to_loc_mat( e1.q, e2.q );
+  vec2d dump, r12 = vec3_to_vec2( src_to_dest * NORTH );
+
+  vec2d tv1 = vec3_to_vec2( e1.P[ e1.P.size()-1 ] );
+  vec2d tv2 = {};
+
+  for( size_t i = 0; i< e1.P.size(); i++)
+    {
+      tv2 = tv1;
+      tv1 = vec3_to_vec2( e1.P[i] );
+      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump )
+          && tv1 != tv2 )
+        {
+          l1 = (tv2 - tv1).abs();
+          v11 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
+          v12 = i;
+          first_found = true;
+          break;
+        }
+    }
+
+  tv1 = vec3_to_vec2( e2.P[ e2.P.size()-1 ] );
+  for( size_t i = 0; i< e2.P.size(); i++)
+    {
+      tv2 = tv1;
+      tv1 = vec3_to_vec2( e2.P[i] );
+      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump )
+          && tv1 != tv2 )
+        {
+          l2 = (tv2 - tv1).abs();
+          v21 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
+          v22 = i;
+          second_found = true;
+          break;
+        }
+    }
+
+  if( first_found && second_found )
+    return ( l1 + l2 ) * 0.5;
+
+  return 0.;
+}
+
+//---------------------------------------------------------------------
+
 // IMPROVE: remove code duplication in 'find_pairs'
 void ContactDetector::sweep_n_prune( Globals& siku )
 {
@@ -206,7 +261,8 @@ void ContactDetector::freeze( Globals& siku, double tol )
 
     case CF_HOPKINS :
       for( auto& c : cont )
-        _share( c, siku, tol );
+        _freeze( c, siku, tol );
+        //_share( c, siku, tol );
       break;
   }
 
@@ -433,20 +489,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
       if( dump.size() > 2 ) c.init_size = size;  // only if size is area
 
       //search for length of original mutual edge
-      vec2d tv1 = vec3_to_vec2( e1.P[ e1.P.size()-1 ] );
-      vec2d tv2 = {};
-      c.init_len = 0.;
-      for( size_t i = 0; i< e1.P.size(); i++)
-        {
-          tv2 = tv1;
-          tv1 = vec3_to_vec2( e1.P[i] );
-          if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, center )
-              && tv1 != tv2 )
-            {
-              c.init_len = (tv2 - tv1).abs();
-              break;
-            }
-        }
+      c.init_len = c.find_edges( siku );
 
       // if no edges such edges detected: L = S / Re, Re - radius of equivalent
       // circle of geometric mean of areas
