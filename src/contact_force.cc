@@ -40,6 +40,11 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku );
 
 void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku );
 
+// -----------------------------------------------------------------------
+
+void _distributed_springs( ContactDetector::Contact& c, Globals& siku );
+
+
 // ============================== contact push ==============================
 
 void contact_push( ContactDetector::Contact& c, Globals& siku )
@@ -53,6 +58,11 @@ void contact_push( ContactDetector::Contact& c, Globals& siku )
     case CF_HOPKINS:
       _hopkins_frankenstein( c, siku );
       break;
+
+    case CF_DIST_SPRINGS:
+      _distributed_springs( c, siku );
+      break;
+
   }
 }
 
@@ -506,3 +516,212 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
 }
+
+// -----------------------------------------------------------------------
+
+void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
+{
+  int ires; //  temporal variable to store geometry results
+  vec3d tv; //
+  Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
+
+  // TODO: such errors should be removed by removing their reason
+  if( (e1.flag & Element::F_ERRORED) ||
+      (e2.flag & Element::F_ERRORED) )
+    return;
+
+  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+
+  vec2d center;
+  double area;
+  vector<PointStatus> stats;
+  vector<vec2d> interPoly;
+
+  if( c.type != ContType::JOINT )
+    {
+      std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
+      std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
+
+      // polygons in local (e1) coords
+      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+
+      // check for errors
+      if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+      if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+
+      // calculating intersection zone and properties
+      if( intersect( loc_P1, loc_P2, interPoly, &stats, &center, &area ) > 2 )
+        {
+          // mark contact as a 'collision'
+          c.type = ContType::COLLISION;
+
+          //TODO: clean this mess
+          vec2d p1p2 [2];  // p1p2 = two points: p1 and p2
+          size_t np = 0;  // amount of edge-edge intersections
+
+          // noob search for p1 and p2
+          for(size_t i = 0; i < stats.size(); ++i )
+            if( stats[i] == PointStatus::EDGE )
+              {
+                if( np < 2 )  p1p2[ np ] = interPoly[ i ];
+                np++;
+              }
+
+          if( np != 2 )  // inapplicable  //UNDONE: add solution for 'fencing'
+                                          // intersections
+            {
+              c.type = ContType::NONE;
+              return ;
+            }
+
+          c.generation = 0;  // refreshing contact for avoiding deletion
+
+////////////////////////
+          // point from e1 center to e2 center
+          tv = e2_to_e1 * NORTH;
+          vec2d r12 { tv.x, tv.y };
+
+          // and its ort
+          vec2d ort { r12 / sqrt( tv.x*tv.x + tv.y*tv.y ) };
+
+          // point from e2 center to aim
+          vec2d r2 { center - r12 };
+
+          // e1 aim speed (coz of spin + propagation)
+          vec2d v1 { vec3_to_vec2( e1.V ) +
+              rot_90_cw( center ) * ( - e1.W.z  * siku.planet.R ) };
+
+          // e2 aim speed (spin + propagation)
+          vec2d v2 { vec3_to_vec2( e2_to_e1 * e2.V )
+                     + rot_90_cw( center - r12 ) *
+                     ( - e2.W.z * siku.planet.R ) };
+
+          // velocity difference at aim point
+          vec2d v12 { v1 - v2 };
+////////////////////////
+
+          // directions and applying point
+          vec2d dp = p1p2[1] - p1p2[0];
+          vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
+          vec2d norm { tau.y, -tau.x };
+          vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
+
+          double Kne = siku.phys_consts["rigidity"],
+                 Kni = siku.phys_consts["viscosity"],
+                 Kw = siku.phys_consts["rotatability"],
+                 Kt = siku.phys_consts["tangency"];
+
+          double Asqrt = sqrt( area );
+
+          double da_dt = siku.time.get_dt() ?
+              ( Asqrt - sqrt( c.area ) ) / siku.time.get_dt() : 0.;
+
+          vec2d F = ( Kne * Asqrt  +
+                      Kni * da_dt ) * siku.planet.R * norm;
+
+          //////////  testing tangential force
+          F += tau * ( tau * v12 ) * Asqrt * Kt * siku.planet.R2;
+
+          double torque1 =
+              Kw * siku.planet.R_rec * cross( center, F );
+
+          double torque2 =
+              Kw * siku.planet.R_rec * cross( center -
+              vec3_to_vec2( e2_to_e1 * NORTH ), F );
+
+          // signs are fitted manually
+          e1.F -= vec2_to_vec3( F );
+          e1.N -= torque1;
+
+          e2.F += e1_to_e2 * vec2_to_vec3( F );
+          e2.N += torque2;
+
+          c.area = area;
+
+        }
+    }
+  else  // <=> if( c.type == ContType::JOINT )
+    {
+      double K = siku.phys_consts["elasticity"],
+             Kw = siku.phys_consts["bendability"],
+             sigma = siku.phys_consts["solidity"],
+             epsilon = siku.phys_consts["tensility"];
+
+      vec3d tv1, tv2;
+
+      vec2d p1 = c.p1, p2 = c.p2;
+      // UNDONE: move the following section into 'vec2_to_vec3' and
+      // 'vec3_to_vec2' in module 'coordinates'
+      tv1 = vec2_to_vec3( c.p3 );                       // just some additional
+      tv1.z = sqrt( 1. - tv1.x*tv1.x - tv1.y*tv1.y );   // accuracy to avoid
+      tv2 = vec2_to_vec3( c.p4 );                       // errors caused by
+      tv2.z = sqrt( 1. - tv2.x*tv2.x - tv2.y*tv2.y );   // rounding
+      vec2d p3 = vec3_to_vec2( e2_to_e1 * tv1 ),
+            p4 = vec3_to_vec2( e2_to_e1 * tv2 );
+
+      double hardness = K * c.init_len * c.durability * siku.planet.R;
+
+      // some additional variables to avoid unnecessary sqrt...
+      vec2d dr1 = p4 - p1,
+            dr2 = p3 - p2;
+      double dl1 = abs( dr1 ), dl2 = abs( dr2 );
+
+      vec2d F1 = dr1 * hardness,
+            F2 = dr2 * hardness;
+
+      vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
+      double torque1 = Kw * siku.planet.R_rec *
+          ( cross( p1, F1 ) + cross( p2, F2 ) );
+      double torque2 = Kw * siku.planet.R_rec *
+          ( cross( p4 - r12, F1 ) + cross( p3 - r12, F2 ) );
+
+      // signs are fitted manually
+      e1.F -= vec2_to_vec3( F1 + F2 );
+      e1.N -= torque1;
+
+      e2.F += e1_to_e2 * vec2_to_vec3( F1 + F2 );
+      e2.N += torque2;
+
+      // durability change
+      double r_size = 1. / c.init_size, // reversed size
+             dmax = max( dl1, dl2 ),    // maximal stretch
+             dave = (dl1 + dl2) * 0.5;  // average stretch
+
+      c.durability -= ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0.;
+
+
+///// OLD
+//      vec2d p1 = c.p1;
+//      vec3d tv = vec2_to_vec3( c.p2 );
+//      tv.z = sqrt(1. - tv.x*tv.x - tv.y*tv.y);
+//      vec2d p2 = vec3_to_vec2( e2_to_e1 * tv );
+//
+//      vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability * c.init_len;
+//
+//      double torque1 =
+//          Kw * siku.planet.R_rec * cross( p1, F );
+//
+//      double torque2 =
+//          Kw * siku.planet.R_rec * cross( p2 -
+//             vec3_to_vec2( e2_to_e1 * NORTH) , F );
+//
+//      // signs are fitted manually
+//      e1.F -= vec2_to_vec3( F );
+//      e1.N -= torque1;
+//
+//      e2.F += e1_to_e2 * vec2_to_vec3( F );
+//      e2.N += torque2;
+//
+//      double t = (p2-p1).abs() *
+//          1. / ( vec3_to_vec2(e2_to_e1 * NORTH).abs() );
+//          //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( e2_to_e1 * NORTH)).abs() );
+//
+//      c.durability -= (t > epsilon) ? t * sigma : 0.;
+
+    }
+
+}
+
+// -----------------------------------------------------------------------

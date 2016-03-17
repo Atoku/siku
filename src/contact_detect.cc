@@ -42,6 +42,8 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
 
 void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol );
 void _share( ContactDetector::Contact& c, Globals& siku, const double& tol );
+void _dist_freeze( ContactDetector::Contact& c, Globals& siku,
+                   const double& tol );
 
 inline double _sqr( const double& x ) { return x*x; }
 
@@ -264,6 +266,11 @@ void ContactDetector::freeze( Globals& siku, double tol )
         _freeze( c, siku, tol );
         //_share( c, siku, tol );
       break;
+
+    case CF_DIST_SPRINGS :
+      for( auto& c : cont )
+        _dist_freeze( c, siku, tol );
+      break;
   }
 
 }
@@ -458,26 +465,28 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 //        return ei==2 && vi ==2;
 //      };
 
-  mat3d src_to_dest = loc_to_loc_mat( e1.q, e2.q );
+  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
       // !static
   mat3d dest_to_src = loc_to_loc_mat( e2.q, e1.q );
       // !static
 
-  vec2d r2 = - vec3_to_vec2( dest_to_src * NORTH );
+  //vec2d r2 = - vec3_to_vec2( dest_to_src * NORTH ); //TODO: select correct
+  vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
 
   for( auto& p : e1.P )
     loc_P1.push_back( vec3_to_vec2( p ) * (1.+tol) );
   for( auto& p : e2.P )
-    loc_P2.push_back( r2 +
-         ( vec3_to_vec2( src_to_dest * p ) - r2 ) * (1.+tol) );
+    loc_P2.push_back( r12 +
+         ( vec3_to_vec2( e2_to_e1 * p ) - r12 ) * (1.+tol) );
 
   if( Geometry::intersect( loc_P1, loc_P2 , dump, &ps, &center, &size ) )
       //&& count() ) // corner intersections are ignored
     {
       c.type = ContType::JOINT;
       c.p1 = center;
-      vec2d r12 = vec3_to_vec2( src_to_dest * NORTH );
+      //vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH ); //calculated before
       vec2d r2 = center - r12;
+
       c.p2 = vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) );
       //c._F = { center, vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) ) };
 //      print(center);
@@ -532,6 +541,66 @@ void _share( ContactDetector::Contact& c, Globals& siku, const double& tol )
             }
         }
 
+}
+
+// --------------------------------------------------------------------------
+
+void _dist_freeze( ContactDetector::Contact& c, Globals& siku,
+                   const double& tol )
+{
+  Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
+
+  vec2d center;
+  double size;
+  std::vector<vec2d> loc_P1;  // e1.P vertices in local coords
+  std::vector<vec2d> loc_P2;  // e2.P vertices in local coords
+  std::vector<vec2d> dump;
+  std::vector<PointStatus> ps;
+
+  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+
+  //OR vec2d r2 = - vec3_to_vec2( e1_to_e2 * NORTH );
+  vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
+
+  // just-for-sure check
+  if( c.find_edges( siku ) )
+    {
+      // important vertices in 2d relied to e1
+      vec2d t11 = vec3_to_vec2( e1.P[c.v11] ),
+            t12 = vec3_to_vec2( e1.P[c.v12] ),
+            t21 = vec3_to_vec2( e2_to_e1 * e2.P[c.v21] ),
+            t22 = vec3_to_vec2( e2_to_e1 * e2.P[c.v22] );
+
+      // if edges are close enough
+      if( segment2d_distance( t11, t12, t21, t22 ) < abs( r12 ) * tol )
+        {
+          c.type = ContType::JOINT;
+
+          vec2d c1 = ( t11 + t22 ) * 0.5;
+          vec2d c2 = ( t12 + t21 ) * 0.5;
+
+          // points of contact in two coord systems
+          c.p1 = c1;
+          c.p2 = c2;
+          c.p3 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( c2 ) );
+          c.p4 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( c1 ) );
+
+
+          c.init_len = abs( c1 - c2 );  // initial len is distance between
+                                        // 'springs'
+          c.init_size = abs( r12 );     // initial size is distance between
+                                        // centers of elements
+          c.durability = 1.;
+        }
+    }
+  else
+    {
+      // UNDONE: remove this
+      cout<<"TEST ERROR IN _dist_freeze"<<endl;
+      cin.get();
+      throw;
+    }
 }
 
 // --------------------------------------------------------------------------

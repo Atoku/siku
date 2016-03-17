@@ -160,8 +160,10 @@ def main():
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
+##    siku.settings.force_model = \
+##                    siku.CONTACT_FORCE_MODEL['Hopkins_Frankenstein']
     siku.settings.force_model = \
-                    siku.CONTACT_FORCE_MODEL['Hopkins_Frankenstein']
+                    siku.CONTACT_FORCE_MODEL['distributed_spring']
 
     siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
 
@@ -174,7 +176,7 @@ def main():
                                   'rotatability' : 0.75,
                                   'tangency' : -0.00003,
                                   
-                                  'elasticity' : -500000.0,
+                                  'elasticity' : -1000000.0,
                                   'bendability' : 1.0,
                                   'solidity' : 0.2,
                                   'tensility' : 0.1,

@@ -119,5 +119,16 @@ namespace Geometry
 
 // --------------------------------------------------------------------------
   
+  double segment2d_distance( const pnt2d& a1, const pnt2d& a2,
+                             const pnt2d& b1, const pnt2d& b2 )
+  {
+    pnt2d X;
+    if( segment2d_intersect( a1, a2, b1, b2, X ) )
+      return 0.;
+
+    // optimized minimal distance between vertices
+    return sqrt( min( min( abs2(a1-b1), abs2(a1-b2) ),
+                      min( abs2(a2-b1), abs2(a2-b2) ) ) );
+  }
 
 }

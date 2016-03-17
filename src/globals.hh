@@ -36,7 +36,8 @@ enum CONTACT_FORCE_MODEL : unsigned long
 {
   CF_DEFAULT = 0,
   CF_TEST_SPRINGS = 0,
-  CF_HOPKINS = 1
+  CF_HOPKINS = 1,
+  CF_DIST_SPRINGS = 2
 };
 
 //! \brief Structure to keep all "global" data here. This namespace

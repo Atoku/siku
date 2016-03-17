@@ -47,7 +47,8 @@ CONTACT_DET_FREQ_MET = {
 
 CONTACT_FORCE_MODEL = {
     'default' : 0, 'test_springs' : 0,
-    'Hopkins_Frankenstein' : 1
+    'Hopkins_Frankenstein' : 1,
+    'distributed_spring' : 2
     }
 
 WIND_SOURCES = {

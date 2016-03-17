@@ -113,18 +113,26 @@ public:
     int step{ -1 };  // step when was created. -1 marks default object
     double area{ 0. };  // area of contact
     double durability{ 1. };  // IMPROVE: must be discussed
+    // TODO: discuss and change following names
     double init_size{ 0. };  // initial size. Must be discussed
     double init_len{ 0. }; // initial length. Must be discussed
     int generation{ 0 };  // 'oldness'
 
-    Geometry::vec2d p1{}, p2{};  // positions of joint center in local
-                                 // coords of contacting polygons
+    // In different physics approaches the points` meaning is different:
+    // in _test_spring p1 and p2 are the positions of 'joint point' in
+    // local coords of 1st and 2nd polygons, in _dist_springs: p1, p2 -
+    // positions in 1st poly, p3,p4 - 2nd (as the approach uses 2 springs)
+    Geometry::vec2d p1{}, p2{},  // positions of joint centerS in local
+                    p3{}, p4{};  // coords of contacting polygons
+
+
     size_t v11 {};  // indexes of vertices of shearing edge
     size_t v12 {};
     size_t v21 {};
     size_t v22 {};
 
-    //! \brief Search for common (the closest) edge of two elements in contact.
+    //! \brief Search for common (or hopefully the closest) edge of two
+    // elements in contact.
     //! \return: mean length of edges on success, 0 on failure
     double find_edges( Globals& siku );
 
