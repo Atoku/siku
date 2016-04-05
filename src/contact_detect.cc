@@ -45,6 +45,9 @@ void _share( ContactDetector::Contact& c, Globals& siku, const double& tol );
 void _dist_freeze( ContactDetector::Contact& c, Globals& siku,
                    const double& tol );
 
+void _select_freeze( std::vector<ContactDetector::Contact>& cont,
+                     Globals& siku, const double& tol );
+
 inline double _sqr( const double& x ) { return x*x; }
 
 inline double _dist2( const vec3d& v1, const vec3d& v2 )
@@ -68,8 +71,10 @@ double ContactDetector::Contact::find_edges( Globals& siku )
   bool first_found = false, second_found = false;
   double l1 =0, l2 =0;
 
-  mat3d src_to_dest = loc_to_loc_mat( e1.q, e2.q );
-  vec2d dump, r12 = vec3_to_vec2( src_to_dest * NORTH );
+  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+  vec2d dump, r12 = vec3_to_vec2( e2_to_e1 * NORTH ),
+              r21 = vec3_to_vec2( e1_to_e2 * NORTH );
 
   vec2d tv1 = vec3_to_vec2( e1.P[ e1.P.size()-1 ] );
   vec2d tv2 = {};
@@ -94,7 +99,7 @@ double ContactDetector::Contact::find_edges( Globals& siku )
     {
       tv2 = tv1;
       tv1 = vec3_to_vec2( e2.P[i] );
-      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump )
+      if( segment2d_intersect( {0.,0.}, r21, tv1, tv2, dump )
           && tv1 != tv2 )
         {
           l2 = (tv2 - tv1).abs();
@@ -254,24 +259,26 @@ void ContactDetector::freeze( Globals& siku, double tol )
   detect( siku );
 
   // actual freezing
-  switch( siku.cont_force_model )
-  {
-    case CF_DEFAULT : // same as CF_TEST_SPRINGS
-      for( auto& c : cont )
-        _freeze( c, siku, tol );
-      break;
+  _select_freeze( cont, siku, tol );
 
-    case CF_HOPKINS :
-      for( auto& c : cont )
-        _freeze( c, siku, tol );
-        //_share( c, siku, tol );
-      break;
-
-    case CF_DIST_SPRINGS :
-      for( auto& c : cont )
-        _dist_freeze( c, siku, tol );
-      break;
-  }
+//  switch( siku.cont_force_model )
+//  {
+//    case CF_DEFAULT : // same as CF_TEST_SPRINGS
+//      for( auto& c : cont )
+//        _freeze( c, siku, tol );
+//      break;
+//
+//    case CF_HOPKINS :
+//      for( auto& c : cont )
+//        _freeze( c, siku, tol );
+//        //_share( c, siku, tol );
+//      break;
+//
+//    case CF_DIST_SPRINGS :
+//      for( auto& c : cont )
+//        _dist_freeze( c, siku, tol );
+//      break;
+//  }
 
 }
 
@@ -286,8 +293,9 @@ void ContactDetector::freeze_links( Globals& siku )
 
   std::sort( cont.begin(), cont.end() );
 
-  for( auto& c : cont )
-    _freeze( c, siku, 0.1 );
+//  for( auto& c : cont )
+//    _freeze( c, siku, 0.1 );
+  _select_freeze( cont, siku, 0.1 );
 
 }
 
@@ -440,6 +448,31 @@ void add_cont( Globals& siku, const size_t& i1, const size_t& i2, const int& t )
 
 // --------------------------------------------------------------------------
 
+void _select_freeze( std::vector<ContactDetector::Contact>& cont,
+                     Globals& siku, const double& tol )
+{
+  switch( siku.cont_force_model )
+  {
+    case CF_DEFAULT : // same as CF_TEST_SPRINGS
+      for( auto& c : cont )
+        _freeze( c, siku, tol );
+      break;
+
+    case CF_HOPKINS :
+      for( auto& c : cont )
+        _freeze( c, siku, tol );
+        //_share( c, siku, tol );
+      break;
+
+    case CF_DIST_SPRINGS :
+      for( auto& c : cont )
+        _dist_freeze( c, siku, tol );
+      break;
+  }
+}
+
+// --------------------------------------------------------------------------
+
 //using namespace BG;
 // perform freezing on two elements by contact
 // implementation copied from 'contact_force'
@@ -583,9 +616,10 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku,
           // points of contact in two coord systems
           c.p1 = c1;
           c.p2 = c2;
-          c.p3 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( c2 ) );
-          c.p4 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( c1 ) );
-
+          vec3d tv1 = { c1.x, c1.y, sqrt( 1. - c1.x*c1.x - c1.y*c1.y ) };
+          vec3d tv2 = { c2.x, c2.y, sqrt( 1. - c2.x*c2.x - c2.y*c2.y ) };
+          c.p3 = vec3_to_vec2( e1_to_e2 * tv2 );
+          c.p4 = vec3_to_vec2( e1_to_e2 * tv1 );
 
           c.init_len = abs( c1 - c2 );  // initial len is distance between
                                         // 'springs'

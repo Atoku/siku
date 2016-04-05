@@ -68,10 +68,14 @@ namespace Geometry
   inline vec3d vec2_to_vec3( const vec2d& v2 )
   {
     return vec3d( v2.x / POINT_SCALE, v2.y / POINT_SCALE, 0. );
+//    return vec3d( v2.x / POINT_SCALE, v2.y / POINT_SCALE,
+//                  sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) / POINT_SCALE );
   }
   inline vec2d vec3_to_vec2( const vec3d& v3 )
   {
     return { v3.x * POINT_SCALE , v3.y * POINT_SCALE };
+//    double s_ = 1. / sqrt( 1. - v3.z*v3.z );
+//    return { v3.x * POINT_SCALE * s_, v3.y * POINT_SCALE * s_ };
   }
 
 // ------------------------ Manual debug checks -----------------------------

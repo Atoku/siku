@@ -318,7 +318,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
           1. / ( vec3_to_vec2(src_to_dest * NORTH).abs() );
           //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( src_to_dest * NORTH)).abs() );
 
-      c.durability -= (t > epsilon) ? t * sigma : 0.;
+      //c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
 
 }
@@ -649,11 +649,13 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
              sigma = siku.phys_consts["solidity"],
              epsilon = siku.phys_consts["tensility"];
 
+      double &R = siku.planet.R, &R_ = siku.planet.R_rec;
+
       vec3d tv1, tv2;
 
       vec2d p1 = c.p1, p2 = c.p2;
-      // UNDONE: move the following section into 'vec2_to_vec3' and
-      // 'vec3_to_vec2' in module 'coordinates'
+      // UNDONE: move the following '1-sqrt(...)' into 'vec2_to_vec3' and
+      // 'vec3_to_vec2' in module 'geometry'. OR it`s a mistake?
       tv1 = vec2_to_vec3( c.p3 );                       // just some additional
       tv1.z = sqrt( 1. - tv1.x*tv1.x - tv1.y*tv1.y );   // accuracy to avoid
       tv2 = vec2_to_vec3( c.p4 );                       // errors caused by
@@ -661,35 +663,61 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       vec2d p3 = vec3_to_vec2( e2_to_e1 * tv1 ),
             p4 = vec3_to_vec2( e2_to_e1 * tv2 );
 
-      double hardness = K * c.init_len * c.durability * siku.planet.R;
+      double hardness = K * c.init_len * c.durability * R,
+             rotatability = K * c.init_len * c.durability * 1./12.;
 
       // some additional variables to avoid unnecessary sqrt...
       vec2d dr1 = p4 - p1,
             dr2 = p3 - p2;
       double dl1 = abs( dr1 ), dl2 = abs( dr2 );
 
-      vec2d F1 = dr1 * hardness,
-            F2 = dr2 * hardness;
+      double mom1, mom2;
+
+      vec2d F = hardness * (dr1 + dr2) * 0.5;
 
       vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
-      double torque1 = Kw * siku.planet.R_rec *
-          ( cross( p1, F1 ) + cross( p2, F2 ) );
-      double torque2 = Kw * siku.planet.R_rec *
-          ( cross( p4 - r12, F1 ) + cross( p3 - r12, F2 ) );
+      mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +              //traction
+                    1.0 * rotatability * cross( p1 - p2, dr1 - dr2 ) );   //couple
+      mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
+                    1.0 * rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
-      // signs are fitted manually
-      e1.F -= vec2_to_vec3( F1 + F2 );
-      e1.N -= torque1;
+//      double torque1 =
+//          Kw * siku.planet.R_rec * cross( p1, F );
+//
+//      double torque2 =
+//          Kw * siku.planet.R_rec * cross( p2 -
+//             vec3_to_vec2( src_to_dest * NORTH) , F );
 
-      e2.F += e1_to_e2 * vec2_to_vec3( F1 + F2 );
-      e2.N += torque2;
+      e1.F -= vec2_to_vec3( F );
+      e1.N -= mom1;
+
+      e2.F += e1_to_e2 * vec2_to_vec3( F );
+      e2.N += mom2;
+
+////old
+//      vec2d F1 = dr1 * hardness,
+//            F2 = dr2 * hardness;
+//
+//      vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
+//      double torque1 = Kw * siku.planet.R_rec *
+//          ( cross( p1, F1 ) + cross( p2, F2 ) );
+//      double torque2 = Kw * siku.planet.R_rec *
+//          ( cross( p4 - r12, F1 ) + cross( p3 - r12, F2 ) );
+//
+//      // signs are fitted manually
+//      e1.F -= vec2_to_vec3( F1 + F2 );
+//      e1.N -= torque1;
+//
+//      e2.F += e1_to_e2 * vec2_to_vec3( F1 + F2 );
+//      e2.N += torque2;
+
 
       // durability change
       double r_size = 1. / c.init_size, // reversed size
              dmax = max( dl1, dl2 ),    // maximal stretch
              dave = (dl1 + dl2) * 0.5;  // average stretch
 
-      c.durability -= ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0.;
+      //c.durability -= ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0.;
 
 
 ///// OLD

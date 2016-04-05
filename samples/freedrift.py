@@ -71,7 +71,7 @@ def main():
     #siku.settings.wind_source_type = siku.WIND_SOURCES['TEST']
     siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
     w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w.make_test_field( 5.0,0. )
+    w.make_test_field( -3.0, 3.0 )
     siku.wind = w
 
     # ---------------------------------------------------------------------
@@ -97,10 +97,10 @@ def main():
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
 
-    nx = 7 #23
+    nx = 5 #23
     ny = 1 #22
     coords, links \
-        = NG.generate_plus( 267.0, 12.0, 280.0, 14.0, nx, ny, 0., 0. )
+        = NG.generate_plus( 267.0, 12.0, 276.0, 14.0, nx, ny, 0., 0. )
     siku.settings.links = links
 ##    nx = 8
 ##    ny = 3
@@ -176,12 +176,12 @@ def main():
                                   'rotatability' : 0.75,
                                   'tangency' : -0.00003,
                                   
-                                  'elasticity' : -1000000.0,
+                                  'elasticity' : -100000.0,
                                   'bendability' : 1.0,
                                   'solidity' : 0.2,
                                   'tensility' : 0.1,
 
-                                  'windage': 0.01
+                                  'windage': 0.01 #1
                                   }
 
 
