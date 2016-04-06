@@ -71,7 +71,7 @@ def main():
     #siku.settings.wind_source_type = siku.WIND_SOURCES['TEST']
     siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
     w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
-    w.make_test_field( -3.0, 3.0 )
+    w.make_test_field( -0.0, 0.0 )
     siku.wind = w
 
     # ---------------------------------------------------------------------
@@ -82,7 +82,7 @@ def main():
 
     #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     siku.time.start = siku.uw.times[st_t_ind]
-    siku.time.finish   = siku.time.start + hour *  720 #120
+    siku.time.finish   = siku.time.start + hour * 720 #120
 
     siku.time.dt       = ( siku.time.finish - siku.time.start ) / 1200 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
@@ -97,10 +97,10 @@ def main():
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
 
-    nx = 5 #23
-    ny = 1 #22
+    nx = 20 #23
+    ny = 20 #22
     coords, links \
-        = NG.generate_plus( 267.0, 12.0, 276.0, 14.0, nx, ny, 0., 0. )
+        = NG.generate_plus( 267.0, 12.0, 287.0, 27.0, nx, ny, 0.2, 0.2 )
     siku.settings.links = links
 ##    nx = 8
 ##    ny = 3
@@ -171,15 +171,15 @@ def main():
 ##                                  -10000.0, 1.00, 0.2, 0.1, \
 ##                                  0.01 ] #wind interaction adjuster
 
-    siku.settings.phys_consts = { 'rigidity' : 5000,
-                                  'viscosity' : 10000000,
-                                  'rotatability' : 0.75,
-                                  'tangency' : -0.00003,
+    siku.settings.phys_consts = { 'rigidity' : 5000,#5000
+                                  'viscosity' : 1000000,#10000000
+                                  'rotatability' : 0.75,#0.75
+                                  'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : -100000.0,
+                                  'elasticity' : -1000000.0,#-100000.0
                                   'bendability' : 1.0,
-                                  'solidity' : 0.2,
-                                  'tensility' : 0.1,
+                                  'solidity' : 0.05,
+                                  'tensility' : 0.615
 
                                   'windage': 0.01 #1
                                   }
@@ -188,12 +188,12 @@ def main():
     right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
     
 ##    siku.settings.manual_inds = right_inds
-##    siku.settings.manual_forces = [ (10.0, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
+##    siku.settings.manual_forces = [ (500.0/nx, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
 ##                                    for i in right_inds ]
 
-##    for i in right_inds:
-##        siku.elements[i].velo = (1.0, -0.01, 0.0)
-##        siku.elements[i].flag_state = element.Element.f_steady
+    for i in right_inds:
+        siku.elements[i].velo = (0.5, 0.01, 0.0)
+        siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
@@ -219,7 +219,7 @@ def presave( t, n, ns ):
 # --------------------------------------------------------------------------
 
 def initializations( siku, t ):
-    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"]) #24_20
 
 # --------------------------------------------------------------------------
 

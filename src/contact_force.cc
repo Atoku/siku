@@ -318,7 +318,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
           1. / ( vec3_to_vec2(src_to_dest * NORTH).abs() );
           //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( src_to_dest * NORTH)).abs() );
 
-      //c.durability -= (t > epsilon) ? t * sigma : 0.;
+      c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
 
 }
@@ -642,7 +642,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
         }
     }
-  else  // <=> if( c.type == ContType::JOINT )
+  else if( c.durability > 0. ) // <=> if( c.type == ContType::JOINT )
     {
       double K = siku.phys_consts["elasticity"],
              Kw = siku.phys_consts["bendability"],
@@ -677,9 +677,9 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
       vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
       mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +              //traction
-                    1.0 * rotatability * cross( p1 - p2, dr1 - dr2 ) );   //couple
+                    rotatability * cross( p1 - p2, dr1 - dr2 ) );   //couple
       mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
-                    1.0 * rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
+                    rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
 //      double torque1 =
 //          Kw * siku.planet.R_rec * cross( p1, F );
@@ -713,40 +713,32 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
 
       // durability change
-      double r_size = 1. / c.init_size, // reversed size
+      double r_size = 1. / c.init_len, // reversed size
              dmax = max( dl1, dl2 ),    // maximal stretch
              dave = (dl1 + dl2) * 0.5;  // average stretch
 
-      //c.durability -= ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0.;
+      c.durability -= ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0.;
 
+//// may be required in 'collision' contact type
+//      if( c.durability < 0.05 )
+//        {
+//          std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
+//          std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
+//
+//          // polygons in local (e1) coords
+//          for( auto& p : e1.P )
+//            loc_P1.push_back( vec3_to_vec2( p ) );
+//          for( auto& p : e2.P )
+//            loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+//
+//          if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+//          if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+//
+//          intersect( loc_P1, loc_P2, interPoly, nullptr, nullptr, &area );
+//
+//          c.area = area;
+//        }
 
-///// OLD
-//      vec2d p1 = c.p1;
-//      vec3d tv = vec2_to_vec3( c.p2 );
-//      tv.z = sqrt(1. - tv.x*tv.x - tv.y*tv.y);
-//      vec2d p2 = vec3_to_vec2( e2_to_e1 * tv );
-//
-//      vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability * c.init_len;
-//
-//      double torque1 =
-//          Kw * siku.planet.R_rec * cross( p1, F );
-//
-//      double torque2 =
-//          Kw * siku.planet.R_rec * cross( p2 -
-//             vec3_to_vec2( e2_to_e1 * NORTH) , F );
-//
-//      // signs are fitted manually
-//      e1.F -= vec2_to_vec3( F );
-//      e1.N -= torque1;
-//
-//      e2.F += e1_to_e2 * vec2_to_vec3( F );
-//      e2.N += torque2;
-//
-//      double t = (p2-p1).abs() *
-//          1. / ( vec3_to_vec2(e2_to_e1 * NORTH).abs() );
-//          //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( e2_to_e1 * NORTH)).abs() );
-//
-//      c.durability -= (t > epsilon) ? t * sigma : 0.;
 
     }
 
