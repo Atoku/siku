@@ -279,6 +279,13 @@ def main():
 ####    siku.elements[16].flag_state = element.Element.f_steady
 ##    siku.elements[17].velo = ( 20, 6.5, 0 )
 ####    siku.elements[18].flag_state = element.Element.f_steady
+
+    siku.elements[6152].flag_state = element.Element.f_special
+    siku.elements[5658].flag_state = element.Element.f_special
+    siku.elements[6485].flag_state = element.Element.f_special
+    siku.elements[5247].flag_state = element.Element.f_special
+    siku.elements[3981].flag_state = element.Element.f_special
+    siku.elements[5039].flag_state = element.Element.f_special
     
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -349,6 +356,8 @@ def main():
 
     ##
     siku.callback.presave = presave
+
+    siku.err_test = {}
     
     return 0
 
@@ -366,6 +375,16 @@ def initializations( siku, t ):
 # --------------------------------------------------------------------------
 
 def conclusions( siku, t ):
+    
+    with open("err_time.txt", 'w') as erf:
+        for i in siku.err_test:
+            erf.write( str(i) + ' : ' )#+ ':\n' )
+            erf.write( str( len( siku.err_test[i] ) ) )
+##            for t in siku.err_test[i]:
+##                erf.write( str( t ) + '   ' )
+            erf.write( '\n' )
+
+    
     print('creating .gif')
     subprocess.call( "nice convert -density 300 -delay 10 drift*.eps drift.gif", \
                      shell=True )
@@ -421,6 +440,10 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##        return
     
     if st & element.Element.f_errored:
+        if siku.err_test.get( i, None ):
+            siku.err_test[i].append(t)
+        else:
+            siku.err_test[i] = [ t ]
         return
 
 ##    print(st)
@@ -441,7 +464,7 @@ def drift_monitor( t, Q, Ps, i, st ):
     c = R * C
 
     # appending vertices to plotting list
-    if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:        
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
@@ -466,7 +489,7 @@ def drift_monitor( t, Q, Ps, i, st ):
             
 ##        elif
         if st & element.Element.f_special: ## elif -> if
-            poly.write( '> -Gpink -W0.1p,purple \n' ) 
+            poly.write( '> -Gpurple -W0.1p,pink \n' ) 
         elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
 ##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
