@@ -4,11 +4,13 @@
 #define VECTOR3D_HH
 
 #include <cmath>
+#include <glm/vec3.hpp>
+
+namespace Geometry
+{
 
 // ============================== GLM implementation ========================
 #ifndef SIKU_3D_NOT_GLM
-
-#include <glm/vec3.hpp>
 
 ////// temporally disabled to avoid ambiguities in H5 save/load
 //#ifdef SIKU_VECF                // float vectors
@@ -217,11 +219,18 @@ typedef Vector3d vec3d;
 
 #endif
 
+}
+
 #include <iostream>
+
+namespace Geometry
+{
 
 inline void print( const vec3d& v )
 {
   std::cout<<v.x<<"\t"<<v.y<<"\t"<<v.z<<std::endl;
+}
+
 }
 
 #endif  /* VECTOR3D_HH */

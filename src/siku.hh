@@ -58,6 +58,6 @@ static const unsigned int MAT_LAY_AMO = 10; // WTF size_t does not work?!
 // TODO: clear this
 typedef Geometry::vec2d vec2d;
 
-
+using namespace Geometry;
 
 #endif  // SIKU_HH

@@ -33,6 +33,7 @@
 using namespace std;
 
 #include "siku.hh"
+#include "coordinates.hh"
 
 //! \brief Ice element class: representation for a single ice element
 class Element
@@ -122,6 +123,17 @@ public:
   double gh[ MAT_LAY_AMO ];     //!< g(h) thickness distribution
   vector<vec3d> P;              //!< 1, local unit frame coords of
                                 //! vertices
+
+////////FOR TEST////////////
+  vector<vec3d> PP;
+
+  void postproc()
+  {
+    for(auto& p : P)
+      PP.push_back( Coordinates::NORTH + p );
+
+  }
+////////\FOR TEST////////////
 
   // ------------------- METHODS: -------------------------------------
 

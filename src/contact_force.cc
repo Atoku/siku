@@ -451,8 +451,10 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
 
       // polygons in local (e1) coords
-      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
-      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+//      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+//      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+      for( auto& p : e1.PP ) loc_P1.push_back( vec3_TO_vec2( p ) );
+      for( auto& p : e2.PP ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
 
       // check for errors
       if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
@@ -473,14 +475,16 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
       vec3d tv1, tv2;
 
-      vec2d p1 = c.p1, p2 = c.p2;
-
-      tv1 = vec2_to_vec3( c.p3 );                       // just some additional
-      tv1.z = sqrt( 1. - tv1.x*tv1.x - tv1.y*tv1.y );   // accuracy to avoid
-      tv2 = vec2_to_vec3( c.p4 );                       // errors caused by
-      tv2.z = sqrt( 1. - tv2.x*tv2.x - tv2.y*tv2.y );   // rounding
-      vec2d p3 = vec3_to_vec2( e2_to_e1 * tv1 ),
-            p4 = vec3_to_vec2( e2_to_e1 * tv2 );
+//      vec2d p1 = c.p1, p2 = c.p2;
+//      tv1 = vec2_to_vec3( c.p3 );                       // just some additional
+//      tv1.z = sqrt( 1. - tv1.x*tv1.x - tv1.y*tv1.y );   // accuracy to avoid
+//      tv2 = vec2_to_vec3( c.p4 );                       // errors caused by
+//      tv2.z = sqrt( 1. - tv2.x*tv2.x - tv2.y*tv2.y );   // rounding
+//      vec2d p3 = vec3_to_vec2( e2_to_e1 * tv1 ),
+//            p4 = vec3_to_vec2( e2_to_e1 * tv2 );
+      vec2d p1 = c.p1, p2 = c.p2,
+            p3 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p3 ) ),
+            p4 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p4 ) );
 
       double hardness = K * c.init_len * c.durability * R,
              rotatability = K * c.init_len * c.durability * 1./12.;
@@ -494,16 +498,16 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
       vec2d F = hardness * (dr1 + dr2) * 0.5;
 
-      vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
+      vec2d r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
       mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +              //traction
                     rotatability * cross( p1 - p2, dr1 - dr2 ) );   //couple
       mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
                     rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
-      e1.F -= vec2_to_vec3( F );
+      e1.F -= vec2_to_vec3( F );//vec2_TO_vec3( F ) - NORTH;
       e1.N -= mom1;
 
-      e2.F += e1_to_e2 * vec2_to_vec3( F );
+      e2.F += e1_to_e2 * vec2_to_vec3( F );//(vec2_TO_vec3( F ) - NORTH);
       e2.N += mom2;
 
       // durability change

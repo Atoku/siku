@@ -717,6 +717,10 @@ Sikupy::read_elements ( Globals& siku )
 
       Py_DECREF( pobj );
 
+////////FOR TEST////////////
+      siku.es[i].postproc();
+////////\FOR TEST////////////
+
       /////////////////////////////////////////////////////////////////////////////////////////
       // TODO: reconsider Closeness of polygon
 //      if( siku.es[i].P.back() == siku.es[i].P.front() )

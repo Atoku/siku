@@ -280,12 +280,14 @@ def main():
 ##    siku.elements[17].velo = ( 20, 6.5, 0 )
 ####    siku.elements[18].flag_state = element.Element.f_steady
 
-    siku.elements[6152].flag_state = element.Element.f_special
-    siku.elements[5658].flag_state = element.Element.f_special
-    siku.elements[6485].flag_state = element.Element.f_special
-    siku.elements[5247].flag_state = element.Element.f_special
-    siku.elements[3981].flag_state = element.Element.f_special
-    siku.elements[5039].flag_state = element.Element.f_special
+####    siku.elements[6152].flag_state = element.Element.f_special
+####    siku.elements[5658].flag_state = element.Element.f_special
+####    siku.elements[6485].flag_state = element.Element.f_special
+####    siku.elements[5247].flag_state = element.Element.f_special
+####    siku.elements[3981].flag_state = element.Element.f_special
+####    siku.elements[5039].flag_state = element.Element.f_special
+##    siku.elements[4911].flag_state = element.Element.f_special
+##    siku.elements[1774].flag_state = element.Element.f_special
     
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -315,7 +317,7 @@ def main():
                                   'rotatability' : 0.75,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : -50000000.0,#-100000.0
+                                  'elasticity' : -5000000.0,#-1000000.0
                                   'bendability' : 1.0,
                                   'solidity' : 0.05,
                                   'tensility' : 0.615,
@@ -439,12 +441,12 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##    if st & element.Element.f_static:
 ##        return
     
-    if st & element.Element.f_errored:
-        if siku.err_test.get( i, None ):
-            siku.err_test[i].append(t)
-        else:
-            siku.err_test[i] = [ t ]
-        return
+##    if st & element.Element.f_errored:
+##        if siku.err_test.get( i, None ):
+##            siku.err_test[i].append(t)
+##        else:
+##            siku.err_test[i] = [ t ]
+##        return
 
 ##    print(st)
 ##    input()
@@ -469,8 +471,6 @@ def drift_monitor( t, Q, Ps, i, st ):
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         poly = siku.local.poly_f
-##        if st & element.Element.f_errored: ##
-##            poly.write( '> -Gred -W0.1p,red \n' ) ##
 
 ## for debug
 ##            #errored export lon-lat:
@@ -486,9 +486,10 @@ def drift_monitor( t, Q, Ps, i, st ):
 ##                        str( v[1] )+'\n' )
 ## /for debug
                     
-            
-##        elif
-        if st & element.Element.f_special: ## elif -> if
+        if st & element.Element.f_errored: ##
+            poly.write( '> -Gred -W0.1p,red \n' ) ##
+##        if
+        elif st & element.Element.f_special: ## elif -> if
             poly.write( '> -Gpurple -W0.1p,pink \n' ) 
         elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
