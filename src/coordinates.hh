@@ -197,33 +197,30 @@ namespace Coordinates
     return { 2 * v.x * den, 2 * v.y * den, ( 1. - sq ) * den };
   }
 
-  inline vec2d _curve( const vec3d& v )
-  {
-    double l = acos( v.z );
-    //double l_sl = l / sin( l );
-    double l_sl = l / sqrt( 1. - v.z*v.z );
-//    if(l_sl != l_sl)
-//      {
-//        cout<<"l_sl = NaN, l= "<<l
-//            <<", vx= "<<v.x<<", vy= "<<v.y<<", vz= "<<v.z<<endl;
-//        cin.get();
-//      }
-    return { v.x * l_sl, v.y * l_sl };
-  }
-  inline vec3d _curve_rev( const vec2d& v )
-  {
-    double l = sqrt( v.x*v.x + v.y*v.y );
-    double sl_l = sin( l ) / l, cl = cos( l );
-    vec3d res { v.x * sl_l, v.y * sl_l, cl };
-//    if(sl_l != sl_l)
-//      {
-//        cout<<"sl_l = NaN, l= "<<l
-//            <<", vx= "<<v.x<<", vy= "<<v.y<<endl;
-//        cin.get();
-//      }
-    return res;
-    //double norm = abs( res );
-    //return res / norm;
+//  inline vec2d _curve( const vec3d& v )
+//  {
+//    double l = acos( v.z );
+//    double l_sl = l / sqrt( 1. - v.z*v.z );
+//    return { v.x * l_sl, v.y * l_sl };
+//  }
+//  inline vec3d _curve_rev( const vec2d& v )
+//  {
+//    double l = sqrt( v.x*v.x + v.y*v.y );
+//    double sl_l = sin( l ) / l, cl = cos( l );
+//    return { v.x * sl_l, v.y * sl_l, cl };
+//  }
+//
+//  inline vec2d _curve( const vec3d& v )
+//  {
+//    double den = sqrt( acos( v.z ) / ( v.x*v.x + v.y*v.y ) );
+//    return { v.x * den, v.y * den };
+//  }
+//  inline vec3d _curve_rev( const vec2d& v )
+//  {
+//    double sq = v.x*v.x + v.y*v.y;
+//    double z = cos( sq );
+//    double d = sin( sq ) / sqrt( sq );
+//    return { d * v.x, d * v.y, z };
   }
 
 // ------------------------------- 2d utils ---------------------------------
