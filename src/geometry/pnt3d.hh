@@ -5,6 +5,9 @@
 
 #include "vec3d.hh"
 
+namespace Geometry
+{
+
 // SIKU_ED_GLB - independent!
 // ============================ Class Point3d ===============================
 
@@ -89,5 +92,7 @@ const static Point3d ZeroPoint3d = Point3d();
 // ==========================================================================
 
 typedef Point3d pnt3d;
+
+}
 
 #endif  /* POINT3D_HH */

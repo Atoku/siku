@@ -9,6 +9,8 @@
 #include "polygon2d.hh"
 
 #include <algorithm>
+//for test
+#include <limits>
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~ local utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -322,7 +324,7 @@ namespace Geometry
 
         // UNDONE: this section contains hardcoded tolerance. It should be
         // rewritten
-        static const double tolerance = 0;//-1e-12;
+        static const double tolerance = -std::numeric_limits<double>::min();//0;//-1e-12;
         if( td2 * td1 < tolerance ) return false;  // if different signs - not convex
 
         td1 = td2;

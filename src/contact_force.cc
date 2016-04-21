@@ -456,6 +456,12 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       for( auto& p : e1.PP ) loc_P1.push_back( vec3_TO_vec2( p ) );
       for( auto& p : e2.PP ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
 
+//      std::vector<vec2d> loc_PP;
+//      for( auto& p : e1.P ) loc_PP.push_back( vec3_to_vec2( p ) );
+//      cvpoly2d cv1(loc_P1), cv2(loc_PP);
+//      cout<<cv1.area()<<endl<<cv2.area()<<endl;
+//      cin.get();
+
       // check for errors
       if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
       if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
@@ -504,10 +510,12 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
                     rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
-      e1.F -= vec2_to_vec3( F );//vec2_TO_vec3( F ) - NORTH;
+      // TODO: make some difference between "vector in 3d space" and
+      // "point on sphere" transformations!
+      e1.F -= vec2_to_vec3( F );
       e1.N -= mom1;
 
-      e2.F += e1_to_e2 * vec2_to_vec3( F );//(vec2_TO_vec3( F ) - NORTH);
+      e2.F += e1_to_e2 * vec2_to_vec3( F );
       e2.N += mom2;
 
       // durability change

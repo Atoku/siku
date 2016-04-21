@@ -55,8 +55,24 @@ def main():
         'ice': 0,
     }
 
-    siku.settings.wind_source_type = siku.WIND_SOURCES['NONE']
+    # ---------------------------------------------------------------------
+    #  Wind initializations (NMC grid example)
+    # ---------------------------------------------------------------------
 
+    #start time index
+    st_t_ind = 2
+    
+    siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
+    siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
+    siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+
+######    siku.settings.wind_source_type = siku.WIND_SOURCES['NONE']
+    siku.settings.wind_source_type = siku.WIND_SOURCES['NMC']
+    #siku.settings.wind_source_type = siku.WIND_SOURCES['TEST']
+    siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
+    w.make_test_field( -0.0, 0.0 )
+    siku.wind = w
 
     # ---------------------------------------------------------------------
     # date/time settings
@@ -64,8 +80,9 @@ def main():
     
     hour = datetime.timedelta ( hours = 1 )
 
-    siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
-    siku.time.finish   = siku.time.start + hour * 30 #120
+    #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
+    siku.time.start = siku.uw.times[st_t_ind]
+    siku.time.finish   = siku.time.start + hour * 720 #120
 
     siku.time.dt       = ( siku.time.finish - siku.time.start ) / 1200 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
@@ -79,93 +96,30 @@ def main():
     coords = []
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
-   
-    coords.append( [ (267.0, 12.0),      
-                    (269.0, 12.0),
-                    (269.0, 14.0),
-                    (267.0, 14.0) ] )
-    coords.append( [ (270.0, 12.0), #2
-                     (272.0, 12.0),
-                     (272.0, 14.0),
-                     (270.0, 14.0) ] )
-    
-    coords.append( [ (265.0, 20.0), #3
-                     (267.0, 18.0),
-                     (269.0, 20.0),
-                     (267.0, 22.0) ] )
-    coords.append( [ (268.0, 18.0), #4
-                     (270.0, 16.0),
-                     (272.0, 18.0),
-                     (270.0, 20.0) ] )
-    
-    coords.append( [ (265.0, 28.0), #5
-                     (266.0, 26.5),
-                     (267.0, 28.0),
-                     (266.0, 29.5) ] )
-    coords.append( [ (267.0, 25.5), #6
-                     (268.0, 24.0),
-                     (269.0, 25.5),
-                     (268.0, 27.0) ] )
-    # ---
-    
-    coords.append( [ (281.0, 10.0), #7
-                     (282.0, 10.0),
-                     (282.0, 16.0),
-                     (281.0, 16.0) ] )
-    coords.append( [ (282.5, 10.0), #8
-                     (283.5, 10.0),
-                     (283.5, 16.0),
-                     (282.5, 16.0) ] )
-    
-    coords.append( [ (278.0, 19.5), #9
-                     (282.0, 19.5),
-                     (282.0, 20.5),
-                     (278.0, 20.5) ] )
-    coords.append( [ (281.0, 18.0), #10
-                     (285.0, 18.0),
-                     (285.0, 19.0),
-                     (281.0, 19.0) ] )
-    
-    coords.append( [ (278.0, 24.0), #11
-                     (280.0, 24.0),
-                     (280.0, 28.0),
-                     (278.0, 28.0) ] )
-    coords.append( [ (282.0, 28.0), #12
-                     (283.0, 26.0),
-                     (285.0, 26.0),
-                     (284.0, 28.0) ] )
-    coords.append( [ (282.0, 24.0), #13
-                     (284.0, 24.0),
-                     (285.0, 26.0),
-                     (283.0, 26.0) ] )
-    # --- 
 
-    coords.append( [ (293.0, 12.0), #14
-                     (294.0, 12.0),
-                     (294.0, 13.0),
-                     (293.0, 13.0) ] )
-    coords.append( [ (295.0, 10.0), #15
-                     (296.0, 10.0),
-                     (296.0, 15.0),
-                     (295.0, 15.0) ] )
-    
-    coords.append( [ (293.0, 21.0), #16
-                     (294.0, 21.0),
-                     (294.0, 22.0),
-                     (293.0, 22.0) ] )
-    coords.append( [ (295.0, 17.0), #17
-                     (296.0, 17.0),
-                     (296.0, 22.0),
-                     (295.0, 22.0) ] )
-    
-    coords.append( [ (291.0, 24.0), #18
-                     (292.0, 24.0),
-                     (292.0, 29.0),
-                     (291.0, 29.0) ] )
-    coords.append( [ (293.0, 26.0), #19
-                     (294.0, 26.0),
-                     (294.0, 27.0),
-                     (293.0, 27.0) ] )
+    nx = 20 #23
+    ny = 20 #22
+    coords, links \
+        = NG.generate_plus( 267.0, 12.0, 287.0, 27.0, nx, ny, 0.2, 0.2 )
+    siku.settings.links = links
+##    nx = 8
+##    ny = 3
+##    coords = NG.generate( 267.0, 12.0, 281.0, 14.0, nx, ny, 0.0, 0.0 )
+
+    # ---
+
+    coords.append( [
+        (280.0, 30.0),
+        (283.0, 30.0),
+        (283.0, 33.0),
+        (280.0, 33.0)
+        ] )
+##    coords.append( [
+##        (282.5, 33.0),
+##        (283.0, 30.0),
+##        (286.0, 33.0),
+##        (283.0, 36.0)
+##        ] )
 
     # ---
     
@@ -185,58 +139,61 @@ def main():
 
     # ------------------------- speed settings ----------------------------
 
-####    Works with caribbean polygons after initialization
-    siku.elements[0].velo = ( 20, 0, 0 )
-##    siku.elements[1].flag_state = element.Element.f_static
-    siku.elements[2].velo = ( 20, 0, 0 )
-##    siku.elements[3].flag_state = element.Element.f_static
-    siku.elements[4].velo = ( 20, 0, 0 )
-##    siku.elements[5].flag_state = element.Element.f_static
+##    siku.elements[-1].velo = (0.0, -1.0, 0.000005)
+##    siku.elements[-1].flag_state = element.Element.f_steady
 
-    siku.elements[6].velo = ( 0, 0, -0.0001 )
-##    siku.elements[7].flag_state = element.Element.f_static
-    siku.elements[8].velo = ( 0, 0, -0.0001 )
-##    siku.elements[9].flag_state = element.Element.f_steady
-    siku.elements[10].velo = ( 20, 0, 0,)#4, 0 )
-##    siku.elements[11].flag_state = element.Element.f_steady
-
-    siku.elements[13].velo = ( 20, 0, 0)#7, 0 )
-##    siku.elements[14].flag_state = element.Element.f_steady
-    siku.elements[15].velo = ( 20, 0, 0,)#5, 0 )
-##    siku.elements[16].flag_state = element.Element.f_steady
-    siku.elements[17].velo = ( 20, 0, 0,)#6.5, 0 )
-##    siku.elements[18].flag_state = element.Element.f_steady
+    #left border is static
+    left_inds = [ i*nx for i in range(ny) ]
+ 
+    for i in left_inds:
+        siku.elements[i].flag_state = element.Element.f_static
 
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
     ## Plotter initialization
-    siku.plotter = GMT_Plotter( 'caribbean_plot.py' )
+    siku.plotter = GMT_Plotter( 'caribbean_plot_wnd.py' )
 
     ### period of picturing
     siku.diagnostics.monitor_period = 30
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
-    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
+##    siku.settings.force_model = \
+##                    siku.CONTACT_FORCE_MODEL['Hopkins_Frankenstein']
     siku.settings.force_model = \
                     siku.CONTACT_FORCE_MODEL['distributed_spring']
 
+    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
+
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
-##                                  -10000.0, 1, 0.2, 0.1, 1 ]
-    siku.settings.phys_consts = { 'rigidity' : 1000000,#5000
+##                                  -10000.0, 1.00, 0.2, 0.1, \
+##                                  0.01 ] #wind interaction adjuster
+
+    siku.settings.phys_consts = { 'rigidity' : 5000,#5000
                                   'viscosity' : 1000000,#10000000
-                                  'rotatability' : 1, #0.75,#0.75
+                                  'rotatability' : 0.75,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : -50000000.0,#-100000.0
+                                  'elasticity' : -5000000.0,#-1000000.0
                                   'bendability' : 1.0,
                                   'solidity' : 0.05,
                                   'tensility' : 0.615,
 
-                                  'windage': 0.05 #1
+                                  'windage': 0.01 #1
                                   }
+
+
+    right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
+    
+##    siku.settings.manual_inds = right_inds
+##    siku.settings.manual_forces = [ (500.0/nx, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
+##                                    for i in right_inds ]
+
+    for i in right_inds:
+        siku.elements[i].velo = (0.5, 0.01, 0.0)
+        siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
@@ -246,6 +203,7 @@ def main():
     siku.callback.aftertimestep = aftertimestep
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
+    siku.callback.updatewind = updatewind
 
     ##
     siku.callback.presave = presave
@@ -261,7 +219,7 @@ def presave( t, n, ns ):
 # --------------------------------------------------------------------------
 
 def initializations( siku, t ):
-    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"]) #24_20
 
 # --------------------------------------------------------------------------
 
@@ -278,7 +236,26 @@ def pretimestep( t, n, ns ):
 
     siku.local.poly_f = open( 'Polygons.txt', 'w' )
 
+    # primitive time stepping
+##    if t > ( siku.time.last + siku.time.dt ):
+##        status += siku.MASK['WINDS']
+##        siku.time.last = t
+
+    # step by NMC own time step
+    if t >= siku.uw.times[siku.time.update_index + 1]: #siku.time.last: #
+        status += siku.MASK['WINDS']
+        siku.time.last = t #siku.time.finish#
+
     return status
+
+# --------------------------------------------------------------------------
+
+def updatewind( siku, t ):
+##    siku.time.update_index += 1
+##    siku.time.last_update = t
+##    siku.wind = \
+##              wnd.NMCSurfaceVField( siku.uw, siku.vw, siku.time.update_index )
+    pass
 
 # --------------------------------------------------------------------------
 
@@ -289,7 +266,7 @@ def aftertimestep( t, n, ns ):
             (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
         print('drawing ' + str( pic_name ) )
         
-        siku.plotter.plot( pic_name, siku.time.update_index )
+        siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
         
     #siku.local.poly_f.close()
     return 0

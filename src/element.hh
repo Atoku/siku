@@ -130,7 +130,7 @@ public:
   void postproc()
   {
     for(auto& p : P)
-      PP.push_back( Coordinates::NORTH + p );
+      PP.push_back( { p.x, p.y, sqrt(1.-p.x*p.x-p.y*p.y) } );
 
   }
 ////////\FOR TEST////////////

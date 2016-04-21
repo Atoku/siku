@@ -133,6 +133,142 @@ namespace Coordinates
   }
 
 
+
+  // ~~~~~~~~~~~~~~~~~ Local utils TODO: choose and clean ~~~~~~~~~~~~~~~~~~~~~
+
+  inline vec2d _Lambert_aea( const vec3d& v )
+  {
+   double d = sqrt( 2. / ( 1. + v.z ) );
+   return { v.x * d, v.y * d };
+  }
+  inline vec3d _Lambert_aea_rev( const vec2d& v )
+  {
+   double sq = v.x*v.x + v.y*v.y;
+   double d = sqrt( 1. - sq * 0.25 );
+   return { d * v.x, d * v.y, 1. - sq * 0.5 };
+  }
+
+  inline vec2d _stereo_1_2( const vec3d& v )
+  {
+   double d = 1. / ( 2. * v.z -1. );
+   return { v.x * d, v.y * d };
+  }
+  inline vec3d _stereo_1_2_rev( const vec2d& v )
+  {
+   double sq = v.x*v.x + v.y*v.y;
+   double rt = sqrt( 1. + 3. * sq );
+   double den = 1. / ( 2. * sq + 0.5 );
+   return { v.x * ( rt - 0.5 ) * den,
+            v.y * ( rt - 0.5 ) * den,
+            ( rt * 0.5 + sq ) * den };
+  }
+
+  inline vec2d _stereo( const vec3d& v )
+  {
+    double d = 2. / ( 1. + v.z );
+    return { v.x * d, v.y * d };
+  }
+  inline vec3d _stereo_rev( const vec2d& v )
+  {
+    double sq = v.x*v.x + v.y*v.y;
+    double den = 1. / ( 4. + sq );
+    return { 8 * v.x * den, 8 * v.y * den, ( 4. - sq ) * den };
+  }
+
+  inline vec2d _stereo_c( const vec3d& v ) // 'c' stand for 'center'
+  {
+    return { v.x / v.z, v.y / v.z };
+  }
+  inline vec3d _stereo_c_rev( const vec2d& v )
+  {
+    double den = 1. / sqrt( 1. + v.x*v.x + v.y*v.y );
+    return { v.x * den, v.y * den, den };
+  }
+
+  inline vec2d _stereo_n( const vec3d& v ) // 'n' stands for 'noob'
+  {
+    double d = 1. / ( 1. + v.z );
+    return { v.x * d, v.y * d };
+  }
+  inline vec3d _stereo_n_rev( const vec2d& v )
+  {
+    double sq = v.x*v.x + v.y*v.y;
+    double den = 1. / ( 1. + sq );
+    return { 2 * v.x * den, 2 * v.y * den, ( 1. - sq ) * den };
+  }
+
+  inline vec2d _curve( const vec3d& v )
+  {
+    double l = acos( v.z );
+    //double l_sl = l / sin( l );
+    double l_sl = l / sqrt( 1. - v.z*v.z );
+//    if(l_sl != l_sl)
+//      {
+//        cout<<"l_sl = NaN, l= "<<l
+//            <<", vx= "<<v.x<<", vy= "<<v.y<<", vz= "<<v.z<<endl;
+//        cin.get();
+//      }
+    return { v.x * l_sl, v.y * l_sl };
+  }
+  inline vec3d _curve_rev( const vec2d& v )
+  {
+    double l = sqrt( v.x*v.x + v.y*v.y );
+    double sl_l = sin( l ) / l, cl = cos( l );
+    vec3d res { v.x * sl_l, v.y * sl_l, cl };
+//    if(sl_l != sl_l)
+//      {
+//        cout<<"sl_l = NaN, l= "<<l
+//            <<", vx= "<<v.x<<", vy= "<<v.y<<endl;
+//        cin.get();
+//      }
+    return res;
+    //double norm = abs( res );
+    //return res / norm;
+  }
+
+// ------------------------------- 2d utils ---------------------------------
+
+  // two ways transforming
+  inline vec3d vec2_to_vec3( const vec2d& v2 )
+  {
+    return vec3d( v2.x, v2.y, 0. );
+//    return vec3d( v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) );
+  }
+  inline vec2d vec3_to_vec2( const vec3d& v3 )
+  {
+    return { v3.x, v3.y };
+//    double s_ = 1. / sqrt( 1. - v3.z*v3.z );
+//    return { v3.x* s_, v3.y * s_ };
+  }
+
+  // transforming 2d vector to 3d vector on unit sphere as if original 2d
+  // vector was a projection on north direction
+  inline vec3d vec2_to_vec3_s( const vec2d& v2 )
+  {
+    return vec3d{ v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) };
+  }
+
+//////FOR TEST//////////////////////
+  inline vec3d vec2_TO_vec3( const vec2d& v )
+  {
+//    return _curve_rev( v );
+//    return _stereo_1_2_rev( v );
+    return _stereo_c_rev( v );
+//    return _Lambert_aea_rev( v );//error
+//    return _stereo_n_rev( v );
+//    return _stereo_rev( v );
+  }
+  inline vec2d vec3_TO_vec2( const vec3d& v )
+  {
+//    return _curve( v );
+//    return _stereo_1_2( v );
+    return _stereo_c( v );
+//    return _Lambert_aea( v );///error
+//    return _stereo_n( v );
+//    return _stereo( v );
+  }
+///////\FOR TEST//////////////////////
+
 }
 
 #endif      /* COORDINATES_HH */
