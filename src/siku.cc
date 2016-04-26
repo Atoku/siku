@@ -32,9 +32,9 @@ extern "C"
 #include "shapefil.h"
 #include <Python.h>
 #undef tolower                  // stupid python defines tolower for
-// all causing error on boost
-// functions replacing further
-// definitions
+                                // all causing error on boost
+                                // functions replacing further
+                                // definitions
 #include "config.h"
 }
 
@@ -49,6 +49,7 @@ extern "C"
 #include "modeltime.hh"         // model time
 
 #include "forces_mass.hh"
+#include "contact_force.hh"
 #include "dynamics.hh"
 #include "position.hh"
 #include "coordinates.hh"
@@ -165,11 +166,11 @@ main ( int argc, char* argv[] )
 
       // ------------------------- physics ------------------------------
 
-      // --- Mass Forces assignement (Drivers, Coriolis)
+      // --- Mass Forces assignment (Drivers, Coriolis)
       forces_mass( siku );
 
-      // --- Contact Forces assignement
-      // ^-- built in into dynamics
+      // --- Contact Forces assignment (Elements` interaction)
+      contact_forces( siku );
 
       // --- Dynamics solution
       dynamics ( siku, dt );
@@ -187,7 +188,8 @@ main ( int argc, char* argv[] )
         {
           // why have this been marked as 'void'? It returns save/not status!
           //(void)
-          int save_status = sikupy.fcall_presave ( siku ); // no function = no action
+          int save_status = sikupy.fcall_presave ( siku );
+          //no function = no action
 
           if( save_status == sikupy.FCALL_OK ) // odd mask processing coz OK=0
             highio.save( siku );

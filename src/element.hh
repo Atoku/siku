@@ -124,17 +124,6 @@ public:
   vector<vec3d> P;              //!< 1, local unit frame coords of
                                 //! vertices
 
-////////FOR TEST////////////
-  vector<vec3d> PP;
-
-  void postproc()
-  {
-    for(auto& p : P)
-      PP.push_back( { p.x, p.y, sqrt(1.-p.x*p.x-p.y*p.y) } );
-
-  }
-////////\FOR TEST////////////
-
   // ------------------- METHODS: -------------------------------------
 
   //! Check if point (given inglobal x,y,z ) is inside the element

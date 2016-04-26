@@ -132,8 +132,6 @@ namespace Coordinates
     return lon;
   }
 
-
-
   // ~~~~~~~~~~~~~~~~~ Local utils TODO: choose and clean ~~~~~~~~~~~~~~~~~~~~~
 
   inline vec2d _Lambert_aea( const vec3d& v )
@@ -172,7 +170,7 @@ namespace Coordinates
   {
     double sq = v.x*v.x + v.y*v.y;
     double den = 1. / ( 4. + sq );
-    return { 8 * v.x * den, 8 * v.y * den, ( 4. - sq ) * den };
+    return { 4. * v.x * den, 4. * v.y * den, ( 4. - sq ) * den };
   }
 
   inline vec2d _stereo_c( const vec3d& v ) // 'c' stand for 'center'
@@ -183,18 +181,6 @@ namespace Coordinates
   {
     double den = 1. / sqrt( 1. + v.x*v.x + v.y*v.y );
     return { v.x * den, v.y * den, den };
-  }
-
-  inline vec2d _stereo_n( const vec3d& v ) // 'n' stands for 'noob'
-  {
-    double d = 1. / ( 1. + v.z );
-    return { v.x * d, v.y * d };
-  }
-  inline vec3d _stereo_n_rev( const vec2d& v )
-  {
-    double sq = v.x*v.x + v.y*v.y;
-    double den = 1. / ( 1. + sq );
-    return { 2 * v.x * den, 2 * v.y * den, ( 1. - sq ) * den };
   }
 
 //  inline vec2d _curve( const vec3d& v )
@@ -221,6 +207,7 @@ namespace Coordinates
 //    double z = cos( sq );
 //    double d = sin( sq ) / sqrt( sq );
 //    return { d * v.x, d * v.y, z };
+//  }
 
 // ------------------------------- 2d utils ---------------------------------
 
@@ -244,27 +231,33 @@ namespace Coordinates
     return vec3d{ v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) };
   }
 
+  // lay 3d vector on the xOy plain (in current coords system) preserving
+  // the length of original vector
+  inline vec3d lay_on_surf( const vec3d& v )
+  {
+    double a = sqrt( (v.x*v.x + v.y*v.y + v.z*v.z) / (v.x*v.x + v.y*v.y) );
+    return { v.x * a, v.y * a, 0. };
+  }
+
 //////FOR TEST//////////////////////
   inline vec3d vec2_TO_vec3( const vec2d& v )
   {
 //    return _curve_rev( v );
 //    return _stereo_1_2_rev( v );
-    return _stereo_c_rev( v );
+//    return _stereo_c_rev( v );
 //    return _Lambert_aea_rev( v );//error
-//    return _stereo_n_rev( v );
-//    return _stereo_rev( v );
+    return _stereo_rev( v );
   }
   inline vec2d vec3_TO_vec2( const vec3d& v )
   {
 //    return _curve( v );
 //    return _stereo_1_2( v );
-    return _stereo_c( v );
+//    return _stereo_c( v );
 //    return _Lambert_aea( v );///error
-//    return _stereo_n( v );
-//    return _stereo( v );
+    return _stereo( v );
   }
 ///////\FOR TEST//////////////////////
 
-  }
+}   /* namespace Coordinates */
 
 #endif      /* COORDINATES_HH */

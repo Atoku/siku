@@ -12,7 +12,6 @@
 
 #include "dynamics.hh"
 #include "coordinates.hh"
-#include "contact_force.hh"
 
 //#include "planet.hh"
 
@@ -22,9 +21,6 @@
 void
 dynamics ( Globals& siku, const double dt )
 {
-  for ( auto& c : siku.ConDet.cont )
-    contact_push( c, siku );
-
   for ( auto & e : siku.es )
     {
       if( e.flag & Element::F_ERRORED ) continue; // TODO: change or remove dis

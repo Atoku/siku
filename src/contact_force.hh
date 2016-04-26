@@ -35,10 +35,16 @@
 // http://geomalgorithms.com/a09-_intersect-3.html
 // http://www.cs.man.ac.uk/~toby/alan/software/gpc.html
 
-//! Currently using boost::geometry
+//! Deprecated
+//////! Currently using boost::geometry
+//! \Deprecated
 
-//! Function for calculating two elements interaction. Changes both elements
-//! so should be used once per pair of elements.
-void contact_push( ContactDetector::Contact& c, Globals& siku );
+//! \brief Calculate elements` interaction forces.
+void contact_forces( Globals& siku );
+
+// Deprecated: built in 'contact_forces' for better performance
+////! Function for calculating two elements interaction. Changes both elements
+////! so should be used once per pair of elements.
+//void contact_push( ContactDetector::Contact& c, Globals& siku );
 
 #endif  /*CONTACTFORCE_HH*/

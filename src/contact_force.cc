@@ -36,45 +36,88 @@ using namespace Geometry;
 
 void _test_springs( ContactDetector::Contact& c, Globals& siku );
 
-// -----------------------------------------------------------------------
-
 void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku );
-
-// -----------------------------------------------------------------------
 
 void _distributed_springs( ContactDetector::Contact& c, Globals& siku );
 
+void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 );
 
-// ============================== contact push ==============================
+// =========================== contact force ================================
 
-void contact_push( ContactDetector::Contact& c, Globals& siku )
+//void contact_push( ContactDetector::Contact& c, Globals& siku )
+//{
+//  switch( siku.cont_force_model )
+//  {
+//    case CF_TEST_SPRINGS: //same as CF_DEFAULT
+//      _test_springs( c, siku );
+//      break;
+//
+//    case CF_HOPKINS:
+//      _hopkins_frankenstein( c, siku );
+//      break;
+//
+//    case CF_DIST_SPRINGS:
+//      _distributed_springs( c, siku );
+//      break;
+//
+//  }
+//}
+//
+// -----------------------------------------------------------------------
+
+void contact_forces( Globals& siku )
 {
   switch( siku.cont_force_model )
   {
     case CF_TEST_SPRINGS: //same as CF_DEFAULT
-      _test_springs( c, siku );
+      for ( auto& c : siku.ConDet.cont )
+        _test_springs( c, siku );
       break;
 
     case CF_HOPKINS:
-      _hopkins_frankenstein( c, siku );
+      for ( auto& c : siku.ConDet.cont )
+        _hopkins_frankenstein( c, siku );
       break;
 
     case CF_DIST_SPRINGS:
-      _distributed_springs( c, siku );
+      for ( auto& c : siku.ConDet.cont )
+        _distributed_springs( c, siku );
       break;
 
   }
+
+// Merged with 'contact_push'
+//  for ( auto& c : siku.ConDet.cont )
+//    contact_push( c, siku );
 }
 
 // ============================== definitions ==============================
 
-void _collision( Globals& siku, ContactDetector::Contact& c,
-                 Element& e1, Element& e2,
-                 mat3d& e1_to_e2, mat3d& e2_to_e1,
-                 vector<vec2d>& loc_P1, vector<vec2d>& loc_P2,
-                 vector<vec2d>& interPoly, vector<PointStatus>& stats,
-                 vec2d& center, double& area )
+void _collision( Globals& siku, ContactDetector::Contact& c )
 {
+  Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
+
+  vec2d center;
+  double area;
+  vector<PointStatus> stats;
+  vector<vec2d> interPoly;
+
+  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+
+  std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
+  std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
+
+  // polygons in local (e1) coords
+//      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+//      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+  for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
+  for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
+
+  // check for errors
+  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+
   if( intersect( loc_P1, loc_P2, interPoly, &stats, &center, &area ) > 2 )
     {
       vec3d tv;
@@ -235,7 +278,7 @@ void _collision( Globals& siku, ContactDetector::Contact& c,
       siku.es[c.i1].F -= vec2_to_vec3( F );
       siku.es[c.i1].N -= torque1;
 
-      siku.es[c.i2].F += e1_to_e2 * vec2_to_vec3( F );
+      siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       siku.es[c.i2].N += torque2;
 
       c.area = area;
@@ -247,43 +290,29 @@ void _collision( Globals& siku, ContactDetector::Contact& c,
 
 void _test_springs( ContactDetector::Contact& c, Globals& siku )
 {
-  int ires;  // temporal variable to store geometry results
-  vec3d tv;  //
-
-  Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
-
   // TODO: such errors should be removed by removing their reason
-  if( (e1.flag & Element::F_ERRORED) ||
-      (e2.flag & Element::F_ERRORED) )
+  if( (siku.es[c.i1].flag & Element::F_ERRORED) ||
+      (siku.es[c.i2].flag & Element::F_ERRORED) )
     return;
-
-  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
-  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-
-  std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
-  std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
-  for( auto& p : e1.P )
-    loc_P1.push_back( vec3_to_vec2( p ) );
-  for( auto& p : e2.P )
-    loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
-
-  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
-
-  // point2d center( 0, 0 );
-  vec2d center;
-  double area;
-  vector<PointStatus> stats;
-  vector<vec2d> interPoly;
 
   if( c.type != ContType::JOINT )
     {
       // calculating intersection zone and properties
-      _collision( siku, c, e1, e2, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
-                  interPoly, stats, center, area );
+      _collision( siku, c//, e1, e2, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
+                  //interPoly, stats, center, area
+                  );
     }
   else  // <=> if( c.type == ContType::JOINT )
     {
+      Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
+
+      mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+      mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+
+      _error_test( e1, e2, e2_to_e1, e1_to_e2 );
+
+      // -------------------------------------------------------------------
+
 //      double K = siku.phys_consts[5];
 //      double Kw = siku.phys_consts[6];
 //      double sigma = siku.phys_consts[7];
@@ -318,7 +347,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i1].F -= vec2_to_vec3( F );
       siku.es[c.i1].N -= torque1;
 
-      siku.es[c.i2].F += e1_to_e2 * vec2_to_vec3( F );
+      siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       siku.es[c.i2].N += torque2;
 
       double t = (p2-p1).abs() *
@@ -334,43 +363,27 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
 
 void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
 {
-  int ires;  // temporal variable to store geometry results
-  vec3d tv;  //
-
-  Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
-
   // TODO: such errors should be removed by removing their reason
-  if( (e1.flag & Element::F_ERRORED) ||
-      (e2.flag & Element::F_ERRORED) )
+  if( (siku.es[c.i1].flag & Element::F_ERRORED) ||
+      (siku.es[c.i2].flag & Element::F_ERRORED) )
     return;
-
-  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
-  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-
-  std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
-  std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
-  for( auto& p : siku.es[c.i1].P )
-    loc_P1.push_back( vec3_to_vec2( p ) );
-  for( auto& p : siku.es[c.i2].P )
-    loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
-
-  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
-
-  // point2d center( 0, 0 );
-  vec2d center;
-  double area;
-  vector<PointStatus> stats;
-  vector<vec2d> interPoly;
 
   if( c.type != ContType::JOINT )
     {
       // calculating intersection zone and properties
-      _collision( siku, c, e1, e2, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
-                  interPoly, stats, center, area );
+      _collision( siku, c );
     }
   else  // <=> if( c.type == ContType::JOINT ) // Hopkins` physics
     {
+      Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
+
+      mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+      mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+
+      _error_test( e1, e2, e2_to_e1, e1_to_e2 );
+
+      // -------------------------------------------------------------------
+
 //      double K = siku.phys_consts[5];
 //      double Kw = siku.phys_consts[6];
 //      double sigma = siku.phys_consts[7];
@@ -416,7 +429,7 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i1].F -= vec2_to_vec3( F );
       siku.es[c.i1].N -= torque1;
 
-      siku.es[c.i2].F += e1_to_e2 * vec2_to_vec3( F );
+      siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       siku.es[c.i2].N += torque2;
 
       double t = (abs(Al) + abs(Ar)) / ( siku.es[c.i1].A + siku.es[c.i2].A );
@@ -428,50 +441,27 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
 
 void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 {
-  int ires; //  temporal variable to store geometry results
-  vec3d tv; //
-  Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
-
   // TODO: such errors should be removed by removing their reason
-  if( (e1.flag & Element::F_ERRORED) ||
-      (e2.flag & Element::F_ERRORED) )
+  if( (siku.es[c.i1].flag & Element::F_ERRORED) ||
+      (siku.es[c.i2].flag & Element::F_ERRORED) )
     return;
-
-  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
-  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-
-  vec2d center;
-  double area;
-  vector<PointStatus> stats;
-  vector<vec2d> interPoly;
 
   if( c.type != ContType::JOINT )
     {
-      std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
-      std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
-
-      // polygons in local (e1) coords
-//      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
-//      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
-      for( auto& p : e1.PP ) loc_P1.push_back( vec3_TO_vec2( p ) );
-      for( auto& p : e2.PP ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
-
-//      std::vector<vec2d> loc_PP;
-//      for( auto& p : e1.P ) loc_PP.push_back( vec3_to_vec2( p ) );
-//      cvpoly2d cv1(loc_P1), cv2(loc_PP);
-//      cout<<cv1.area()<<endl<<cv2.area()<<endl;
-//      cin.get();
-
-      // check for errors
-      if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-      if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
-
       // calculating intersection zone and properties
-      _collision( siku, c, e1, e2, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
-                  interPoly, stats, center, area );
+      _collision( siku, c );
     }
   else if( c.durability > 0. ) // <=> if( c.type == ContType::JOINT )
     {
+      Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
+
+      mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+      mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+
+      _error_test( e1, e2, e2_to_e1, e1_to_e2 );
+
+      // -------------------------------------------------------------------
+
       double K = siku.phys_consts["elasticity"],
              Kw = siku.phys_consts["bendability"],
              sigma = siku.phys_consts["solidity"],
@@ -515,7 +505,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       e1.F -= vec2_to_vec3( F );
       e1.N -= mom1;
 
-      e2.F += e1_to_e2 * vec2_to_vec3( F );
+      e2.F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       e2.N += mom2;
 
       // durability change
@@ -545,9 +535,27 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 //          c.area = area;
 //        }
 
-
     }
 
 }
 
 // -----------------------------------------------------------------------
+
+void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 )
+{
+  std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
+  std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
+
+  // polygons in local (e1) coords
+//      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+//      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+  for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
+  for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
+
+  // check for errors
+  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+}
+
+// -----------------------------------------------------------------------
+
