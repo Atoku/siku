@@ -221,7 +221,6 @@ namespace Coordinates
 //    double z = cos( sq );
 //    double d = sin( sq ) / sqrt( sq );
 //    return { d * v.x, d * v.y, z };
-  }
 
 // ------------------------------- 2d utils ---------------------------------
 
@@ -266,6 +265,6 @@ namespace Coordinates
   }
 ///////\FOR TEST//////////////////////
 
-}
+  }
 
 #endif      /* COORDINATES_HH */
