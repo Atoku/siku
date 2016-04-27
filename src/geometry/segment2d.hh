@@ -33,6 +33,16 @@ namespace Geometry
   double segment2d_distance( const pnt2d& a1, const pnt2d& a2,
                              const pnt2d& b1, const pnt2d& b2 );
 
+
+  //! \brief checks if a line intersects a segment
+  //! \param[in] p - any point on line
+  //! \param[in] n - normal (perpendicular) direction to line
+  //! \param[in] v1, v2 - vertices of segment
+  //! \param[out] X - intersection point (if intersect)
+  //! \return true if intersect, false if not
+  bool segment2d_line_inter( const pnt2d& p, const vec2d& n,
+                             const pnt2d& v1, const pnt2d& v2, pnt2d& X );
+
 }
 
 #endif      /* SEGMENT_HH */

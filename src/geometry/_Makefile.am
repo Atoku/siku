@@ -4,17 +4,11 @@ AM_CXXFLAGS = $(SIMD_FLAGS) $(PROFILE_FLAGS) $(STYLEFLAGS) $(FPCHECK_FLAGS) ${BO
 
 noinst_LIBRARIES = libgeometry.a
 libgeometry_a_SOURCES = \
-	geometry.hh geometry.cc \
-	geom_types.hh \
-	matrix2d.hh \
-	matrix3d.hh \
-	polygon2d.hh polygon2d.cc \
-	polyhedron3d.hh polyhedron3d.cc \
-	pnt2d.hh \
-	pnt3d.hh\
+        vec2d.hh pnt2d.hh \
         segment2d.hh segment2d.cc \
-	segment3d.hh segment3d.cc \
-        vec2d.hh \
-	vec3d.hh 
-
-
+	polygon2d.hh polygon2d.cc \
+	geometry.hh geometry.cc
+	
+#	matrix3d.hh
+#	pnt3d.hh
+# 	vec3d.hh

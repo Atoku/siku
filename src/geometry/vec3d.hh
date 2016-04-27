@@ -4,20 +4,26 @@
 #define VECTOR3D_HH
 
 #include <cmath>
-#include <glm/vec3.hpp>
 
-namespace Geometry
-{
+#include "geom_types.hh"
+// #include chain:
+// gtypes -- vec3d - pnt3d - mat3d - segment2d - polyhedron3d -- geometry
+//        \- vec2d - pnt2d - segment2d - polygon2d --         -/
+
 
 // ============================== GLM implementation ========================
 #ifndef SIKU_3D_NOT_GLM
 
-////// temporally disabled to avoid ambiguities in H5 save/load
-//#ifdef SIKU_VECF                // float vectors
-//typedef glm::fvec3 vec3d;
-//#else
-typedef glm::dvec3 vec3d;
-//#endif
+#include <glm/vec3.hpp>
+
+namespace Geometry
+{
+   ////// temporally disabled to avoid ambiguities in H5 save/load
+  //#ifdef SIKU_VECF                // float vectors
+  //typedef glm::fvec3 vec3d;
+  //#else
+  typedef glm::dvec3 vec3d;
+  //#endif
 
 // zero-vector for fast cleaning
 static const vec3d nullvec3d = vec3d( 0., 0., 0. );
@@ -25,6 +31,11 @@ static const vec3d nullvec3d = vec3d( 0., 0., 0. );
 inline double dot( const vec3d& v1, const vec3d& v2 )
 {
   return v1.x*v2.x + v1.y*v2.y +v1.z*v2.z;
+}
+
+inline vec3d cross( const vec3d& v1, const vec3d& v2 )  //ugly but flexible
+{
+  return glm::cross( v1, v2 );
 }
 
 inline double abs( const vec3d& v )
@@ -40,6 +51,8 @@ inline double abs2( const vec3d& v )
 inline vec3d ort( const vec3d& v )
 {
   return v / abs( v );
+}
+
 }
 
 #else
@@ -219,18 +232,21 @@ typedef Vector3d vec3d;
 
 #endif
 
-}
-
 #include <iostream>
 
 namespace Geometry
 {
+  inline void print( const vec3d& v )
+  {
+    std::cout<<v.x<<"\t"<<v.y<<"\t"<<v.z<<std::endl;
+  }
 
-inline void print( const vec3d& v )
-{
-  std::cout<<v.x<<"\t"<<v.y<<"\t"<<v.z<<std::endl;
-}
-
+  //! Streams printing
+  inline std::ostream& operator<<( std::ostream& out, const vec3d& v )
+  {
+    out << v.x << " " << v.y << " " << v.z;
+    return out;
+  }
 }
 
 #endif  /* VECTOR3D_HH */

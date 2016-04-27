@@ -40,10 +40,9 @@ void add_cont( Globals& siku, const size_t& i1, const size_t& i2,
 void merge_contacts( vector<ContactDetector::Contact>& olds,
                      const vector<ContactDetector::Contact>& news );
 
-void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol );
-void _share( ContactDetector::Contact& c, Globals& siku, const double& tol );
-void _dist_freeze( ContactDetector::Contact& c, Globals& siku,
-                   const double& tol );
+void _freeze( ContactDetector::Contact& c, Globals& siku, double tol );
+void _share( ContactDetector::Contact& c, Globals& siku, double tol );
+void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol );
 
 void _select_freeze( std::vector<ContactDetector::Contact>& cont,
                      Globals& siku, const double& tol );
@@ -477,7 +476,7 @@ void _select_freeze( std::vector<ContactDetector::Contact>& cont,
 // perform freezing on two elements by contact
 // implementation copied from 'contact_force'
 // TODO: move to 'geometric' module
-void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
+void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
 {
   Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
   int ires;  // !static? temporal variable to store geometry results
@@ -542,7 +541,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, const double& tol )
 
 // --------------------------------------------------------------------------
 
-void _share( ContactDetector::Contact& c, Globals& siku, const double& tol )
+void _share( ContactDetector::Contact& c, Globals& siku, double tol )
 {
   Element& e1 = siku.es[c.i1];
   Element& e2 = siku.es[c.i2];
@@ -578,8 +577,7 @@ void _share( ContactDetector::Contact& c, Globals& siku, const double& tol )
 
 // --------------------------------------------------------------------------
 
-void _dist_freeze( ContactDetector::Contact& c, Globals& siku,
-                   const double& tol )
+void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
 {
   Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
 

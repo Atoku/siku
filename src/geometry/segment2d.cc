@@ -131,4 +131,40 @@ namespace Geometry
                       min( abs2(a2-b1), abs2(a2-b2) ) ) );
   }
 
+  // --------------------------------------------------------------------------
+
+  bool segment2d_line_inter( const pnt2d& p, const vec2d& n,
+                             const pnt2d& v1, const pnt2d& v2, pnt2d& X )
+  {
+    //relative positions
+    vec2d seg = v2 - v1,
+          pv1 = v1 - p,
+          pv2 = v2 - p;
+
+    //some projections
+    double seg_d_norm = dot( seg, n ),
+           pv1_d_norm = dot( pv1, n ),
+           pv2_d_norm = dot( pv2, n );
+
+    if( seg_d_norm == 0. )  // <-segment is parallel to line
+      {
+        if( pv2_d_norm == 0. )  // <-segment belong to line
+          {
+            X = (v1 + v2) * 0.5;
+            return true;
+          }
+        else
+          return false;
+      }
+
+    // diff signs = intersect, zero = vertex touch
+    if( pv1_d_norm * pv2_d_norm <= 0. )
+      {
+        X = v1 + seg * ( -pv1_d_norm / seg_d_norm );
+        return true;
+      }
+
+    return false;
+  }
+
 }

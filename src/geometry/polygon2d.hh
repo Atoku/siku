@@ -93,8 +93,6 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
 
   class cvpoly2d
   {
-//    friend int intersect( const cvpoly2d& , const cvpoly2d& ,
-//                           std::vector<pnt2d>& , pnt2d& , double& );
     friend int intersect( const cvpoly2d&, const cvpoly2d&,
                           std::vector<pnt2d>&, std::vector<PointStatus>*,
                           pnt2d*, double* );
@@ -202,6 +200,11 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
     // Pretty print
     //---------------------------------------------------------------------
     void print();
+
+    // changes order of vertices thus poly becomes CCW oriented.
+    // !!! works ONLY if it is convex or close to it
+    //! \return true if all is correct, false on error
+    void make_CCW();
 
   };
 

@@ -33,39 +33,27 @@
 // ----------------------------- Project includes ---------------------------
 //#include "siku.hh"  // conflict!
 #include "polygon2d.hh"
-#include "matrix3d.hh"
+#include "polyhedron3d.hh"
 
-//#include "coordinates.hh"
-
-// ====================== Implementation black magic ========================
-
-  // converting scale for vec3d <-> point2d  // for debug
-  // TODO: remove this
-  const double POINT_SCALE = 1. ;
-
-
-  //===== GLM =====
-  // removing degrees support to avoid warning message
-  #define GLM_FORCE_RADIANS
-
-  //! Main quaternion types
-  #include <glm/gtc/quaternion.hpp>
-  ////// temporally disabled to avoid ambiguities in H5 save/load
-  //#ifdef SIKU_QUATF
-  //typedef glm::fquat quat;
-  //#else
-  typedef glm::dquat quat;
-  //#endif
+// #include chain:
+// gtypes -- vec3d - pnt3d - mat3d - segment2d - polyhedron3d -- geometry
+//        \- vec2d - pnt2d - segment2d - polygon2d --         -/
 
 namespace Geometry
 {
-
 // ------------------------ Manual debug checks -----------------------------
 
   // for tests. IMPROVE this or remove if necessary
   inline void print(const quat& q)
   {
     std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
+  }
+
+  //! Streams printing
+  inline std::ostream& operator<<( std::ostream& out, const quat& q )
+  {
+    out << q.w << " " << q.x << " " << q.y << " " << q.z;
+    return out;
   }
 
   // NaN quat
@@ -86,42 +74,26 @@ namespace Geometry
   //! a point. Z-coordinate is ignored -> works with projection on xOy.
   bool contains( const std::vector<vec3d>& poly, const vec3d& point );
 
-  //! \brief checks if two line segments intersect. Return intersection point
-  //! or nullvec if they don`t intersect. Work with xOy projection, z - omitted.
-  //! \param a1, a2 - two points of segment 'a'; b1, b2 - two points of
-  //! segment 'b'
-//  vec3d line_seg_inter( const vec3d& a1, const vec3d& a2,
-//                        const vec3d& b1, const vec3d& b2 );
-
-////DEPRECATED!
-//  //! \brief calculates intersection of two polygons.
-//  //! \param[in] poly1 - first ConvexPoly2d
-//  //! \param[in] poly2 - first ConvexPoly2d
-//  //! \param[out] res - resulting vector of points. Caption depends on
-//  //! implementation. Generally - vertices of intersection area.
-//  //! \param[out] center - center of intersection (whatever it is).
-//  //! \param[out] size - area, perimeter or equivalent concept
-//  //! \return number of intersection vertices. Zero if no intersection
-//  int intersect( const std::vector<vec3d>& poly1,
-//                 const std::vector<vec3d>& poly2,
-//                 std::vector<vec3d>& res, vec3d& center, double& size );
-//
-//  //! \brief checks the polygon given as a vector of vertices for different
-//  //! errors. Returns true if errors exist, false if all is correct.
-//  //! If errors occur - puts some marks into 'res' argument (depend on
-//  //! implementation method).
-//  bool errored( const std::vector<vec3d>& poly, int& res );
-
   //! \brief reloaded error check for a set of 2d verts
   //! \param[in] poly2d - polygon that is being checked
   bool errored( const cvpoly2d& poly );
+
+  //! \brief Generates a flat polygon as a cross-section of polyhedron.
+  //! \param[in] poly - Polyhedron3d, which is being sect
+  //! \param[in] p - any point on secting plane (aka transition)
+  //! \param[in] q - quaternion of secting plane orientation. Oz -> normal,
+  //! xOy - plain of result polygon
+  //! \return - cvpoly2d, which is the resulting cross-section.
+  //! Empty polygon (no vertices) if there is no intersection
+  cvpoly2d cross_section( const Polyhedron3d& poly,
+                          const vec3d& p, const quat& q );
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ inlines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // stupid inlines. Privide some functions helping to work with vec3d objects
   // as if they were vec2d objects (Z-component ignored)
 
-  // vec3d-to-bool conversion with wierd name
+  // vec3d-to-bool conversion with weird name
   inline bool is( const vec3d& v)  { return v.x || v.y || v.z; }
 
   // returns point on line given by two points, which is calculated as a

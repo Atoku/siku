@@ -211,9 +211,110 @@ namespace Geometry
 
   bool errored( const cvpoly2d& poly )
   {
-    //return false; // for some tests
-    return ! poly.is_convex();
     return ! ( poly.is_convex() && poly.is_CCW_oriented() );
+  }
+
+  // --------------------------------------------------------------------------
+
+  cvpoly2d cross_section( const Polyhedron3d& poly,
+                          const vec3d& p, const quat& q )
+  {
+    // local struct for storing edges
+    struct _edge
+    {
+      size_t i1, i2;
+
+      // ordering constructor
+      _edge( size_t _i1 = 0, size_t _i2 = 0 )
+      {
+        if( _i1 < _i2 )
+          {
+            i1 = _i1;
+            i2 = _i2;
+          }
+        else
+          {
+            i1 = _i2;
+            i2 = _i1;
+          }
+      }
+
+      bool operator < ( const _edge& e )
+      {
+        return i1 < e.i1 || ( i1 == e.i1 && i2 < e.i2 );
+      }
+    };
+
+    // temporal ordered array of unique edges
+    vector< _edge > edges;
+    for( auto& a : poly.hedra )
+      {
+        // creating edges possible
+        _edge e1{ a.v1, a.v2 },
+              e2{ a.v1, a.v3 },
+              e3{ a.v2, a.v3 };
+
+        if( edges.size() == 0 )
+          edges.push_back( e1 );
+
+        // placing only new edges in correct positions
+        for( size_t i = 0; i < edges.size(); i++ )
+          {
+            if( edges[i] < e1 &&
+                ( i == edges.size()-1 ||
+                    ( i < edges.size()-1 && e1 < edges[i+1] )
+                )
+              )
+              edges.insert( edges.begin() + i + 1, e1 );
+
+            if( edges[i] < e2 &&
+                ( i == edges.size()-1 ||
+                    ( i < edges.size()-1 && e2 < edges[i+1] )
+                )
+              )
+              edges.insert( edges.begin() + i + 1, e2 );
+
+            if( edges[i] < e3 &&
+                ( i == edges.size()-1 ||
+                    ( i < edges.size()-1 && e3 < edges[i+1] )
+                )
+              )
+              edges.insert( edges.begin() + i + 1, e3 );
+          }
+      }
+
+
+    vector< pnt3d > intersection;   // a set of intersection points
+    pnt3d X;    // temp point
+    mat3d loc = q_to_m3( poly.rot );    // loc_to_glob transform matrix
+    mat3d plain_orient = q_to_m3( q );  // plain orientation matrix
+    vec3d norm = plain_orient * vec3d( 0., 0., 1. ),    // plain normal
+          Ox = plain_orient * vec3d( 1., 0., 0. ),      // Ox in plain
+          Oy = plain_orient * vec3d( 0., 1., 0. );      // Oy in plain
+    for( auto& a : edges )
+      {
+        //generating points of intersection of edges with plain
+        if( segment3d_surf_inter( poly.pos + loc * poly.verts[a.i1].pos,
+                                  poly.pos + loc * poly.verts[a.i2].pos,
+                                  p, norm, X ) )
+          {
+            intersection.push_back( X );
+          }
+      }
+
+    //projecting on plain
+    vector< vec2d > V2;
+    for( auto& a : intersection )
+      V2.push_back( { dot( a-p, Ox ), dot( a-p, Oy ) } );
+
+    cvpoly2d res( V2 );
+
+    // making result polygon CCW ordered
+    res.make_CCW();
+
+//    if(res.size())  // test output TODO: clean
+//      cout<<res.size()<<endl;
+    return res;
   }
 
 }

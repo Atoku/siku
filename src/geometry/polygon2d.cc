@@ -9,8 +9,6 @@
 #include "polygon2d.hh"
 
 #include <algorithm>
-//for test
-#include <limits>
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~ local utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -324,7 +322,7 @@ namespace Geometry
 
         // UNDONE: this section contains hardcoded tolerance. It should be
         // rewritten
-        static const double tolerance = -std::numeric_limits<double>::min();//0;//-1e-12;
+        static const double tolerance = 0;//-1e-12;
         if( td2 * td1 < tolerance ) return false;  // if different signs - not convex
 
         td1 = td2;
@@ -531,7 +529,51 @@ namespace Geometry
     for ( auto& v : verts )
       v.print();
   }
-  
+
+  // --------------------------------------------------------------------------
+
+  void cvpoly2d::make_CCW()
+  {
+    vec2d tv1 {}, tv2, tp;//nullvec2d;
+    size_t s = verts.size();
+    vector<vec2d> temp;
+
+    for ( size_t i = 0; i < s; ++i )
+      tv1 += verts[i];        // vec=pnt
+    tp = tv1 / (double) verts.size ();
+
+    // calculating cross-products <~> phi = atan( y/x )
+    double* prods = new double[s];
+    //tv1 = tempVerts[0] - tp;
+    for ( size_t i = 0; i < s; ++i )
+      {
+        tv2 = verts[i] - tp;
+        prods[i] = atan2 ( tv2.gety (), tv2.getx () );
+      }
+
+    // forming resulting vector of points
+    while ( s )
+      {
+        size_t n = 0;
+        for ( size_t i = 0; i < s; ++i )  // search for min prod
+          if ( prods[i] < prods[n] )
+            n = i;
+
+        // moving matching vertex into 'verts'
+        temp.push_back ( verts[n] );
+        verts[n] = verts.back ();
+        verts.pop_back ();
+
+        prods[n] = prods[s - 1];
+        --s;
+      }
+
+    delete[] prods;
+
+    verts.swap( temp );
+
+    return;
+  }
   
 } // namespace Geometry
 

@@ -44,27 +44,6 @@ void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 );
 
 // =========================== contact force ================================
 
-//void contact_push( ContactDetector::Contact& c, Globals& siku )
-//{
-//  switch( siku.cont_force_model )
-//  {
-//    case CF_TEST_SPRINGS: //same as CF_DEFAULT
-//      _test_springs( c, siku );
-//      break;
-//
-//    case CF_HOPKINS:
-//      _hopkins_frankenstein( c, siku );
-//      break;
-//
-//    case CF_DIST_SPRINGS:
-//      _distributed_springs( c, siku );
-//      break;
-//
-//  }
-//}
-//
-// -----------------------------------------------------------------------
-
 void contact_forces( Globals& siku )
 {
   switch( siku.cont_force_model )
@@ -85,10 +64,6 @@ void contact_forces( Globals& siku )
       break;
 
   }
-
-// Merged with 'contact_push'
-//  for ( auto& c : siku.ConDet.cont )
-//    contact_push( c, siku );
 }
 
 // ============================== definitions ==============================
@@ -97,11 +72,13 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
 {
   Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
 
+  // temporal variables for storing geometry results
   vec2d center;
   double area;
   vector<PointStatus> stats;
   vector<vec2d> interPoly;
 
+  // coordinates transformation matrixes (local systems of two elements)
   mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
   mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
@@ -114,15 +91,16 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
   for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
   for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
 
-  // check for errors
+  // errors check
   if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
   if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
 
+  // call for 'geometry'->'2d'->'polygon intersection'
   if( intersect( loc_P1, loc_P2, interPoly, &stats, &center, &area ) > 2 )
     {
-      vec3d tv;
-      // mark contact as a 'collision'
-      c.type = ContType::COLLISION;
+      vec3d tv;  // temporal
+
+      c.type = ContType::COLLISION;  // mark contact as a 'collision'
 
 ////  OLD
 //          // 'center' vec is the same as r1, because local origin stays in e1
@@ -217,7 +195,7 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
 
       c.generation = 0;  // refreshing contact for avoiding deletion
 
-    ////////////////////////
+//////////////////////// Yet I`m not sure in this section
       // point from e1 center to e2 center
       tv = e2_to_e1 * NORTH;
       vec2d r12 { tv.x, tv.y };
@@ -239,7 +217,7 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
 
       // velocity difference at aim point
       vec2d v12 { v1 - v2 };
-    ////////////////////////
+////////////////////////
 
       // directions and applying point
       vec2d dp = p1p2[1] - p1p2[0];
@@ -247,10 +225,7 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
       vec2d norm { tau.y, -tau.x };
       vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
 
-//          double Kne = siku.phys_consts[0],
-//                 Kni = siku.phys_consts[1],
-//                 Kw = siku.phys_consts[2],
-//                 Kt = siku.phys_consts[3];
+      // physical constants (from python scenario)
       double Kne = siku.phys_consts["rigidity"],
              Kni = siku.phys_consts["viscosity"],
              Kw = siku.phys_consts["rotatability"],
@@ -258,13 +233,15 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
 
       double Asqrt = sqrt( area );
 
+      // zero if dt==0, some fraction otherwise
       double da_dt = siku.time.get_dt() ?
           ( Asqrt - sqrt( c.area ) ) / siku.time.get_dt() : 0.;
 
+      // actually the force
       vec2d F = ( Kne * Asqrt  +
                   Kni * da_dt ) * siku.planet.R * norm;
 
-      //////////  testing tangential force
+//////////  testing tangential force
       F += tau * ( tau * v12 ) * Asqrt * Kt * siku.planet.R2;
 
       double torque1 =
@@ -274,7 +251,8 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
           Kw * siku.planet.R_rec * cross( center -
           vec3_to_vec2( e2_to_e1 * NORTH ), F );
 
-      // signs are fitted manually
+      // applying forces and torques
+      // (signs are fitted manually)
       siku.es[c.i1].F -= vec2_to_vec3( F );
       siku.es[c.i1].N -= torque1;
 
@@ -297,44 +275,34 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
 
   if( c.type != ContType::JOINT )
     {
-      // calculating intersection zone and properties
-      _collision( siku, c//, e1, e2, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
-                  //interPoly, stats, center, area
-                  );
+      _collision( siku, c ); // collision forces
     }
   else  // <=> if( c.type == ContType::JOINT )
     {
       Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
 
+      // coordinates transformation matrixes (local systems of two elements)
       mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
       mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
+      // test for polygons convexity
       _error_test( e1, e2, e2_to_e1, e1_to_e2 );
 
       // -------------------------------------------------------------------
 
-//      double K = siku.phys_consts[5];
-//      double Kw = siku.phys_consts[6];
-//      double sigma = siku.phys_consts[7];
-//      double epsilon = siku.phys_consts[8];
+      // physical constants (from python scenario)
       double K = siku.phys_consts["elasticity"],
              Kw = siku.phys_consts["bendability"],
              sigma = siku.phys_consts["solidity"],
              epsilon = siku.phys_consts["tensility"];
 
+      // calculating forces and torques
       vec2d p1 = c.p1;
-      vec3d tv = vec2_to_vec3( c.p2 );
-      tv.z = sqrt(1. - tv.x*tv.x - tv.y*tv.y);
-      vec2d p2 = vec3_to_vec2( e2_to_e1 * tv );
-//
-//      print( p1);
-//      print(p2);
-//      print( p2 - p1 );
-//      cout<<"---\n";
+      vec2d p2 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p2 ) );
+
       vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability *
           c.init_len;
       // * c.init_size OR c.init_len;
-//      print (F);
 
       double torque1 =
           Kw * siku.planet.R_rec * cross( p1, F );
@@ -343,6 +311,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
           Kw * siku.planet.R_rec * cross( p2 -
              vec3_to_vec2( e2_to_e1 * NORTH) , F );
 
+      // applying forces and torques
       // signs are fitted manually
       siku.es[c.i1].F -= vec2_to_vec3( F );
       siku.es[c.i1].N -= torque1;
@@ -350,6 +319,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       siku.es[c.i2].N += torque2;
 
+      // Joint destruction
       double t = (p2-p1).abs() *
           1. / ( vec3_to_vec2(e2_to_e1 * NORTH).abs() );
           //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( e2_to_e1 * NORTH)).abs() );
@@ -370,40 +340,36 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
 
   if( c.type != ContType::JOINT )
     {
-      // calculating intersection zone and properties
-      _collision( siku, c );
+      _collision( siku, c ); // collision forces
     }
   else  // <=> if( c.type == ContType::JOINT ) // Hopkins` physics
     {
       Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
 
+      // coordinates transformation matrixes (local systems of two elements)
       mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
       mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
+      // test for polygons convexity
       _error_test( e1, e2, e2_to_e1, e1_to_e2 );
 
       // -------------------------------------------------------------------
 
-//      double K = siku.phys_consts[5];
-//      double Kw = siku.phys_consts[6];
-//      double sigma = siku.phys_consts[7];
-//      double epsilon = siku.phys_consts[8];
+      // physical constants (from python scenario)
       double K = siku.phys_consts["elasticity"],
              Kw = siku.phys_consts["bendability"],
              sigma = siku.phys_consts["solidity"],
              epsilon = siku.phys_consts["tensility"];
 
+      // calculating forces and torques (this method seems to be working wrong)
       vec2d p11 = vec3_to_vec2( siku.es[c.i1].P[c.v11] );
       vec2d p12 = vec3_to_vec2( siku.es[c.i1].P[c.v12] );
       vec2d p21 = vec3_to_vec2( e2_to_e1 * siku.es[c.i2].P[c.v21] );
       vec2d p22 = vec3_to_vec2( e2_to_e1 * siku.es[c.i2].P[c.v22] );
       vec2d X;
 
-      double sinX;
-      double cosX;
-
-      sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
-      cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );
+//      double sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
+//      double cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );
 
       double Al = 0.5 * cross( p12 - X, p21 - X );
       double Ar = 0.5 * cross( p22 - X, p11 - X );
@@ -425,6 +391,7 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       c.area = Ar > 0 ? Ar : 0.
              + Al > 0 ? Al : 0.;
 
+      // applying forces and torques
       // signs are fitted manually
       siku.es[c.i1].F -= vec2_to_vec3( F );
       siku.es[c.i1].N -= torque1;
@@ -432,6 +399,7 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       siku.es[c.i2].N += torque2;
 
+      // Joint destruction
       double t = (abs(Al) + abs(Ar)) / ( siku.es[c.i1].A + siku.es[c.i2].A );
       c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
@@ -448,67 +416,66 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
   if( c.type != ContType::JOINT )
     {
-      // calculating intersection zone and properties
-      _collision( siku, c );
+      _collision( siku, c ); // collision forces
     }
   else if( c.durability > 0. ) // <=> if( c.type == ContType::JOINT )
     {
       Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
 
+      // coordinates transformation matrixes (local systems of two elements)
       mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
       mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
+      // test for polygons convexity
       _error_test( e1, e2, e2_to_e1, e1_to_e2 );
 
       // -------------------------------------------------------------------
 
+      // physical constants (from python scenario)
       double K = siku.phys_consts["elasticity"],
              Kw = siku.phys_consts["bendability"],
              sigma = siku.phys_consts["solidity"],
              epsilon = siku.phys_consts["tensility"];
 
+      // direct and reversed planet radius shortcuts
       double &R = siku.planet.R, &R_ = siku.planet.R_rec;
 
-      vec3d tv1, tv2;
+      vec3d tv1, tv2; // just some temporals
 
-//      vec2d p1 = c.p1, p2 = c.p2;
-//      tv1 = vec2_to_vec3( c.p3 );                       // just some additional
-//      tv1.z = sqrt( 1. - tv1.x*tv1.x - tv1.y*tv1.y );   // accuracy to avoid
-//      tv2 = vec2_to_vec3( c.p4 );                       // errors caused by
-//      tv2.z = sqrt( 1. - tv2.x*tv2.x - tv2.y*tv2.y );   // rounding
-//      vec2d p3 = vec3_to_vec2( e2_to_e1 * tv1 ),
-//            p4 = vec3_to_vec2( e2_to_e1 * tv2 );
+      // original contact points considering current shift of elements
       vec2d p1 = c.p1, p2 = c.p2,
             p3 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p3 ) ),
             p4 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p4 ) );
 
+      // some additional variables to avoid unnecessary functions` calls
       double hardness = K * c.init_len * c.durability * R,
              rotatability = K * c.init_len * c.durability * 1./12.;
 
-      // some additional variables to avoid unnecessary sqrt...
       vec2d dr1 = p4 - p1,
             dr2 = p3 - p2;
       double dl1 = abs( dr1 ), dl2 = abs( dr2 );
 
       double mom1, mom2;
 
+      // The Force itself
       vec2d F = hardness * (dr1 + dr2) * 0.5;
 
+      // combined torques
       vec2d r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
       mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +              //traction
                     rotatability * cross( p1 - p2, dr1 - dr2 ) );   //couple
       mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
                     rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
-      // TODO: make some difference between "vector in 3d space" and
-      // "point on sphere" transformations!
+      // applying forces and torques
+      // signs are fitted manually
       e1.F -= vec2_to_vec3( F );
       e1.N -= mom1;
 
       e2.F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       e2.N += mom2;
 
-      // durability change
+      // durability change - joint destruction
       double r_size = 1. / c.init_len, // reversed size
              dmax = max( dl1, dl2 ),    // maximal stretch
              dave = (dl1 + dl2) * 0.5;  // average stretch
@@ -547,8 +514,6 @@ void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 )
   std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
 
   // polygons in local (e1) coords
-//      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
-//      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
   for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
   for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
 

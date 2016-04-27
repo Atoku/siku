@@ -4,19 +4,29 @@
 #define MATRIX3D_HH
 
 #include "pnt3d.hh"
+// #include chain:
+// gtypes -- vec3d - pnt3d - mat3d - segment2d - polyhedron3d -- geometry
+//        \- vec2d - pnt2d - segment2d - polygon2d --         -/
 
 // =========================== GLM implementation ===========================
 #ifndef SIKU_3D_NOT_GLM
 
 //! Main matrix types
 #include <glm/mat3x3.hpp>
-////// temporally disabled to avoid ambiguities in H5 save/load
-//#ifdef SIKU_QUATF
-//typedef glm::fmat3 mat3d;
-//#else
-typedef glm::dmat3 mat3d;
-//#endif
+namespace Geometry
+{
+  ////// temporally disabled to avoid ambiguities in H5 save/load
+  //#ifdef SIKU_QUATF
+  //typedef glm::fmat3 mat3d;
+  //#else
+  typedef glm::dmat3 mat3d;
+  //#endif
 
+  inline mat3d q_to_m3( const quat& q )
+  {
+    return glm::mat3_cast( q );
+  }
+}
 // ============================= Local implementation =======================
 #else
 

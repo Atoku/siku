@@ -43,6 +43,8 @@ extern "C" {
 #include <assert.h>
 }
 
+#include "geom_types.hh"
+
 namespace Geometry
 {
 
@@ -260,6 +262,13 @@ namespace Geometry
     inline void print( const vec2d& v )  //experimental
     {
       v.print();
+    }
+
+    //! Streams printing
+    inline std::ostream& operator<<( std::ostream& out, const vec2d& v )
+    {
+      out << v.x << " " << v.y;
+      return out;
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Utils ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
