@@ -112,5 +112,15 @@ void mproperties( Globals& siku )
 
       // marking element as it was already processed
       e.flag |= Element::F_PROCESSED;
+
+      // checking land-fastency condition
+      if( !(e.flag & Element::F_FASTENED) &&
+          (e.OA / e.A) > siku.phys_consts["fastency"] )
+        {
+          e.flag &= ~( Element::F_FREE );//| Element::F_STEADY );
+          e.flag |= Element::F_STATIC | Element::F_FASTENED;
+        }
+      else
+        e.OA = 0.;
     }
 }

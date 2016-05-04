@@ -49,13 +49,6 @@ namespace Geometry
     std::cout<<q.w<<"\t"<<q.x<<"\t"<<q.y<<"\t"<<q.z<<std::endl;
   }
 
-  //! Streams printing
-  inline std::ostream& operator<<( std::ostream& out, const quat& q )
-  {
-    out << q.w << " " << q.x << " " << q.y << " " << q.z;
-    return out;
-  }
-
   // NaN quat
   inline bool NaN_q( const quat& q )
   {

@@ -147,20 +147,8 @@ main ( int argc, char* argv[] )
       // --- pretimestep
       (void) sikupy.fcall_pretimestep ( siku );
 
-      // --- Updating external forcing fields if necessary
-      //sikupy.fcall_winds ( siku ); //<- GONE to _pretimestep
-
       // --- Searching for interaction pairs
       siku.ConDet.detect( siku );
-
-//      for( auto a : siku.ConDet.cont )
-//        {
-//          cout<<a.type<<" "<<a.durability<<"\t";
-//          cout<<a.i1<<" - "<<a.i2<<"\t";
-//          cout<<a.generation<<"\t"<<a.step<<"\t";
-//          cout<<endl;
-//        }
-//      cout<<endl;
 
       // --- Broad Phase Contact Detection if necessary
 
@@ -208,7 +196,6 @@ main ( int argc, char* argv[] )
 
       // --- END OF LOOP ---
       siku.time.increment ();
-//cout<<"======= "<<siku.ConDet.cont.size()<<" ==================\n";
 
       // ------------------------------------------------------------------
     }

@@ -28,6 +28,7 @@
 #ifndef ELEMENT_HH
 #define ELEMENT_HH
 
+#include <cstdint>
 #include <vector>
 #include <string>
 using namespace std;
@@ -75,8 +76,11 @@ public:
   //! either loaded from snapshot or already processed by dynamics/position
   static const unsigned int F_PROCESSED {0x40};  // aka 64
 
+  //! \brief flag for runtime land-fastened ice elements
+  static const unsigned int F_FASTENED {0x80};  // aka 128
+
   //! \brief flag state for elements with any kind of error properties
-  static const unsigned int F_ERRORED {0x80};  // aka 128
+  static const unsigned int F_ERRORED {0x80000000};
 
 
   // --------------- Not changing handling parameters ----------------
@@ -110,6 +114,9 @@ public:
                                 //!frame
   double N {0};                 //!< N*m, torque value in local frame
 
+  double OA {0};                //!< total relative overlap area with landfast
+                                //!ice
+
   // --------------- Not changing state parameters -------------------
 
   size_t imat;                  //!< material index
@@ -119,7 +126,6 @@ public:
   double sbb_rmin;              //!< bounding sphere minimum radius
 
   //OLD //vector<double> gh;
-  //vector<double> gh;
   double gh[ MAT_LAY_AMO ];     //!< g(h) thickness distribution
   vector<vec3d> P;              //!< 1, local unit frame coords of
                                 //! vertices

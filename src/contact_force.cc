@@ -40,7 +40,11 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku );
 
 void _distributed_springs( ContactDetector::Contact& c, Globals& siku );
 
-void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 );
+void _err_n_land_test( Element &e1, Element &e2,
+                       mat3d& e2_to_e1, mat3d& e1_to_e2 );
+
+void _fastency( Element &e1, Element &e2,
+                const vector<vec2d>& l1, const vector<vec2d>& l2 );
 
 // =========================== contact force ================================
 
@@ -86,14 +90,12 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
   std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
 
   // polygons in local (e1) coords
-//      for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
-//      for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
   for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
   for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
 
   // errors check
-  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+//  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+//  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
 
   // call for 'geometry'->'2d'->'polygon intersection'
   if( intersect( loc_P1, loc_P2, interPoly, &stats, &center, &area ) > 2 )
@@ -261,6 +263,19 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
 
       c.area = area;
 
+      if( area < 0 )
+        {
+          cout<<"!!!!!!!!  "<<area<<endl;
+          cin.get();
+
+        }
+
+      // if at least one element is fastened
+      if( (e1.flag & Element::F_STATIC) || (e2.flag & Element::F_STATIC) )
+        {
+          e1.OA += area;
+          e2.OA += area;
+        }
     }
 }
 
@@ -272,6 +287,12 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
   if( (siku.es[c.i1].flag & Element::F_ERRORED) ||
       (siku.es[c.i2].flag & Element::F_ERRORED) )
     return;
+
+//  // No need to calculate interaction for two steady polygons
+//  // TODO: reconsider runtime fastened ice
+//  if( (siku.es[c.i1].flag & Element::F_STEADY) &&
+//      (siku.es[c.i2].flag & Element::F_STEADY) )
+//    return;
 
   if( c.type != ContType::JOINT )
     {
@@ -286,7 +307,7 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
       mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
       // test for polygons convexity
-      _error_test( e1, e2, e2_to_e1, e1_to_e2 );
+      _err_n_land_test( e1, e2, e2_to_e1, e1_to_e2 );
 
       // -------------------------------------------------------------------
 
@@ -331,11 +352,18 @@ void _test_springs( ContactDetector::Contact& c, Globals& siku )
 
 // -----------------------------------------------------------------------
 
+/// UNDONE!
 void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
 {
   // TODO: such errors should be removed by removing their reason
   if( (siku.es[c.i1].flag & Element::F_ERRORED) ||
       (siku.es[c.i2].flag & Element::F_ERRORED) )
+    return;
+
+  // No need to calculate interaction for two steady polygons
+  // TODO: reconsider runtime fastened ice
+  if( (siku.es[c.i1].flag & Element::F_STEADY) &&
+      (siku.es[c.i2].flag & Element::F_STEADY) )
     return;
 
   if( c.type != ContType::JOINT )
@@ -351,7 +379,7 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
       // test for polygons convexity
-      _error_test( e1, e2, e2_to_e1, e1_to_e2 );
+      _err_n_land_test( e1, e2, e2_to_e1, e1_to_e2 );
 
       // -------------------------------------------------------------------
 
@@ -400,8 +428,8 @@ void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
       siku.es[c.i2].N += torque2;
 
       // Joint destruction
-      double t = (abs(Al) + abs(Ar)) / ( siku.es[c.i1].A + siku.es[c.i2].A );
-      c.durability -= (t > epsilon) ? t * sigma : 0.;
+//      double t = (abs(Al) + abs(Ar)) / ( siku.es[c.i1].A + siku.es[c.i2].A );
+//      c.durability -= (t > epsilon) ? t * sigma : 0.;
     }
 }
 
@@ -412,6 +440,12 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
   // TODO: such errors should be removed by removing their reason
   if( (siku.es[c.i1].flag & Element::F_ERRORED) ||
       (siku.es[c.i2].flag & Element::F_ERRORED) )
+    return;
+
+  //No need to calculate interaction for two steady polygons
+  // TODO: reconsider runtime fastened ice
+  if( (siku.es[c.i1].flag & Element::F_STEADY) &&
+      (siku.es[c.i2].flag & Element::F_STEADY) )
     return;
 
   if( c.type != ContType::JOINT )
@@ -427,7 +461,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
       // test for polygons convexity
-      _error_test( e1, e2, e2_to_e1, e1_to_e2 );
+      _err_n_land_test( e1, e2, e2_to_e1, e1_to_e2 );
 
       // -------------------------------------------------------------------
 
@@ -448,7 +482,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
             p4 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p4 ) );
 
       // some additional variables to avoid unnecessary functions` calls
-      double hardness = K * c.init_len * c.durability * R,
+      double hardness     = K * c.init_len * c.durability * R,
              rotatability = K * c.init_len * c.durability * 1./12.;
 
       vec2d dr1 = p4 - p1,
@@ -508,7 +542,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
 // -----------------------------------------------------------------------
 
-void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 )
+void _err_n_land_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 )
 {
   std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
   std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
@@ -518,8 +552,37 @@ void _error_test( Element &e1, Element &e2, mat3d& e2_to_e1, mat3d& e1_to_e2 )
   for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
 
   // check for errors
-  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+//  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+//  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+
+  _fastency( e1, e2, loc_P1, loc_P2 );
+}
+
+// -----------------------------------------------------------------------
+
+void _fastency( Element &e1, Element &e2,
+                const vector<vec2d>& l1, const vector<vec2d>& l2 )
+{
+  // if at least one element is fastened - calculate overlap
+  if( (e1.flag & Element::F_STATIC) || (e2.flag & Element::F_STATIC) )
+    {
+      double area;
+      vector<vec2d> interPoly;
+
+      // if there is some intersection area
+      if( intersect( l1, l2, interPoly, nullptr, nullptr, &area ) > 2 )
+        {
+          if( area < -0.00000001 )
+            {
+              cout<<"!!!!!!!!  "<<area<<endl;
+              cin.get();
+
+            }
+
+          e1.OA += area;
+          e2.OA += area;
+        }
+    }
 }
 
 // -----------------------------------------------------------------------

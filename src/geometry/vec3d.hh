@@ -18,7 +18,7 @@
 
 namespace Geometry
 {
-   ////// temporally disabled to avoid ambiguities in H5 save/load
+  ////// temporally disabled to avoid ambiguities in H5 save/load
   //#ifdef SIKU_VECF                // float vectors
   //typedef glm::fvec3 vec3d;
   //#else

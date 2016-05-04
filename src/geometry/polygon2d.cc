@@ -166,7 +166,7 @@ namespace Geometry
 
                 *psize += cross( tv1, tv2 );
               }
-            *psize /= 2.;
+            *psize *= 0.5;
           }
         tv2 = (verts)[1] - tp;
 
@@ -263,7 +263,7 @@ namespace Geometry
     for(size_t i = 1; i < verts.size() - 1; ++i )
       a += cross( verts[i] - o, verts[i+1] - o );
 
-    return a / 2.;
+    return a * 0.5;
   }
 
 // --------------------------------------------------------------------------
