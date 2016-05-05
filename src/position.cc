@@ -19,8 +19,7 @@ position ( Globals& siku, const double dt )
 
   for ( auto & e : siku.es )
     {
-      if( e.flag & Element::F_ERRORED )
-        continue;
+//      if( e.flag & Element::F_ERRORED )   continue;
 
       if ( e.flag & Element::F_STATIC ) continue;
 

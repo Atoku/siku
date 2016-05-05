@@ -211,7 +211,8 @@ namespace Geometry
 
   bool errored( const cvpoly2d& poly )
   {
-    return ! ( poly.is_convex() && poly.is_CCW_oriented() );
+    return !poly.is_convex();
+    //return ! ( poly.is_convex() && poly.is_CCW_oriented() );
   }
 
   // --------------------------------------------------------------------------

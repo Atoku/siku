@@ -114,8 +114,11 @@ void mproperties( Globals& siku )
       e.flag |= Element::F_PROCESSED;
 
       // checking land-fastency condition
-      if( !(e.flag & Element::F_FASTENED) &&
-          (e.OA / e.A) > siku.phys_consts["fastency"] )
+      if( e.flag & Element::F_FREE &&
+          ~e.flag & Element::F_FASTENED &&
+          e.OA > 0.0 )
+//          (e.OA / e.A) > siku.phys_consts["fastency"] * 0.5 )
+        //BUG: 0.5 lost in python->polygon->A calculation
         {
           e.flag &= ~( Element::F_FREE );//| Element::F_STEADY );
           e.flag |= Element::F_STATIC | Element::F_FASTENED;

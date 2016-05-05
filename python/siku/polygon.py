@@ -133,7 +133,7 @@ class Polygon:
         Ci = []
         for i in range( len(Pi) ):
             j = ( i + 1 ) % len(Pi)
-            Ai.append( Pi[i].cross(Pi[j]).length )
+            Ai.append( Pi[i].cross(Pi[j]).length * 0.5 )
             Ci.append( poly_xyz[i] + poly_xyz[j] + P )
         A = sum( Ai )
         
