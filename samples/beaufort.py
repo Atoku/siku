@@ -89,9 +89,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + hour * 90
+    siku.time.finish = siku.uw.times[st_t_ind] + hour * 30
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 3600
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 1200
    
     # ---------------------------------------------------------------------
     # elements
@@ -111,8 +111,8 @@ def main():
     PC.filter_( 179, 187, 54, 60 )
 
 ##TESTING!
-    PV.filter_( 185, 230, 62, 82 )
-    PC.filter_( 185, 230, 62, 82 )
+    PV.filter_( 190, 230, 62, 82 )
+    PC.filter_( 190, 230, 62, 82 )
 ##/TESTING
 
     
@@ -190,7 +190,7 @@ def main():
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  1, 1, 1, 1, 1 ]
     
-    siku.settings.phys_consts = { 'rigidity' : 1000,#5000
+    siku.settings.phys_consts = { 'rigidity' : 5000,#5000
                                   'viscosity' : 100000,#10000000
                                   'rotatability' : 0.75,#0.75
                                   'tangency' : -0.00003,#-0.00003
@@ -200,7 +200,7 @@ def main():
                                   'solidity' : 0.05,
                                   'tensility' : 0.615,
 
-                                  'windage': 0.04, #1
+                                  'windage': 0.05, #1
                                   'fastency' : 0.5
                                   }
 

@@ -109,12 +109,11 @@ https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Mono
 
     cvpoly2d( const std::vector<vec2d>& v )
     {
-      // TODO: reconsider Closeness of polygon
       verts = v;
-//      if( verts.back() == verts.front() )
-//        {
-//          verts.pop_back();
-//        }
+
+      // polygons are stored unclosed
+      if( verts.back() == verts.front() )
+        verts.pop_back();
     }
 
     // we want a real deep copy!
