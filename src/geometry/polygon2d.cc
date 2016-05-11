@@ -366,7 +366,7 @@ namespace Geometry
   bool cvpoly2d::is_CCW_oriented_NC() const
   {
     // default check
-    if( verts.size() < 3 ) return 0.;
+    if( verts.size() < 3 ) throw( "Error in is_CCW_nc: bad polygon!" );
 
     size_t size = verts.size();
 
@@ -380,8 +380,7 @@ namespace Geometry
         tv2 = ort( verts[ (i+2) % size ] - verts[ (i+1) % size ] );
 
         // accumulate angle between edges
-        // BUG: should be replaced with something like atan
-        res += atan( cross( tv1, tv2 ) / dot( tv1, tv2 ) );
+        res += atan2( cross( tv1, tv2 ), dot( tv1, tv2 ) );
       }
 
     return res > 0.;

@@ -15,7 +15,7 @@ namespace Geometry
 
 
   bool segment2d_intersect( const pnt2d& a1, const pnt2d& a2,
-                        const pnt2d& b1, const pnt2d& b2, pnt2d& X )
+                            const pnt2d& b1, const pnt2d& b2, pnt2d& X )
   {
       // algorithm taken from
       // http://algolist.manual.ru/maths/geom/intersect/lineline2d.php

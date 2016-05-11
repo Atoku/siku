@@ -46,6 +46,14 @@ void _err_n_land_test( Element &e1, Element &e2,
 void _fasten( Element &e1, Element &e2, double area,
                 const vector<vec2d>& l1, const vector<vec2d>& l2 );
 
+// TODO: reassemble this function with _collision
+void _spike( Element& e1, Element& e2, ContactDetector::Contact& c,
+             Globals& siku,
+             const mat3d& e1_to_e2, const mat3d& e2_to_e1,
+             const vector<vec2d>& loc1, const vector<vec2d>& loc2,
+             const vector<vec2d>& inter, const vector<PointStatus>& stats,
+             vec2d center, double area );
+
 // =========================== contact force ================================
 
 void contact_forces( Globals& siku )
@@ -191,8 +199,10 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
       if( np != 2 )  // inapplicable  //UNDONE: add solution for 'fencing'
                                       // intersections
         {
+//          _spike( e1, e2, c, siku, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
+//                  interPoly, stats, center, area );
           c.type = ContType::NONE;
-          return ;
+          return;
         }
 
       c.generation = 0;  // refreshing contact for avoiding deletion
@@ -573,3 +583,86 @@ void _fasten( Element &e1, Element &e2, double area,
 
 // -----------------------------------------------------------------------
 
+void _spike( Element& e1, Element& e2, ContactDetector::Contact& c,
+             Globals& siku,
+             const mat3d& e1_to_e2, const mat3d& e2_to_e1,
+             const vector<vec2d>& loc1, const vector<vec2d>& loc2,
+             const vector<vec2d>& inter, const vector<PointStatus>& stats,
+             vec2d center, double area )
+{
+  // temporal values
+  vec2d r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
+  vec2d c1 = -center,
+        c2 = r12 - center;
+
+  // some absolute values (just in case)
+  double lc1 = abs( c1 ), lc2 = abs( c2 );
+
+  //vec2d t = r12 * 0.5; // too easy and too wrong
+  vec2d t = r12 * ( lc2 / ( lc1 + lc2 ) );
+  vec2d tau = t - center;
+
+  // normal direction of force from e1 to e2
+  vec2d n12 = r12 * abs2( tau ) - tau * ( r12 * tau ); // <=> [tau, [r12, tau]]
+  n12 /= abs( n12 );
+
+  n12 *= copysign( 1., n12 * r12 );
+  // TODO: redesign this functions
+  tau = { -n12.y, n12.x };
+///////////////////////// copied from _collision:////////////////////////
+  // point from e2 center to aim
+  vec2d r2 { center - r12 };
+
+  // e1 aim speed (coz of spin + propagation)
+  vec2d v1 { vec3_to_vec2( siku.es[c.i1].V ) +
+      rot_90_cw( center ) * ( - siku.es[c.i1].W.z  * siku.planet.R ) };
+
+  // e2 aim speed (spin + propagation)
+  vec2d v2 { vec3_to_vec2( e2_to_e1 * siku.es[c.i2].V )
+             + rot_90_cw( center - r12 ) *
+             ( - siku.es[c.i2].W.z * siku.planet.R ) };
+
+  // velocity difference at aim point
+  vec2d v12 { v1 - v2 };
+
+  // physical constants (from python scenario)
+  double Kne = siku.phys_consts["rigidity"],
+         Kni = siku.phys_consts["viscosity"],
+         Kw = siku.phys_consts["rotatability"],
+         Kt = siku.phys_consts["tangency"];
+
+  double Asqrt = sqrt( area );
+
+  // zero if dt==0, some fraction otherwise
+  double da_dt = siku.time.get_dt() ?
+      ( Asqrt - sqrt( c.area ) ) / siku.time.get_dt() : 0.;
+
+  // actually the force
+  vec2d F = ( Kne * Asqrt  +
+              Kni * da_dt ) * siku.planet.R * n12;
+
+  //////////  testing tangential force
+//  F += tau * ( tau * v12 ) * Asqrt * Kt * siku.planet.R2;
+
+  double torque1 =
+      Kw * siku.planet.R_rec * cross( center, F );
+
+  double torque2 =
+      Kw * siku.planet.R_rec * cross( center -
+      vec3_to_vec2( e2_to_e1 * NORTH ), F );
+
+  // applying forces and torques
+  // (signs are fitted manually)
+  e1.F -= vec2_to_vec3( F );
+  e1.N -= torque1;
+
+  e2.F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
+  e2.N += torque2;
+
+  c.area = area;
+
+  _fasten( e1, e2, area, loc1, loc2 );
+
+}
+
+// -----------------------------------------------------------------------
