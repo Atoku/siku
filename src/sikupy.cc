@@ -652,7 +652,6 @@ Sikupy::read_elements ( Globals& siku )
       PyObject* pobj;           // for all the objects
 
       // reading geom. moment of inertia (I/m)
-
       pobj = PyObject_GetAttrString ( pitem, "i" ); // new
       assert( pobj );
 
@@ -662,20 +661,15 @@ Sikupy::read_elements ( Globals& siku )
       Py_DECREF( pobj );
 
       // reading area
-
       pobj = PyObject_GetAttrString ( pitem, "A" ); // new
       assert( pobj );
 
       success = read_double ( pobj, siku.es[i].A );
       assert( success );
 
-      // banned for spamming
-      //cout << "i = " << es[i].i << "; A = " << es[i].A << endl;
-
       Py_DECREF( pobj );
 
       // reading quaternion q (loc->global)
-
       pobj = PyObject_GetAttrString ( pitem, "q" ); // new
       assert( pobj );
 
@@ -685,7 +679,6 @@ Sikupy::read_elements ( Globals& siku )
       Py_DECREF( pobj );
 
       // reading g(h) - ice thickness distribution for the element
-
       pobj = PyObject_GetAttrString ( pitem, "gh" );
       assert( pobj );
 
@@ -698,7 +691,6 @@ Sikupy::read_elements ( Globals& siku )
       Py_DECREF( pobj );
 
       // reading sphere radius
-
       pobj = PyObject_GetAttrString ( pitem, "sbb_rmin" ); // new
       assert( pobj );
 
@@ -707,8 +699,25 @@ Sikupy::read_elements ( Globals& siku )
 
       Py_DECREF( pobj );
 
-      // reading all local coordinates of vertices Pi
+      // reading anchority factor
+      pobj = PyObject_GetAttrString ( pitem, "anchority" ); // new
+      assert( pobj );
 
+      success = read_double ( pobj, siku.es[i].anchority );
+      assert( success );
+
+      Py_DECREF( pobj );
+
+      // reading windage factor
+      pobj = PyObject_GetAttrString ( pitem, "windage" ); // new
+      assert( pobj );
+
+      success = read_double ( pobj, siku.es[i].windage );
+      assert( success );
+
+      Py_DECREF( pobj );
+
+      // reading all local coordinates of vertices Pi
       pobj = PyObject_GetAttrString ( pitem, "verts_xyz_loc" );
       assert( pobj );
 
@@ -717,16 +726,7 @@ Sikupy::read_elements ( Globals& siku )
 
       Py_DECREF( pobj );
 
-      /////////////////////////////////////////////////////////////////////////////////////////
-      // TODO: reconsider Closeness of polygon
-//      if( siku.es[i].P.back() == siku.es[i].P.front() )
-//        {
-//          cout<<"fixing\n";
-//          siku.es[i].P.pop_back();
-//        }
-
       // reading material index
-
       pobj = PyObject_GetAttrString ( pitem, "imat" );
       assert( pobj );
 
@@ -738,7 +738,6 @@ Sikupy::read_elements ( Globals& siku )
       Py_DECREF( pobj );
 
       // reading flag for the state (free/steady/static)
-
       pobj = PyObject_GetAttrString ( pitem, "flag_state" );
       assert( pobj );
 
@@ -1290,26 +1289,29 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // direct reference to the element to store
   const Element* pe = &siku.es[i];
-  Element ee = *pe;
+  //Element ee = *pe;
 
-  // creating quaternion object
+
+  // creating quaternion object ( q )
   PyObject* pQTuple = PyTuple_New ( 4 ); // quaternion as a new tuple, len = 4
 
   for ( Py_ssize_t k = 0; k < 4; ++k )
     {
-      PyObject* pNum = PyFloat_FromDouble ( ee.q[ (k+3)%4 ] );
+      PyObject* pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] );
           // ^-number to fill into the tuple // new
 
       PyTuple_SET_ITEM( pQTuple, k, pNum );  // steals pNum
     }
 
-  // creating list of tuples with vertices
+
+  // creating list of tuples with vertices ( P )
   PyObject* pPiList = PyList_New ( pe->P.size () ); // new
 
   for ( Py_ssize_t j = 0; j < Py_ssize_t ( pe->P.size () ); ++j )
     {
       // setting tuples
       PyObject* pPTuple = PyTuple_New ( 3 ); // new
+
       for ( Py_ssize_t k = 0; k < 3; ++k )
         {
           PyObject* pNum = PyFloat_FromDouble ( pe->P[j][k] );
@@ -1320,9 +1322,51 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
       PyList_SetItem( pPiList, j, pPTuple ); // steals pPTuple // discard previous value, if it existed
     }
 
-  PyObject* pReturnValue =
-      PyObject_CallMethod ( pSiku, fname, "(O,O,O,i,I)", pCurTime, pQTuple,
-                            pPiList, i, pe->flag ); //& Element::F_MOVE_FLAG ); //new
+
+  // preparing rotation vector
+  PyObject* pWTuple = PyTuple_New ( 3 ); // new
+
+  for ( Py_ssize_t k = 0; k < 3; ++k )
+    {
+      PyObject* pNum = PyFloat_FromDouble ( pe->W[k] );
+          // ^-number to fill into the tuple // new
+      PyTuple_SET_ITEM( pWTuple, k, pNum );  // steals pNum
+    }
+
+
+  // preparing force vector
+  PyObject* pFTuple = PyTuple_New ( 3 ); // new
+
+  for ( Py_ssize_t k = 0; k < 3; ++k )
+    {
+      PyObject* pNum = PyFloat_FromDouble ( pe->F[k] );
+          // ^-number to fill into the tuple // new
+      PyTuple_SET_ITEM( pFTuple, k, pNum );  // steals pNum
+    }
+
+
+  // calling the 'monitor' method with all the arguments
+  // !! synchronized with python
+  PyObject* pReturnValue =      // new
+      PyObject_CallMethod ( pSiku, fname, "(O,O,O,I,I,k,O,O,d,d,d,d,d,d,d)",
+                            pCurTime,       // time
+
+                            pQTuple,        // quat
+                            pPiList,        // vertices
+                            pe->flag,       // state flag
+                            i,              // index in array
+                            pe->id,         // id of element
+                            pWTuple,        // angle velocity
+                            pFTuple,        // current force
+                            pe->N,          // torque (2d)
+
+                            pe->m,          // mass
+                            pe->I,          // moment of inertia
+                            pe->i,          // geometric moment of inertia
+                            pe->A,          // area (on unit sphere)
+                            pe->anchority,  // water interaction factor
+                            pe->windage     // wind interaction factor
+                            );  //new
 
   if ( !pReturnValue )
     PyErr_Print ();
@@ -1330,6 +1374,8 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
     Py_DECREF( pReturnValue );
   Py_DECREF( pQTuple );
   Py_DECREF( pPiList );
+  Py_DECREF( pWTuple );
+  Py_DECREF( pFTuple );
 
   return status;
 }

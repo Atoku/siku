@@ -61,6 +61,10 @@ class Element:
         # thickness distribution by layers
         self.gh = None
 
+        # form-factors of interaction with water and air
+        self.anchority = 1.0
+        self.windage = 1.0
+
         # default velocity and rotation in local coords ( vx, vy, rot )
         if st_loc_velo:
             self.velo = st_loc_velo

@@ -125,6 +125,9 @@ public:
   double A;                     //!< m^2, area of polygon (on unit sphere)
   double sbb_rmin;              //!< bounding sphere minimum radius
 
+  double anchority;             //!< interaction with water
+  double windage;               //!< interaction with wind
+
   //OLD //vector<double> gh;
   double gh[ MAT_LAY_AMO ];     //!< g(h) thickness distribution
   vector<vec3d> P;              //!< 1, local unit frame coords of

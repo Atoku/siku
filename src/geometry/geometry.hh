@@ -126,6 +126,11 @@ namespace Geometry
     return { v.y, -v.x };
   }
 
+  inline vec2d rot_90_ccw( const vec2d& v )
+  {
+    return { -v.y, v.x };
+  }
+
 }
 
 #endif /* GEOMETRY_HH */

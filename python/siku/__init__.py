@@ -117,8 +117,12 @@ settings.phys_consts = { 'rigidity' : 1.0,  #'bouncing' on impact
                       'tensility' : 1.0,    #extension-without-damage cap
 
                       'windage' : 1.0,      #part of wind applied to force
-                      'fastency' : 0.8      #floe overlap with landfast floe
+                      'anchority' : 1.0,    #generic viscosity of water
+                      'fastency' : 0.8,     #floe overlap with landfast floe
                                             #to become landfast itself
+
+                      'sigma' : 1.0,         # -//- rigidity
+                      'etha' : 1.0          # -//- viscisity
                       }
 
 settings.manual_inds = []

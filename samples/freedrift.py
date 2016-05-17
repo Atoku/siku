@@ -59,16 +59,23 @@ def main():
     # ---------------------------------------------------------------------
     #  Wind initializations (NMC grid example)
     # ---------------------------------------------------------------------
-
-    #start time index
-    st_t_ind = 2
     
-    siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
-    siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
+    siku.uw = wnd.NMCVar( 'u1994.nc', 'uwnd' )
+    siku.vw = wnd.NMCVar( 'v1994.nc', 'vwnd' )
+
+    start =  datetime.datetime  ( 1994, 2, 16, 00, 00, 00 )
+    for i in range(len( siku.uw.times )):
+        if siku.uw.times[i] >= start:
+            break
+    st_t_ind = i
+    siku.time.update_index = i - 1
+    print( 'start time: ' + str( start ) + ' at position: ' + str( i ) + \
+           ' of ' + str( len( siku.uw.times ) ) + '\n\n' )
+    
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
     siku.settings.wind_source_type = siku.WIND_SOURCES['NMC']
-    siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
+    siku.settings.wind_source_names = [ 'u1994.nc', 'v1994.nc' ]
 ##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 ##    w.make_test_field( 0.,0. )
 ##    siku.wind = w
@@ -103,16 +110,16 @@ def main():
     # ---------------------- voronoi initialization ------------------------
     print('\nLoading polygons')
     ## North cap
-    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+    PV = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
     ## Channel (handmade)
-    PC = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
+##    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
     
     PV.filter_( 0, 360, 60, 90 )
-    PC.filter_( 179, 187, 54, 60 )
+##    PC.filter_( 179, 187, 54, 60 )
 
 ##TESTING!
-    PV.filter_( 185, 230, 62, 82 )
-    PC.filter_( 185, 230, 62, 82 )
+####    PV.filter_( 190, 230, 62, 82 )
+##    PC.filter_( 190, 230, 62, 82 )
 ##/TESTING
 
     
@@ -120,7 +127,7 @@ def main():
     PV.clear_the_land()
 
     coords = PV.coords
-    coords = coords + PC.coords
+##    coords = coords + PC.coords
 
     siku.tempc = coords # for debug
 
@@ -172,7 +179,7 @@ def main():
     # ---------------------------------------------------------------------
 
     ## Plotter initialization
-    siku.plotter = GMT_Plotter( 'beaufort_plot.py' )
+    siku.plotter = GMT_Plotter( 'beaufort94_plot.py' )
 
     ### period of picturing
     siku.diagnostics.monitor_period = 30
@@ -200,7 +207,7 @@ def main():
                                   'solidity' : 0.05,
                                   'tensility' : 0.615,
 
-                                  'windage': 0.04, #1
+                                  'windage': 0.05, #1
                                   'fastency' : 0.5
                                   }
 
@@ -231,6 +238,7 @@ def main():
     siku.callback.aftertimestep = aftertimestep
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
+    siku.callback.updatewind = updatewind
 
     ##
     siku.callback.presave = presave
@@ -247,8 +255,6 @@ def presave( t, n, ns ):
 
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
-    ###old version
-    #os.system("gmtset PS_MEDIA=Custom_24cx20c ")
 
 # --------------------------------------------------------------------------
 
@@ -266,8 +272,6 @@ def conclusions( siku, t ):
     print('creating .gif')
     subprocess.call( "nice convert -density 300 -delay 10 beaufort*.eps beaufort.gif", \
                      shell=True )
-    ###old version
-    #os.system("convert -density 300 -delay 10 drift*.eps drift.gif")
 
 # --------------------------------------------------------------------------
 
@@ -285,9 +289,9 @@ def pretimestep( t, n, ns ):
 ##        siku.time.last = t
 
     # step by NMC own time step
-    if t >= siku.time.last: #siku.uw.times[siku.time.update_index + 1]:
+    if t >= siku.uw.times[siku.time.update_index + 1]: # siku.time.last: #
         status += siku.MASK['WINDS']
-        siku.time.last = siku.time.finish#t
+        siku.time.last = t# siku.time.finish# 
 
     # and change the winds here
     # ~!wind is changed with another call
@@ -295,6 +299,16 @@ def pretimestep( t, n, ns ):
     # and save the current time in a structure
     # ~!current time is saved in siku.time.last
     return status
+
+# --------------------------------------------------------------------------
+
+def updatewind( siku, t ):
+    siku.time.update_index += 1
+    siku.time.last_update = t
+    siku.wind = \
+              wnd.NMCSurfaceVField( siku.uw, siku.vw, siku.time.update_index )
+    print( str( t ) + '\n' )
+    pass
 
 # --------------------------------------------------------------------------
 
@@ -312,7 +326,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, i, st ):
+def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
 ##    #static polygons (generally shores) may be simply passed
 ##    if st & element.Element.f_static:
 ##        return

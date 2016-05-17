@@ -16,7 +16,19 @@ using namespace Coordinates;
 //////testing
 #include <iostream>
 
-double test_adjuster = 0.5;
+
+// ----------------------------- local utils --------------------------------
+
+inline void _drag_factors( const Globals& siku, const Element& e,
+                    double& water_factor, double& wind_factor )
+{
+  // yet simple scaling by constants from python. May me changed to
+  // multiparametric algorithm later.
+  water_factor = e.anchority * siku.phys_consts["anchority"];
+  wind_factor  = e.windage   * siku.phys_consts["windage"];
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void forces_mass( Globals& siku )
 {
@@ -29,7 +41,12 @@ void forces_mass( Globals& siku )
       // i just don`t like range-based loops
       auto & e = siku.es[i];
 
-      //-------- WIND----------
+      // force scaling
+      double wnd_fact, wat_fact;
+      _drag_factors( siku, e, wat_fact, wnd_fact );
+
+      //-------- WIND ----------
+
       // acquiring element` position in terms lat-lon
       double lat, lon;
       Coordinates::sph_by_quat ( e.q, &lat, &lon );
@@ -42,13 +59,10 @@ void forces_mass( Globals& siku )
       V = Coordinates::glob_to_loc( e.q, V );
 
       // calculating local Force (draft)
-      // V.lenght() always equals to 3 - it`s amount of components!!!
-      e.F += 0.0016 * abs( V ) * V * e.A * siku.planet.R2 *
-          //siku.phys_consts.back(); // runtime adjustment
-          siku.phys_consts["windage"];
-      //e.F = 0.0016 * sqrt( V.x*V.x + V.y*V.y + V.z*V.z ) * V * e.A;
+      e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact;
 
-      //-------- WATER (STEADY) ----------
+      //-------- WATER (yet steady) ----------
+
       // calculating element`s speed in local coords
       V = e.V;
 
@@ -63,16 +77,13 @@ void forces_mass( Globals& siku )
       W -= V;
 
       // applying water forces
-      e.F += 0.0045 * 1 * abs( W ) * W * e.A * siku.planet.R2 *test_adjuster;
-
-      // experimental water torque
-      //e.N += 0.0045 * e.W.z * e.W.z * e.I * test_adjuster;
-
+      e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
     }
   
   // manual forces
   for( size_t i = 0; i < siku.man_inds.size(); ++i )
     {
+      // indexes of manually added forces
       size_t I = siku.man_inds[i];
       vec3d tv;
 
@@ -85,6 +96,7 @@ void forces_mass( Globals& siku )
       vec3d F = tv;
       double trq = siku.man_forces[i].z;
 
+      // TODO: check planet.R scaling
       siku.es[I].flag |= Element::F_SPECIAL;
       siku.es[I].F += F * siku.planet.R;
       siku.es[I].N += trq;

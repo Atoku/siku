@@ -1,5 +1,5 @@
-uwind_file = 'u1994.nc' #!* #file for uwind source for grid and interpolation
-vwind_file = 'v1994.nc' #!* #file for vwind source for grid and interpolation
+uwind_file = 'u2014.nc' #!* #file for uwind source for grid and interpolation
+vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation
 
 inter_domain = ( 170, 240, 55, 85 )
 
