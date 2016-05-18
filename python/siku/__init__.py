@@ -121,8 +121,8 @@ settings.phys_consts = { 'rigidity' : 1.0,  #'bouncing' on impact
                       'fastency' : 0.8,     #floe overlap with landfast floe
                                             #to become landfast itself
 
-                      'sigma' : 1.0,         # -//- rigidity
-                      'etha' : 1.0          # -//- viscisity
+                      'sigma' : 1.0,        # -//- rigidity
+                      'etha' : 1.0          # -//- viscosity
                       }
 
 settings.manual_inds = []

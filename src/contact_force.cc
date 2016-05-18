@@ -47,6 +47,8 @@ struct CollisionData
   mat3d e2_to_e1;               // between e1 and e2 local systems
 
   vec2d r1, r2, r12;            // intervectors of e1, e2, interPoly centers
+                                // (on unit sphere)
+
   vec2d va1, va2, va12;         // velocities of points located in the center
                                 // of interPoly but belonging to e1 and e2
 
@@ -80,10 +82,10 @@ struct CollisionData
     r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
     r2 = r1 - r12;
 
+    // BUG: check order of planet.R carefully!
     // e1 aim speed (coz of spin + propagation)
     va1 = vec3_to_vec2( e1.V )
         + rot_90_cw( r1 ) * ( -e1.W.z * siku.planet.R );
-
     // e2 aim speed (spin + propagation)
     va2 = vec3_to_vec2( lay_on_surf( e2_to_e1 * e2.V ) )
         + rot_90_cw( r2 ) * ( -e2.W.z * siku.planet.R );
@@ -117,15 +119,17 @@ inline double _rigidity( CollisionData& cd )
   double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
 
   // search for thickest layer
-  for( int i = 1; i < MAT_LAY_AMO; ++i )
+  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
     if( cd.e1.gh[i] > h1 )
       h1 = cd.e1.gh[i];
-  for( int i = 1; i < MAT_LAY_AMO; ++i )
+  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
     if( cd.e1.gh[i] > h1 )
       h1 = cd.e1.gh[i];
 
-  // result is linear rigidity of ice
-  return cd.siku.phys_consts["sigma"] * min( h1, h2 );
+  // result reduced rigidity (improve: comments 'приведенная жесткость'):
+  // close-to-linear-spring rigidity of ice
+  return h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) )
+               * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
 }
 
 // viscous and elastic forces applied to e1 caused by e2.
@@ -154,17 +158,18 @@ inline vec2d _elastic_force( CollisionData& cd )
     }
   else // no definite front
     {
-      // normal being calculated by interposition of polygons` centers and
+      // normal is being calculated by interposition of polygons` centers and
       // intersection area center
       norm = ort(   ort( cd.r2 )*abs( cd.r1 )
                   - ort( cd.r1 )*abs( cd.r2 ) );
     }
 
-  // reciprocal length of polygon
-  double l_ = 1. / ( abs( dot( cd.r1, norm ) ) + abs( dot( cd.r2, norm ) ) );
+// moved to _regidity
+//  // reciprocal length of polygon
+//  double l_ = 1. / ( abs( dot( cd.r1, norm ) ) + abs( dot( cd.r2, norm ) ) );
 
   // resulting force - close to linear spring
-  return _rigidity( cd ) * cd.area * cd.siku.planet.R2 * l_ * norm ;
+  return _rigidity( cd ) * cd.area * cd.siku.planet.R2 * norm;
 }
 inline vec2d _viscous_force( CollisionData& cd )
 {
@@ -175,6 +180,7 @@ inline vec2d _viscous_force( CollisionData& cd )
 
 void contact_forces( Globals& siku )
 {
+
   switch( siku.cont_force_model )
   {
     case CF_TEST_SPRINGS: //same as CF_DEFAULT
@@ -512,7 +518,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       e2.N += mom2;
 
       // durability change - joint destruction
-      double r_size = 1. / c.init_len, // reversed size
+      double r_size = 1. / c.init_size, // reversed size
              dmax = max( dl1, dl2 ),    // maximal stretch
              dave = (dl1 + dl2) * 0.5;  // average stretch
 
@@ -571,6 +577,13 @@ void _fasten( Element &e1, Element &e2, double area,
   if( ( e1.flag & Element::F_STATIC && ~e1.flag & Element::F_FASTENED ) ||
       ( e2.flag & Element::F_STATIC && ~e2.flag & Element::F_FASTENED ) )
     {
+      // minimal areas for comparison
+      double ma = min( e1.A, e2.A );
+      e1.OAM = min( e1.OAM, ma );
+      e2.OAM = min( e2.OAM, ma );
+
+      // current overlap area accumulation (optimized in case of precalculated
+      // area
       if( area )
         {
           e1.OA += area;

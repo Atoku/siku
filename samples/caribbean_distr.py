@@ -97,10 +97,10 @@ def main():
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
 
-    nx = 20 #23
-    ny = 20 #22
+    nx = 80 #23
+    ny = 80 #22
     coords, links \
-        = NG.generate_plus( 267.0, 12.0, 287.0, 27.0, nx, ny, 0.2, 0.2 )
+        = NG.generate_plus( 267.0, 12.0, 287.0, 27.0, nx, ny, 0., 0. )#0.2, 0.2
     siku.settings.links = links
 ##    nx = 8
 ##    ny = 3
@@ -171,28 +171,36 @@ def main():
 ##                                  -10000.0, 1.00, 0.2, 0.1, \
 ##                                  0.01 ] #wind interaction adjuster
 
-    siku.settings.phys_consts = { 'rigidity' : 5000,#5000
-                                  'viscosity' : 1000000,#10000000
-                                  'rotatability' : 0.75,#0.75
+    siku.settings.phys_consts = { 'rigidity' : 1.0,
+                                  'viscosity' : 1.0,
+                                  'rotatability' : 0.750,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : -5000000.0,#-1000000.0
-                                  'bendability' : 1.0,
-                                  'solidity' : 0.05,
-                                  'tensility' : 0.615,
+                                  'elasticity' :-1000000.0,#-5000000.0,
+                                  'bendability' : 1.0,#1.0,
+                                  'solidity' : 0.1,#0.05,
+                                  'tensility' : 0.10,#0.615,
 
-                                  'windage': 0.01 #1
+                                  'anchority' : 0.0005,
+                                  'windage': 0.05, #0.05
+                                  'fastency' : 0.50, #0.5
+
+                                  'sigma' : 10000,        # -//- rigidity
+                                  'etha' : 0.10          # -//- viscosity
                                   }
 
 
     right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
     
 ##    siku.settings.manual_inds = right_inds
-##    siku.settings.manual_forces = [ (500.0/nx, -0.0, 0.0) #-(i/nx)*1.0, -0.2*(i/ny/nx))
+##    amo = len(right_inds)
+##    F = 800.0
+##    siku.settings.manual_forces = [ (F/amo, -F/14/amo, 0.0) \
+##                                    #-(i/nx)*1.0, -0.2*(i/ny/nx))
 ##                                    for i in right_inds ]
 
     for i in right_inds:
-        siku.elements[i].velo = (0.5, 0.01, 0.0)
+        siku.elements[i].velo = (0.20, -0.02, 0.0)
         siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
@@ -273,7 +281,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, i, st ): 
+def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )

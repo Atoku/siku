@@ -225,17 +225,22 @@ def main():
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  -10000.0, 1, 0.2, 0.1, 1 ]
-    siku.settings.phys_consts = { 'rigidity' : 1000000,#5000
-                                  'viscosity' : 1000000,#10000000
-                                  'rotatability' : 1, #0.75,#0.75
+    siku.settings.phys_consts = { 'rigidity' : 10.0,#10,
+                                  'viscosity' : 1.0,#1.0,#1
+                                  'rotatability' : 0.750,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : -50000000.0,#-100000.0
-                                  'bendability' : 1.0,
-                                  'solidity' : 0.05,
-                                  'tensility' : 0.615,
+                                  'elasticity' :-50000000.0,#-5000000.0,
+                                  'bendability' : 1.0,#1.0,
+                                  'solidity' : 0.05,#0.05,
+                                  'tensility' : 0.30,#0.615,
 
-                                  'windage': 0.05 #1
+                                  'anchority' : 0.0005,
+                                  'windage': 0.05, #0.05
+                                  'fastency' : 0.50, #0.5
+
+                                  'sigma' : 1.0,        # -//- rigidity
+                                  'etha' : 1.0          # -//- viscosity
                                   }
 
     # ---------------------------------------------------------------------
@@ -296,7 +301,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, i, st ): 
+def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )

@@ -305,7 +305,8 @@ def main():
                                   'solidity' : 0.2,
                                   'tensility' : 0.1,
 
-                                  'windage': 0.01
+                                  'windage': 0.01,
+                                  'fastency' : 0.8
                                   }
 
 ##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']

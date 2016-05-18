@@ -45,22 +45,22 @@ void mproperties( Globals& siku )
       bool nan_flag = false;
 
       if( (nan_flag |= NaN_q( e.q )) )
-          cout<<"\nERROR: NaN q at element \n"<<e.id<<" !\n"
+          cout<<"\nERROR: NaN q at element "<<e.id<<" !\n"
           <<e.q.w<<" "<<e.q.x<<" "<<e.q.y<<" "<<e.q.z<<" "<<"\n";
 
       nan_flag |= NaN_v( e.Glob );
       if( NaN_v( e.Glob ) )
-          cout<<"\nERROR: NaN Glob at element \n"<<e.id<<" !\n"
+          cout<<"\nERROR: NaN Glob at element "<<e.id<<" !\n"
           <<e.Glob.x<<" "<<e.Glob.y<<" "<<e.Glob.z<<" "<<"\n";
 
       nan_flag |= NaN_v( e.V );
       if( NaN_v( e.V ) )
-          cout<<"\nERROR: NaN V at element \n"<<e.id<<" !\n"
+          cout<<"\nERROR: NaN V at element "<<e.id<<" !\n"
           <<e.V.x<<" "<<e.V.y<<" "<<e.V.z<<" "<<"\n";
 
       nan_flag |= NaN_v( e.W );
       if( NaN_v( e.W ) )
-          cout<<"\nERROR: NaN W at element \n"<<e.id<<" !\n"
+          cout<<"\nERROR: NaN W at element "<<e.id<<" !\n"
           <<e.W.x<<" "<<e.W.y<<" "<<e.W.z<<" "<<"\n";
 
       if( nan_flag )
@@ -116,14 +116,18 @@ void mproperties( Globals& siku )
       // checking land-fastency condition
       if( e.flag & Element::F_FREE &&
           ~e.flag & Element::F_FASTENED &&
-          e.OA > 0.0 )
-//          (e.OA / e.A) > siku.phys_consts["fastency"] * 0.5 )
-        //BUG: 0.5 lost in python->polygon->A calculation
+          e.OA &&
+          //OLD //e.OA > 0.0 )
+          (e.OA / e.OAM) > siku.phys_consts["fastency"] )
+//          (e.OA / e.A) > siku.phys_consts["fastency"] )
         {
           e.flag &= ~( Element::F_FREE );//| Element::F_STEADY );
           e.flag |= Element::F_STATIC | Element::F_FASTENED;
         }
       else
-        e.OA = 0.;
+        {
+          e.OA = 0.;
+          e.OAM = e.A;
+        }
     }
 }

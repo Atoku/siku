@@ -19,8 +19,8 @@ using namespace Coordinates;
 
 // ----------------------------- local utils --------------------------------
 
-inline void _drag_factors( const Globals& siku, const Element& e,
-                    double& water_factor, double& wind_factor )
+inline void _drag_factors( Globals& siku, Element& e,
+                           double& water_factor, double& wind_factor )
 {
   // yet simple scaling by constants from python. May me changed to
   // multiparametric algorithm later.

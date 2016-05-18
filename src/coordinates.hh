@@ -235,7 +235,14 @@ namespace Coordinates
   // the length of original vector
   inline vec3d lay_on_surf( const vec3d& v )
   {
-    double a = sqrt( (v.x*v.x + v.y*v.y + v.z*v.z) / (v.x*v.x + v.y*v.y) );
+    // TODO: Optimize and fix! Division by zero should be avoided and at the
+    // same time - vectors with small X and Y should be processed properly
+    // (Yet they are not...)
+    double d = sqrt( v.x*v.x + v.y*v.y );
+    double n = sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+    double epsilon = 1e-16;
+    double a = abs(d) > epsilon ? n/d : 0.;
+    //double a = sqrt( (v.x*v.x + v.y*v.y + v.z*v.z) / (v.x*v.x + v.y*v.y) );
     return { v.x * a, v.y * a, 0. };
   }
 

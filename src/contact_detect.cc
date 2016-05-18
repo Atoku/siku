@@ -621,8 +621,11 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
 
           c.init_len = abs( c1 - c2 );  // initial len is distance between
                                         // 'springs'
-          c.init_size = abs( r12 );     // initial size is distance between
-                                        // centers of elements
+          //old //c.init_size = abs( r12 );
+          // initial size is a sum of distances between centers of elements
+          // and contact zone (0.5 factored out of vectors averaging)
+          c.init_size = ( abs(c.p1 + c.p2) + abs(c.p3 + c.p4) )*0.5;
+
           c.durability = 1.;
         }
     }
