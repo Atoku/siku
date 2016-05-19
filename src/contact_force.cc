@@ -64,6 +64,9 @@ struct CollisionData
   CollisionData( ContactDetector::Contact& _c, Globals& _siku ):
     siku( _siku ), c( _c ), e1( siku.es[ c.i1 ] ), e2( siku.es[ c.i2 ] )
   {
+    VERIFY( e1.q, "CollDat");
+    VERIFY( e2.q, "CollDat");
+
     // coordinates transformation matrixes (local systems of two elements)
     e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
     e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
@@ -82,7 +85,7 @@ struct CollisionData
     r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
     r2 = r1 - r12;
 
-    // BUG: check order of planet.R carefully!
+    // IMPROVE: check order of planet.R carefully!
     // e1 aim speed (coz of spin + propagation)
     va1 = vec3_to_vec2( e1.V )
         + rot_90_cw( r1 ) * ( -e1.W.z * siku.planet.R );
@@ -135,6 +138,7 @@ inline double _rigidity( CollisionData& cd )
 // viscous and elastic forces applied to e1 caused by e2.
 inline vec2d _elastic_force( CollisionData& cd )
 {
+  //return {};
   vec2d norm;
 
   // IMPROVE: try to find better solution for normal direction search
@@ -173,7 +177,10 @@ inline vec2d _elastic_force( CollisionData& cd )
 }
 inline vec2d _viscous_force( CollisionData& cd )
 {
-  return -cd.area * cd.siku.planet.R2 * cd.siku.phys_consts["etha"] * cd.va12;
+
+  // TODO: reconsider time scaling
+  return -cd.area * cd.siku.planet.R2 * cd.siku.phys_consts["etha"]
+                  * cd.va12 * cd.siku.time.get_dt();
 }
 
 // =========================== contact force ================================
@@ -269,12 +276,21 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
       // force in Newtons applied to e1 caused by e2
       vec2d F = _elastic_force( cd ) * siku.phys_consts["rigidity"]
               + _viscous_force( cd ) * siku.phys_consts["viscosity"];
+      VERIFY(_elastic_force( cd ), "" );
+      VERIFY(_viscous_force( cd ), "" );
 
       double torque1 = cross( cd.r1, F )
           * siku.planet.R_rec * siku.phys_consts["rotatability"];
 
       double torque2 = cross( cd.r2, F)
           * siku.planet.R_rec * siku.phys_consts["rotatability"];
+
+      VERIFY( F, string("in collision ")
+              +to_string(siku.es[c.i1].id)
+              +string(" ")
+              +to_string(siku.es[c.i2].id) );
+      VERIFY( torque1, "in collision" );
+      VERIFY( torque2, "in collision" );
 
       // applying forces and torques
       // (signs are fitted manually)
@@ -285,6 +301,7 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
       siku.es[c.i2].N -= torque2;
 
       c.area = cd.area;
+      VERIFY( c.area, "collision" );
 
       _fasten( cd.e1, cd.e2, cd.area, cd.loc_P1, cd.loc_P2 );
     }
@@ -489,6 +506,10 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
             p3 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p3 ) ),
             p4 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p4 ) );
 
+      // IMPROVE: make proper check
+//      assert( c.durability > 0. );
+      VERIFY( c.durability > 0. , "in dist spring" );
+
       // some additional variables to avoid unnecessary functions` calls
       double hardness     = K * c.init_len * c.durability * R,
              rotatability = K * c.init_len * c.durability * 1./12.;
@@ -509,6 +530,10 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
                     rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
+      VERIFY( F, "in dist_spring");
+      VERIFY( mom1, "in dist_spring");
+      VERIFY( mom2, "in dist_spring");
+
       // applying forces and torques
       // signs are fitted manually
       e1.F -= vec2_to_vec3( F );
@@ -522,7 +547,9 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
              dmax = max( dl1, dl2 ),    // maximal stretch
              dave = (dl1 + dl2) * 0.5;  // average stretch
 
-      c.durability -= ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0.;
+      // TODO: discuss time scaling
+      c.durability -= siku.time.get_dt() *
+          ( ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0. );
 
 //// may be required in 'collision' contact type
 //      if( c.durability < 0.05 )

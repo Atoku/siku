@@ -61,6 +61,12 @@ namespace Geometry
     return ( v.x != v.x || v.y != v.y || v.z != v.z );
   }
 
+  // NaN vec2d
+  inline bool NaN_v( const vec2d& v )
+  {
+    return ( v.x != v.x || v.y != v.y );
+  }
+
 // ============================== Functions =================================
 
   //! \brief Checks if the polygon given by vector of vertices contains

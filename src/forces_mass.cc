@@ -32,7 +32,6 @@ inline void _drag_factors( Globals& siku, Element& e,
 
 void forces_mass( Globals& siku )
 {
-
   for ( size_t i = 0; i < siku.es.size (); ++i )
     {
       if( siku.es[i].flag & Element::F_ERRORED )
@@ -60,6 +59,7 @@ void forces_mass( Globals& siku )
 
       // calculating local Force (draft)
       e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact;
+      VERIFY( e.F , "wind forces mass" );
 
       //-------- WATER (yet steady) ----------
 
@@ -78,6 +78,7 @@ void forces_mass( Globals& siku )
 
       // applying water forces
       e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
+      VERIFY( e.F, "water in forces mass");
     }
   
   // manual forces

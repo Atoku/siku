@@ -60,4 +60,23 @@ typedef Geometry::vec2d vec2d;
 
 using namespace Geometry;
 
+////////////////////////// OBJECT VERIFICATION
+//TODO: Delete or advance this macro - it spends unnecessary time!
+
+inline bool _verify( const bool& b )   { return b; }
+inline bool _verify( const int& i )    { return i; }
+inline bool _verify( const double& d ) { return d == d; }
+inline bool _verify( const vec2d& v )  { return !NaN_v( v ); }
+inline bool _verify( const vec3d& v )  { return !NaN_v( v ); }
+inline bool _verify( const quat& q )   { return !NaN_q( q ); }
+
+#define VERIFY( _EXP, _MSG ) \
+  if( ! _verify( _EXP ) ) \
+    { \
+      cout << "NaN in: " << #_EXP << " (" << _MSG << ")" << endl; \
+      cin.get(); \
+    }
+
+////////////////////////// \OBJECT VERIFICATION
+
 #endif  // SIKU_HH

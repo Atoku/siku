@@ -170,6 +170,19 @@ namespace Geometry
           }
         tv2 = (verts)[1] - tp;
 
+        // BUG! sometimes cross-product gives 0 and afterward we have either
+        // inf or NaN in 'center' vector!!! Yet if to calculate explicitly
+        // the cross-product may be just 1e-13~-14. Thus the solution is
+        // necessary!!
+        if( psize && (*psize == 0.) && pcen) // spiky solution
+          {
+            *pcen = {};
+            for(auto& a : verts)
+              *pcen += a;
+            *pcen /= verts.size();
+            return verts.size();
+          }
+
         // centroid
         // triangulation method [source: http://e-maxx.ru/algo/gravity_center]
         if( psize && pcen )
