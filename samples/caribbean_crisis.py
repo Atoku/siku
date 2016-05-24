@@ -225,8 +225,8 @@ def main():
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  -10000.0, 1, 0.2, 0.1, 1 ]
-    siku.settings.phys_consts = { 'rigidity' : 10.0,#10,
-                                  'viscosity' : 1.0,#1.0,#1
+    siku.settings.phys_consts = { 'rigidity' : 1.0,
+                                  'viscosity' : 1.0,
                                   'rotatability' : 0.750,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
@@ -235,12 +235,12 @@ def main():
                                   'solidity' : 0.05,#0.05,
                                   'tensility' : 0.30,#0.615,
 
-                                  'anchority' : 0.0005,
-                                  'windage': 0.05, #0.05
+                                  'anchority' : 0.0000001,
+                                  'windage':    0.0000000,
                                   'fastency' : 0.50, #0.5
 
-                                  'sigma' : 1.0,        # -//- rigidity
-                                  'etha' : 1.0          # -//- viscosity
+                                  'sigma' : 10000000.0,        # -//- rigidity
+                                  'etha' : 0.0051          # -//- viscosity
                                   }
 
     # ---------------------------------------------------------------------

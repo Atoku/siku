@@ -40,5 +40,6 @@ position ( Globals& siku, const double dt )
 ////////////////////
 
       e.q = glm::normalize( e.q );
+      VERIFY( e.q, "positioning");
     }
 }

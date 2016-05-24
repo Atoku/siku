@@ -96,9 +96,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + hour * 90
+    siku.time.finish = siku.uw.times[st_t_ind] + hour * 30
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 3600
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 1200
    
     # ---------------------------------------------------------------------
     # elements
@@ -108,71 +108,71 @@ def main():
     siku.elements = []
 
     # ---------------------- voronoi initialization ------------------------
-    print('\nLoading polygons')
-    ## North cap
-    PV = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
-    ## Channel (handmade)
-##    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
-    
-    PV.filter_( 0, 360, 60, 90 )
-##    PC.filter_( 179, 187, 54, 60 )
-
-##TESTING!
-####    PV.filter_( 190, 230, 62, 82 )
-##    PC.filter_( 190, 230, 62, 82 )
-##/TESTING
-
-    
-    print('Deleting land polygons')
-    PV.clear_the_land()
-
-    coords = PV.coords
-##    coords = coords + PC.coords
-
-    siku.tempc = coords # for debug
-
-    ### Initializing elements with polygon vertices
-    for c in coords:
-        siku.P.update( c )
-     
-        # Element declaration
-        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
-        E.monitor = "drift_monitor"
-        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
-               0.0, 0.0, 0.0, 0.0, 0.0 ]
-        E.set_gh( gh, ice )
-        
-        # all elements in the list
-        siku.elements.append( E )
-
-    ## Core will mark polygons, those contain at leas one point from next
-    ## file as 'static'
-    siku.settings.border_mark = 1
-    siku.settings.borders = 'contours.ll'
-
-    print('Marking borders with GMT')
-    bor = PV.get_border_by_gmt()
-    for b in bor:
-        siku.elements[ b ].flag_state = element.Element.f_static
-    print('Done\n\n')
+##    print('\nLoading polygons')
+##    ## North cap
+##    PV = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
+##    ## Channel (handmade)
+####    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
+##    
+##    PV.filter_( 0, 360, 60, 90 )
+####    PC.filter_( 179, 187, 54, 60 )
+##
+####TESTING!
+######    PV.filter_( 190, 230, 62, 82 )
+####    PC.filter_( 190, 230, 62, 82 )
+####/TESTING
+##
+##    
+##    print('Deleting land polygons')
+##    PV.clear_the_land()
+##
+##    coords = PV.coords
+####    coords = coords + PC.coords
+##
+##    siku.tempc = coords # for debug
+##
+##    ### Initializing elements with polygon vertices
+##    for c in coords:
+##        siku.P.update( c )
+##     
+##        # Element declaration
+##        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
+##        E.monitor = "drift_monitor"
+##        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
+##               0.0, 0.0, 0.0, 0.0, 0.0 ]
+##        E.set_gh( gh, ice )
+##        
+##        # all elements in the list
+##        siku.elements.append( E )
+##
+##    ## Core will mark polygons, those contain at leas one point from next
+##    ## file as 'static'
+##    siku.settings.border_mark = 1
+##    siku.settings.borders = 'contours.ll'
+##
+##    print('Marking borders with GMT')
+##    bor = PV.get_border_by_gmt()
+##    for b in bor:
+##        siku.elements[ b ].flag_state = element.Element.f_static
+##    print('Done\n\n')
 
     # ---------------------- loading from file ----------------------------
 
-##    print('file start atempt\n')
-##    
-##    hl = hload('save_test.h5')
-####    #hl = hload('siku-2014-01-01-12:50:46.h5')
-####
-####    #hl.load()
-##    hl.load_fnames()
-##    hl.load_mats()
-##    hl.load_els()
-##    print('\n')
+    print('loading from file\n')
+    
+    hl = hload('save_test.h5')
+##    #hl = hload('siku-2014-01-01-12:50:46.h5')
 ##
-##    siku.elements = hl.extract_els()
-##    siku.materials = hl.extract_mats()
-##          
-##    hl = None
+##    #hl.load()
+    hl.load_fnames()
+    hl.load_mats()
+    hl.load_els()
+    print('\n')
+
+    siku.elements = hl.extract_els()
+    siku.materials = hl.extract_mats()
+          
+    hl = None
 
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -197,18 +197,22 @@ def main():
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  1, 1, 1, 1, 1 ]
     
-    siku.settings.phys_consts = { 'rigidity' : 1000,#5000
-                                  'viscosity' : 100000,#10000000
-                                  'rotatability' : 0.75,#0.75
+    siku.settings.phys_consts = { 'rigidity' : 1.0,
+                                  'viscosity' : 1.0,
+                                  'rotatability' : 0.750,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : -5000000.0,#-100000.0
-                                  'bendability' : 1.0,
-                                  'solidity' : 0.05,
-                                  'tensility' : 0.615,
+                                  'elasticity' : 50000000.0,#-5000000.0,
+                                  'bendability' : 1.0,#1.0,
+                                  'solidity' : 0.5,#0.05,
+                                  'tensility' : 0.30,#0.615,
 
-                                  'windage': 0.05, #1
-                                  'fastency' : 0.5
+                                  'anchority' : 0.0000001,
+                                  'windage':    0.0000001,
+                                  'fastency' : 0.50, #0.5
+
+                                  'sigma' : 10000000.0,        # -//- rigidity
+                                  'etha' : 0.0051          # -//- viscosity
                                   }
 
 ##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']

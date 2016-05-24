@@ -103,7 +103,7 @@ public:
   quat q;
 
   vec3d Glob;           //!< global position in (x, y, z)
-  vec3d V;              //!< local surface velocity (x, y, 0)
+  vec3d V{};            //!< local surface velocity (x, y, 0)
 
   double m;             //!< kg, mass
   double I;             //!< moment of inertia

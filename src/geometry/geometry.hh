@@ -50,21 +50,25 @@ namespace Geometry
   }
 
   // NaN quat
-  inline bool NaN_q( const quat& q )
+  inline bool NaN( const quat& q )
   {
-    return ( q.w != q.w || q.x != q.x || q.y != q.y || q.z != q.z );
+    return ! ( std::isfinite( q.w ) && std::isfinite( q.x )
+            && std::isfinite( q.y ) && std::isfinite( q.z ) );
   }
 
   // NaN vec3d
-  inline bool NaN_v( const vec3d& v )
+  inline bool NaN( const vec3d& v )
   {
-    return ( v.x != v.x || v.y != v.y || v.z != v.z );
+    return ! ( std::isfinite( v.x ) && std::isfinite( v.y )
+            && std::isfinite( v.z )
+            && std::isfinite(sqrt(v.x*v.x+v.y*v.y+v.z*v.z)) );
   }
 
   // NaN vec2d
-  inline bool NaN_v( const vec2d& v )
+  inline bool NaN( const vec2d& v )
   {
-    return ( v.x != v.x || v.y != v.y );
+    return ! ( std::isfinite( v.x ) && std::isfinite( v.y )
+            && std::isfinite(sqrt(v.x*v.x+v.y*v.y))  );
   }
 
 // ============================== Functions =================================

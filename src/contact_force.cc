@@ -118,6 +118,10 @@ void _fasten( Element &e1, Element &e2, double area,
 // calculates linear rigidity of ice with respect to material and other props
 inline double _rigidity( CollisionData& cd )
 {
+ // BUG: factors at elastic collision and dist spring should be the same!
+  return cd.siku.phys_consts["elasticity"] * cd.siku.planet.R_rec;
+
+
   // reduced thickness of floes
   double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
 
@@ -138,7 +142,7 @@ inline double _rigidity( CollisionData& cd )
 // viscous and elastic forces applied to e1 caused by e2.
 inline vec2d _elastic_force( CollisionData& cd )
 {
-  //return {};
+//  return {};
   vec2d norm;
 
   // IMPROVE: try to find better solution for normal direction search
@@ -302,6 +306,8 @@ void _collision( Globals& siku, ContactDetector::Contact& c )
 
       c.area = cd.area;
       VERIFY( c.area, "collision" );
+      VERIFY( siku.es[c.i1].F, "1collision");
+      VERIFY( siku.es[c.i2].F, "1collision");
 
       _fasten( cd.e1, cd.e2, cd.area, cd.loc_P1, cd.loc_P2 );
     }
@@ -491,7 +497,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       // -------------------------------------------------------------------
 
       // physical constants (from python scenario)
-      double K = siku.phys_consts["elasticity"],
+      double K = - siku.phys_consts["elasticity"], // NOTE THE SIGN!
              Kw = siku.phys_consts["bendability"],
              sigma = siku.phys_consts["solidity"],
              epsilon = siku.phys_consts["tensility"];
@@ -508,7 +514,7 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
       // IMPROVE: make proper check
 //      assert( c.durability > 0. );
-      VERIFY( c.durability > 0. , "in dist spring" );
+      VERIFY( (c.durability>0.) , "in dist spring" );
 
       // some additional variables to avoid unnecessary functions` calls
       double hardness     = K * c.init_len * c.durability * R,
@@ -541,6 +547,9 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
       e2.F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
       e2.N += mom2;
+
+      VERIFY( e1.F, "1in dist_spring");
+      VERIFY( e2.F, "1in dist_spring");
 
       // durability change - joint destruction
       double r_size = 1. / c.init_size, // reversed size

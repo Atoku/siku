@@ -51,34 +51,47 @@ void forces_mass( Globals& siku )
       Coordinates::sph_by_quat ( e.q, &lat, &lon );
       
       // interpolating wind speed near element`s mass center
-      vec3d V = siku.wind.get_at_lat_lon_rad ( Coordinates::norm_lat ( lat ),
-                                               Coordinates::norm_lon ( lon ) );
+      vec3d V = siku.wind.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
+                                               Coordinates::norm_lon( lon ) );
 
       // transforming to local coordinates
-      V = Coordinates::glob_to_loc( e.q, V );
+      // BUG! time scaling was lost!
+      V = Coordinates::glob_to_loc( e.q, V ) * siku.time.get_dt();
 
       // calculating local Force (draft)
-      e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact;
+      e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact ;
       VERIFY( e.F , "wind forces mass" );
 
       //-------- WATER (yet steady) ----------
 
       // calculating element`s speed in local coords
       V = e.V;
+      if(!_verify(abs(V)))
+              cout<<"-----"<<V<<endl;
+      VERIFY( abs(V) ,"V F_M ");
+
 
       // interpolating currents speed
       // !!check for earth.R scaling
-      vec3d W = siku.flows.get_at_lat_lon_rad ( Coordinates::norm_lat ( lat ),
-                                         Coordinates::norm_lon ( lon ) );
+      vec3d W = siku.flows.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
+                                                Coordinates::norm_lon( lon ) );
+      VERIFY( abs(W ),"1");
       // transforming currents into local coords
       W = Coordinates::glob_to_loc( e.q, W );
+      VERIFY( abs(W ),"2");
 
-      // velocity defference between ice element and water
+      // velocity difference between ice element and water
       W -= V;
+      VERIFY( abs(W ),"3");
+
+      // BUG! time scaling was lost!
+      W *= siku.time.get_dt();
 
       // applying water forces
       e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
-      VERIFY( e.F, "water in forces mass");
+      VERIFY( abs(W), "in f_m");
+      if(!_verify(abs(W))) cout<<"===="<<W<<endl;
+      VERIFY( e.F, string("water in forces mass ") + to_string(wat_fact)+ string("  ") + to_string(e.A) );
     }
   
   // manual forces

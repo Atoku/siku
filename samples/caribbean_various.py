@@ -84,7 +84,7 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.finish   = siku.time.start + hour * 120 #120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 1200 #60
+    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 2400 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     siku.time.last = siku.time.start
     siku.time.last_update = siku.time.last
@@ -95,31 +95,50 @@ def main():
     
     coords = []
     siku.elements = []
+    n_filled = 0
 ## custom testing polygons for caribbeans # lon, lat convention
 
-    nx = 40 #23
-    ny = 40 #22
-    coords, links \
-        = NG.generate_plus( 267.0, 12.0, 287.0, 27.0, nx, ny, 0., 0. )#0.2, 0.2
-    siku.settings.links = links
-##    nx = 8
-##    ny = 3
-##    coords = NG.generate( 267.0, 12.0, 281.0, 14.0, nx, ny, 0.0, 0.0 )
+    x = 5
+    y = 2
 
-    # ---
+    NN = [ 1, 2, 4, 8 ]
 
-    coords.append( [
-        (280.0, 30.0),
-        (283.0, 30.0),
-        (283.0, 33.0),
-        (280.0, 33.0)
-        ] )
-##    coords.append( [
-##        (282.5, 33.0),
-##        (283.0, 30.0),
-##        (286.0, 33.0),
-##        (283.0, 36.0)
-##        ] )
+    nx = [ x*i for i in NN ]
+    ny = [ y*i for i in NN ]
+
+    left_inds = []
+    right_inds = []
+
+    ###test sections
+    for i in range( len( NN ) ):
+        cds, links = NG.generate_plus( \
+            275.0, 9.0+i*5.0, 285.0, 13.0+i*5.0, nx[i], ny[i], 0., 0. )
+
+        coords = coords + cds
+##        siku.settings.links = siku.settings.links + links
+
+##        left_inds = left_inds + \
+##                     [ n_filled+j*nx[i] for j in range(ny[i]) ]
+##        right_inds = right_inds + \
+##                     [ n_filled+j*nx[i]+nx[i]-1 for j in range(0, ny[i]) ]
+##
+        n_filled += nx[i]*ny[i]
+
+    ###handles
+    for i in range( len( NN ) ):
+        cds, links = NG.generate_plus( \
+            275.0-10.0/nx[i], 9.0+i*5.0, 275.0, 13.0+i*5.0, 1, ny[i], \
+            0., 0. )
+        coords = coords + cds
+        left_inds = left_inds + [ n_filled+j for j in range(ny[i]) ]
+        n_filled += ny[i]
+
+        cds, links = NG.generate_plus( \
+            285.0, 9.0+i*5.0, 285.0+10.0/nx[i], 13.0+i*5.0, 1, ny[i], \
+            0., 0. )
+        coords = coords + cds
+        right_inds = right_inds + [ n_filled+j for j in range(ny[i]) ]
+        n_filled += ny[i]
 
     # ---
     
@@ -137,17 +156,6 @@ def main():
         # all elements in the list
         siku.elements.append( E )
 
-    # ------------------------- speed settings ----------------------------
-
-##    siku.elements[-1].velo = (0.0, -1.0, 0.000005)
-##    siku.elements[-1].flag_state = element.Element.f_steady
-
-    #left border is static
-    left_inds = [ i*nx for i in range(ny) ]
- 
-    for i in left_inds:
-        siku.elements[i].flag_state = element.Element.f_static
-
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
@@ -156,7 +164,7 @@ def main():
     siku.plotter = GMT_Plotter( 'caribbean_plot_wnd.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 30
+    siku.diagnostics.monitor_period = 60
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -189,8 +197,11 @@ def main():
                                   'etha' : 0.0051          # -//- viscosity
                                   }
 
+    # ------------------------- speed settings ----------------------------
+ 
+    for i in left_inds:
+        siku.elements[i].flag_state = element.Element.f_static
 
-    right_inds = [ i*nx+nx-1 for i in range(1, ny-1) ]
     
 ##    siku.settings.manual_inds = right_inds
 ##    amo = len(right_inds)
@@ -200,7 +211,7 @@ def main():
 ##                                    for i in right_inds ]
 
     for i in right_inds:
-        siku.elements[i].velo = (2, -0.2, 0.0)
+        siku.elements[i].velo = (2, -0.1, 0.0)
         siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------

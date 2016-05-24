@@ -44,22 +44,22 @@ void mproperties( Globals& siku )
       // input test: element`s NaN checks
       bool nan_flag = false;
 
-      if( (nan_flag |= NaN_q( e.q )) )
+      if( (nan_flag |= NaN( e.q )) )
           cout<<"\nERROR: NaN q at element "<<e.id<<" !\n"
           <<e.q.w<<" "<<e.q.x<<" "<<e.q.y<<" "<<e.q.z<<" "<<"\n";
 
-      nan_flag |= NaN_v( e.Glob );
-      if( NaN_v( e.Glob ) )
+      nan_flag |= NaN( e.Glob );
+      if( NaN( e.Glob ) )
           cout<<"\nERROR: NaN Glob at element "<<e.id<<" !\n"
           <<e.Glob.x<<" "<<e.Glob.y<<" "<<e.Glob.z<<" "<<"\n";
 
-      nan_flag |= NaN_v( e.V );
-      if( NaN_v( e.V ) )
+      nan_flag |= NaN( e.V );
+      if( NaN( e.V ) )
           cout<<"\nERROR: NaN V at element "<<e.id<<" !\n"
           <<e.V.x<<" "<<e.V.y<<" "<<e.V.z<<" "<<"\n";
 
-      nan_flag |= NaN_v( e.W );
-      if( NaN_v( e.W ) )
+      nan_flag |= NaN( e.W );
+      if( NaN( e.W ) )
           cout<<"\nERROR: NaN W at element "<<e.id<<" !\n"
           <<e.W.x<<" "<<e.W.y<<" "<<e.W.z<<" "<<"\n";
 

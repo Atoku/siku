@@ -65,15 +65,15 @@ using namespace Geometry;
 
 inline bool _verify( const bool& b )   { return b; }
 inline bool _verify( const int& i )    { return i; }
-inline bool _verify( const double& d ) { return d == d; }
-inline bool _verify( const vec2d& v )  { return !NaN_v( v ); }
-inline bool _verify( const vec3d& v )  { return !NaN_v( v ); }
-inline bool _verify( const quat& q )   { return !NaN_q( q ); }
+inline bool _verify( const double& d ) { return std::isfinite( d ); }
+inline bool _verify( const vec2d& v )  { return !NaN( v ); }
+inline bool _verify( const vec3d& v )  { return !NaN( v ); }
+inline bool _verify( const quat& q )   { return !NaN( q ); }
 
 #define VERIFY( _EXP, _MSG ) \
-  if( ! _verify( _EXP ) ) \
+  if( ! _verify( (_EXP) ) ) \
     { \
-      cout << "NaN in: " << #_EXP << " (" << _MSG << ")" << endl; \
+      cout << "'" << (_EXP) << "' in: " << #_EXP << " (" << _MSG << ")" << endl; \
       cin.get(); \
     }
 
