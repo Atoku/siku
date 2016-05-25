@@ -191,6 +191,9 @@ main ( int argc, char* argv[] )
       // -- Diagnostics functions
       diagnosting ( siku, sikupy );
 
+      // --- Cleaning of accumulating values etc.
+      clean_props ( siku );
+
       // --- Concluding call back functions
       (void) sikupy.fcall_aftertimestep ( siku );
 

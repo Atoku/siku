@@ -1,5 +1,5 @@
-uwind_file = 'u2014.nc' #!* #file for uwind source for grid and interpolation
-vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation
+uwind_file = 'u1994.nc' #!* #file for uwind source for grid and interpolation
+vwind_file = 'v1994.nc' #!* #file for vwind source for grid and interpolation
 
 inter_domain = ( 170, 240, 55, 85 )
 
@@ -7,7 +7,7 @@ inter_density = 0
 
 ##view = '-R190/65/240/75r -JA205/71/15 -Bag30 '
 ##view = '-R185/62/240/75r -JA205/71/15 -Bag30 '
-view = '-R190/65/235/75r -JA210/71/15 -Bag30 '
+view = '-R190/65/235/75r -JA210/71/15 -X1 -Y1.5 -Bag30 '
 
 overlays = []
 

@@ -1,5 +1,5 @@
 #just some caribbean sea
-view = '-R262.5/7/302.5/30r -JA282.5/20/15 -Bag30 '
+view = '-R262.5/7/302.5/30r -JA282.5/20/15 -X1 -Y1 -Bag30 '
 
 uwind_file = 'u2014.nc' #!* #file for uwind source for grid and interpolation
 vwind_file = 'v2014.nc' #!* #file for vwind source for grid and interpolation

@@ -16,4 +16,6 @@
 
 void mproperties( Globals& siku );
 
+void clean_props( Globals& siku );
+
 #endif      /* MPROPERTIES_HH */

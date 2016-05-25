@@ -106,9 +106,10 @@ void mproperties( Globals& siku )
       // current global position update
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
 
-      // clearing the force and the torque
-      e.F = nullvec3d;
-      e.N = 0;
+//// gone to 'clean_props'
+//      // clearing the force and the torque (and all other accumulating values
+//      e.F = nullvec3d;
+//      e.N = 0;
 
       // marking element as it was already processed
       e.flag |= Element::F_PROCESSED;
@@ -129,5 +130,17 @@ void mproperties( Globals& siku )
           e.OA = 0.;
           e.OAM = e.A;
         }
+    }
+}
+
+// --------------------------------------------------------------------------
+
+void clean_props( Globals& siku )
+{
+  for ( Element & e: siku.es )
+    {
+      // clearing the force and the torque (and all other accumulating values
+      e.F = nullvec3d;
+      e.N = 0;
     }
 }

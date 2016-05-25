@@ -34,7 +34,9 @@ void forces_mass( Globals& siku )
 {
   for ( size_t i = 0; i < siku.es.size (); ++i )
     {
-      if( siku.es[i].flag & Element::F_ERRORED )
+      if( siku.es[i].flag & Element::F_ERRORED //)
+          || siku.es[i].flag & Element::F_STEADY    // coz steady and static
+          || siku.es[i].flag & Element::F_STATIC )  // won`t change their speed
         continue;
 
       // i just don`t like range-based loops

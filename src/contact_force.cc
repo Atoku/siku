@@ -119,7 +119,8 @@ void _fasten( Element &e1, Element &e2, double area,
 inline double _rigidity( CollisionData& cd )
 {
  // BUG: factors at elastic collision and dist spring should be the same!
-  return cd.siku.phys_consts["elasticity"] * cd.siku.planet.R_rec;
+  return cd.siku.phys_consts["elasticity"] * cd.siku.planet.R_rec
+      / ( abs(cd.r1) + (cd.r2) );
 
 
   // reduced thickness of floes
@@ -517,8 +518,10 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
       VERIFY( (c.durability>0.) , "in dist spring" );
 
       // some additional variables to avoid unnecessary functions` calls
-      double hardness     = K * c.init_len * c.durability * R,
-             rotatability = K * c.init_len * c.durability * 1./12.;
+//      double hardness     = K * c.init_len * c.durability * R
+//             rotatability = K * c.init_len / c.init_size * c.durability * 1./12.;
+      double hardness = K * c.init_len / c.init_size * c.durability * R,
+             rotablty = K * c.init_len / c.init_size * c.durability * 1./12.;
 
       vec2d dr1 = p4 - p1,
             dr2 = p3 - p2;
@@ -531,10 +534,10 @@ void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
 
       // combined torques
       vec2d r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
-      mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +              //traction
-                    rotatability * cross( p1 - p2, dr1 - dr2 ) );   //couple
-      mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +        //traction
-                    rotatability * cross( p3 - p4, dr2 - dr1 ) );   //couple
+      mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +          //traction
+                    rotablty * cross( p1 - p2, dr1 - dr2 ) );   //couple
+      mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +    //traction
+                    rotablty * cross( p3 - p4, dr2 - dr1 ) );   //couple
 
       VERIFY( F, "in dist_spring");
       VERIFY( mom1, "in dist_spring");

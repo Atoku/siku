@@ -96,9 +96,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + hour * 30
+    siku.time.finish = siku.uw.times[st_t_ind] + hour * 60
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 1200
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 2400
    
     # ---------------------------------------------------------------------
     # elements
@@ -196,24 +196,25 @@ def main():
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  1, 1, 1, 1, 1 ]
-    
+        
     siku.settings.phys_consts = { 'rigidity' : 1.0,
                                   'viscosity' : 1.0,
                                   'rotatability' : 0.750,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : 50000000.0,#-5000000.0,
+                                  'elasticity' : 5000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.5,#0.05,
                                   'tensility' : 0.30,#0.615,
 
                                   'anchority' : 0.0000001,
-                                  'windage':    0.0000001,
-                                  'fastency' : 0.50, #0.5
+                                  'windage':    0.00000001,
+                                  'fastency' : 0.30, #0.5
 
-                                  'sigma' : 10000000.0,        # -//- rigidity
+                                  'sigma' : 5000.0,        # -//- rigidity
                                   'etha' : 0.0051          # -//- viscosity
                                   }
+    
 
 ##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
 ##    siku.settings.contact_value = 1000
@@ -258,7 +259,7 @@ def presave( t, n, ns ):
 # --------------------------------------------------------------------------
 
 def initializations( siku, t ):
-    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+    subprocess.call(["gmtset", "PS_MEDIA=Custom_17cx13c"])
 
 # --------------------------------------------------------------------------
 
@@ -392,7 +393,8 @@ def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+            poly.write( '> -GlightCyan -W0.1p,lightCyan \n' )
+##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
