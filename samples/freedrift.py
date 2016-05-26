@@ -108,71 +108,71 @@ def main():
     siku.elements = []
 
     # ---------------------- voronoi initialization ------------------------
-##    print('\nLoading polygons')
-##    ## North cap
-##    PV = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
-##    ## Channel (handmade)
-####    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
-##    
-##    PV.filter_( 0, 360, 60, 90 )
-####    PC.filter_( 179, 187, 54, 60 )
-##
-####TESTING!
-######    PV.filter_( 190, 230, 62, 82 )
-####    PC.filter_( 190, 230, 62, 82 )
-####/TESTING
-##
-##    
-##    print('Deleting land polygons')
-##    PV.clear_the_land()
-##
-##    coords = PV.coords
-####    coords = coords + PC.coords
-##
-##    siku.tempc = coords # for debug
-##
-##    ### Initializing elements with polygon vertices
-##    for c in coords:
-##        siku.P.update( c )
-##     
-##        # Element declaration
-##        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
-##        E.monitor = "drift_monitor"
-##        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
-##               0.0, 0.0, 0.0, 0.0, 0.0 ]
-##        E.set_gh( gh, ice )
-##        
-##        # all elements in the list
-##        siku.elements.append( E )
-##
-##    ## Core will mark polygons, those contain at leas one point from next
-##    ## file as 'static'
-##    siku.settings.border_mark = 1
-##    siku.settings.borders = 'contours.ll'
-##
-##    print('Marking borders with GMT')
-##    bor = PV.get_border_by_gmt()
-##    for b in bor:
-##        siku.elements[ b ].flag_state = element.Element.f_static
-##    print('Done\n\n')
+    print('\nLoading polygons')
+    ## North cap
+    PV = PolyVor( 'high.voronoi.xyz', 'high.voronoi.xyzf' )
+    ## Channel (handmade)
+##    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
+    
+    PV.filter_( 0, 360, 60, 90 )
+##    PC.filter_( 179, 187, 54, 60 )
+
+##TESTING!
+####    PV.filter_( 190, 230, 62, 82 )
+##    PC.filter_( 190, 230, 62, 82 )
+##/TESTING
+
+    
+    print('Deleting land polygons')
+    PV.clear_the_land()
+
+    coords = PV.coords
+##    coords = coords + PC.coords
+
+    siku.tempc = coords # for debug
+
+    ### Initializing elements with polygon vertices
+    for c in coords:
+        siku.P.update( c )
+     
+        # Element declaration
+        E = element.Element( polygon = siku.P, imat = matnames['ice'] )
+        E.monitor = "drift_monitor"
+        gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
+               0.0, 0.0, 0.0, 0.0, 0.0 ]
+        E.set_gh( gh, ice )
+        
+        # all elements in the list
+        siku.elements.append( E )
+
+    ## Core will mark polygons, those contain at leas one point from next
+    ## file as 'static'
+    siku.settings.border_mark = 1
+    siku.settings.borders = 'contours.ll'
+
+    print('Marking borders with GMT')
+    bor = PV.get_border_by_gmt()
+    for b in bor:
+        siku.elements[ b ].flag_state = element.Element.f_static
+    print('Done\n\n')
 
     # ---------------------- loading from file ----------------------------
 
-    print('loading from file\n')
-    
-    hl = hload('save_test.h5')
-##    #hl = hload('siku-2014-01-01-12:50:46.h5')
+##    print('loading from file\n')
+##    
+##    hl = hload('save_test.h5')
+####    #hl = hload('siku-2014-01-01-12:50:46.h5')
+####
+####    #hl.load()
+##    hl.load_fnames()
+##    hl.load_mats()
+##    hl.load_els()
+##    print('\n')
 ##
-##    #hl.load()
-    hl.load_fnames()
-    hl.load_mats()
-    hl.load_els()
-    print('\n')
-
-    siku.elements = hl.extract_els()
-    siku.materials = hl.extract_mats()
-          
-    hl = None
+##    siku.elements = hl.extract_els()
+##    siku.materials = hl.extract_mats()
+##          
+##    hl = None
 
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
@@ -202,16 +202,16 @@ def main():
                                   'rotatability' : 0.750,#0.75
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : 5000.0,#-5000000.0,
+                                  'elasticity' : 10000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.5,#0.05,
-                                  'tensility' : 0.30,#0.615,
+                                  'tensility' : 0.1,#0.615,
 
                                   'anchority' : 0.0000001,
                                   'windage':    0.00000001,
                                   'fastency' : 0.30, #0.5
 
-                                  'sigma' : 5000.0,        # -//- rigidity
+                                  'sigma' : 10000.0,        # -//- rigidity
                                   'etha' : 0.0051          # -//- viscosity
                                   }
     
@@ -393,8 +393,8 @@ def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-            poly.write( '> -GlightCyan -W0.1p,lightCyan \n' )
-##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+##            poly.write( '> -GlightCyan -W0.1p,lightCyan \n' )
+            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

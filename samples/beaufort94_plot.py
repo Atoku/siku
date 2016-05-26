@@ -8,6 +8,7 @@ inter_density = 0
 ##view = '-R190/65/240/75r -JA205/71/15 -Bag30 '
 ##view = '-R185/62/240/75r -JA205/71/15 -Bag30 '
 view = '-R190/65/235/75r -JA210/71/15 -X1 -Y1.5 -Bag30 '
+####view = '-Rg -JA210/71/15 -X1 -Y1.5 -Bag30 '
 
 overlays = []
 
