@@ -207,8 +207,8 @@ def main():
                                   'solidity' : 0.5,#0.05,
                                   'tensility' : 0.1,#0.615,
 
-                                  'anchority' : 0.0000001,
-                                  'windage':    0.00000001,
+                                  'anchority' : 0.001,
+                                  'windage':    0.0001,
                                   'fastency' : 0.30, #0.5
 
                                   'sigma' : 10000.0,        # -//- rigidity

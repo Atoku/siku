@@ -57,8 +57,7 @@ void forces_mass( Globals& siku )
                                                Coordinates::norm_lon( lon ) );
 
       // transforming to local coordinates
-      // BUG! time scaling was lost!
-      V = Coordinates::glob_to_loc( e.q, V ) * siku.time.get_dt();
+      V = Coordinates::glob_to_loc( e.q, V );
 
       // calculating local Force (draft)
       e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact ;
@@ -86,14 +85,12 @@ void forces_mass( Globals& siku )
       W -= V;
       VERIFY( abs(W ),"3");
 
-      // BUG! time scaling was lost!
-      W *= siku.time.get_dt();
-
       // applying water forces
       e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
       VERIFY( abs(W), "in f_m");
       if(!_verify(abs(W))) cout<<"===="<<W<<endl;
-      VERIFY( e.F, string("water in forces mass ") + to_string(wat_fact)+ string("  ") + to_string(e.A) );
+      VERIFY( e.F, string("water in forces mass ") + to_string(wat_fact)+
+              string("  ") + to_string(e.A) );
     }
   
   // manual forces

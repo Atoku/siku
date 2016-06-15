@@ -182,10 +182,7 @@ inline vec2d _elastic_force( CollisionData& cd )
 }
 inline vec2d _viscous_force( CollisionData& cd )
 {
-
-  // TODO: reconsider time scaling
-  return -cd.area * cd.siku.planet.R2 * cd.siku.phys_consts["etha"]
-                  * cd.va12 * cd.siku.time.get_dt();
+  return -cd.area * cd.siku.planet.R2 * cd.siku.phys_consts["etha"] * cd.va12;
 }
 
 // =========================== contact force ================================
