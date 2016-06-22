@@ -32,7 +32,7 @@
 using namespace Coordinates;
 using namespace Geometry;
 
-// ======================== local utility struct ============================
+// ======================== local utility structs ===========================
 
 // local structure for intersection (overlapping) data.
 // !members` declaration order supposed to be optimized by memory
@@ -99,6 +99,11 @@ struct CollisionData
 
 };
 
+struct InterForces
+{
+  vec2d rf1, rf2, F1, couple1;
+};
+
 // ==================== local functions` declarations =======================
 
 void _test_springs( ContactDetector::Contact& c, Globals& siku );
@@ -114,6 +119,14 @@ void _fasten( Element &e1, Element &e2, double area,
                 const vector<vec2d>& l1, const vector<vec2d>& l2 );
 
 // -----------------------------------------------------------------------
+
+InterForces _collision_new( CollisionData& cd );
+InterForces _test_springs_new( CollisionData& cd );
+InterForces _hopkins_frankenstein_new( CollisionData& cd );
+InterForces _distributed_springs_new( CollisionData& cd );
+
+void _apply_interaction( CollisionData& cd, InterForces& if_ );
+void _update_contact_state( CollisionData& cd );
 
 // calculates linear rigidity of ice with respect to material and other props
 inline double _rigidity( CollisionData& cd )
@@ -208,6 +221,64 @@ void contact_forces( Globals& siku )
       break;
 
   }
+}
+
+// -------------------------------------------------------------------------
+
+void contact_forces_new( Globals& siku )
+{
+  for( auto& c : siku.ConDet.cont )
+    {
+      // conditional cancellation of interaction
+      // TODO: such errors should be removed by removing their reason
+      if(
+          //(siku.es[c.i1].flag & Element::F_ERRORED) ||
+          //(siku.es[c.i2].flag & Element::F_ERRORED) ||
+      // No need to calculate interaction for two steady polygons
+      // TODO: reconsider runtime fastened ice
+          ( (siku.es[c.i1].flag & Element::F_STEADY) &&
+            (siku.es[c.i2].flag & Element::F_STEADY) ) )
+          continue;
+
+      // calculation of elements inter-section, -position, -velocity and
+      // some additional parameters
+      CollisionData cd( c, siku );
+
+      InterForces intf;  // elements` interaction forces
+
+      // calculating the forces
+      if( c.type != ContType::JOINT )
+        {
+          intf = _collision_new( cd ); // collision forces
+        }
+      else
+        {
+          // TODO: reconsider manual optimization: single switch on loading
+          // combined with calling function by pointer on calculation time.
+          switch( siku.cont_force_model )
+          {
+            case CF_TEST_SPRINGS: //same as CF_DEFAULT
+              intf = _test_springs_new( cd );
+              break;
+
+            case CF_HOPKINS:
+              intf = _hopkins_frankenstein_new( cd );
+              break;
+
+            case CF_DIST_SPRINGS:
+              intf = _distributed_springs_new( cd );
+              break;
+          }
+        }
+
+      // accumulating forces and torques applied to elements
+      _apply_interaction( cd, intf );
+
+      // check of contact destruction/renovation, land-fastening conditions,
+      // e.t.c.
+      _update_contact_state( cd );
+
+    }
 }
 
 // ============================== definitions ==============================

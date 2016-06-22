@@ -42,6 +42,8 @@
 //! \brief Calculate elements` interaction forces.
 void contact_forces( Globals& siku );
 
+void contact_forces_new( Globals& siku );
+
 // Deprecated: built in 'contact_forces' for better performance
 ////! Function for calculating two elements interaction. Changes both elements
 ////! so should be used once per pair of elements.
