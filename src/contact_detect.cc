@@ -499,7 +499,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
 
   mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
       // !static
-  mat3d dest_to_src = loc_to_loc_mat( e2.q, e1.q );
+  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
       // !static
 
   //vec2d r2 = - vec3_to_vec2( dest_to_src * NORTH ); //TODO: select correct
@@ -519,7 +519,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
       //vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH ); //calculated before
       vec2d r2 = center - r12;
 
-      c.p2 = vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) );
+      c.p2 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( r2 ) );
       //c._F = { center, vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) ) };
 //      print(center);
 //      print(r12);

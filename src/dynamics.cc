@@ -38,6 +38,7 @@ dynamics ( Globals& siku, const double dt )
 //      vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
 //                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );
       //// manual drag added
+      // TODO: fix this factor - rotation slowdonw caused by water viscosity
       double c = 0.0 * siku.planet.R_rec * siku.time.get_dt(); //time scaling coz pseudoforce
       vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
                  e.F[0] / ( siku.planet.R * e.m ), e.N / e.I - c * e.W.z );

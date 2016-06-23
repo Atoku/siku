@@ -106,7 +106,7 @@ public:
   vec3d V{};            //!< local surface velocity (x, y, 0)
 
   double m;             //!< kg, mass
-  double I;             //!< moment of inertia
+  double I;             //!< kg*m^2, moment of inertia
 
   vec3d W;              //!< 1/m, angular velocity in local coord.
   vec3d F;              //!< N, net force vector in local frame
