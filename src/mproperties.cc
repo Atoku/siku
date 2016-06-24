@@ -38,8 +38,8 @@ void mproperties( Globals& siku )
 
   for ( Element & e: siku.es )
     {
-      if( e.flag & Element::F_ERRORED )
-        continue;
+//      if( e.flag & Element::F_ERRORED )
+//        continue;
 /////////////////
       // input test: element`s NaN checks
       bool nan_flag = false;
@@ -101,34 +101,22 @@ void mproperties( Globals& siku )
       e.m *= siku.planet.R2;
       e.I *= siku.planet.R2;
 
-//cout<<e.m<<"\t"<<e.I<<"\t"<<e.A*siku.planet.R2<<endl;
-//cin.get();
       // current global position update
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
 
-//// gone to 'clean_props'
-//      // clearing the force and the torque (and all other accumulating values
-//      e.F = nullvec3d;
-//      e.N = 0;
-
-      // marking element as it was already processed
+      // marking element as it was already processed (required for save-load
+      // runs where new elements may be added)
       e.flag |= Element::F_PROCESSED;
 
       // checking land-fastency condition
-      if( e.flag & Element::F_FREE &&
-          ~e.flag & Element::F_FASTENED &&
-          e.OA &&
-          //OLD //e.OA > 0.0 )
-          (e.OA / e.OAM) > siku.phys_consts["fastency"] )
-//          (e.OA / e.A) > siku.phys_consts["fastency"] )
+      if( (e.flag & Element::F_FREE) && (~e.flag & Element::F_FASTENED) &&
+          (e.OA) && (e.OA > e.Amin*siku.phys_consts["fastency"]) )
         {
           e.flag &= ~( Element::F_FREE );//| Element::F_STEADY );
           e.flag |= Element::F_STATIC | Element::F_FASTENED;
-        }
-      else
-        {
-          e.OA = 0.;
-          e.OAM = e.A;
+// TODO: clean
+//          cout<<"FAST!  "<<e.id<<": "<<e.OA<<", "<<e.Amin<<", "<<e.A<<endl;
+
         }
     }
 }
@@ -139,8 +127,10 @@ void clean_props( Globals& siku )
 {
   for ( Element & e: siku.es )
     {
-      // clearing the force and the torque (and all other accumulating values
+      // clearing all accumulated values
       e.F = nullvec3d;
       e.N = 0;
+      e.OA = 0.;
+      e.Amin = e.A;
     }
 }

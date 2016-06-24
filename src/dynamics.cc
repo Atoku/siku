@@ -25,13 +25,11 @@ dynamics ( Globals& siku, const double dt )
     {
 //      if( e.flag & Element::F_ERRORED ) continue; // TODO: change or remove dis
 
-      //cout<<"%%% "<<e.I<<endl;
-      //cout<<"%%% "<<e.m<<endl;
-
       if ( e.flag & Element::F_STATIC ) //continue;
         {
           e.W = {};
           e.V = {};
+          continue;
         }
 
       // first we create a vector of Super-Torque

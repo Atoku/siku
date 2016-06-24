@@ -185,7 +185,7 @@ def main():
                                   'windage':    0.00000001,
                                   'fastency' : 0.50, #0.5
 
-                                  'sigma' : 10000000.0,        # -//- rigidity
+                                  'sigma' : 1000000.0,        # -//- rigidity
                                   'etha' : 0.0051          # -//- viscosity
                                   }
 

@@ -211,11 +211,14 @@ namespace Geometry
         return ( *this * V );
       }
 
-      //cross product
+      // cross product
       inline double cross( const vec2d& V ) const
       {
         return x * V.y - y * V.x;
       }
+
+//      // conversion to double means absolute value
+//      inline operator double () const { return abs(); }
 
       //---------------------------------------------------------------------
 

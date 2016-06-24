@@ -536,6 +536,9 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
       // circle of geometric mean of areas
       if( !c.init_len && dump.size() > 2 )
         c.init_len = size * sqrt( M_PI / sqrt( e1.A * e2.A ) );
+
+      // init size - sum of distances between contact end elements` centers
+      c.init_size = abs( c.p1 ) + abs( c.p2 );
     }
 }
 

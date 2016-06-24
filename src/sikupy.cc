@@ -667,6 +667,7 @@ Sikupy::read_elements ( Globals& siku )
 
       success = read_double ( pobj, siku.es[i].A );
       assert( success );
+      siku.es[i].Amin = siku.es[i].A; // constructor might saved the day
 
       Py_DECREF( pobj );
 

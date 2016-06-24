@@ -112,15 +112,15 @@ public:
   vec3d F;              //!< N, net force vector in local frame
   double N {0};         //!< N*m, torque value in local frame
 
-  double OA {0};        //!< total relative overlap area with landfast !ice
-  double OAM {0};       //!< minimal area of polygons for fastening checks
+  double OA {0};        //!< m^2, total overlap area with landfast ice
+  double Amin {0};      //!< m^2, minimal area of polygons for fastening checks
 
   // --------------- Not changing state parameters -------------------
 
   size_t imat;                  //!< material index
   size_t igroup;                //!< group index
   double i;                     //!< I/m, geometical moment of inertia
-  double A;                     //!< m^2, area of polygon (on unit sphere)
+  double A;                     //!< area of polygon (on unit sphere)
   double sbb_rmin;              //!< bounding sphere minimum radius
 
   double anchority;             //!< interaction with water
