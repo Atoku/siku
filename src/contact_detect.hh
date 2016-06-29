@@ -111,11 +111,11 @@ public:
     size_t i2 { 0 };
 
     int step{ -1 };  // step when was created. -1 marks default object
-    double area{ 0. };  // area of contact
+    double area{ 0. };  // area of contact (on unit sphere)
     double durability{ 1. };  // IMPROVE: must be discussed
     // TODO: discuss and change following names
-    double init_size{ 0. };  // initial size. Must be discussed
-    double init_len{ 0. }; // initial length. Must be discussed
+    double init_len{ 0. };  // initial width (OUS) Must be discussed
+    double init_wid{ 0. }; // initial length (OUS) Must be discussed
     int generation{ 0 };  // 'oldness'
 
     // In different physics approaches the points` meaning is different:

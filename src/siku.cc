@@ -158,8 +158,7 @@ main ( int argc, char* argv[] )
       forces_mass( siku );
 
       // --- Contact Forces assignment (Elements` interaction)
-//      contact_forces( siku );
-      contact_forces_new( siku );
+      contact_forces( siku );
 
       // --- Dynamics solution
       dynamics ( siku, dt );

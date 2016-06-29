@@ -39,7 +39,7 @@ dynamics ( Globals& siku, const double dt )
       // TODO: fix this factor - rotation slowdonw caused by water viscosity
       double c = 0.0 * siku.planet.R_rec * siku.time.get_dt(); //time scaling coz pseudoforce
       vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
-                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I - c * e.W.z );
+                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );//- c * e.W.z );
 
       VERIFY( sT, string("dyn ") + to_string(e.m) + string(" | ") + to_string(e.F[0]) + "  " + to_string(e.F[1]) );
 

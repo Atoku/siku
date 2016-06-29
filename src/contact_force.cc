@@ -82,8 +82,8 @@ struct ContactData
     e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
 
     // polygons in local (e1) coords
-    for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
-    for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
+    for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+    for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
 
     // errors check
 //    if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
@@ -92,15 +92,16 @@ struct ContactData
     // call for 'geometry'->'2d'->'polygon intersection'
     inter_res = intersect( loc_P1, loc_P2, interPoly, &stats, &r1, &area );
     // and calc centers` interpositions
-    r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
+    r12 = vec3_to_vec2( e2_to_e1 * NORTH );
     r2 = r1 - r12;
 
     // IMPROVE: check order of planet.R carefully!
     // e1 aim speed (coz of propagation + spin)
-    va1 = vec3_to_vec2( e1.V )
+    va1 = vec3_to_vec2_s( e1.V )
         + rot_90_cw( r1 ) * ( -e1.W.z ) * siku.planet.R;
     // e2 aim speed (propagation + spin)
-    va2 = vec3_to_vec2( lay_on_surf( e2_to_e1 * e2.V ) )
+    vec3d tv = lay_on_surf( e2_to_e1 * e2.V );
+    va2 = vec3_to_vec2_s( lay_on_surf( e2_to_e1 * e2.V ) )
         + rot_90_cw( r2 ) * ( -e2.W.z ) * siku.planet.R;
 
     // velocity difference at aim point
@@ -115,31 +116,26 @@ struct InterForces
   vec2d rf1,        // application point of force at e1
         rf2,        // application point of force at e2
         F1;         // force applied to e1 ( = - F2 )
-  double couple1;    // couple (wikipedia) applied to e1 ( = - couple2 )
+  double couple1;   // couple (wikipedia) applied to e1 ( = - couple2 ) ( SI )
 };
 
 // ==================== local functions` declarations =======================
 
-void _test_springs( ContactDetector::Contact& c, Globals& siku );
+InterForces _collision( ContactData& cd );
 
-void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku );
+InterForces _test_springs( ContactData& cd );
 
-void _distributed_springs( ContactDetector::Contact& c, Globals& siku );
+InterForces _hopkins_frankenstein( ContactData& cd );
 
-void _err_n_land_test( Element &e1, Element &e2,
-                       mat3d& e2_to_e1, mat3d& e1_to_e2 );
-
-void _fasten( Element &e1, Element &e2, double area,
-                const vector<vec2d>& l1, const vector<vec2d>& l2 );
+InterForces _distributed_springs( ContactData& cd );
 
 // -----------------------------------------------------------------------
 
 // calculates linear rigidity of ice with respect to material and other props
 inline double _rigidity( ContactData& cd )
 {
- // BUG: factors at elastic collision and dist spring should be the same!
-  return cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec
-      / ( abs(cd.r1) + abs(cd.r2) );
+//  return cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec
+//      / ( abs(cd.r1) + abs(cd.r2) );
 
 
   // reduced thickness of floes
@@ -150,8 +146,10 @@ inline double _rigidity( ContactData& cd )
     if( cd.e1.gh[i] > h1 )
       h1 = cd.e1.gh[i];
   for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-    if( cd.e1.gh[i] > h1 )
-      h1 = cd.e1.gh[i];
+    if( cd.e2.gh[i] > h2 )
+      h2 = cd.e2.gh[i];
+
+  // TODO: provide some protection from zero-thickness of layers
 
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
   // close-to-linear-spring rigidity of ice
@@ -202,14 +200,14 @@ inline vec2d _viscous_force( ContactData& cd )
 
 // -----------------------------------------------------------------------
 
-void _fasten_new( ContactData& cd )
+inline void _fasten( ContactData& cd )
 {
   // if at least one element is shore (static but not fastened):
-  if( ( ( cd.e1.flag & Element::F_STATIC &&
-            ~cd.e1.flag & Element::F_FASTENED ) ||
-        ( cd.e2.flag & Element::F_STATIC &&
-            ~cd.e2.flag & Element::F_FASTENED ) ) &&
-      cd.inter_res > 2 )
+  if( ( ( (cd.e1.flag & Element::F_STATIC) &&
+          (~cd.e1.flag & Element::F_FASTENED) ) ||
+        ( (cd.e2.flag & Element::F_STATIC) &&
+          (~cd.e2.flag & Element::F_FASTENED) ) ) &&
+      (cd.inter_res > 2) )
     {
       // minimal areas for comparison
       double am = min( cd.e1.A, cd.e2.A );
@@ -221,7 +219,136 @@ void _fasten_new( ContactData& cd )
     }
 }
 
-InterForces _collision_new( ContactData& cd )
+inline void _apply_interaction( ContactData& cd, InterForces& if_ )
+{
+  // forces applied to e1 and e2 in their local coords (SI)
+  vec3d F1 = vec2_to_vec3_s( if_.F1 ),
+        F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3_s( -if_.F1 ) );
+
+  // torques (combined) applied to e1 and e2 in their local coords (SI)
+  double tq1 =  if_.couple1 + cross( if_.rf1, if_.F1 );
+  double tq2 = -if_.couple1 + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
+                                     -if_.F1 ); // (SI) - that`s why ' * R'
+
+  // TODO: find and clean (set properly) all adjustment factors like below
+  cd.e1.F += F1;
+  cd.e1.N += tq1 * cd.siku.phys_consts["rotatability"];
+
+  cd.e2.F += F2;
+  cd.e2.N += tq2 * cd.siku.phys_consts["rotatability"];
+}
+
+inline void _update_contact( ContactData& cd )
+{
+  // durability change - joint destruction
+  double r_size = cd.siku.planet.R_rec / cd.c.init_len,   // reversed size (SI)
+         dmax   = max( cd.d1, cd.d2 ),                    // maximal stretch
+         dave   = (cd.d1 + cd.d2) * 0.5;                  // average stretch
+
+  double sigma =   cd.siku.phys_consts["solidity"],
+         epsilon = cd.siku.phys_consts["tensility"];
+
+  // TODO: discuss time scaling
+  cd.c.durability -= cd.siku.time.get_dt() *
+      ( ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0. );
+
+  // check for errors
+  if( errored( cd.loc_P1 ) )   cd.e1.flag |= Element::F_ERRORED;
+  if( errored( cd.loc_P2 ) )   cd.e2.flag |= Element::F_ERRORED;
+
+  // land fastening
+  _fasten( cd );
+
+// may be required in 'collision' contact type
+//      if( c.durability < 0.05 )
+//        {
+//          std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
+//          std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
+//
+//          // polygons in local (e1) coords
+//          for( auto& p : e1.P )
+//            loc_P1.push_back( vec3_to_vec2( p ) );
+//          for( auto& p : e2.P )
+//            loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
+//
+//          if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
+//          if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
+//
+//          intersect( loc_P1, loc_P2, interPoly, nullptr, nullptr, &area );
+//
+//          c.area = area;
+//        }
+}
+
+// =========================== contact force ================================
+
+void contact_forces( Globals& siku )
+{
+  for( auto& c : siku.ConDet.cont )
+    {
+      // conditional cancellation of interaction
+      // TODO: such errors should be removed by removing their reason
+      if(
+          //(siku.es[c.i1].flag & Element::F_ERRORED) ||
+          //(siku.es[c.i2].flag & Element::F_ERRORED) ||
+      // No need to calculate interaction for two steady polygons
+      // TODO: reconsider runtime fastened ice
+          ( (siku.es[c.i1].flag & Element::F_STEADY) &&
+            (siku.es[c.i2].flag & Element::F_STEADY) ) )
+          continue;
+
+      // calculation of elements inter-section, -position, -velocity and
+      // some additional parameters
+      ContactData cd( c, siku );
+
+      InterForces intf;  // elements` interaction forces
+
+      // calculating the forces
+      if( c.type != ContType::JOINT )
+        {
+          intf = _collision( cd ); // collision forces
+        }
+      else if( c.durability <= 0. )
+        {
+          // IMPROVE: find this leak in 'update' function and prevent the
+          // possibility of such contacts
+          intf = {};
+        }
+      else
+        {
+
+
+          // TODO: reconsider manual optimization: single switch on loading
+          // combined with calling function by pointer on calculation time.
+          switch( siku.cont_force_model )
+          {
+            case CF_TEST_SPRINGS: //same as CF_DEFAULT
+              intf = _test_springs( cd );
+              break;
+
+            case CF_HOPKINS:
+              intf = _hopkins_frankenstein( cd );
+              break;
+
+            case CF_DIST_SPRINGS:
+              intf = _distributed_springs( cd );
+              break;
+          }
+        }
+
+      // accumulating forces and torques applied to elements
+      _apply_interaction( cd, intf );
+
+      // check of contact destruction/renovation, land-fastening conditions,
+      // e.t.c.
+      _update_contact( cd );
+
+    }
+}
+
+// ============================== definitions ==============================
+
+InterForces _collision( ContactData& cd )
 {
   InterForces if_{};
 
@@ -229,125 +356,63 @@ InterForces _collision_new( ContactData& cd )
     {
       cd.c.type = ContType::COLLISION;  // mark contact as a 'collision'
 
-//
-//      //TODO: clean this mess
-//      vec2d p1p2 [2];  // p1p2 = two points: p1 and p2
-//      size_t np = 0;  // amount of edge-edge intersections
-//      // noob search for p1 and p2
-//      for(size_t i = 0; i < cd.stats.size(); ++i )
-//        if( stats[i] == PointStatus::EDGE )
-//          {
-//            if( np < 2 )  p1p2[ np ] = interPoly[ i ];
-//            np++;
-//          }
-//
-//      if( np != 2 )  // inapplicable  //UNDONE: add solution for 'fencing'
-//                                      // intersections
-//        {
-////          _spike( e1, e2, c, siku, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
-////                  interPoly, stats, center, area );
-//          c.type = ContType::NONE;
-//          return;
-//        }
-//
-//      c.generation = 0;  // refreshing contact for avoiding deletion
-//
-//
-//      // directions and applying point
-//      vec2d dp = p1p2[1] - p1p2[0];
-//      vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
-//      vec2d norm { tau.y, -tau.x };
-//      vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
-//
-//      // physical constants (from python scenario)
-//      double Kne = siku.phys_consts["rigidity"],
-//             Kni = siku.phys_consts["viscosity"],
-//             Kw = siku.phys_consts["rotatability"],
-//             Kt = siku.phys_consts["tangency"];
-//
-//      double Asqrt = sqrt( area );
-//
-//      // zero if dt==0, some fraction otherwise
-//      double da_dt = siku.time.get_dt() ?
-//          ( Asqrt - sqrt( c.area ) ) / siku.time.get_dt() : 0.;
-//
-//      // actually the force
-//      vec2d F = ( Kne * Asqrt  +
-//                  Kni * da_dt ) * siku.planet.R * norm;
-//
-////////////  testing tangential force
-//      F += tau * ( tau * v12 ) * Asqrt * Kt * siku.planet.R2;
-//
-//      double torque1 =
-//          Kw * siku.planet.R_rec * cross( center, F );
-//
-//      double torque2 =
-//          Kw * siku.planet.R_rec * cross( center -
-//          vec3_to_vec2( e2_to_e1 * NORTH ), F );
-
       // force in Newtons applied to e1 caused by e2
       vec2d F = _elastic_force( cd ) * cd.siku.phys_consts["rigidity"]
               + _viscous_force( cd ) * cd.siku.phys_consts["viscosity"];
       // TODO: add couple caused by friction
 
-//      VERIFY(_elastic_force( cd ), "" );
-//      VERIFY(_viscous_force( cd ), "" );
-
-      if_.rf1 = cd.r1;
-      if_.rf2 = cd.r1;
+      if_.rf1 = cd.r1 * cd.siku.planet.R;
+      if_.rf2 = cd.r1 * cd.siku.planet.R;
       if_.F1 = F;
       //if_.couple1 = 0.; by default
 
+      // renewing the contact to avoid deletion
+      cd.c.generation = 0;
     }
 
   return if_;
 }
 
-InterForces _test_springs_new( ContactData& cd )
+// -----------------------------------------------------------------------
+
+InterForces _test_springs( ContactData& cd )
 {
   InterForces if_{};
 
-  if( cd.c.durability <= 0. )
-    {
-      //ERROR!
-      return {};
-    }
-
-  // physical constants (from python scenario)
-  double K =       cd.siku.phys_consts["sigma"],
-         Kw =      cd.siku.phys_consts["bendability"],
-         sigma =   cd.siku.phys_consts["solidity"],
-         epsilon = cd.siku.phys_consts["tensility"];
+  // physical rigidity of ice (from python scenario)
+  double K =       cd.siku.phys_consts["sigma"];
 
   // calculating forces and torques
   vec2d p1 = cd.c.p1;
-  vec2d p2 = vec3_TO_vec2( cd.e2_to_e1 * vec2_TO_vec3( cd.c.p2 ) );
+  vec2d p2 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p2 ) );
   vec2d def = p2 - p1;
 
-  vec2d F = def * cd.siku.planet.R * K * cd.c.durability *
-      cd.c.init_len / cd.c.init_size;
+  vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid / cd.c.init_len)
+              * cd.c.durability;
   // BUG: possibly wrong p1, p2 calculation
   // * c.init_size OR c.init_len;
 
   // memorizing deformation
-  cd.d1 = cd.d2 = abs( def );
+  cd.d1 = cd.d2 = abs( def ) * cd.siku.planet.R;
 
-  if_.rf1 = p1;
-  if_.rf2 = p2;
+  if_.rf1 = p1 * cd.siku.planet.R;
+  if_.rf2 = p2 * cd.siku.planet.R;
   if_.F1  = F;
   //if_.couple1 = 0.; by default
 
   return if_;
 }
-InterForces _hopkins_frankenstein_new( ContactData& cd )
+
+// -----------------------------------------------------------------------
+
+InterForces _hopkins_frankenstein( ContactData& cd )
 {
   InterForces if_{};
 
-  // physical constants (from python scenario)
-  double K =       cd.siku.phys_consts["elasticity"],
-         Kw =      cd.siku.phys_consts["bendability"],
-         sigma =   cd.siku.phys_consts["solidity"],
-         epsilon = cd.siku.phys_consts["tensility"];
+  // physical params of ice (from python scenario)
+  double K =  cd.siku.phys_consts["elasticity"],
+         Kw = cd.siku.phys_consts["bendability"];
+
 
   // calculating forces and torques (this method seems to be working wrong)
   vec2d p11 = vec3_to_vec2( cd.siku.es[cd.c.i1].P[cd.c.v11] );
@@ -380,54 +445,40 @@ InterForces _hopkins_frankenstein_new( ContactData& cd )
          + Al > 0 ? Al : 0.;
 
   // UNDONE!!!
+  cd.d1 = cd.d2 = {};
 
   return if_;
 }
-InterForces _distributed_springs_new( ContactData& cd )
+
+// -----------------------------------------------------------------------
+
+InterForces _distributed_springs( ContactData& cd )
 {
   InterForces if_{};
 
-  if( cd.c.durability <= 0. )
-    {
-      //ERROR!
-      return {};
-    }
-
-  // physical constants (from python scenario)
-  double K =       cd.siku.phys_consts["sigma"],
-         Kw =      cd.siku.phys_consts["bendability"],
-         sigma =   cd.siku.phys_consts["solidity"],
-         epsilon = cd.siku.phys_consts["tensility"];
-
-  // direct and reversed planet radius shortcuts
-  double &R = cd.siku.planet.R, &R_ = cd.siku.planet.R_rec;
+  // physical rigidity of ice (from python scenario)
+  double K = cd.siku.phys_consts["sigma"];
 
   vec3d tv1, tv2; // just some temporals
 
-  // original contact points considering current shift of elements
-  vec2d p1 = cd.c.p1, p2 = cd.c.p2,
-        p3 = vec3_TO_vec2( cd.e2_to_e1 * vec2_TO_vec3( cd.c.p3 ) ),
-        p4 = vec3_TO_vec2( cd.e2_to_e1 * vec2_TO_vec3( cd.c.p4 ) );
-
-//  // IMPROVE: make proper check
-////      assert( c.durability > 0. );
-//  VERIFY( (cd.c.durability>0.) , "in dist spring" );
+  // original contact points considering current shift of elements (SI)
+  vec2d p1 = cd.c.p1 * cd.siku.planet.R,
+        p2 = cd.c.p2 * cd.siku.planet.R,
+        p3 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p3 ) )
+          * cd.siku.planet.R,
+        p4 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p4 ) )
+          * cd.siku.planet.R;
 
   // some additional variables to avoid unnecessary functions` calls
-//      double hardness     = K * c.init_len * c.durability * R
-//             rotatability = K * c.init_len / c.init_size * c.durability * 1./12.;
-  double hardness = K * cd.c.init_len / cd.c.init_size
-            * cd.c.durability * R,
-         rotablty = K * cd.c.init_len / cd.c.init_size
-            * cd.c.durability * 1./12.;
+  double hardness = K * (cd.c.init_wid / cd.c.init_len) * cd.c.durability,
+         rotablty = hardness * 1./12.;
 
   vec2d dr1 = p4 - p1,
         dr2 = p3 - p2;
-  double dl1 = abs( dr1 ), dl2 = abs( dr2 );
 
   // memorizing deformations
-  cd.d1 = dl1;
-  cd.d2 = dl2;
+  cd.d1 = abs( dr1 );
+  cd.d2 = abs( dr2 );
 
   // The Force itself
   vec2d F = hardness * (dr1 + dr2) * 0.5;
@@ -439,581 +490,4 @@ InterForces _distributed_springs_new( ContactData& cd )
 
   return if_;
 }
-
-void _apply_interaction( ContactData& cd, InterForces& if_ )
-{
-  vec3d F1 = vec2_to_vec3( if_.F1 ),
-        F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3( -if_.F1 ) );
-
-  double tq1 = if_.couple1 +
-      cross( if_.rf1, if_.F1 ) * cd.siku.planet.R_rec;
-  double tq2 = -if_.couple1 +
-      cross( if_.rf2 - cd.r12, -if_.F1 ) * cd.siku.planet.R_rec;
-
-  cd.e1.F += F1;
-  cd.e1.N += tq1 * cd.siku.phys_consts["rotatability"];
-  // TODO: fix planet R scaling all over the physics
-  cd.e2.F += F2;
-  cd.e2.N += tq2 * cd.siku.phys_consts["rotatability"];
-
-  //      VERIFY( F, string("in collision ")
-  //              +to_string(cd.siku.es[cd.c.i1].id)
-  //              +string(" ")
-  //              +to_string(cd.siku.es[cd.c.i2].id) );
-
-}
-void _update_contact( ContactData& cd )
-{
-  // durability change - joint destruction
-  double r_size = 1. / cd.c.init_size, // reversed size
-         dmax = max( cd.d1, cd.d2 ),    // maximal stretch
-         dave = (cd.d1 + cd.d2) * 0.5;  // average stretch
-
-  double sigma =   cd.siku.phys_consts["solidity"],
-         epsilon = cd.siku.phys_consts["tensility"];
-
-  // TODO: discuss time scaling
-  cd.c.durability -= cd.siku.time.get_dt() *
-      ( ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0. );
-
-  // check for errors
-  if( errored( cd.loc_P1 ) )   cd.e1.flag |= Element::F_ERRORED;
-  if( errored( cd.loc_P2 ) )   cd.e2.flag |= Element::F_ERRORED;
-
-  // land fastening
-  _fasten_new( cd );
-
-// may be required in 'collision' contact type
-//      if( c.durability < 0.05 )
-//        {
-//          std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
-//          std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
-//
-//          // polygons in local (e1) coords
-//          for( auto& p : e1.P )
-//            loc_P1.push_back( vec3_to_vec2( p ) );
-//          for( auto& p : e2.P )
-//            loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
-//
-//          if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-//          if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
-//
-//          intersect( loc_P1, loc_P2, interPoly, nullptr, nullptr, &area );
-//
-//          c.area = area;
-//        }
-}
-
-// =========================== contact force ================================
-
-void contact_forces( Globals& siku )
-{
-
-  switch( siku.cont_force_model )
-  {
-    case CF_TEST_SPRINGS: //same as CF_DEFAULT
-      for ( auto& c : siku.ConDet.cont )
-        _test_springs( c, siku );
-      break;
-
-    case CF_HOPKINS:
-      for ( auto& c : siku.ConDet.cont )
-        _hopkins_frankenstein( c, siku );
-      break;
-
-    case CF_DIST_SPRINGS:
-      for ( auto& c : siku.ConDet.cont )
-        _distributed_springs( c, siku );
-      break;
-
-  }
-}
-
-// -------------------------------------------------------------------------
-
-void contact_forces_new( Globals& siku )
-{
-  for( auto& c : siku.ConDet.cont )
-    {
-      // conditional cancellation of interaction
-      // TODO: such errors should be removed by removing their reason
-      if(
-          //(siku.es[c.i1].flag & Element::F_ERRORED) ||
-          //(siku.es[c.i2].flag & Element::F_ERRORED) ||
-      // No need to calculate interaction for two steady polygons
-      // TODO: reconsider runtime fastened ice
-          ( (siku.es[c.i1].flag & Element::F_STEADY) &&
-            (siku.es[c.i2].flag & Element::F_STEADY) ) )
-          continue;
-
-      // calculation of elements inter-section, -position, -velocity and
-      // some additional parameters
-      ContactData cd( c, siku );
-
-      InterForces intf;  // elements` interaction forces
-
-      // calculating the forces
-      if( c.type != ContType::JOINT )
-        {
-          intf = _collision_new( cd ); // collision forces
-        }
-      else
-        {
-          // TODO: reconsider manual optimization: single switch on loading
-          // combined with calling function by pointer on calculation time.
-          switch( siku.cont_force_model )
-          {
-            case CF_TEST_SPRINGS: //same as CF_DEFAULT
-              intf = _test_springs_new( cd );
-              break;
-
-            case CF_HOPKINS:
-              intf = _hopkins_frankenstein_new( cd );
-              break;
-
-            case CF_DIST_SPRINGS:
-              intf = _distributed_springs_new( cd );
-              break;
-          }
-        }
-
-      // accumulating forces and torques applied to elements
-      _apply_interaction( cd, intf );
-
-      // check of contact destruction/renovation, land-fastening conditions,
-      // e.t.c.
-      _update_contact( cd );
-
-    }
-}
-
-// ============================== definitions ==============================
-
-void _collision( Globals& siku, ContactDetector::Contact& c )
-{
-  ContactData cd( c, siku );
-
-  if( cd.inter_res > 2 )
-    {
-      c.type = ContType::COLLISION;  // mark contact as a 'collision'
-
-//      //TODO: clean this mess
-//      vec2d p1p2 [2];  // p1p2 = two points: p1 and p2
-//      size_t np = 0;  // amount of edge-edge intersections
-//      // noob search for p1 and p2
-//      for(size_t i = 0; i < cd.stats.size(); ++i )
-//        if( stats[i] == PointStatus::EDGE )
-//          {
-//            if( np < 2 )  p1p2[ np ] = interPoly[ i ];
-//            np++;
-//          }
-//
-//      if( np != 2 )  // inapplicable  //UNDONE: add solution for 'fencing'
-//                                      // intersections
-//        {
-////          _spike( e1, e2, c, siku, e1_to_e2, e2_to_e1, loc_P1, loc_P2,
-////                  interPoly, stats, center, area );
-//          c.type = ContType::NONE;
-//          return;
-//        }
-//
-//      c.generation = 0;  // refreshing contact for avoiding deletion
-//
-//
-//      // directions and applying point
-//      vec2d dp = p1p2[1] - p1p2[0];
-//      vec2d tau = dp.ort() * copysign( 1., cross( p1p2[0], dp ) );
-//      vec2d norm { tau.y, -tau.x };
-//      vec2d center = ( p1p2[0] + p1p2[1] ) / 2.;
-//
-//      // physical constants (from python scenario)
-//      double Kne = siku.phys_consts["rigidity"],
-//             Kni = siku.phys_consts["viscosity"],
-//             Kw = siku.phys_consts["rotatability"],
-//             Kt = siku.phys_consts["tangency"];
-//
-//      double Asqrt = sqrt( area );
-//
-//      // zero if dt==0, some fraction otherwise
-//      double da_dt = siku.time.get_dt() ?
-//          ( Asqrt - sqrt( c.area ) ) / siku.time.get_dt() : 0.;
-//
-//      // actually the force
-//      vec2d F = ( Kne * Asqrt  +
-//                  Kni * da_dt ) * siku.planet.R * norm;
-//
-////////////  testing tangential force
-//      F += tau * ( tau * v12 ) * Asqrt * Kt * siku.planet.R2;
-//
-//      double torque1 =
-//          Kw * siku.planet.R_rec * cross( center, F );
-//
-//      double torque2 =
-//          Kw * siku.planet.R_rec * cross( center -
-//          vec3_to_vec2( e2_to_e1 * NORTH ), F );
-
-      // force in Newtons applied to e1 caused by e2
-      vec2d F = _elastic_force( cd ) * siku.phys_consts["rigidity"]
-              + _viscous_force( cd ) * siku.phys_consts["viscosity"];
-      VERIFY(_elastic_force( cd ), "" );
-      VERIFY(_viscous_force( cd ), "" );
-
-      double torque1 = cross( cd.r1, F )
-          * siku.planet.R_rec * siku.phys_consts["rotatability"];
-
-      double torque2 = cross( cd.r2, F)
-          * siku.planet.R_rec * siku.phys_consts["rotatability"];
-
-      VERIFY( F, string("in collision ")
-              +to_string(siku.es[c.i1].id)
-              +string(" ")
-              +to_string(siku.es[c.i2].id) );
-      VERIFY( torque1, "in collision" );
-      VERIFY( torque2, "in collision" );
-
-      // applying forces and torques
-      // (signs are fitted manually)
-      siku.es[c.i1].F += vec2_to_vec3( F );
-      siku.es[c.i1].N += torque1;
-
-      siku.es[c.i2].F -= lay_on_surf( cd.e1_to_e2 * vec2_to_vec3( F ) );
-      siku.es[c.i2].N -= torque2;
-
-      c.area = cd.area;
-      VERIFY( c.area, "collision" );
-      VERIFY( siku.es[c.i1].F, "1collision");
-      VERIFY( siku.es[c.i2].F, "1collision");
-
-      _fasten( cd.e1, cd.e2, cd.area, cd.loc_P1, cd.loc_P2 );
-    }
-}
-
-// -----------------------------------------------------------------------
-
-void _test_springs( ContactDetector::Contact& c, Globals& siku )
-{
-  // TODO: such errors should be removed by removing their reason
-  if(
-//      (siku.es[c.i1].flag & Element::F_ERRORED) ||
-//      (siku.es[c.i2].flag & Element::F_ERRORED) ||
-  // No need to calculate interaction for two steady polygons
-  // TODO: reconsider runtime fastened ice
-      ( (siku.es[c.i1].flag & Element::F_STEADY) &&
-          (siku.es[c.i2].flag & Element::F_STEADY) ) )
-    return;
-
-  if( c.type != ContType::JOINT )
-    {
-      _collision( siku, c ); // collision forces
-    }
-  else  // <=> if( c.type == ContType::JOINT )
-    {
-      Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
-
-      // coordinates transformation matrixes (local systems of two elements)
-      mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
-      mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-
-      // test for polygons convexity
-      _err_n_land_test( e1, e2, e2_to_e1, e1_to_e2 );
-
-      // -------------------------------------------------------------------
-
-      // physical constants (from python scenario)
-      double K = siku.phys_consts["elasticity"],
-             Kw = siku.phys_consts["bendability"],
-             sigma = siku.phys_consts["solidity"],
-             epsilon = siku.phys_consts["tensility"];
-
-      // calculating forces and torques
-      vec2d p1 = c.p1;
-      vec2d p2 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p2 ) );
-
-      vec2d F = ( p2 - p1 ) * siku.planet.R * K * c.durability *
-          c.init_len;
-      // * c.init_size OR c.init_len;
-
-      double torque1 =
-          Kw * siku.planet.R_rec * cross( p1, F );
-
-      double torque2 =
-          Kw * siku.planet.R_rec * cross( p2 -
-             vec3_to_vec2( e2_to_e1 * NORTH) , F );
-
-      // applying forces and torques
-      // signs are fitted manually
-      siku.es[c.i1].F -= vec2_to_vec3( F );
-      siku.es[c.i1].N -= torque1;
-
-      siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
-      siku.es[c.i2].N += torque2;
-
-      // Joint destruction
-      double t = (p2-p1).abs() *
-          1. / ( vec3_to_vec2(e2_to_e1 * NORTH).abs() );
-          //2.0 / ( p1.abs() + (p2 - vec3_to_vec2( e2_to_e1 * NORTH)).abs() );
-
-      c.durability -= (t > epsilon) ? t * sigma : 0.;
-    }
-
-}
-
-// -----------------------------------------------------------------------
-
-/// UNDONE!
-void _hopkins_frankenstein( ContactDetector::Contact& c, Globals& siku )
-{
-  // TODO: such errors should be removed by removing their reason
-  if(
-//      (siku.es[c.i1].flag & Element::F_ERRORED) ||
-//      (siku.es[c.i2].flag & Element::F_ERRORED) ||
-  // No need to calculate interaction for two steady polygons
-  // TODO: reconsider runtime fastened ice
-      ( (siku.es[c.i1].flag & Element::F_STEADY) &&
-          (siku.es[c.i2].flag & Element::F_STEADY) ) )
-    return;
-
-  if( c.type != ContType::JOINT )
-    {
-      _collision( siku, c ); // collision forces
-    }
-  else  // <=> if( c.type == ContType::JOINT ) // Hopkins` physics
-    {
-      Element& e1 = siku.es[c.i1], e2 = siku.es[c.i2];
-
-      // coordinates transformation matrixes (local systems of two elements)
-      mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
-      mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-
-      // test for polygons convexity
-      _err_n_land_test( e1, e2, e2_to_e1, e1_to_e2 );
-
-      // -------------------------------------------------------------------
-
-      // physical constants (from python scenario)
-      double K = siku.phys_consts["elasticity"],
-             Kw = siku.phys_consts["bendability"],
-             sigma = siku.phys_consts["solidity"],
-             epsilon = siku.phys_consts["tensility"];
-
-      // calculating forces and torques (this method seems to be working wrong)
-      vec2d p11 = vec3_to_vec2( siku.es[c.i1].P[c.v11] );
-      vec2d p12 = vec3_to_vec2( siku.es[c.i1].P[c.v12] );
-      vec2d p21 = vec3_to_vec2( e2_to_e1 * siku.es[c.i2].P[c.v21] );
-      vec2d p22 = vec3_to_vec2( e2_to_e1 * siku.es[c.i2].P[c.v22] );
-      vec2d X;
-
-//      double sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
-//      double cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );
-
-      double Al = 0.5 * cross( p12 - X, p21 - X );
-      double Ar = 0.5 * cross( p22 - X, p11 - X );
-      vec2d Cl = (p12 + p21 + X) / 3.;
-      vec2d Cr = (p22 + p11 + X) / 3.;
-
-      vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH );
-      vec2d Fl = Al * siku.planet.R * K * r12.ort();
-      vec2d Fr = Ar * siku.planet.R * K * r12.ort();
-
-      vec2d F = Fl + Fr;
-
-      double torque1 = Kw * siku.planet.R_rec *
-          ( cross( Cl, Fl ) + cross( Cr, Fr ) );
-
-      double torque2 = Kw * siku.planet.R_rec *
-                ( cross( r12 - Cl, Fl ) + cross( r12 - Cr, Fr ) );
-
-      c.area = Ar > 0 ? Ar : 0.
-             + Al > 0 ? Al : 0.;
-
-      // applying forces and torques
-      // signs are fitted manually
-      siku.es[c.i1].F -= vec2_to_vec3( F );
-      siku.es[c.i1].N -= torque1;
-
-      siku.es[c.i2].F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
-      siku.es[c.i2].N += torque2;
-
-      // Joint destruction
-//      double t = (abs(Al) + abs(Ar)) / ( siku.es[c.i1].A + siku.es[c.i2].A );
-//      c.durability -= (t > epsilon) ? t * sigma : 0.;
-    }
-}
-
-// -----------------------------------------------------------------------
-
-void _distributed_springs( ContactDetector::Contact& c, Globals& siku )
-{
-  // TODO: such errors should be removed by removing their reason
-  if(
-//      (siku.es[c.i1].flag & Element::F_ERRORED) ||
-//      (siku.es[c.i2].flag & Element::F_ERRORED) ||
-  // No need to calculate interaction for two steady polygons
-  // TODO: reconsider runtime fastened ice
-      ( (siku.es[c.i1].flag & Element::F_STEADY) &&
-          (siku.es[c.i2].flag & Element::F_STEADY) ) )
-      return;
-
-  if( c.type != ContType::JOINT )
-    {
-      _collision( siku, c ); // collision forces
-    }
-  else if( c.durability > 0. ) // <=> if( c.type == ContType::JOINT )
-    {
-      Element &e1 = siku.es[c.i1], &e2 = siku.es[c.i2];
-
-      // coordinates transformation matrixes (local systems of two elements)
-      mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
-      mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-
-      // test for polygons convexity
-      _err_n_land_test( e1, e2, e2_to_e1, e1_to_e2 );
-
-      // -------------------------------------------------------------------
-
-      // physical constants (from python scenario)
-      double K = - siku.phys_consts["elasticity"], // NOTE THE SIGN!
-             Kw = siku.phys_consts["bendability"],
-             sigma = siku.phys_consts["solidity"],
-             epsilon = siku.phys_consts["tensility"];
-
-      // direct and reversed planet radius shortcuts
-      double &R = siku.planet.R, &R_ = siku.planet.R_rec;
-
-      vec3d tv1, tv2; // just some temporals
-
-      // original contact points considering current shift of elements
-      vec2d p1 = c.p1, p2 = c.p2,
-            p3 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p3 ) ),
-            p4 = vec3_TO_vec2( e2_to_e1 * vec2_TO_vec3( c.p4 ) );
-
-      // IMPROVE: make proper check
-//      assert( c.durability > 0. );
-      VERIFY( (c.durability>0.) , "in dist spring" );
-
-      // some additional variables to avoid unnecessary functions` calls
-//      double hardness     = K * c.init_len * c.durability * R
-//             rotatability = K * c.init_len / c.init_size * c.durability * 1./12.;
-      double hardness = K * c.init_len / c.init_size * c.durability * R,
-             rotablty = K * c.init_len / c.init_size * c.durability * 1./12.;
-
-      vec2d dr1 = p4 - p1,
-            dr2 = p3 - p2;
-      double dl1 = abs( dr1 ), dl2 = abs( dr2 );
-
-      double mom1, mom2;
-
-      // The Force itself
-      vec2d F = hardness * (dr1 + dr2) * 0.5;
-
-      // combined torques
-      vec2d r12 = vec3_TO_vec2( e2_to_e1 * NORTH );
-      mom1 = Kw * ( R_ * cross( (p1 + p2) * 0.5, F ) +          //traction
-                    rotablty * cross( p1 - p2, dr1 - dr2 ) );   //couple
-      mom2 = Kw * ( R_ * cross( (p3 + p4) * 0.5 - r12, F ) +    //traction
-                    rotablty * cross( p3 - p4, dr2 - dr1 ) );   //couple
-
-      VERIFY( F, "in dist_spring");
-      VERIFY( mom1, "in dist_spring");
-      VERIFY( mom2, "in dist_spring");
-
-      // applying forces and torques
-      // signs are fitted manually
-      e1.F -= vec2_to_vec3( F );
-      e1.N -= mom1;
-
-      e2.F += lay_on_surf( e1_to_e2 * vec2_to_vec3( F ) );
-      e2.N += mom2;
-
-      VERIFY( e1.F, "1in dist_spring");
-      VERIFY( e2.F, "1in dist_spring");
-
-      // durability change - joint destruction
-      double r_size = 1. / c.init_size, // reversed size
-             dmax = max( dl1, dl2 ),    // maximal stretch
-             dave = (dl1 + dl2) * 0.5;  // average stretch
-
-      // TODO: discuss time scaling
-      c.durability -= siku.time.get_dt() *
-          ( ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0. );
-
-//// may be required in 'collision' contact type
-//      if( c.durability < 0.05 )
-//        {
-//          std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
-//          std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
-//
-//          // polygons in local (e1) coords
-//          for( auto& p : e1.P )
-//            loc_P1.push_back( vec3_to_vec2( p ) );
-//          for( auto& p : e2.P )
-//            loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
-//
-//          if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-//          if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
-//
-//          intersect( loc_P1, loc_P2, interPoly, nullptr, nullptr, &area );
-//
-//          c.area = area;
-//        }
-
-    }
-
-}
-
-// -----------------------------------------------------------------------
-
-void _err_n_land_test( Element &e1, Element &e2,
-                       mat3d& e2_to_e1, mat3d& e1_to_e2 )
-{
-  std::vector<vec2d> loc_P1;  // e1.P vertices in local 2d coords
-  std::vector<vec2d> loc_P2;  // e2.P vertices in local 2d coords
-
-  // polygons in local (e1) coords
-  for( auto& p : e1.P ) loc_P1.push_back( vec3_TO_vec2( p ) );
-  for( auto& p : e2.P ) loc_P2.push_back( vec3_TO_vec2( e2_to_e1 * p ) );
-
-  // check for errors
-//  if( errored( loc_P1 ) )   e1.flag |= Element::F_ERRORED;
-//  if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
-
-  _fasten( e1, e2, 0.0, loc_P1, loc_P2 );
-}
-
-// -----------------------------------------------------------------------
-
-void _fasten( Element &e1, Element &e2, double area,
-                const vector<vec2d>& l1, const vector<vec2d>& l2 )
-{
-  // if one element is shore (static but not fastened):
-  // check fastening condition
-  if( ( e1.flag & Element::F_STATIC && ~e1.flag & Element::F_FASTENED ) ||
-      ( e2.flag & Element::F_STATIC && ~e2.flag & Element::F_FASTENED ) )
-    {
-      // minimal areas for comparison
-      double ma = min( e1.A, e2.A );
-      e1.Amin = min( e1.Amin, ma );
-      e2.Amin = min( e2.Amin, ma );
-
-      // current overlap area accumulation (optimized in case of precalculated
-      // area
-      if( area )
-        {
-          e1.OA += area;
-          e2.OA += area;
-        }
-      else
-        {
-          vector<vec2d> interPoly;
-          if( intersect( l1, l2, interPoly, nullptr, nullptr, &area ) > 2 )
-            {
-              e1.OA += area;
-              e2.OA += area;
-            }
-        }
-    }
-}
-
-// -----------------------------------------------------------------------
-
 

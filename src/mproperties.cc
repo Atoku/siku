@@ -89,17 +89,8 @@ void mproperties( Globals& siku )
           m += pmat->layers[i].thickness * pmat->layers[i].rho * e.gh[i];
         }
 
-      e.m = e.A * m;
-      e.I = e.m * e.i;          // moment of inertia update
-
-      /*
-       * TODO: clear this mess with planet.R, planet.R2 all around the code
-       */
-      ///////////// AAAAH!! Area and i has been calculated for UNIT SPHERE!
-      ///////////// So they are scaled manually down here
-      ///////////// And this should be removed (fixed, moved somewhere else...)
-      e.m *= siku.planet.R2;
-      e.I *= siku.planet.R2;
+      e.m = e.A * m   * siku.planet.R2; // mass update
+      e.I = e.m * e.i * siku.planet.R2; // moment of inertia update
 
       // current global position update
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );

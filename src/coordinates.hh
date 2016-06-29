@@ -11,6 +11,8 @@
 
 #include "siku.hh"
 
+#include "math.h"
+
 ///// is it necessary?
 #include <iostream>
 using namespace std;
@@ -173,11 +175,11 @@ namespace Coordinates
     return { 4. * v.x * den, 4. * v.y * den, ( 4. - sq ) * den };
   }
 
-  inline vec2d _stereo_c( const vec3d& v ) // 'c' stand for 'center'
+  inline vec2d _gnomonic( const vec3d& v ) // 'c' stand for 'center'
   {
     return { v.x / v.z, v.y / v.z };
   }
-  inline vec3d _stereo_c_rev( const vec2d& v )
+  inline vec3d _gnomonic_rev( const vec2d& v )
   {
     double den = 1. / sqrt( 1. + v.x*v.x + v.y*v.y );
     return { v.x * den, v.y * den, den };
@@ -211,24 +213,33 @@ namespace Coordinates
 
 // ------------------------------- 2d utils ---------------------------------
 
-  // two ways transforming
-  inline vec3d vec2_to_vec3( const vec2d& v2 )
-  {
-    return vec3d( v2.x, v2.y, 0. );
-//    return vec3d( v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) );
-  }
-  inline vec2d vec3_to_vec2( const vec3d& v3 )
-  {
-    return { v3.x, v3.y };
-//    double s_ = 1. / sqrt( 1. - v3.z*v3.z );
-//    return { v3.x* s_, v3.y * s_ };
-  }
+// TODO: REMOVE
+//// two ways transforming
+//  inline vec3d vec2_to_vec3( const vec2d& v2 )
+//  {
+//    return vec3d( v2.x, v2.y, 0. );
+//  }
+//  inline vec2d vec3_to_vec2( const vec3d& v3 )
+//  {
+//    return { v3.x, v3.y };
+//  }
+//
+//// transforming 2d vector to 3d vector on unit sphere as if original 2d
+//// vector was a projection on north direction
+//  inline vec3d vec2_to_vec3_s( const vec2d& v2 )
+//  {
+//    return vec3d{ v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) };
+//  }
 
-  // transforming 2d vector to 3d vector on unit sphere as if original 2d
-  // vector was a projection on north direction
-  inline vec3d vec2_to_vec3_s( const vec2d& v2 )
+  // transforming surface (tangential) vec2 into vec3
+  inline vec3d vec2_to_vec3_s( const vec2d& v )
   {
-    return vec3d{ v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) };
+    return vec3d( v.x, v.y, 0. );
+  }
+  // transforming surface (tangential) vec3 into vec2
+  inline vec2d vec3_to_vec2_s( const vec3d& v )
+  {
+    return { v.x, v.y };
   }
 
   // lay 3d vector on the xOy plain (in current coords system) preserving
@@ -239,34 +250,33 @@ namespace Coordinates
     // same time - vectors with small X and Y should be processed properly
     // (Yet they are not...)
 
-    return { v.x, v.y, 0. };//BUG!!
-
-    double d = sqrt( v.x*v.x + v.y*v.y );
-    double n = sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
-    double epsilon = 1e-14;
-    double a = abs(d) > epsilon ? n/d : 0.;
-    //double a = sqrt( (v.x*v.x + v.y*v.y + v.z*v.z) / (v.x*v.x + v.y*v.y) );
-    return { v.x * a, v.y * a, 0. };
+//    double d = sqrt( v.x*v.x + v.y*v.y );
+//    double n = sqrt( v.x*v.x + v.y*v.y + v.z*v.z );
+//    double epsilon = 1e-14;
+//    double a = abs(d) > epsilon ? n/d : 0.;
+    // BUG fix attempt
+    double a = sqrt( (v.x*v.x + v.y*v.y + v.z*v.z) / (v.x*v.x + v.y*v.y) );
+    return std::isfinite( a ) ? vec3d( v.x * a, v.y * a, 0. ) : vec3d();
   }
 
-//////FOR TEST//////////////////////
-  inline vec3d vec2_TO_vec3( const vec2d& v )
+  // interconversion of vec3d radius-vector on unit sphere and vec2d vector on
+  // the projection plane
+  inline vec3d vec2_to_vec3( const vec2d& v )
   {
 //    return _curve_rev( v );
 //    return _stereo_1_2_rev( v );
-//    return _stereo_c_rev( v );
+//    return _stereo_rev( v );
 //    return _Lambert_aea_rev( v );//error
-    return _stereo_rev( v );
+    return _gnomonic_rev( v );
   }
-  inline vec2d vec3_TO_vec2( const vec3d& v )
+  inline vec2d vec3_to_vec2( const vec3d& v )
   {
 //    return _curve( v );
 //    return _stereo_1_2( v );
-//    return _stereo_c( v );
+//    return _stereo( v );
 //    return _Lambert_aea( v );///error
-    return _stereo( v );
+    return _gnomonic( v );
   }
-///////\FOR TEST//////////////////////
 
 }   /* namespace Coordinates */
 

@@ -105,12 +105,12 @@ public:
   vec3d Glob;           //!< global position in (x, y, z)
   vec3d V{};            //!< local surface velocity (x, y, 0)
 
-  double m;             //!< kg, mass
-  double I;             //!< kg*m^2, moment of inertia
+  double m;             //!< kg, mass (SI)
+  double I;             //!< kg*m^2, moment of inertia (SI)
 
   vec3d W;              //!< 1/m, angular velocity in local coord.
   vec3d F;              //!< N, net force vector in local frame
-  double N {0};         //!< N*m, torque value in local frame
+  double N {0};         //!< N*m, torque value in local frame (SI)
 
   double OA {0};        //!< m^2, total overlap area with landfast ice
   double Amin {0};      //!< m^2, minimal area of polygons for fastening checks

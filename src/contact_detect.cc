@@ -527,18 +527,18 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
 //      print(c.p2);
 //      cout<<"===\n";
       c.durability = 1.;
-      if( dump.size() > 2 ) c.init_size = size;  // only if size is area
+      if( dump.size() > 2 ) c.init_len = size;  // only if size is area
 
       //search for length of original mutual edge
-      c.init_len = c.find_edges( siku );
+      c.init_wid = c.find_edges( siku );
 
       // if no edges such edges detected: L = S / Re, Re - radius of equivalent
       // circle of geometric mean of areas
-      if( !c.init_len && dump.size() > 2 )
-        c.init_len = size * sqrt( M_PI / sqrt( e1.A * e2.A ) );
+      if( !c.init_wid && dump.size() > 2 )
+        c.init_wid = size * sqrt( M_PI / sqrt( e1.A * e2.A ) );
 
       // init size - sum of distances between contact end elements` centers
-      c.init_size = abs( c.p1 ) + abs( c.p2 );
+      c.init_len = abs( c.p1 ) + abs( c.p2 );
     }
 }
 
@@ -622,12 +622,12 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
           c.p3 = vec3_to_vec2( e1_to_e2 * tv2 );
           c.p4 = vec3_to_vec2( e1_to_e2 * tv1 );
 
-          c.init_len = abs( c1 - c2 );  // initial len is distance between
+          c.init_wid = abs( c1 - c2 );  // initial len is distance between
                                         // 'springs'
-          //old //c.init_size = abs( r12 );
+
           // initial size is a sum of distances between centers of elements
           // and contact zone (0.5 factored out of vectors averaging)
-          c.init_size = ( abs(c.p1 + c.p2) + abs(c.p3 + c.p4) )*0.5;
+          c.init_len = ( abs(c.p1 + c.p2) + abs(c.p3 + c.p4) )*0.5;
 
           c.durability = 1.;
         }
