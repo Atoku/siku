@@ -149,12 +149,11 @@ inline double _rigidity( ContactData& cd )
     if( cd.e2.gh[i] > h2 )
       h2 = cd.e2.gh[i];
 
-  // TODO: provide some protection from zero-thickness of layers
-
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
   // close-to-linear-spring rigidity of ice
-  return h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) )
-               * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
+  double H = h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
+  return ( isfinite( H ) ? H : 0.0 )
+      * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
 }
 
 // viscous and elastic forces applied to e1 caused by e2.
@@ -232,10 +231,10 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
 
   // TODO: find and clean (set properly) all adjustment factors like below
   cd.e1.F += F1;
-  cd.e1.N += tq1 * cd.siku.phys_consts["rotatability"];
+  cd.e1.N += tq1;
 
   cd.e2.F += F2;
-  cd.e2.N += tq2 * cd.siku.phys_consts["rotatability"];
+  cd.e2.N += tq2;
 }
 
 inline void _update_contact( ContactData& cd )
@@ -245,7 +244,7 @@ inline void _update_contact( ContactData& cd )
          dmax   = max( cd.d1, cd.d2 ),                    // maximal stretch
          dave   = (cd.d1 + cd.d2) * 0.5;                  // average stretch
 
-  double sigma =   cd.siku.phys_consts["solidity"],
+  double sigma   = cd.siku.phys_consts["solidity"],
          epsilon = cd.siku.phys_consts["tensility"];
 
   // TODO: discuss time scaling
@@ -360,6 +359,7 @@ InterForces _collision( ContactData& cd )
       vec2d F = _elastic_force( cd ) * cd.siku.phys_consts["rigidity"]
               + _viscous_force( cd ) * cd.siku.phys_consts["viscosity"];
       // TODO: add couple caused by friction
+      // IMPROVE: reconsider 'rigidity' and 'viscosity' sense
 
       if_.rf1 = cd.r1 * cd.siku.planet.R;
       if_.rf2 = cd.r1 * cd.siku.planet.R;
@@ -380,7 +380,8 @@ InterForces _test_springs( ContactData& cd )
   InterForces if_{};
 
   // physical rigidity of ice (from python scenario)
-  double K =       cd.siku.phys_consts["sigma"];
+  double K = cd.siku.phys_consts["sigma"];
+//  double K = _rigidity( cd );
 
   // calculating forces and torques
   vec2d p1 = cd.c.p1;
@@ -389,8 +390,6 @@ InterForces _test_springs( ContactData& cd )
 
   vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid / cd.c.init_len)
               * cd.c.durability;
-  // BUG: possibly wrong p1, p2 calculation
-  // * c.init_size OR c.init_len;
 
   // memorizing deformation
   cd.d1 = cd.d2 = abs( def ) * cd.siku.planet.R;
@@ -410,9 +409,8 @@ InterForces _hopkins_frankenstein( ContactData& cd )
   InterForces if_{};
 
   // physical params of ice (from python scenario)
-  double K =  cd.siku.phys_consts["elasticity"],
-         Kw = cd.siku.phys_consts["bendability"];
-
+  double K =  cd.siku.phys_consts["sigma"];
+//  double K = _rigidity( cd );
 
   // calculating forces and torques (this method seems to be working wrong)
   vec2d p11 = vec3_to_vec2( cd.siku.es[cd.c.i1].P[cd.c.v11] );
@@ -435,10 +433,10 @@ InterForces _hopkins_frankenstein( ContactData& cd )
 
   vec2d F = Fl + Fr;
 
-  double torque1 = Kw * cd.siku.planet.R_rec *
+  double torque1 = cd.siku.planet.R_rec *
       ( cross( Cl, Fl ) + cross( Cr, Fr ) );
 
-  double torque2 = Kw * cd.siku.planet.R_rec *
+  double torque2 = cd.siku.planet.R_rec *
             ( cross( r12 - Cl, Fl ) + cross( r12 - Cr, Fr ) );
 
   cd.c.area = Ar > 0 ? Ar : 0.
@@ -458,6 +456,7 @@ InterForces _distributed_springs( ContactData& cd )
 
   // physical rigidity of ice (from python scenario)
   double K = cd.siku.phys_consts["sigma"];
+//  double K = _rigidity( cd );
 
   vec3d tv1, tv2; // just some temporals
 

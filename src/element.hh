@@ -133,6 +133,7 @@ public:
 
   // ------------------- METHODS: -------------------------------------
 
+  // improve: use geometry:: function instead of this!
   //! Check if point (given inglobal x,y,z ) is inside the element
   bool contains( const vec3d& p );
 
