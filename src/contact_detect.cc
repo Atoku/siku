@@ -51,7 +51,8 @@ inline double _sqr( const double& x ) { return x*x; }
 
 inline double _dist2( const vec3d& v1, const vec3d& v2 )
 {
-  return dot( v2 - v1, v2 - v1 );
+  vec3d v = v2 - v1;
+  return dot( v, v );
 }
 
 // =============================== Methods ==================================
@@ -135,11 +136,12 @@ void ContactDetector::sweep_n_prune( Globals& siku )
   // contact search
   for ( size_t i = 0; i < siku.pes.size () - 1; ++i )
     {
-      if( siku.pes[i]->flag & Element::F_ERRORED ) continue;
+      // IMPROVE: reconsider error checks!
+//      if( siku.pes[i]->flag & Element::F_ERRORED ) continue;
 
       for ( size_t j = i + 1; j < siku.pes.size (); ++j )
         {
-          if( siku.pes[j]->flag & Element::F_ERRORED ) continue;
+//          if( siku.pes[j]->flag & Element::F_ERRORED ) continue;
 
           if ( _dist2( siku.pes[i]->Glob, siku.pes[j]->Glob ) <
               _sqr( siku.pes[i]->sbb_rmin + siku.pes[j]->sbb_rmin ) )

@@ -26,3 +26,121 @@
   \untqtrn{q}^{n+1} = \untqtrn{q}^{n} \circ \untqtrn{p}.
 \end{equation}
 
+
+\chapter{Formulas on July 1, 2016 (C++ Core)}
+
+OUS $\equiv$ on unit sphere, 
+R = Planet.R, 
+e - element, 
+``const'' - some global constant from python
+
+\paragraph{mproperties}
+
+\begin{equation}
+ \rho_{2d} = \sum_{i}^{N = 10} \cdot Mat.\rho_i \cdot Mat.h_i \cdot e.h_i
+\end{equation}
+\begin{equation}
+ e.m = e.A[OUS] \cdot \rho_{2d} \cdot R^2
+\end{equation}
+\begin{equation}
+ e.I = e.m \cdot e.i[OUS] \cdot R^2
+\end{equation}
+fasten $if$ ( e.OverlapArea $>$ e.AreaMin $\cdot$ ``fastency'' )
+
+\paragraph{forces\_mass}
+
+ $\vec{\tilde{V}}$ -Interpolated wind velo 
+ $\vec{\tilde{W}}$ -Interpolated water velo 
+
+\begin{equation}
+ \vec{F}_{wind} = |\tilde{V}|\cdot\vec{\tilde{V}} \cdot e.A[OUS] \cdot R^2 \cdot ``windage'' \cdot e.windage
+\end{equation}
+\begin{equation}
+ \vec{F}_{water} = |\vec{\tilde{W}} - \vec{e.V}|\cdot(\vec{\tilde{W}} - \vec{e.V}) \cdot e.A[OUS] \cdot R^2 \cdot ``anchority'' \cdot e.anchority
+\end{equation}
+
+\paragraph{contact\_forces}
+
+CD $-$ collision data, $\vec{NORTH} = (0, 0, 1)$
+
+\begin{equation}
+ \vec{cd.r_{12}} = \hat{e2\_to\_e1} \cdot \vec{NORTH} [OUS]
+\end{equation}
+\begin{equation}
+ \vec{cd.r_1} = \vec{center} (of\_intersection, [OUS])
+ \end{equation}
+\begin{equation}
+ \vec{cd.r_2} = \vec{r_1} - \vec{r_2} [OUS]
+ \end{equation}
+\begin{equation}
+ \vec{cd.va_1} = \vec{e1.V} + (\vec{r_1} \cdot R) \cdot e1.\Omega_z [SI]
+ \end{equation}
+\begin{equation}
+ \vec{cd.va_2} = \hat{e2\_to\_e1} \cdot \vec{e2.V} + (\vec{r_2} \cdot R) \cdot e2.\Omega_z [SI]
+ \end{equation}
+\begin{equation}
+ \vec{cd.v_{12}} = \vec{va_1} - \vec{va_2} [SI]
+\end{equation}
+
+\subsection{collision}
+\begin{equation}
+ \vec{F_c} = (cd.A[OUS] \cdot R^2) \cdot \frac{h_1 h_2}{h_1 r_2 + h_2 r_1} \cdot R^{-1} \cdot \sigma \cdot ``rigidity'' +
+ (-cd.\vec{v_{12}}) \cdot (cd.A[OUS] \cdot R^2) \cdot \eta \cdot ``viscosity''
+\end{equation}
+\begin{equation}
+ N_c = [\vec{r} \times \vec{F_c}]
+\end{equation}
+
+\subsection{test}
+\begin{equation}
+ \vec{F_t} = (\vec{\Delta X}[OUS] \cdot R) \cdot \sigma \cdot \frac{Joint.width}{Joint.length} \cdot Joint.durability 
+\end{equation}
+\begin{equation}
+ N_t = [\vec{r} \times \vec{F_t}]
+\end{equation}
+
+\subsection{distributed}
+\begin{equation}
+ \vec{F_d} = (\frac{\vec{\Delta X_1}+\vec{\Delta X_2}}{2})[OUS] \cdot R \cdot \sigma \cdot \frac{Joint.width}{Joint.length} \cdot Joint.durability
+\end{equation}
+\begin{equation}
+ N_d = [\vec{r} \times \vec{F_d}] + [(\frac{\vec{\Delta X_1}-\vec{\Delta X_2}}{2}) \cdot R \times \vec{r}] \cdot \sigma \cdot
+ \frac{Joint.width}{Joint.length} \cdot Joint.durability \cdot \frac{1}{12}
+\end{equation}
+
+\subsection{durability}
+ if $\frac{\Delta X_{max}}{Joint.length} > ``tensility''$ : $Joint.durability -= \frac{<\Delta X>}{Joint.length} \cdot ``solidity'' \cdot dt$
+ 
+ e.OverlapArea = $\sum_{contacts} contact.intersectionArea$
+ 
+ $e.A_{min} = \min_{contacts} [e.A]$
+ 
+ \paragraph{dynamics}
+ 
+\begin{equation}
+SuperTorque = ( \frac{-F_y}{R \cdot m}, \frac{F_x}{R \cdot m}, \frac{N}{I}),
+e.W += SuperTorque \cdot dt
+\end{equation}
+
+\paragraph{position}
+
+1) propagation (axis is random Global):
+%\right\{
+\begin{eqnarray}
+  p^4 = (1, \frac{(W_x, W_y, 0) \cdot dt}{2}) \\
+  e.q = [e.q \times^4 p^4]
+\end{eqnarray}
+
+2) spin (asis is Local $\vec{Oz}$):
+%\right\{
+\begin{eqnarray}
+  p^4 = (1, \frac{(0, 0, W_z) \cdot dt}{2}) \\
+  t^4 = [e.q \times^4 p^4]
+\end{eqnarray}
+
+3) transform old e.W and e.q according to element`s new position and orientation
+%\right\{
+\begin{eqnarray}
+  e.W = loca\_to\_local( t^4, e.q, W ) \\
+  e.q = t^4.normilized
+\end{eqnarray}
