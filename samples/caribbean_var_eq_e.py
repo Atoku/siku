@@ -82,7 +82,7 @@ def main():
 
     #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     siku.time.start = siku.uw.times[st_t_ind]
-    siku.time.finish   = siku.time.start + hour * 105#120
+    siku.time.finish   = siku.time.start + hour * 210#105#120
 
     siku.time.dt       = ( siku.time.finish - siku.time.start ) / 1200 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
@@ -149,7 +149,7 @@ def main():
         t = [ n_filled+j for j in range(ny[i]) ]
         right_inds = right_inds + t
         for j in t:
-            right_gi[j] = i 
+* cd.siku.time.get_dt()            right_gi[j] = i 
         n_filled += ny[i]
 
     siku.local.NN = NN
@@ -207,14 +207,14 @@ def main():
                                   'elasticity' : 500000.0,#5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.5,#0.05,
-                                  'tensility' : 0.30,#0.615,
+                                  'tensility' : 0.10,#0.615,
 
                                   'anchority' : 0.0000001,
                                   'windage':    0.001,
                                   'fastency' : 0.250, #0.5
 
                                   'sigma' : 500000.0, #same as elasticity
-                                  'etha' : 0.051    # -//- viscosity
+                                  'etha' : 0.51    # -//- viscosity
                                   }
 
     # ------------------------- speed settings ----------------------------
@@ -332,7 +332,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
+def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )

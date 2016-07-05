@@ -250,6 +250,7 @@ inline void _update_contact( ContactData& cd )
   // TODO: discuss time scaling
   cd.c.durability -= cd.siku.time.get_dt() *
       ( ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0. );
+//  cd.c.durability -=
 
   // check for errors
   if( errored( cd.loc_P1 ) )   cd.e1.flag |= Element::F_ERRORED;
@@ -455,8 +456,8 @@ InterForces _distributed_springs( ContactData& cd )
   InterForces if_{};
 
   // physical rigidity of ice (from python scenario)
-  double K = cd.siku.phys_consts["sigma"];
-//  double K = _rigidity( cd );
+//  double K = cd.siku.phys_consts["sigma"];
+  double K = _rigidity( cd ) * cd.siku.planet.R;
 
   vec3d tv1, tv2; // just some temporals
 
@@ -469,7 +470,7 @@ InterForces _distributed_springs( ContactData& cd )
           * cd.siku.planet.R;
 
   // some additional variables to avoid unnecessary functions` calls
-  double hardness = K * (cd.c.init_wid / cd.c.init_len) * cd.c.durability,
+  double hardness = K * (cd.c.init_wid /*/ cd.c.init_len*/) * cd.c.durability,
          rotablty = hardness * 1./12.;
 
   vec2d dr1 = p4 - p1,
@@ -482,10 +483,15 @@ InterForces _distributed_springs( ContactData& cd )
   // The Force itself
   vec2d F = hardness * (dr1 + dr2) * 0.5;
 
+  // viscous torque // UNDONE: discuss with chief
+  double vt = 1./32. * (cd.e2.W.z - cd.e1.W.z) * (M_PI * 0.25)
+      * cd.siku.phys_consts["etha"] * cd.siku.time.get_dt()
+      * pow( cd.c.init_wid * cd.siku.planet.R, 4 );
+
   if_.F1 = F;
   if_.rf1 = (p1 + p2) * 0.5;
   if_.rf2 = (p3 + p4) * 0.5;
-  if_.couple1 = rotablty * cross( p1 - p2, dr1 - dr2 );
+  if_.couple1 = rotablty * cross( p1 - p2, dr1 - dr2 );// + vt;
 
   return if_;
 }

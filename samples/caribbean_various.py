@@ -189,12 +189,12 @@ def main():
                                   'solidity' : 0.5,#0.05,
                                   'tensility' : 0.30,#0.615,
 
-                                  'anchority' : 0.0000001,
-                                  'windage':    0.00000001,
-                                  'fastency' : 0.50, #0.5
+                                  'anchority' : 0.0000005,
+                                  'windage':    0.0051,
+                                  'fastency' : 0.250, #0.5
 
-                                  'sigma' : 10000000.0,        # -//- rigidity
-                                  'etha' : 0.0051          # -//- viscosity
+                                  'sigma' : 400000.0,        # -//- rigidity
+                                  'etha' : 0.0003          # -//- viscosity
                                   }
 
     # ------------------------- speed settings ----------------------------
@@ -292,7 +292,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
+def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )

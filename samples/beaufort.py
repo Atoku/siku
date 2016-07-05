@@ -197,22 +197,22 @@ def main():
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  1, 1, 1, 1, 1 ]
     
-    siku.settings.phys_consts = { 'rigidity' : 10.0,#10,
+    siku.settings.phys_consts = { 'rigidity' : 1.0,#10,
                                   'viscosity' : 1.0,#1.0,#1
-                                  'rotatability' : 0.750,#0.75
+                                  'rotatability' : 1.0,#0.75,
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' :-50000000.0,#-5000000.0,
+                                  'elasticity' :50000000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.05,#0.05,
                                   'tensility' : 0.30,#0.615,
 
-                                  'anchority' : 0.0005,
-                                  'windage': 0.05, #0.05
+                                  'anchority' : 0.0000001,
+                                  'windage':    0.00000001, #0.05
                                   'fastency' : 0.50, #0.5
 
-                                  'sigma' : 1.0,        # -//- rigidity
-                                  'etha' : 1.0          # -//- viscosity
+                                  'sigma' : 5000.0,        # -//- rigidity
+                                  'etha' : 0.0051          # -//- viscosity
                                   }
 
 ##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
@@ -330,7 +330,7 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
+def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
 ##    #static polygons (generally shores) may be simply passed
 ##    if st & element.Element.f_static:
 ##        return

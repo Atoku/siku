@@ -1346,12 +1346,15 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
       PyTuple_SET_ITEM( pFTuple, k, pNum );  // steals pNum
     }
 
+  // time step number
+  const size_t tn = siku.time.get_n ();
 
   // calling the 'monitor' method with all the arguments
   // !! synchronized with python
   PyObject* pReturnValue =      // new
-      PyObject_CallMethod ( pSiku, fname, "(O,O,O,I,I,k,O,O,d,d,d,d,d,d,d)",
+      PyObject_CallMethod ( pSiku, fname, "(O,i,O,O,I,I,k,O,O,d,d,d,d,d,d,d)",
                             pCurTime,       // time
+                            tn,             // time step number
 
                             pQTuple,        // quat
                             pPiList,        // vertices
