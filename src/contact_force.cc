@@ -381,15 +381,15 @@ InterForces _test_springs( ContactData& cd )
   InterForces if_{};
 
   // physical rigidity of ice (from python scenario)
-  double K = cd.siku.phys_consts["sigma"];
-//  double K = _rigidity( cd );
+//  double K = cd.siku.phys_consts["sigma"];
+  double K = _rigidity( cd ) * cd.siku.planet.R;
 
   // calculating forces and torques
   vec2d p1 = cd.c.p1;
   vec2d p2 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p2 ) );
   vec2d def = p2 - p1;
 
-  vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid / cd.c.init_len)
+  vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid /*/ cd.c.init_len*/)
               * cd.c.durability;
 
   // memorizing deformation

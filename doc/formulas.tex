@@ -27,120 +27,238 @@
 \end{equation}
 
 
-\chapter{Formulas on July 1, 2016 (C++ Core)}
+\chapter{Formulas on July 6, 2016 (C++ Core)}
 
-OUS $\equiv$ on unit sphere, 
-R = Planet.R, 
-e - element, 
-``const'' - some global constant from python
+In this appendix all values marked with \underline{underlined} font 
+are being stored in coordinates On Unit Sphere (with respective scale).
+All the other values are in SI.
+\\
+The values marked with ``quotes'' are global constants, those are set
+up in python scenario.
+\\
+Denotions:
 
-\paragraph{mproperties}
+R - planet radius in meters, $e_i$ - one of the ice elements.
 
+\section{Elements` state update}
+
+Elements` state is being updated in module ``mproperties''.
+This update includes calculation of elements mass (according to 
+melting/freezing) and moment of inertia, land fastency conditions check, 
+minor error checks (like zero-thickness), e.t.c.
+\\
+\\
+Two dimensional density (per unit of surface):
 \begin{equation}
- \rho_{2d} = \sum_{i}^{N = 10} \cdot Mat.\rho_i \cdot Mat.h_i \cdot e.h_i
+ \rho_{2d} = \sum_{i}^{10} \cdot \rho_i \cdot h_i \cdot h_{e_j,i}
+\end{equation}
+where $h_{e_j,i}$ is !UNDONE!
+\\
+Element`s mass:
+\begin{equation}
+ m_{e_j} = \underline{A_{e_j}} \cdot R^2 \cdot \rho_{2d}
+\end{equation}
+\\
+Moment of inertia:
+\begin{equation}
+ I_{e_j} = m_{e_j} \cdot \underline{i_{e_j}} \cdot R^2
+\end{equation}
+\\
+Element $e_j$ becomes fastened  $if$ ( $A_{overlap,e_j} > A_{min,e_j} \cdot ``fastency''$ ),
+\\ where $A_{overlap,e_j}$ is total 
+area of overlap of $e_j$ with shore elements and $A_{min,e_j}$ is an area
+of the smallest of nearby elements (including $e_j$).
+
+\section{Distributed forces}
+
+All the distributed forces like wind drag, water currents, Coriolis force
+are being calculated in ``forces\_mass'' module.
+\\
+Denotions:
+
+$\vec{\tilde{V}}$ -interpolated wind velocity, 
+$\vec{\tilde{W}}$ -interpolated water velocity.
+\\
+Wind and water drag forces:
+\begin{equation}
+ \vec{F}_{wind} = |\tilde{V}|\cdot\vec{\tilde{V}} \cdot \underline{A_{e_j}} \cdot R^2 \cdot windage_{e_j} \cdot ``windage''
 \end{equation}
 \begin{equation}
- e.m = e.A[OUS] \cdot \rho_{2d} \cdot R^2
+ \vec{F}_{water} = |\vec{\tilde{W}} - \vec{V_{e_j}}|\cdot(\vec{\tilde{W}} - \vec{V_{ e_j}}) \cdot \underline{A_{e_j}}
+ \cdot R^2 \cdot anchority_{ e_j} \cdot ``anchority''
+\end{equation}
+\\
+where ``windage'' and ``anchority'' are the general factors of interaction of
+floes with air and water, $windage_{e_j}$ and $anchority_{ e_j}$ are respective
+formfactors for each floe (depending on shape, density, e.t.c.).
+
+\section{Elements interaction}
+
+The interaction of elements is represented as a set of pairwise forces, 
+those are selected with respect to each contact type (e.g. frozen joint, collision...).
+Pairwise interactions are implemented in ``contact\_forces'' module.
+In this section indexes '1' and '2' denote respectively two interacting 
+ice elements for each contact. 
+
+The process is devided into three steps:\\
+1) generating collision data\\
+2) calculating the force\\
+3) applying and updating the state of the contact
+
+\subsection{Contact data}
+
+Contact data (denoted as $cd$) is a structure that is being generated
+at every step for each particular contact (the pair of interacting floes).
+It contains all geometric data like relative positions, velocities, 
+intersection region (area, shape).
+\\
+\paragraph{Interposition vectors} of elements` centers and center of intersection region:
+\begin{equation}
+ \underline{\vec{r_{12,cd}}} = \hat{e2\_to\_e1} \cdot \vec{NORTH}
 \end{equation}
 \begin{equation}
- e.I = e.m \cdot e.i[OUS] \cdot R^2
-\end{equation}
-fasten $if$ ( e.OverlapArea $>$ e.AreaMin $\cdot$ ``fastency'' )
-
-\paragraph{forces\_mass}
-
- $\vec{\tilde{V}}$ -Interpolated wind velo 
- $\vec{\tilde{W}}$ -Interpolated water velo 
-
-\begin{equation}
- \vec{F}_{wind} = |\tilde{V}|\cdot\vec{\tilde{V}} \cdot e.A[OUS] \cdot R^2 \cdot ``windage'' \cdot e.windage
-\end{equation}
-\begin{equation}
- \vec{F}_{water} = |\vec{\tilde{W}} - \vec{e.V}|\cdot(\vec{\tilde{W}} - \vec{e.V}) \cdot e.A[OUS] \cdot R^2 \cdot ``anchority'' \cdot e.anchority
-\end{equation}
-
-\paragraph{contact\_forces}
-
-CD $-$ collision data, $\vec{NORTH} = (0, 0, 1)$
-
-\begin{equation}
- \vec{cd.r_{12}} = \hat{e2\_to\_e1} \cdot \vec{NORTH} [OUS]
-\end{equation}
-\begin{equation}
- \vec{cd.r_1} = \vec{center} (of\_intersection, [OUS])
+ \underline{\vec{r_{1,cd}}} = \underline{\vec{CoI}}
  \end{equation}
 \begin{equation}
- \vec{cd.r_2} = \vec{r_1} - \vec{r_2} [OUS]
+ \underline{\vec{r_{2,cd}}} = \underline{\vec{r_{1,cd}}} - \underline{\vec{r_{2,cd}}}
+ \end{equation}
+ \\where $\hat{e2\_to\_e1}$ is a transformation matrix from $e_2$ local coordinates
+ to $e_1$ local coordinates, $\vec{NORTH} \equiv (0, 0, 1)$,
+ $\underline{\vec{CoI}}$ is a vector from $e_1$ center (coinsides with the origin)
+ to the center of intersection region (calculated by ``geometry'' module).
+ 
+\paragraph{Velocities}:
+\begin{equation}
+ \vec{v_{1,cd}} = \vec{V_{e_1}} + (\underline{\vec{r_{1,cd}}} \cdot R) \cdot \Omega_{z,e_1}
  \end{equation}
 \begin{equation}
- \vec{cd.va_1} = \vec{e1.V} + (\vec{r_1} \cdot R) \cdot e1.\Omega_z [SI]
+ \vec{v_{2,cd}} = \hat{e2\_to\_e1} \cdot \vec{V_{e_2}} + (\underline{\vec{r_{2,cd}}} \cdot R) \cdot \Omega_{z,e_2}
  \end{equation}
 \begin{equation}
- \vec{cd.va_2} = \hat{e2\_to\_e1} \cdot \vec{e2.V} + (\vec{r_2} \cdot R) \cdot e2.\Omega_z [SI]
- \end{equation}
-\begin{equation}
- \vec{cd.v_{12}} = \vec{va_1} - \vec{va_2} [SI]
+ \vec{v_{12,cd}} = \vec{v_{1,cd}} - \vec{v_{2,cd}}
 \end{equation}
+\\where $\Omega_{z,e_j}$ is an angular velocity of $e_j$ element about it`s local
+vertical axis, $\vec{V_{e_j}}$ is translational velocity of $e_j$.
 
-\subsection{collision}
+\subsection{Pairwise forces}
+
+All pairwise forces take $contact\ data$ and other contact props 
+as the parameters and generate small structure containing 
+the vector of force, two points of applications of this force
+to floes and the force couple value. In this section $N$ denotes 
+combined torque from possible moment of $F$ and force couple caused 
+by any kind of source.
+
+Several methods which include elastic forces use the spring-like 
+elasticity coefficient:
 \begin{equation}
- \vec{F_c} = (cd.A[OUS] \cdot R^2) \cdot \frac{h_1 h_2}{h_1 r_2 + h_2 r_1} \cdot R^{-1} \cdot \sigma \cdot ``rigidity'' +
- (-cd.\vec{v_{12}}) \cdot (cd.A[OUS] \cdot R^2) \cdot \eta \cdot ``viscosity''
+ El_{1\ 2} = \frac{El_1 \cdot El_2}{El_1 + El_2} =...= 
+ \sigma \frac{h_1 \cdot h_2}{h_1 \underline{r_2} + h_2 \underline{r_1}} \cdot R^{-1}
+\end{equation}
+where $\sigma$ is stiffness of ice, $h_{1, 2}$ are thickness of the 
+largest layers of two floes, $r_{1, 2}$ are the ``length'' of elements
+(approximately the distance from the centers or ice elements to
+intersection region).
+\\
+\\
+There are next basic force methods:
+
+\paragraph{Collision} - interaction of two separate floes.
+\begin{equation}
+ \vec{F_c} = El_{1\ 2} \cdot (\underline{A_{cd}} \cdot R^2) \cdot ``rigidity'' +
+ \eta \cdot (-\vec{v_{1 2,cd}}) \cdot ( \underline{A_{cd}} \cdot R^2) \cdot ``viscosity''
 \end{equation}
 \begin{equation}
  N_c = [\vec{r} \times \vec{F_c}]
 \end{equation}
+where $\eta$ is parameter of ice-ice interaction viscosity, 
+``rigidity'' and ``viscosity'' are manual factors for possible 
+`switching-off' of unwanted forces, $r$ - application point of force.
 
-\subsection{test}
+\paragraph{Test\_spring} is the simpliest method for two frozen 
+floes (Joint). Contact is represented as a single 1D spring with 
+the same stiffness as if it was an ice block of appropriate size.
 \begin{equation}
- \vec{F_t} = (\vec{\Delta X}[OUS] \cdot R) \cdot \sigma \cdot \frac{Joint.width}{Joint.length} \cdot Joint.durability 
+ \vec{F_t} = (\underline{\vec{\Delta r}} \cdot R) \cdot El_{1\ 2} \cdot (\underline{wid} \cdot R) \cdot dur 
 \end{equation}
 \begin{equation}
  N_t = [\vec{r} \times \vec{F_t}]
 \end{equation}
+where $\underline{\vec{\Delta r}}$ is the displacement from the 
+equilibrium position (which [position] is defined at the moment of
+Joint freezing), $\underline{wid}$ is width of contact (length of 
+mutual edge of two polygons), $dur$ is current durability of Joint
+(1 for new unbroken Joint, 0 for destructed one).
 
-\subsection{distributed}
+\paragraph{Distributed\_spring} is the main method for two frozen
+floes. Contact is represented as 2D spring, that allowes to calculate
+forces and moment far more precisely.
 \begin{equation}
- \vec{F_d} = (\frac{\vec{\Delta X_1}+\vec{\Delta X_2}}{2})[OUS] \cdot R \cdot \sigma \cdot \frac{Joint.width}{Joint.length} \cdot Joint.durability
+ \vec{F_d} = (\frac{\underline{\vec{\Delta r'}}+\underline{\vec{\Delta r''}}}{2} \cdot R) \cdot 
+ El_{1\ 2} \cdot (\underline{wid} \cdot R) \cdot dur
 \end{equation}
 \begin{equation}
- N_d = [\vec{r} \times \vec{F_d}] + [(\frac{\vec{\Delta X_1}-\vec{\Delta X_2}}{2}) \cdot R \times \vec{r}] \cdot \sigma \cdot
- \frac{Joint.width}{Joint.length} \cdot Joint.durability \cdot \frac{1}{12}
+ N_d = [\vec{r} \times \vec{F_d}] + 
+ [(\frac{\underline{\vec{\Delta r'}}-\underline{\vec{\Delta r''}}}{2} \cdot R) \times (\underline{\vec{wid}} \cdot R)] 
+ \cdot El_{1\ 2} \cdot (\underline{wid} \cdot R) \cdot dur \cdot \frac{1}{12}
 \end{equation}
+where $\underline{\vec{\Delta r'}}$ and $\underline{\vec{\Delta r''}}$
+are the displacements of two ends of mutual edge of polygons, 
+$\underline{\vec{wid}}$ is a vector of that very edge itself.
 
-\subsection{durability}
- if $\frac{\Delta X_{max}}{Joint.length} > ``tensility''$ : $Joint.durability -= \frac{<\Delta X>}{Joint.length} \cdot ``solidity'' \cdot dt$
+\subsection{Joint state and props}
+
+\paragraph{Durability} of each Joint evolves by the next rule:
+
+ $if\ \frac{\Delta r_{max}}{len}\ >\ ``tensility''\ :\ dur\ -=
+ \ \frac{<\Delta r>}{len} \cdot ``solidity'' \cdot dt$
  
- e.OverlapArea = $\sum_{contacts} contact.intersectionArea$
- 
- $e.A_{min} = \min_{contacts} [e.A]$
- 
- \paragraph{dynamics}
+\paragraph{Fastening} is not that simple.
+For proper check of land fastening conditions at each time step
+ice elements accumulate the area of overlaping ($OA_{e_j}$) by
+border elements (aka static elements on seashores). In addition 
+each ice element stores the area minimal area ($A_{min,e_j}$)
+of single floe amoung the nearest floes (including self).
  
 \begin{equation}
-SuperTorque = ( \frac{-F_y}{R \cdot m}, \frac{F_x}{R \cdot m}, \frac{N}{I}),
-e.W += SuperTorque \cdot dt
+ OA_{e_j} = \sum_{c \in C} A_{intersect[e_j,c]} 
+\end{equation}
+\begin{equation}
+ A_{min,e_j} = \min_{c \in C} [A_c]
+\end{equation}
+where $C$ is a set of nearest ice elements (including self), 
+ 
+\section{Dynamics}
+ 
+\begin{equation}
+ SuperTorque = ( \frac{-F_y}{R \cdot m}, \frac{F_x}{R \cdot m}, \frac{N}{I})
+\end{equation}
+\begin{equation}
+ e.W += SuperTorque \cdot dt
 \end{equation}
 
-\paragraph{position}
+\section{Position}
 
-1) propagation (axis is random Global):
+\paragraph{1) propagation} (axis is random Global):
 %\right\{
 \begin{eqnarray}
-  p^4 = (1, \frac{(W_x, W_y, 0) \cdot dt}{2}) \\
-  e.q = [e.q \times^4 p^4]
+  \untqtrn{p} = (1, \frac{(W_x, W_y, 0) \cdot dt}{2}) \\
+  \untqtrn{q} = [\untqtrn{q} \times \untqtrn{p}]
 \end{eqnarray}
 
-2) spin (asis is Local $\vec{Oz}$):
+\paragraph{2) spin} (axis is Local $\vec{Oz}$):
 %\right\{
 \begin{eqnarray}
-  p^4 = (1, \frac{(0, 0, W_z) \cdot dt}{2}) \\
-  t^4 = [e.q \times^4 p^4]
+  \untqtrn{p} = (1, \frac{(0, 0, W_z) \cdot dt}{2}) \\
+  \untqtrn{t} = [\untqtrn{q} \times \untqtrn{p}]
 \end{eqnarray}
 
-3) transform old e.W and e.q according to element`s new position and orientation
+\paragraph{3)} transform old e.W and e.q according to element`s 
+new position and orientation
 %\right\{
 \begin{eqnarray}
-  e.W = loca\_to\_local( t^4, e.q, W ) \\
-  e.q = t^4.normilized
+  W = loca\_to\_local( \untqtrn{t}, \untqtrn{q}, W ) \\
+  \untqtrn{q} = normilized(\untqtrn{t})
 \end{eqnarray}
+where $loca\_to\_local$ transforms $W$ from $\untqtrn{q}$ to 
+$\untqtrn{t}$ local coordinates
