@@ -80,92 +80,11 @@ def main():
     siku.elements = []
 ## custom testing polygons for caribbeans # lon, lat convention
    
-    coords.append( [ (267.0, 12.0),      
-                    (269.0, 12.0),
-                    (269.0, 14.0),
-                    (267.0, 14.0) ] )
-    coords.append( [ (270.0, 12.0), #2
-                     (272.0, 12.0),
-                     (272.0, 14.0),
-                     (270.0, 14.0) ] )
-    
-    coords.append( [ (265.0, 20.0), #3
-                     (267.0, 18.0),
-                     (269.0, 20.0),
-                     (267.0, 22.0) ] )
-    coords.append( [ (268.0, 18.0), #4
-                     (270.0, 16.0),
-                     (272.0, 18.0),
-                     (270.0, 20.0) ] )
-    
-    coords.append( [ (265.0, 28.0), #5
-                     (266.0, 26.5),
-                     (267.0, 28.0),
-                     (266.0, 29.5) ] )
-    coords.append( [ (267.0, 25.5), #6
-                     (268.0, 24.0),
-                     (269.0, 25.5),
-                     (268.0, 27.0) ] )
-    # ---
-    
-    coords.append( [ (281.0, 10.0), #7
-                     (282.0, 10.0),
-                     (282.0, 16.0),
-                     (281.0, 16.0) ] )
-    coords.append( [ (282.5, 10.0), #8
-                     (283.5, 10.0),
-                     (283.5, 16.0),
-                     (282.5, 16.0) ] )
-    
-    coords.append( [ (278.0, 19.5), #9
-                     (282.0, 19.5),
-                     (282.0, 20.5),
-                     (278.0, 20.5) ] )
-    coords.append( [ (281.0, 18.0), #10
-                     (285.0, 18.0),
-                     (285.0, 19.0),
-                     (281.0, 19.0) ] )
-    
-    coords.append( [ (278.0, 24.0), #11
-                     (280.0, 24.0),
-                     (280.0, 28.0),
-                     (278.0, 28.0) ] )
-    coords.append( [ (282.0, 28.0), #12
-                     (283.0, 26.0),
-                     (285.0, 26.0),
-                     (284.0, 28.0) ] )
-    coords.append( [ (282.0, 24.0), #13
-                     (284.0, 24.0),
-                     (285.0, 26.0),
-                     (283.0, 26.0) ] )
-    # --- 
-
-    coords.append( [ (293.0, 12.0), #14
-                     (294.0, 12.0),
-                     (294.0, 13.0),
-                     (293.0, 13.0) ] )
-    coords.append( [ (295.0, 10.0), #15
-                     (296.0, 10.0),
-                     (296.0, 15.0),
-                     (295.0, 15.0) ] )
-    
-    coords.append( [ (293.0, 21.0), #16
-                     (294.0, 21.0),
-                     (294.0, 22.0),
-                     (293.0, 22.0) ] )
-    coords.append( [ (295.0, 17.0), #17
-                     (296.0, 17.0),
-                     (296.0, 22.0),
-                     (295.0, 22.0) ] )
-    
-    coords.append( [ (291.0, 24.0), #18
-                     (292.0, 24.0),
-                     (292.0, 29.0),
-                     (291.0, 29.0) ] )
-    coords.append( [ (293.0, 26.0), #19
-                     (294.0, 26.0),
-                     (294.0, 27.0),
-                     (293.0, 27.0) ] )
+    nx = 2
+    ny = 1
+    coords, links \
+        = NG.generate_plus( 268.0, -1.0, 272.0, 1.0, nx, ny, 0., 0. )
+##    siku.settings.links = links
 
     # ---
     
@@ -185,34 +104,18 @@ def main():
 
     # ------------------------- speed settings ----------------------------
 
-####    Works with caribbean polygons after initialization
-    siku.elements[0].velo = ( 20, 0, 0 )
-##    siku.elements[1].flag_state = element.Element.f_static
-    siku.elements[2].velo = ( 20, 0, 0 )
-##    siku.elements[3].flag_state = element.Element.f_static
-    siku.elements[4].velo = ( 20, 0, 0 )
-##    siku.elements[5].flag_state = element.Element.f_static
+######    Works with caribbean polygons after initialization
+##    siku.elements[1].velo = ( 0.0, 5.0, 0. )
+    siku.elements[1].velo = ( 0, 0, 0.0001 )
+    siku.elements[0].flag_state = element.Element.f_static
 
-    siku.elements[6].velo = ( 0, 0, -0.0001 )
-##    siku.elements[7].flag_state = element.Element.f_static
-    siku.elements[8].velo = ( 0, 0, -0.0001 )
-##    siku.elements[9].flag_state = element.Element.f_steady
-    siku.elements[10].velo = ( 20, 0, 0,)#4, 0 )
-##    siku.elements[11].flag_state = element.Element.f_steady
-
-    siku.elements[13].velo = ( 20, 0, 0)#7, 0 )
-##    siku.elements[14].flag_state = element.Element.f_steady
-    siku.elements[15].velo = ( 20, 0, 0,)#5, 0 )
-##    siku.elements[16].flag_state = element.Element.f_steady
-    siku.elements[17].velo = ( 20, 0, 0,)#6.5, 0 )
-##    siku.elements[18].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
     ## Plotter initialization
-    siku.plotter = GMT_Plotter( 'caribbean_plot.py' )
+    siku.plotter = GMT_Plotter( 'caribbean_plot1.py' )
 
     ### period of picturing
     siku.diagnostics.monitor_period = 30
@@ -220,12 +123,12 @@ def main():
     siku.diagnostics.step_count = 0
 
     siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
-    siku.settings.force_model = \
-                    siku.CONTACT_FORCE_MODEL['distributed_spring']
+##    siku.settings.force_model = \
+##                    siku.CONTACT_FORCE_MODEL['distributed_spring']
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  -10000.0, 1, 0.2, 0.1, 1 ]
-    siku.settings.phys_consts = { 'rigidity' : 1.0,
+    siku.settings.phys_consts = { 'rigidity' : 0.0,
                                   'viscosity' : 1.0,
                                   'rotatability' : 1.0,#0.75,
                                   'tangency' : -0.00003,#-0.00003
@@ -233,14 +136,14 @@ def main():
                                   'elasticity' :-50000000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.05,#0.05,
-                                  'tensility' : 0.530,#0.615,
+                                  'tensility' : 10.3,#0.615,
 
-                                  'anchority' : 0.00001,
+                                  'anchority' : 0.0000,
                                   'windage':    0.0000000,
-                                  'fastency' : 0.50, #0.5
+                                  'fastency' : 10.50, #0.5
 
                                   'sigma' : 10000000.0,        # -//- rigidity
-                                  'etha' : 0.051          # -//- viscosity
+                                  'etha' : 0.05          # -//- viscosity
                                   }
 
     # ---------------------------------------------------------------------
@@ -267,14 +170,20 @@ def presave( t, n, ns ):
 
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+    siku.local.FF = open( './forces/N.txt', 'w' )
 
 # --------------------------------------------------------------------------
 
 def conclusions( siku, t ):
+    siku.local.FF.close()
+    subprocess.call( "gnuplot ./forces/N.sh", shell=True )
+    
     print('creating .gif')
     subprocess.call( "convert -density 100 -delay 10 carib*.eps caribbeans.gif", \
                      shell=True )
 
+
+    
 # --------------------------------------------------------------------------
 
 def pretimestep( t, n, ns ):
@@ -295,7 +204,7 @@ def aftertimestep( t, n, ns ):
         print('drawing ' + str( pic_name ) )
         
         siku.plotter.plot( pic_name, siku.time.update_index )
-        
+
     #siku.local.poly_f.close()
     return 0
 
@@ -309,6 +218,9 @@ def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     # get latitude and longitude of center of mass (0,0,1)
     R = q.to_matrix()
     c = R * C
+
+    if( ID == 1 ):
+        siku.local.FF.write( str(n)+'\t' + str(W[2])+'\t' + str(N)+'\n' )
 
     # appending vertices to plotting list
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:

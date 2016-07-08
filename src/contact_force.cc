@@ -225,8 +225,8 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
         F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3_s( -if_.F1 ) );
 
   // torques (combined) applied to e1 and e2 in their local coords (SI)
-  double tq1 =  if_.couple1 + cross( if_.rf1, if_.F1 );
-  double tq2 = -if_.couple1 + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
+  double tq1 =  /*if_.couple1 */+ cross( if_.rf1, if_.F1 );
+  double tq2 = /*-if_.couple1*/ + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
                                      -if_.F1 ); // (SI) - that`s why ' * R'
 
   // TODO: find and clean (set properly) all adjustment factors like below
@@ -359,13 +359,16 @@ InterForces _collision( ContactData& cd )
       // force in Newtons applied to e1 caused by e2
       vec2d F = _elastic_force( cd ) * cd.siku.phys_consts["rigidity"]
               + _viscous_force( cd ) * cd.siku.phys_consts["viscosity"];
-      // TODO: add couple caused by friction
       // IMPROVE: reconsider 'rigidity' and 'viscosity' sense
+
+      // couple caused by friction
+      double vt =  (cd.e2.W.z - cd.e1.W.z) * cd.siku.phys_consts["etha"]
+                   * pow( (cd.area * cd.siku.planet.R2), 2 ) / ( 6. * M_PI );
 
       if_.rf1 = cd.r1 * cd.siku.planet.R;
       if_.rf2 = cd.r1 * cd.siku.planet.R;
       if_.F1 = F;
-      //if_.couple1 = 0.; by default
+      if_.couple1 = vt;
 
       // renewing the contact to avoid deletion
       cd.c.generation = 0;
@@ -382,14 +385,14 @@ InterForces _test_springs( ContactData& cd )
 
   // physical rigidity of ice (from python scenario)
 //  double K = cd.siku.phys_consts["sigma"];
-  double K = _rigidity( cd ) * cd.siku.planet.R;
+  double K = _rigidity( cd );
 
   // calculating forces and torques
   vec2d p1 = cd.c.p1;
   vec2d p2 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p2 ) );
   vec2d def = p2 - p1;
 
-  vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid /*/ cd.c.init_len*/)
+  vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid  * cd.siku.planet.R)
               * cd.c.durability;
 
   // memorizing deformation
@@ -457,7 +460,7 @@ InterForces _distributed_springs( ContactData& cd )
 
   // physical rigidity of ice (from python scenario)
 //  double K = cd.siku.phys_consts["sigma"];
-  double K = _rigidity( cd ) * cd.siku.planet.R;
+  double K = _rigidity( cd );
 
   vec3d tv1, tv2; // just some temporals
 
@@ -470,8 +473,10 @@ InterForces _distributed_springs( ContactData& cd )
           * cd.siku.planet.R;
 
   // some additional variables to avoid unnecessary functions` calls
-  double hardness = K * (cd.c.init_wid /*/ cd.c.init_len*/) * cd.c.durability,
-         rotablty = hardness * 1./12.;
+  double hardness = K * (cd.c.init_wid * cd.siku.planet.R) * cd.c.durability,
+         rotablty = hardness * 1./12.,
+         area = pow( (cd.c.init_wid * cd.siku.planet.R * 0.25 ), 2 ) * M_PI;
+      // TODO: implement some kind of form factor for proper 'area' calculation
 
   vec2d dr1 = p4 - p1,
         dr2 = p3 - p2;
@@ -481,17 +486,31 @@ InterForces _distributed_springs( ContactData& cd )
   cd.d2 = abs( dr2 );
 
   // The Force itself
-  vec2d F = hardness * (dr1 + dr2) * 0.5;
+  // TODO: recombine viscous force with respectie method inside 'collision'
+  vec2d F = hardness * (dr1 + dr2) * 0.5                     // elastic
+            - area * cd.siku.phys_consts["etha"] * cd.va12;  // viscous
 
-  // viscous torque // UNDONE: discuss with chief
-  double vt = 1./32. * (cd.e2.W.z - cd.e1.W.z) * (M_PI * 0.25)
-      * cd.siku.phys_consts["etha"] * cd.siku.time.get_dt()
-      * pow( cd.c.init_wid * cd.siku.planet.R, 4 );
+  // viscous torque // UNDONE: correct multiplier yet unknown and has
+  // no correlation with 'collision' force
+  double vt =  (cd.e2.W.z - cd.e1.W.z) * cd.siku.phys_consts["etha"]
+               * pow( area, 2 ) / (6. * M_PI) ;
 
   if_.F1 = F;
   if_.rf1 = (p1 + p2) * 0.5;
   if_.rf2 = (p3 + p4) * 0.5;
-  if_.couple1 = rotablty * cross( p1 - p2, dr1 - dr2 );// + vt;
+  if_.couple1 =
+      rotablty * cross( p1 - p2, dr1 - dr2 )
+//      rotablty * cross( p1 - p2, p4 - p1 - p3 + p2 ) // same
+//      rotablty * cross( p1 - p2, (p4 + p2) - (p1 + p3) ) // same
+
+//      rotablty * cd.siku.planet.R2 *                 // same
+//      cross( cd.c.p1 - cd.c.p2,
+//             vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p4 ) )
+//             - cd.c.p1
+//             - vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p3 ) )
+//             + cd.c.p2 )
+      + vt;
+
 
   return if_;
 }

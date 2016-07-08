@@ -204,7 +204,9 @@ void ContactDetector::clear()
         {
           if( cont[i].durability < 0.05 )  // destruction
             {
-              //cout<<"CRACK!"<<endl;
+              cout<<"CRACK!!!!!!!!!!!!!!!!"<<endl;
+//              cin.get();
+// TODO: clean -^
               cont[i].type = ContType::COLLISION;
               cont[i].generation = 0;
             }

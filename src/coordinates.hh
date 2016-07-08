@@ -267,6 +267,7 @@ namespace Coordinates
 //    return _stereo_1_2_rev( v );
 //    return _stereo_rev( v );
 //    return _Lambert_aea_rev( v );//error
+//    return vec2_to_vec3_s( v );/////
     return _gnomonic_rev( v );
   }
   inline vec2d vec3_to_vec2( const vec3d& v )
@@ -275,6 +276,7 @@ namespace Coordinates
 //    return _stereo_1_2( v );
 //    return _stereo( v );
 //    return _Lambert_aea( v );///error
+//    return vec3_to_vec2_s( v );///////
     return _gnomonic( v );
   }
 
