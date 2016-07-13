@@ -233,14 +233,14 @@ def main():
                                   'elasticity' :-50000000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.05,#0.05,
-                                  'tensility' : 0.30,#0.615,
+                                  'tensility' : 0.530,#0.615,
 
-                                  'anchority' : 0.0000001,
+                                  'anchority' : 0.00001,
                                   'windage':    0.0000000,
                                   'fastency' : 0.50, #0.5
 
-                                  'sigma' : 10000000.0,        # -//- rigidity
-                                  'etha' : 0.051          # -//- viscosity
+                                  'sigma' : 100000000.0,        # -//- rigidity
+                                  'etha' : 0.9051          # -//- viscosity
                                   }
 
     # ---------------------------------------------------------------------

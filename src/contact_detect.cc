@@ -204,7 +204,7 @@ void ContactDetector::clear()
         {
           if( cont[i].durability < 0.05 )  // destruction
             {
-              cout<<"CRACK!!!!!!!!!!!!!!!!"<<endl;
+//              cout<<"CRACK!!!!!!!!!!!!!!!!"<<endl;
 //              cin.get();
 // TODO: clean -^
               cont[i].type = ContType::COLLISION;
@@ -519,19 +519,14 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
       //&& count() ) // corner intersections are ignored
     {
       c.type = ContType::JOINT;
-      c.p1 = center;
-      //vec2d r12 = vec3_to_vec2( e2_to_e1 * NORTH ); //calculated before
-      vec2d r2 = center - r12;
 
-      c.p2 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( r2 ) );
-      //c._F = { center, vec3_to_vec2( dest_to_src * vec2_to_vec3( r2 ) ) };
-//      print(center);
-//      print(r12);
-//      print(c.p1);
-//      print(c.p2);
-//      cout<<"===\n";
+      c.p1 = c.p2 = center;
+      c.p3 = c.p4 = vec3_to_vec2( e1_to_e2 * vec2_to_vec3( center ) );
+
       c.durability = 1.;
-      if( dump.size() > 2 ) c.init_len = size;  // only if size is area
+
+      //deprecated
+      //if( dump.size() > 2 ) c.init_len = size;  // only if size is area
 
       //search for length of original mutual edge
       c.init_wid = c.find_edges( siku );
@@ -542,7 +537,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
         c.init_wid = size * sqrt( M_PI / sqrt( e1.A * e2.A ) );
 
       // init size - sum of distances between contact end elements` centers
-      c.init_len = abs( c.p1 ) + abs( c.p2 );
+      c.init_len = abs( c.p1 ) + abs( c.p3 );
     }
 }
 
@@ -604,6 +599,7 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
   // just-for-sure check
   if( c.find_edges( siku ) )
     {
+      // IMPROVE: rewrite this with adequate denotations
       // important vertices in 2d relied to e1
       vec2d t11 = vec3_to_vec2( e1.P[c.v11] ),
             t12 = vec3_to_vec2( e1.P[c.v12] ),
@@ -626,10 +622,10 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
           c.p3 = vec3_to_vec2( e1_to_e2 * tv2 );
           c.p4 = vec3_to_vec2( e1_to_e2 * tv1 );
 
-          c.init_wid = abs( c1 - c2 );  // initial len is distance between
+          c.init_wid = abs( c1 - c2 );  // initial width is distance between
                                         // 'springs'
 
-          // initial size is a sum of distances between centers of elements
+          // initial length is a sum of distances between centers of elements
           // and contact zone (0.5 factored out of vectors averaging)
           c.init_len = ( abs(c.p1 + c.p2) + abs(c.p3 + c.p4) )*0.5;
 

@@ -115,6 +115,9 @@ public:
   double OA {0};        //!< m^2, total overlap area with landfast ice
   double Amin {0};      //!< m^2, minimal area of polygons for fastening checks
 
+  //?double h_main{0};     //!< m, thickness of the main (thickest) layer
+  //?double ela {0};       //!< kg/s^2, elasticity of element (SI)
+
   // --------------- Not changing state parameters -------------------
 
   size_t imat;                  //!< material index

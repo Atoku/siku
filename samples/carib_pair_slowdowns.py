@@ -105,7 +105,8 @@ def main():
     # ------------------------- speed settings ----------------------------
 
 ######    Works with caribbean polygons after initialization
-    siku.elements[1].velo = ( 0, 0, 0.00002 )
+    siku.elements[1].velo = ( 0.0, 5.0, 0. )
+##    siku.elements[1].velo = ( 0, 0, 0.0001 )
     siku.elements[0].flag_state = element.Element.f_static
 
 
@@ -127,7 +128,7 @@ def main():
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  -10000.0, 1, 0.2, 0.1, 1 ]
-    siku.settings.phys_consts = { 'rigidity' : 1.0,
+    siku.settings.phys_consts = { 'rigidity' : 0.0,
                                   'viscosity' : 1.0,
                                   'rotatability' : 1.0,#0.75,
                                   'tangency' : -0.00003,#-0.00003
@@ -135,14 +136,14 @@ def main():
                                   'elasticity' :-50000000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
                                   'solidity' : 0.05,#0.05,
-                                  'tensility' : 9999999999999990.95430,#0.615,
+                                  'tensility' : 10.3,#0.615,
 
                                   'anchority' : 0.0000,
                                   'windage':    0.0000000,
-                                  'fastency' : 0.50, #0.5
+                                  'fastency' : 10.50, #0.5
 
-                                  'sigma' : 100000000.0,        # -//- rigidity
-                                  'etha' : 0.051          # -//- viscosity
+                                  'sigma' : 10000000.0,        # -//- rigidity
+                                  'etha' : 0.905          # -//- viscosity
                                   }
 
     # ---------------------------------------------------------------------
@@ -174,12 +175,14 @@ def initializations( siku, t ):
 # --------------------------------------------------------------------------
 
 def conclusions( siku, t ):
+    siku.local.FF.close()
+    subprocess.call( "gnuplot ./forces/N.sh", shell=True )
+    
     print('creating .gif')
     subprocess.call( "convert -density 100 -delay 10 carib*.eps caribbeans.gif", \
                      shell=True )
 
-    siku.local.FF.close()
-    subprocess.call( "gnuplot ./forces/N.sh", shell=True )
+
     
 # --------------------------------------------------------------------------
 
@@ -217,7 +220,9 @@ def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     c = R * C
 
     if( ID == 1 ):
-        siku.local.FF.write( str(n) + '\t' + str(W[2]) + '\n' )
+        ttt = math.sqrt( F[0]*F[0] + F[1]*F[1] + F[2]*F[2] )
+##        ttt = math.sqrt( F[1]*F[1] ) #+ math.sqrt( F[1]*F[1] )
+        siku.local.FF.write( str(n)+'\t' + str(W[2])+'\t' + str(ttt)+'\n' )
 
     # appending vertices to plotting list
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:

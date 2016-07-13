@@ -24,6 +24,9 @@
 
 #include "contact_force.hh"
 
+
+#include <fstream>
+
 /*
  * TODO: discuss threading VS static
  */
@@ -46,8 +49,9 @@ struct ContactData
   mat3d e1_to_e2;               // matrix for coordinates transformation
   mat3d e2_to_e1;               // between e1 and e2 local systems
 
-  vec2d r1,                     // vec from e1 center to intersection center
-        r2,                     // vec from e2 center to intersection center
+  vec2d icen,                   // vec from e1 center to intersection center
+        r1,                     // vec from e1 center to contact region center
+        r2,                     // vec from e2 center to contact region center
         r12;                    // vec from e1 center to e2 center
                                 // (on unit sphere)
 
@@ -90,10 +94,23 @@ struct ContactData
 //    if( errored( loc_P2 ) )   e2.flag |= Element::F_ERRORED;
 
     // call for 'geometry'->'2d'->'polygon intersection'
-    inter_res = intersect( loc_P1, loc_P2, interPoly, &stats, &r1, &area );
+    inter_res = intersect( loc_P1, loc_P2, interPoly, &stats, &icen, &area );
+
     // and calc centers` interpositions
     r12 = vec3_to_vec2( e2_to_e1 * NORTH );
+    if( c.type == JOINT )
+      {
+        // TODO: reorganize this properly
+        r1 = (c.p1 + c.p2) * 0.5;
+        r2 = vec3_to_vec2( e2_to_e1 * vec2_to_vec3( (c.p3 + c.p4) * 0.5 ) );
+
+        r1 = (r1 + (r12 + r2)) * 0.5;
+      }
+     else
+        r1 = icen;
     r2 = r1 - r12;
+
+
 
     // IMPROVE: check order of planet.R carefully!
     // e1 aim speed (coz of propagation + spin)
@@ -137,7 +154,6 @@ inline double _rigidity( ContactData& cd )
 //  return cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec
 //      / ( abs(cd.r1) + abs(cd.r2) );
 
-
   // reduced thickness of floes
   double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
 
@@ -149,6 +165,7 @@ inline double _rigidity( ContactData& cd )
     if( cd.e2.gh[i] > h2 )
       h2 = cd.e2.gh[i];
 
+  // BUG!!!! down here!
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
   // close-to-linear-spring rigidity of ice
   double H = h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
@@ -225,8 +242,8 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
         F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3_s( -if_.F1 ) );
 
   // torques (combined) applied to e1 and e2 in their local coords (SI)
-  double tq1 =  /*if_.couple1 */+ cross( if_.rf1, if_.F1 );
-  double tq2 = /*-if_.couple1*/ + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
+  double tq1 =  if_.couple1 + cross( if_.rf1, if_.F1 );
+  double tq2 = -if_.couple1 + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
                                      -if_.F1 ); // (SI) - that`s why ' * R'
 
   // TODO: find and clean (set properly) all adjustment factors like below
@@ -384,16 +401,18 @@ InterForces _test_springs( ContactData& cd )
   InterForces if_{};
 
   // physical rigidity of ice (from python scenario)
-//  double K = cd.siku.phys_consts["sigma"];
   double K = _rigidity( cd );
+  // TODO: discuss viscosity
+  //double area = pow( (cd.c.init_wid * cd.siku.planet.R * 0.25 ), 2 ) * M_PI;
 
   // calculating forces and torques
-  vec2d p1 = cd.c.p1;
-  vec2d p2 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p2 ) );
+  vec2d p1 = cd.c.p1; // same as c.p2
+  vec2d p2 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p3 ) ); // || c.p4
   vec2d def = p2 - p1;
 
   vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid  * cd.siku.planet.R)
-              * cd.c.durability;
+              * cd.c.durability
+              ;//- area * cd.siku.phys_consts["etha"] * cd.va12;  // viscous ;
 
   // memorizing deformation
   cd.d1 = cd.d2 = abs( def ) * cd.siku.planet.R;
@@ -473,9 +492,9 @@ InterForces _distributed_springs( ContactData& cd )
           * cd.siku.planet.R;
 
   // some additional variables to avoid unnecessary functions` calls
-  double hardness = K * (cd.c.init_wid * cd.siku.planet.R) * cd.c.durability,
+  double hardness = K * (cd.c.init_wid * cd.siku.planet.R),// * cd.c.durability,
          rotablty = hardness * 1./12.,
-         area = pow( (cd.c.init_wid * cd.siku.planet.R * 0.25 ), 2 ) * M_PI;
+         area = pow( (cd.c.init_wid * cd.siku.planet.R * 0.5 ), 2 ) * M_PI;
       // TODO: implement some kind of form factor for proper 'area' calculation
 
   vec2d dr1 = p4 - p1,
@@ -500,6 +519,7 @@ InterForces _distributed_springs( ContactData& cd )
   if_.rf2 = (p3 + p4) * 0.5;
   if_.couple1 =
       rotablty * cross( p1 - p2, dr1 - dr2 )
+//// TODO: clean dis mess
 //      rotablty * cross( p1 - p2, p4 - p1 - p3 + p2 ) // same
 //      rotablty * cross( p1 - p2, (p4 + p2) - (p1 + p3) ) // same
 
