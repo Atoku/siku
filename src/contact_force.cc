@@ -157,6 +157,7 @@ inline double _rigidity( ContactData& cd )
   // reduced thickness of floes
   double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
 
+  // TODO: move this to 'mproperties' as a 'Elasticity' of each element
   // search for thickest layer
   for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
     if( cd.e1.gh[i] > h1 )
@@ -165,7 +166,7 @@ inline double _rigidity( ContactData& cd )
     if( cd.e2.gh[i] > h2 )
       h2 = cd.e2.gh[i];
 
-  // BUG!!!! down here!
+
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
   // close-to-linear-spring rigidity of ice
   double H = h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
@@ -478,7 +479,6 @@ InterForces _distributed_springs( ContactData& cd )
   InterForces if_{};
 
   // physical rigidity of ice (from python scenario)
-//  double K = cd.siku.phys_consts["sigma"];
   double K = _rigidity( cd );
 
   vec3d tv1, tv2; // just some temporals
@@ -517,20 +517,9 @@ InterForces _distributed_springs( ContactData& cd )
   if_.F1 = F;
   if_.rf1 = (p1 + p2) * 0.5;
   if_.rf2 = (p3 + p4) * 0.5;
-  if_.couple1 =
-      rotablty * cross( p1 - p2, dr1 - dr2 )
-//// TODO: clean dis mess
-//      rotablty * cross( p1 - p2, p4 - p1 - p3 + p2 ) // same
-//      rotablty * cross( p1 - p2, (p4 + p2) - (p1 + p3) ) // same
-
-//      rotablty * cd.siku.planet.R2 *                 // same
-//      cross( cd.c.p1 - cd.c.p2,
-//             vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p4 ) )
-//             - cd.c.p1
-//             - vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p3 ) )
-//             + cd.c.p2 )
-      + vt;
-
+  if_.couple1 = rotablty * cross( p1 - p2, dr1 - dr2 ) + vt;
+//// IMPROVE: clean dis mess
+//      rotablty * cross( p1 - p2, (p4 + p2) - (p1 + p3) ) // same as above
 
   return if_;
 }

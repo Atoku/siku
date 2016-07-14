@@ -2,6 +2,8 @@ STYLEFLAGS = -pedantic -Wall
 
 AM_CXXFLAGS = $(SIMD_FLAGS) $(PROFILE_FLAGS) $(STYLEFLAGS) $(FPCHECK_FLAGS) ${BOOST_CPPFLAGS} $(INCLUDEFLAGS)
 
+#SUBDIRS = tests
+
 noinst_LIBRARIES = libgeometry.a
 libgeometry_a_SOURCES = \
 	geometry.hh geometry.cc \
