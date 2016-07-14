@@ -1,0 +1,263 @@
+{\rtf1\ansi\deff3\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset0 Liberation Serif{\*\falt Times New Roman};}{\f4\froman\fprq2\fcharset0 Liberation Sans{\*\falt Arial};}{\f5\froman\fprq2\fcharset0 Liberation Mono{\*\falt Courier New};}{\f6\fnil\fprq2\fcharset0 Liberation Mono{\*\falt Courier New};}{\f7\fnil\fprq2\fcharset0 FreeSans;}{\f8\fnil\fprq2\fcharset0 Liberation Serif{\*\falt Times New Roman};}}
+{\colortbl;\red0\green0\blue0;\red128\green128\blue128;}
+{\stylesheet{\s0\snext0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf1\dbch\af7\langfe1081\dbch\af8\afs24\kerning1\alang1081\loch\f3\fs24\lang3081 Normal;}
+{\s15\sbasedon0\snext16\ql\nowidctlpar\sb240\sa120\keepn\ltrpar\cf1\dbch\af7\langfe1081\dbch\af8\afs24\loch\f4\fs28\lang3081 Heading;}
+{\s16\sbasedon0\snext16\sl288\slmult1\ql\nowidctlpar\sb0\sa140\ltrpar\cf1\dbch\af7\langfe1081\dbch\af8\afs24\loch\f3\fs24\lang3081 Text Body;}
+{\s17\sbasedon16\snext17\sl288\slmult1\ql\nowidctlpar\sb0\sa140\ltrpar\cf1\dbch\af7\langfe1081\dbch\af8\afs24\loch\f3\fs24\lang3081 List;}
+{\s18\sbasedon0\snext18\ql\nowidctlpar\sb120\sa120\ltrpar\cf1\i\dbch\af7\langfe1081\dbch\af8\afs24\loch\f3\fs24\lang3081 Caption;}
+{\s19\sbasedon0\snext19\ql\nowidctlpar\ltrpar\cf1\dbch\af7\langfe1081\dbch\af8\afs24\loch\f3\fs24\lang3081 Index;}
+{\s20\sbasedon0\snext20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081 Preformatted Text;}
+}{\*\generator LibreOffice/4.4.3.2$Linux_X86_64 LibreOffice_project/40m0$Build-2}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr2015\mo10\dy28\hr16\min40}{\printim\yr0\mo0\dy0\hr0\min0}}\deftab709
+\viewscale80
+{\*\pgdsctbl
+{\pgdsc0\pgdscuse451\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\pgdscnxt0 Default Style;}}
+\formshade{\*\pgdscno0}\paperh16838\paperw11906\margl1134\margr1134\margt1134\margb1134\sectd\sbknone\sectunlocked1\pgndec\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
+{\*\ftnsep\chftnsep}\pgndec\pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\qc\sb0\sa0{\ul\ulc0\b\dbch\af6\rtlch \ltrch\loch\fs32
+Polygons and boarders generation manual}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\qc\sb0\sa0\ul\ulc0\b\dbch\af6\rtlch \ltrch\loch\fs32
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+This manual describes possible procedure of generation of Voronoi polygon coverage and coastlines automatic marking.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+The process consists of several steps. Some of them may be avoided or replaced with user`s own analogues.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+To make this process easy and understandable we provide additional modules with all required functionality for automatical generation of various polygon meshes and different coasts marking algorithms.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+The module that supports mesh and boarders generation is called 'boarder_gen.py' and it should be manipulated by user-specified controlling script file. Such script example is 'boarders.py'. Also it depends from external fortran program for the Voronoi diagrams generation.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+1) }{\ul\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Preparing contours}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+First of all one need to initialize 'Boarder' class instance from module 'boarder_gen.py'. This instance wil accumulate user`s data and provide functionality for that data processing.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+import boarder_gen}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board = boarder_gen.Boarder('.../shapefile')}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+In this example Boarder instance is initialized with the name of shapefile. This file is automatically loaded into boarder`s field 'contour' as a list of longitude-latitude pairs, but one can create empty boarder and fill it later.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+After creating an instance of Boarder one can add some contours to it from either shapefiles or user`s tabled files that contain two coloumns of lon-lat geographical coordinates in degrees.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.add_shapes_contour( shapes, (minlo, maxlo, minla, maxla) )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.add_contour( 'points.ll' )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Here shapes is a list of shapes from user`s shapefile, 'points.ll' is tabled file with points in lon-lat convension and (minlo, maxlo, minla, maxla) is a tuple that specifies geographic domain. All domains in this module are optional. If domain is given then the called method will make effect on points inside that domain. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+After all contour points are added they could be filtered by minimal angular distance between them. This could be done by calling:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.filter_contour( 0.15, (0, 360, 50, 90) )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+where 0.15 is angular distance (called 'density') in degrees. Second argument is geographic domain. If given \u8211\'96 filter will make effect on inner point. Those which are outside domain will not be filtered.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Contour adding and filtering operations are independent and may me called in arbitrary order. Contour field itself can be accessed and edited directly, but should not.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+2) }{\ul\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Adding vertices}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+After contours are prepared one should add randomly generated high dense points close to desired high-resolution boarders. This points are needed for proper contours shaping. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+To cover some required domain with points one can easily call:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.add_hp_verts( 0.1, 0.2, (170, 210, 60, 70) )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+where first argument is initial average points density, second argument is filter density (similar to contour filter) and third optional argument is geographic domain.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+All these points are storaged in 'verts' field of Boarder instance. It can be accessed and edited directlym but also should not.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+3) }{\ul\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Generating boarders}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+After all verts and contours are ready \u8211\'96 one can simply generate boarder and contour files by calling:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.gener_boarders( 100, 0.1, (90, 270, 50, 90), file_b='brds.ll')}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+This method takes one main (first) argument \u8211\'96 thickness of boarder zone in kilometers. This means that the class will merge contours and verts into one array and put all the points those are within 'thick' kilometers range from contained contours into output file.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Three other optional arguments are density for filtering points after before final output, geographic domain (works as before) and output file name.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Also this method will generate two contour files called 'contours.ll' and 'contours.xyz' that contain points from 'contour' filed inside domain in terms lon-lat and x-y-z respectively.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+4) }{\ul\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Adding coverage}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+After boarder and contour files are generated one should cover the globe with another set of randomly generated points. This points are required for proper Voronoi diagrams building. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+One can generate this points using same methods of Boarder instance as for generating inner verts and save 'verts' field into file or other methods from other modules or even use one`s own file that contains points in lon-lat convension ni degrees.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+5) }{\ul\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Filtering and merging}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+When the boarder and covering files are ready they have to be filtered to avoid areas overlaping. If that would not be done \u8211\'96 Voronoi generator may stop with error or required points (and polygons) density will be violated.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+Several boarder files could be merged by calling:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.merge_boarders( file1, file2, thick, file_out='merged.ll' )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+this will put all points from file2 and only the points from file1 that are out of 'thick' range (in kilometers) from any point from file2 into file_out.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+When all boarders from several files are merged into one huge boarder \u8211\'96 covering file can be filtered with it by calling:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+board.extract_boarders_from_v( file_v, file_b, thick, file_out='extrd.ll')}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+this will extract all points from file_v and put those are out of 'thick' range from points in file_b intp file_out. The difference from previous method is that the files will not be mergedm meaning that file_out will contain only the points from file_v.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\ulnone\ulc0\b0\dbch\af6\rtlch \ltrch\loch\fs28
+6) }{\i0\ul\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+Files finilizing}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+When all boarders are merged and all covers are filtered one should save all the points into one single file for Voronoi module processing. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+To make this operation easy siku provides points files manipulating module called 'geofiles.py'. This module has several functions for reading, converting and writing geographic point arrays in different convensions. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+To merge the all points into final file one can easily call:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+verts = geofiles.r_lonlat( 'extrd.ll' )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+boards = geofiles.r_lonlat( 'brds.ll' )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+geofiles.w_xyz( 'shapes.xyz', geofiles.lonlat_to_xyz( verts + boards ) )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+this will read two files into two lists, add this lists, convert into x-y-z coordinates (on unit sphere) and write into file 'shapes.xyz'.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+After this is done \u8211\'96 one can pass this file to Voronoi module, run fortran binary with this file name as argument and gain two files containing data of generated polygons.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+7) }{\i0\ul\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+Polygon upload and marking}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\ulnone\ulc0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+When poygon files are generated they could be loaded into siku scenatio by module called 'poly_voronoi'.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+Inside the scenario one should create an instance of PolyVor class that will load this two files as a list of convex polygons vertices lists:}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i\ulnone\ulc0\b0\dbch\af6\afs24\ai\rtlch \ltrch\loch\fs24
+PV = PolyVor( 'file.voronoi.xyz', 'file.voronoi.xyzf' )}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+This data is contaned in 'coords' field. The instance may be created empty and loaded afterwards with 'load' method call.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+After polygons are loaded they may be }{{\*\bkmkstart __DdeLink__772_1532126173}\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+additionally}{{\*\bkmkend __DdeLink__772_1532126173}\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+ filtered. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+Method '}{\i\ulnone\ulc0\b0\dbch\af6\ai\rtlch \ltrch\loch\fs28
+filter_}{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+' will throw out all polygons from PolyVor instance those contain at least one vertex located out of specified region.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+Method '}{\i\ulnone\ulc0\b0\dbch\af6\ai\rtlch \ltrch\loch\fs28
+clear_the_land}{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+' will throw out all polygons those have all the vertices located NOT on ocean.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+Method '}{\i\ulnone\ulc0\b0\dbch\af6\ai\rtlch \ltrch\loch\fs28
+get_boarder_by_gmt}{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+' will return thi list of polygon indexes (matching current 'coords' fild list) for all polygons those have both 'ocean' and 'not ocean' vertices.}
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0{\i0\ulnone\ulc0\b0\dbch\af6\ai0\rtlch \ltrch\loch\fs28
+After coordinates list is ready it can be passed to scenario coordinates, initialized as elements and loaded into the core. }
+\par \pard\plain \s20\ql\nowidctlpar\sb0\sa0\ltrpar\cf1\dbch\af6\langfe1081\dbch\af8\afs24\loch\f5\fs20\lang3081\ql\sb0\sa0\i0\ulnone\ulc0\ai0\rtlch \ltrch\loch
+
+\par }
