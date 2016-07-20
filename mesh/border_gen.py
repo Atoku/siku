@@ -19,7 +19,7 @@ from siku import geocoords
 from siku import geofiles
 GC = geocoords
 
-import ExtBords
+#import ExtBords
 
 # -------------------------------------------------------------------------
 # In this module all fields named exactly as 'domain' have to be 4-tuple in
@@ -79,28 +79,28 @@ class Border:
 
     def filter_contour( self, dens, domain=None ):
         '''Filters contour vertices (only inside domain, if one is given)
-##        for lowering resolution.'''
-##        verts = []
-##
-##        if domain:
-##            for c in self.contour:
-##                if is_inside( c, domain ):
-##                    verts.append( c )
-##                    self.contour.remove( c )
-##        else:
-##            verts = self.contour[:]
-##            self.contour= []
-##
-##        verts = geofiles.lonlat_to_xyz( verts )
-##        g = hpgrid.Grid()
-##        g.points = verts
-##        g.points_filter( dens )
-##        verts = geofiles.xyz_to_lonlat( g.points )
-##
-##        self.contour = self.contour + verts
-        if domain == None:
-            domain = (0.0, 360.0, -90.0, 90.0)
-        self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )
+        for lowering resolution.'''
+        verts = []
+        
+        if domain:
+            for c in self.contour:
+                if is_inside( c, domain ):
+                    verts.append( c )
+                    self.contour.remove( c )
+        else:
+            verts = self.contour[:]
+            self.contour= []
+
+        verts = geofiles.lonlat_to_xyz( verts )
+        g = hpgrid.Grid()
+        g.points = verts
+        g.points_filter( dens )
+        verts = geofiles.xyz_to_lonlat( g.points )
+
+        self.contour = self.contour + verts
+        # if domain == None:
+        #     domain = (0.0, 360.0, -90.0, 90.0)
+        # self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )
 
     def add_hp_verts( self, gen_dens, fil_dens, domain = None ):
         '''Generates and appends vertices using hpgrid monule'''
