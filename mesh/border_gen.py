@@ -81,7 +81,7 @@ class Border:
         '''Filters contour vertices (only inside domain, if one is given)
         for lowering resolution.'''
         verts = []
-        
+
         if domain:
             for c in self.contour:
                 if is_inside( c, domain ):
@@ -98,9 +98,9 @@ class Border:
         verts = geofiles.xyz_to_lonlat( g.points )
 
         self.contour = self.contour + verts
-        # if domain == None:
-        #     domain = (0.0, 360.0, -90.0, 90.0)
-        # self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )
+##        if domain == None:
+##            domain = (0.0, 360.0, -90.0, 90.0)
+##        self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )
 
     def add_hp_verts( self, gen_dens, fil_dens, domain = None ):
         '''Generates and appends vertices using hpgrid monule'''
