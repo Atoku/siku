@@ -259,8 +259,8 @@ subroutine stripack_interface ( point_file_name )
 !  are taken to be the center of the range of
 !  the nodal latitudes and longitudes.
 !
-  elat = 0.0D+00
-  elon = 0.0D+00
+  elat = 45.0D+00
+  elon = -150.0D+00
   a = 90.0D+00
   numbr = ( n <= 200 )
   nt = 2 * n - 4

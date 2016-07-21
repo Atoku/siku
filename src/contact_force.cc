@@ -302,8 +302,12 @@ inline void _update_contact( ContactData& cd )
 
 void contact_forces( Globals& siku )
 {
-  for( auto& c : siku.ConDet.cont )
+  #pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
+  for( int i = 0; i < siku.ConDet.cont.size(); i++ )
+//  for( auto& c : siku.ConDet.cont ) // reorganized for OpenMP
     {
+      auto& c = siku.ConDet.cont[i];
+
       // conditional cancellation of interaction
       // TODO: such errors should be removed by removing their reason
       if(
@@ -404,7 +408,7 @@ InterForces _test_springs( ContactData& cd )
   // physical rigidity of ice (from python scenario)
   double K = _rigidity( cd );
   // TODO: discuss viscosity
-  //double area = pow( (cd.c.init_wid * cd.siku.planet.R * 0.25 ), 2 ) * M_PI;
+  double area = pow( (cd.c.init_wid * cd.siku.planet.R * 0.5 ), 2 ) * M_PI;
 
   // calculating forces and torques
   vec2d p1 = cd.c.p1; // same as c.p2
@@ -413,7 +417,7 @@ InterForces _test_springs( ContactData& cd )
 
   vec2d F = (def * cd.siku.planet.R) * K * (cd.c.init_wid  * cd.siku.planet.R)
               * cd.c.durability
-              ;//- area * cd.siku.phys_consts["etha"] * cd.va12;  // viscous ;
+              - area * cd.siku.phys_consts["etha"] * cd.va12;  // viscous
 
   // memorizing deformation
   cd.d1 = cd.d2 = abs( def ) * cd.siku.planet.R;

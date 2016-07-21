@@ -1,0 +1,947 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 15.84      3.73     3.73                             Geometry::intersect(Geometry::cvpoly2d const&, Geometry::cvpoly2d const&, std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >&, std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >*, Geometry::vec2d*, double*)
+ 15.07      7.28     3.55                             Geometry::segment2d_intersect(Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d&)
+ 10.53      9.76     2.48                             Geometry::cvpoly2d::contains(Geometry::vec2d const&) const
+  9.89     12.09     2.33     2401     0.00     0.00  void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long)
+  7.43     13.84     1.75  5333161     0.00     0.00  ContactData::ContactData(ContactDetector::Contact&, Globals&)
+  6.03     15.26     1.42        1     1.42     4.39  ContactDetector::sweep_n_prune(Globals&)
+  5.44     16.54     1.28                             Geometry::cvpoly2d::is_convex() const
+  4.18     17.53     0.99     1020     0.00     0.00  _collision(ContactData&)
+  3.91     18.45     0.92  3259394     0.00     0.00  _distributed_springs(ContactData&)
+  3.69     19.32     0.87 10826777     0.00     0.00  void std::__adjust_heap<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, ContactDetector::Contact>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, long, ContactDetector::Contact)
+  3.50     20.14     0.83 31424748     0.00     0.00  void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >)
+  2.00     20.61     0.47 41892802     0.00     0.00  void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d>(Geometry::vec2d&&)
+  1.89     21.06     0.45 20627409     0.00     0.00  std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::operator=(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> > const&)
+  1.74     21.47     0.41     1201     0.00     0.00  merge_contacts(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > const&)
+  0.81     21.66     0.19  8880460     0.00     0.00  NMCVecfield::get_vec(int const&, int const&)
+  0.76     21.84     0.18 71615369     0.00     0.00  el_pointers_x_compare(Element*, Element*)
+  0.76     22.02     0.18                             forces_mass(Globals&)
+  0.74     22.19     0.18 16671617     0.00     0.00  void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::emplace_back<ContactDetector::Contact>(ContactDetector::Contact&&)
+  0.72     22.36     0.17     1201     0.00     0.00  ContactDetector::clear()
+  0.72     22.53     0.17                             void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d const&>(Geometry::vec2d const&)
+  0.68     22.69     0.16  3596400     0.00     0.00  Sikupy::fcall_monitor(Globals const&, unsigned long, char const*)
+  0.53     22.82     0.13 70524311     0.00     0.00  void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::emplace_back<Geometry::vec2d>(Geometry::vec2d&&)
+  0.38     22.91     0.09     9983     0.00     0.00  void std::__heap_select<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >)
+  0.38     23.00     0.09                             void std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >::_M_emplace_back_aux<Geometry::PointStatus>(Geometry::PointStatus&&)
+  0.30     23.07     0.07     1201     0.00     0.00  void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*))
+  0.21     23.12     0.05                             clean_props(Globals&)
+  0.21     23.17     0.05                             mproperties(Globals&)
+  0.17     23.21     0.04  4440230     0.00     0.00  Vecfield::get_at_lat_lon_rad(double, double)
+  0.17     23.25     0.04  3595550     0.00     0.00  void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*))
+  0.17     23.29     0.04                             Geometry::convex_hull(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >)
+  0.17     23.33     0.04                             Geometry::cvpoly2d::intersect(Geometry::cvpoly2d const&, Geometry::cvpoly2d const&)
+  0.13     23.36     0.03                             Geometry::cvpoly2d::is_CCW_oriented_NC() const
+  0.13     23.39     0.03  2223112     0.00     0.00  Coordinates::sph_by_quat(glm::detail::tquat<double, (glm::precision)0> const&, double*, double*)
+  0.08     23.41     0.02                             monitoring(Globals&, Sikupy&)
+  0.08     23.43     0.02                             dynamics(Globals&, double)
+  0.08     23.45     0.02                             position(Globals&, double)
+  0.08     23.47     0.02                             Geometry::cvpoly2d::mom_of_ine() const
+  0.08     23.49     0.02                             std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_default_append(unsigned long)
+  0.04     23.50     0.01     7218     0.00     0.00  boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int)
+  0.04     23.51     0.01       15     0.00     0.00  void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact>(ContactDetector::Contact&&)
+  0.04     23.52     0.01        5     0.00     0.00  Sikupy::read_nmc_vecfield(NMCVecfield&, char const*)
+  0.04     23.53     0.01                             ContactDetector::freeze(Globals&, double)
+  0.04     23.54     0.01                             void std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >::_M_emplace_back_aux<Geometry::PointStatus const&>(Geometry::PointStatus const&)
+  0.02     23.54     0.01     1201     0.00     0.00  void std::__insertion_sort<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*))
+  0.02     23.55     0.01                             std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::~vector()
+  0.00     23.55     0.00   222778     0.00     0.00  Sikupy::read_double(_object*, double&)
+  0.00     23.55     0.00   153862     0.00     0.00  void std::__adjust_heap<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, Element*, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, long, Element*, bool (*)(Element*, Element*))
+  0.00     23.55     0.00   111114     0.00     0.00  Coordinates::sph_to_cart(double const&, double const&, double const&)
+  0.00     23.55     0.00    55557     0.00     0.00  Coordinates::geo_to_cart_surf_velo(double const&, double const&, double const&, double const&)
+  0.00     23.55     0.00    52560     0.00     0.00  NMCVecfield::set_vec(glm::detail::tvec3<double, (glm::precision)0> const&, unsigned long const&, unsigned long const&)
+  0.00     23.55     0.00    13852     0.00     0.00  _dist_freeze(ContactDetector::Contact&, Globals&, double)
+  0.00     23.55     0.00    13852     0.00     0.00  ContactDetector::Contact::find_edges(Globals&)
+  0.00     23.55     0.00     6010     0.00     0.00  boost::date_time::counted_time_system<boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> >::get_time_of_day(boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> const&)
+  0.00     23.55     0.00     3609     0.00     0.00  boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const
+  0.00     23.55     0.00     3004     0.00     0.00  Sikupy::read_string(_object*, std::string&)
+  0.00     23.55     0.00     3001     0.00     0.00  Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&)
+  0.00     23.55     0.00     2998     0.00     0.00  Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&)
+  0.00     23.55     0.00     2997     0.00     0.00  Sikupy::read_vec3d(_object*, glm::detail::tvec3<double, (glm::precision)0>&)
+  0.00     23.55     0.00     2997     0.00     0.00  Sikupy::read_quat(_object*, glm::detail::tquat<double, (glm::precision)0>&)
+  0.00     23.55     0.00     2997     0.00     0.00  Globals::add_monit(std::string&, Element&)
+  0.00     23.55     0.00     2997     0.00     0.00  std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >::_M_default_append(unsigned long)
+  0.00     23.55     0.00     2401     0.00     0.00  void std::__insertion_sort<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >)
+  0.00     23.55     0.00     1206     0.00     0.00  Sikupy::read_ulong(_object*, unsigned long&)
+  0.00     23.55     0.00     1201     0.00     0.00  ContactDetector::is_detect_time(Globals&)
+  0.00     23.55     0.00     1200     0.00     0.00  Sikupy::fcall_update_wind(Globals&)
+  0.00     23.55     0.00     1085     0.00     0.00  std::map<double, unsigned long, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::operator[](double const&)
+  0.00     23.55     0.00     1085     0.00     0.00  std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::operator[](unsigned long const&)
+  0.00     23.55     0.00     1085     0.00     0.00  std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<double const, unsigned long> >, double const&)
+  0.00     23.55     0.00     1085     0.00     0.00  std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<unsigned long const, double> >, unsigned long const&)
+  0.00     23.55     0.00       30     0.00     0.00  void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact const&>(ContactDetector::Contact const&)
+  0.00     23.55     0.00       14     0.00     0.00  void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&)
+  0.00     23.55     0.00       14     0.00     0.00  std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*)
+  0.00     23.55     0.00       14     0.00     0.00  std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*)
+  0.00     23.55     0.00       13     0.00     0.00  void std::vector<Element*, std::allocator<Element*> >::_M_emplace_back_aux<Element*>(Element*&&)
+  0.00     23.55     0.00       13     0.00     0.00  std::_Rb_tree_iterator<std::pair<std::string const, double> > std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<std::string const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::piecewise_construct_t const&, std::tuple<std::string const&>&&, std::tuple<>&&)
+  0.00     23.55     0.00       13     0.00     0.00  std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::string const&)
+  0.00     23.55     0.00       10     0.00     0.00  std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_unique_pos(double const&)
+  0.00     23.55     0.00       10     0.00     0.00  std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_unique_pos(unsigned long const&)
+  0.00     23.55     0.00        8     0.00     0.00  boost::date_time::int_adapter<long> boost::date_time::int_adapter<long>::operator+<long>(boost::date_time::int_adapter<long> const&) const
+  0.00     23.55     0.00        6     0.00     0.00  NMCVecfield::clear()
+  0.00     23.55     0.00        5     0.00     0.00  NMCVecfield::init_grid(unsigned long const&, unsigned long const&)
+  0.00     23.55     0.00        5     0.00     0.00  Sikupy::read_string_vector(_object*, std::vector<std::string, std::allocator<std::string> >&)
+  0.00     23.55     0.00        5     0.00     0.00  std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > >::_M_fill_insert(__gnu_cxx::__normal_iterator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >*, std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > > >, unsigned long, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > const&)
+  0.00     23.55     0.00        5     0.00     0.00  void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string>(std::string&&)
+  0.00     23.55     0.00        3     0.00     0.00  ModelTime::set_marker(unsigned int, boost::posix_time::ptime const&)
+  0.00     23.55     0.00        2     0.00     0.00  _GLOBAL__sub_I__ZN5LowioC2Ev
+  0.00     23.55     0.00        2     0.00     0.00  Sikupy::read_dt(_object*, boost::posix_time::time_duration&)
+  0.00     23.55     0.00        2     0.00     0.00  Sikupy::read_time(_object*, boost::posix_time::ptime&)
+  0.00     23.55     0.00        2     0.00     0.00  Vecfield::~Vecfield()
+  0.00     23.55     0.00        2     0.00     0.00  ModelTime::set_dt(unsigned int, boost::posix_time::time_duration const&)
+  0.00     23.55     0.00        2     0.00     0.00  std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z10monitoringR7GlobalsR6Sikupy
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z11forces_massR7Globals
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z11mpropertiesR7Globals
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z14contact_forcesR7Globals
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z8dynamicsR7Globalsd
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z8positionR7Globalsd
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN11Coordinates11sph_by_quatERKN3glm6detail5tquatIdLNS0_9precisionE0EEEPdS7_
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN11NMCVecfield7get_vecERKiS1_
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN15ContactDetector7Contact10find_edgesER7Globals
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN6Highio4saveERK7Globals
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN6SikupyC2ESs
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN7Element8containsERKN3glm6detail5tvec3IdLNS0_9precisionE0EEE
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN7GlobalsC2Ev
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN7OptionsC2EiPPc
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN8VecfieldC2ERKNS_11Source_TypeE
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN9ModelTime10set_markerEjiiiiiii
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN9Scheduler14set_event_timeEiiiiiii
+  0.00     23.55     0.00        1     0.00     0.00  _GLOBAL__sub_I_main
+  0.00     23.55     0.00        1     0.00     0.00  _select_freeze(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, Globals&, double const&)
+  0.00     23.55     0.00        1     0.00     2.20  ContactDetector::detect(Globals&)
+  0.00     23.55     0.00        1     0.00     0.00  Lowio::~Lowio()
+  0.00     23.55     0.00        1     0.00     0.00  boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::counted_time_rep(boost::gregorian::date const&, boost::posix_time::time_duration const&)
+  0.00     23.55     0.00        1     0.00     0.00  boost::date_time::date_generator_formatter<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::date_generator_formatter()
+  0.00     23.55     0.00        1     0.00     0.00  boost::gregorian::date::date(boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day)
+  0.00     23.55     0.00        1     0.00     0.00  std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_links(Globals&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_planet(Planet&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_elements(Globals&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_settings(Globals&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_modeltime(ModelTime&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_long_vector(_object*, std::vector<long, std::allocator<long> >&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_str_doub_map(_object*, std::map<std::string, double, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_diagnostics_winds(Diagnostics&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_diagnostics_meshes(Diagnostics&)
+  0.00     23.55     0.00        1     0.00     0.00  Sikupy::read_info(Info&)
+  0.00     23.55     0.00        1     0.00     0.00  Options::info()
+  0.00     23.55     0.00        1     0.00     0.00  Vecfield::init(Vecfield::Source_Type const&)
+  0.00     23.55     0.00        1     0.00     0.00  Vecfield::Vecfield()
+  0.00     23.55     0.00        1     0.00     0.00  Vecfield::Vecfield(Vecfield::Source_Type const&)
+  0.00     23.55     0.00        1     0.00     0.00  auxutils::remove_file_extension(std::string const&)
+  0.00     23.55     0.00        1     0.00     0.00  boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::do_put_tm(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, tm const&, std::string) const
+  0.00     23.55     0.00        1     0.00     0.00  std::locale::locale<boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&, boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >*)
+  0.00     23.55     0.00        1     0.00     0.00  std::vector<Element, std::allocator<Element> >::_M_default_append(unsigned long)
+  0.00     23.55     0.00        1     0.00     0.00  std::vector<Material, std::allocator<Material> >::_M_default_append(unsigned long)
+  0.00     23.55     0.00        1     0.00     0.00  std::vector<std::string, std::allocator<std::string> >::_M_default_append(unsigned long)
+  0.00     23.55     0.00        1     0.00     0.00  void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string const&>(std::string const&)
+  0.00     23.55     0.00        1     0.00     0.00  std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_unique_pos(std::string const&)
+  0.00     23.55     0.00        1     0.00     0.00  std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<std::string const, double> >*)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.04% of 23.55 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     28.1    0.01    6.60                 ContactDetector::freeze(Globals&, double) [1]
+                1.42    2.97       1/1           ContactDetector::sweep_n_prune(Globals&) [4]
+                0.00    2.20       1/1           ContactDetector::detect(Globals&) [11]
+                0.00    0.00       1/1           _select_freeze(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, Globals&, double const&) [125]
+-----------------------------------------------
+                             2130292             _collision(ContactData&) [2]
+                0.99    3.71    1020/1020        contact_forces(Globals&) [3]
+[2]     19.9    0.99    3.71    1020+2130292 _collision(ContactData&) [2]
+                1.75    0.81 5333161/5333161     ContactData::ContactData(ContactDetector::Contact&, Globals&) [8]
+                0.92    0.00 3259394/3259394     _distributed_springs(ContactData&) [13]
+                0.23    0.00 10596734/20627409     std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::operator=(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> > const&) [17]
+                             2130292             _collision(ContactData&) [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]     19.9    0.00    4.70                 contact_forces(Globals&) [3]
+                0.99    3.71    1020/1020        _collision(ContactData&) [2]
+-----------------------------------------------
+                1.42    2.97       1/1           ContactDetector::freeze(Globals&, double) [1]
+[4]     18.7    1.42    2.97       1         ContactDetector::sweep_n_prune(Globals&) [4]
+                1.17    0.48    1201/2401        void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+                0.44    0.00 16652401/31424748     void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [15]
+                0.41    0.00    1201/1201        merge_contacts(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > const&) [19]
+                0.07    0.15    1201/1201        void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)) [22]
+                0.18    0.00 16671617/16671617     void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::emplace_back<ContactDetector::Contact>(ContactDetector::Contact&&) [26]
+                0.04    0.03 3580181/3595550     void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [31]
+                0.01    0.00      15/15          void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact>(ContactDetector::Contact&&) [44]
+                0.01    0.00    1201/1201        void std::__insertion_sort<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [48]
+                0.00    0.00    1201/2401        void std::__insertion_sort<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [52]
+                0.00    0.00      13/13          void std::vector<Element*, std::allocator<Element*> >::_M_emplace_back_aux<Element*>(Element*&&) [89]
+-----------------------------------------------
+                                                 <spontaneous>
+[5]     15.8    3.73    0.00                 Geometry::intersect(Geometry::cvpoly2d const&, Geometry::cvpoly2d const&, std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >&, std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >*, Geometry::vec2d*, double*) [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[6]     15.1    3.55    0.00                 Geometry::segment2d_intersect(Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d&) [6]
+-----------------------------------------------
+                             2540534             void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+                1.16    0.48    1200/2401        ContactDetector::clear() [10]
+                1.17    0.48    1201/2401        ContactDetector::sweep_n_prune(Globals&) [4]
+[7]     14.0    2.33    0.96    2401+2540534 void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+                0.58    0.00 7216258/10826777     void std::__adjust_heap<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, ContactDetector::Contact>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, long, ContactDetector::Contact) [14]
+                0.09    0.29    9983/9983        void std::__heap_select<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [20]
+                             2540534             void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+-----------------------------------------------
+                1.75    0.81 5333161/5333161     _collision(ContactData&) [2]
+[8]     10.9    1.75    0.81 5333161         ContactData::ContactData(ContactDetector::Contact&, Globals&) [8]
+                0.47    0.00 41892802/41892802     void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d>(Geometry::vec2d&&) [16]
+                0.22    0.00 10030675/20627409     std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::operator=(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> > const&) [17]
+                0.13    0.00 70524311/70524311     void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::emplace_back<Geometry::vec2d>(Geometry::vec2d&&) [29]
+-----------------------------------------------
+                                                 <spontaneous>
+[9]     10.5    2.48    0.00                 Geometry::cvpoly2d::contains(Geometry::vec2d const&) const [9]
+-----------------------------------------------
+                0.17    2.03    1201/1201        ContactDetector::detect(Globals&) [11]
+[10]     9.4    0.17    2.03    1201         ContactDetector::clear() [10]
+                1.16    0.48    1200/2401        void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+                0.39    0.00 14740146/31424748     void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [15]
+                0.00    0.00    1200/2401        void std::__insertion_sort<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [52]
+-----------------------------------------------
+                0.00    2.20       1/1           ContactDetector::freeze(Globals&, double) [1]
+[11]     9.4    0.00    2.20       1         ContactDetector::detect(Globals&) [11]
+                0.17    2.03    1201/1201        ContactDetector::clear() [10]
+                0.00    0.00    1201/1201        ContactDetector::is_detect_time(Globals&) [80]
+-----------------------------------------------
+                                                 <spontaneous>
+[12]     5.4    1.28    0.00                 Geometry::cvpoly2d::is_convex() const [12]
+-----------------------------------------------
+                0.92    0.00 3259394/3259394     _collision(ContactData&) [2]
+[13]     3.9    0.92    0.00 3259394         _distributed_springs(ContactData&) [13]
+-----------------------------------------------
+                0.29    0.00 3610519/10826777     void std::__heap_select<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [20]
+                0.58    0.00 7216258/10826777     void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+[14]     3.7    0.87    0.00 10826777         void std::__adjust_heap<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, ContactDetector::Contact>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, long, ContactDetector::Contact) [14]
+-----------------------------------------------
+                0.00    0.00   32201/31424748     void std::__insertion_sort<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [52]
+                0.39    0.00 14740146/31424748     ContactDetector::clear() [10]
+                0.44    0.00 16652401/31424748     ContactDetector::sweep_n_prune(Globals&) [4]
+[15]     3.5    0.83    0.00 31424748         void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [15]
+-----------------------------------------------
+                0.47    0.00 41892802/41892802     ContactData::ContactData(ContactDetector::Contact&, Globals&) [8]
+[16]     2.0    0.47    0.00 41892802         void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d>(Geometry::vec2d&&) [16]
+-----------------------------------------------
+                0.22    0.00 10030675/20627409     ContactData::ContactData(ContactDetector::Contact&, Globals&) [8]
+                0.23    0.00 10596734/20627409     _collision(ContactData&) [2]
+[17]     1.9    0.45    0.00 20627409         std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::operator=(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> > const&) [17]
+-----------------------------------------------
+                                                 <spontaneous>
+[18]     1.9    0.18    0.26                 forces_mass(Globals&) [18]
+                0.04    0.19 4440230/4440230     Vecfield::get_at_lat_lon_rad(double, double) [21]
+                0.03    0.00 2220115/2223112     Coordinates::sph_by_quat(glm::detail::tquat<double, (glm::precision)0> const&, double*, double*) [37]
+-----------------------------------------------
+                0.41    0.00    1201/1201        ContactDetector::sweep_n_prune(Globals&) [4]
+[19]     1.7    0.41    0.00    1201         merge_contacts(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > const&) [19]
+                0.00    0.00      30/30          void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact const&>(ContactDetector::Contact const&) [85]
+-----------------------------------------------
+                0.09    0.29    9983/9983        void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long) [7]
+[20]     1.6    0.09    0.29    9983         void std::__heap_select<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [20]
+                0.29    0.00 3610519/10826777     void std::__adjust_heap<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, ContactDetector::Contact>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, long, ContactDetector::Contact) [14]
+-----------------------------------------------
+                0.04    0.19 4440230/4440230     forces_mass(Globals&) [18]
+[21]     1.0    0.04    0.19 4440230         Vecfield::get_at_lat_lon_rad(double, double) [21]
+                0.19    0.00 8880460/8880460     NMCVecfield::get_vec(int const&, int const&) [23]
+-----------------------------------------------
+                              365327             void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)) [22]
+                0.07    0.15    1201/1201        ContactDetector::sweep_n_prune(Globals&) [4]
+[22]     0.9    0.07    0.15    1201+365327  void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)) [22]
+                0.15    0.00 58161473/71615369     el_pointers_x_compare(Element*, Element*) [24]
+                0.00    0.00  153862/153862      void std::__adjust_heap<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, Element*, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, long, Element*, bool (*)(Element*, Element*)) [51]
+                              365327             void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)) [22]
+-----------------------------------------------
+                0.19    0.00 8880460/8880460     Vecfield::get_at_lat_lon_rad(double, double) [21]
+[23]     0.8    0.19    0.00 8880460         NMCVecfield::get_vec(int const&, int const&) [23]
+-----------------------------------------------
+                0.00    0.00   18015/71615369     void std::__insertion_sort<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [48]
+                0.00    0.00  516897/71615369     void std::__adjust_heap<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, Element*, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, long, Element*, bool (*)(Element*, Element*)) [51]
+                0.03    0.00 12918984/71615369     void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [31]
+                0.15    0.00 58161473/71615369     void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)) [22]
+[24]     0.8    0.18    0.00 71615369         el_pointers_x_compare(Element*, Element*) [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[25]     0.8    0.02    0.16                 monitoring(Globals&, Sikupy&) [25]
+                0.16    0.00 3596400/3596400     Sikupy::fcall_monitor(Globals const&, unsigned long, char const*) [28]
+-----------------------------------------------
+                0.18    0.00 16671617/16671617     ContactDetector::sweep_n_prune(Globals&) [4]
+[26]     0.7    0.18    0.00 16671617         void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::emplace_back<ContactDetector::Contact>(ContactDetector::Contact&&) [26]
+-----------------------------------------------
+                                                 <spontaneous>
+[27]     0.7    0.17    0.00                 void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d const&>(Geometry::vec2d const&) [27]
+-----------------------------------------------
+                0.16    0.00 3596400/3596400     monitoring(Globals&, Sikupy&) [25]
+[28]     0.7    0.16    0.00 3596400         Sikupy::fcall_monitor(Globals const&, unsigned long, char const*) [28]
+-----------------------------------------------
+                0.13    0.00 70524311/70524311     ContactData::ContactData(ContactDetector::Contact&, Globals&) [8]
+[29]     0.5    0.13    0.00 70524311         void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::emplace_back<Geometry::vec2d>(Geometry::vec2d&&) [29]
+-----------------------------------------------
+                                                 <spontaneous>
+[30]     0.4    0.09    0.00                 void std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >::_M_emplace_back_aux<Geometry::PointStatus>(Geometry::PointStatus&&) [30]
+-----------------------------------------------
+                0.00    0.00   15369/3595550     void std::__insertion_sort<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [48]
+                0.04    0.03 3580181/3595550     ContactDetector::sweep_n_prune(Globals&) [4]
+[31]     0.3    0.04    0.03 3595550         void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [31]
+                0.03    0.00 12918984/71615369     el_pointers_x_compare(Element*, Element*) [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[32]     0.2    0.05    0.00                 clean_props(Globals&) [32]
+-----------------------------------------------
+                                                 <spontaneous>
+[33]     0.2    0.05    0.00                 mproperties(Globals&) [33]
+-----------------------------------------------
+                                                 <spontaneous>
+[34]     0.2    0.04    0.00                 Geometry::convex_hull(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >) [34]
+-----------------------------------------------
+                                                 <spontaneous>
+[35]     0.2    0.04    0.00                 Geometry::cvpoly2d::intersect(Geometry::cvpoly2d const&, Geometry::cvpoly2d const&) [35]
+-----------------------------------------------
+                                                 <spontaneous>
+[36]     0.1    0.03    0.00                 Geometry::cvpoly2d::is_CCW_oriented_NC() const [36]
+-----------------------------------------------
+                0.00    0.00    2997/2223112     Globals::post_init() [53]
+                0.03    0.00 2220115/2223112     forces_mass(Globals&) [18]
+[37]     0.1    0.03    0.00 2223112         Coordinates::sph_by_quat(glm::detail::tquat<double, (glm::precision)0> const&, double*, double*) [37]
+-----------------------------------------------
+                                                 <spontaneous>
+[38]     0.1    0.02    0.00                 dynamics(Globals&, double) [38]
+-----------------------------------------------
+                                                 <spontaneous>
+[39]     0.1    0.02    0.00                 position(Globals&, double) [39]
+-----------------------------------------------
+                                                 <spontaneous>
+[40]     0.1    0.02    0.00                 Geometry::cvpoly2d::mom_of_ine() const [40]
+-----------------------------------------------
+                                                 <spontaneous>
+[41]     0.1    0.02    0.00                 std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_default_append(unsigned long) [41]
+-----------------------------------------------
+                                                 <spontaneous>
+[42]     0.1    0.00    0.02                 Sikupy::fcall_pretimestep(Globals&) [42]
+                0.00    0.01    1200/1200        Sikupy::fcall_update_wind(Globals&) [43]
+                0.00    0.00    3600/3609        boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [49]
+                0.00    0.00    3600/7218        boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [47]
+                0.00    0.00    6000/6010        boost::date_time::counted_time_system<boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> >::get_time_of_day(boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> const&) [71]
+                0.00    0.00    1200/1206        Sikupy::read_ulong(_object*, unsigned long&) [79]
+-----------------------------------------------
+                0.00    0.01    1200/1200        Sikupy::fcall_pretimestep(Globals&) [42]
+[43]     0.0    0.00    0.01    1200         Sikupy::fcall_update_wind(Globals&) [43]
+                0.01    0.00       5/5           Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+                0.00    0.00       5/5           Sikupy::read_string_vector(_object*, std::vector<std::string, std::allocator<std::string> >&) [97]
+-----------------------------------------------
+                0.01    0.00      15/15          ContactDetector::sweep_n_prune(Globals&) [4]
+[44]     0.0    0.01    0.00      15         void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact>(ContactDetector::Contact&&) [44]
+-----------------------------------------------
+                0.01    0.00       5/5           Sikupy::fcall_update_wind(Globals&) [43]
+[45]     0.0    0.01    0.00       5         Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+                0.00    0.00  106205/222778      Sikupy::read_double(_object*, double&) [65]
+                0.00    0.00   52560/55557       Coordinates::geo_to_cart_surf_velo(double const&, double const&, double const&, double const&) [67]
+                0.00    0.00   52560/52560       NMCVecfield::set_vec(glm::detail::tvec3<double, (glm::precision)0> const&, unsigned long const&, unsigned long const&) [68]
+                0.00    0.00    1085/1085        std::map<double, unsigned long, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::operator[](double const&) [81]
+                0.00    0.00    1085/1085        std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::operator[](unsigned long const&) [82]
+                0.00    0.00       5/5           NMCVecfield::init_grid(unsigned long const&, unsigned long const&) [96]
+-----------------------------------------------
+                                                 <spontaneous>
+[46]     0.0    0.01    0.00                 void std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >::_M_emplace_back_aux<Geometry::PointStatus const&>(Geometry::PointStatus const&) [46]
+-----------------------------------------------
+                0.00    0.00       3/7218        Sikupy::fcall_inits(Globals&) [56]
+                0.00    0.00       3/7218        Sikupy::fcall_conclusions(Globals&) [57]
+                0.00    0.00       3/7218        Sikupy::read_info(Info&) [54]
+                0.00    0.00    3600/7218        Sikupy::fcall_pretimestep(Globals&) [42]
+                0.01    0.00    3609/7218        boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [49]
+[47]     0.0    0.01    0.00    7218         boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [47]
+-----------------------------------------------
+                0.01    0.00    1201/1201        ContactDetector::sweep_n_prune(Globals&) [4]
+[48]     0.0    0.01    0.00    1201         void std::__insertion_sort<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [48]
+                0.00    0.00   15369/3595550     void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)) [31]
+                0.00    0.00   18015/71615369     el_pointers_x_compare(Element*, Element*) [24]
+-----------------------------------------------
+                0.00    0.00       3/3609        Sikupy::fcall_inits(Globals&) [56]
+                0.00    0.00       3/3609        Sikupy::fcall_conclusions(Globals&) [57]
+                0.00    0.00       3/3609        Sikupy::read_info(Info&) [54]
+                0.00    0.00    3600/3609        Sikupy::fcall_pretimestep(Globals&) [42]
+[49]     0.0    0.00    0.01    3609         boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [49]
+                0.01    0.00    3609/7218        boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [47]
+-----------------------------------------------
+                                                 <spontaneous>
+[50]     0.0    0.01    0.00                 std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::~vector() [50]
+-----------------------------------------------
+                0.00    0.00  153862/153862      void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)) [22]
+[51]     0.0    0.00    0.00  153862         void std::__adjust_heap<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, Element*, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, long, Element*, bool (*)(Element*, Element*)) [51]
+                0.00    0.00  516897/71615369     el_pointers_x_compare(Element*, Element*) [24]
+-----------------------------------------------
+                0.00    0.00    1200/2401        ContactDetector::clear() [10]
+                0.00    0.00    1201/2401        ContactDetector::sweep_n_prune(Globals&) [4]
+[52]     0.0    0.00    0.00    2401         void std::__insertion_sort<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [52]
+                0.00    0.00   32201/31424748     void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >) [15]
+-----------------------------------------------
+                                                 <spontaneous>
+[53]     0.0    0.00    0.00                 Globals::post_init() [53]
+                0.00    0.00    2997/2223112     Coordinates::sph_by_quat(glm::detail::tquat<double, (glm::precision)0> const&, double*, double*) [37]
+                0.00    0.00    2997/55557       Coordinates::geo_to_cart_surf_velo(double const&, double const&, double const&, double const&) [67]
+                0.00    0.00       1/1           Vecfield::init(Vecfield::Source_Type const&) [142]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[54]     0.0    0.00    0.00       1         Sikupy::read_info(Info&) [54]
+                0.00    0.00       3/7218        boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [47]
+                0.00    0.00       3/3609        boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [49]
+                0.00    0.00       4/3004        Sikupy::read_string(_object*, std::string&) [72]
+                0.00    0.00       1/1           boost::gregorian::date::date(boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day) [129]
+                0.00    0.00       1/1           boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::counted_time_rep(boost::gregorian::date const&, boost::posix_time::time_duration const&) [127]
+                0.00    0.00       1/1           std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+-----------------------------------------------
+                                                 <spontaneous>
+[55]     0.0    0.00    0.00                 Sikupy::initialize(Globals&) [55]
+                0.00    0.00       1/1           Sikupy::read_info(Info&) [54]
+                0.00    0.00       1/1           Sikupy::read_settings(Globals&) [134]
+                0.00    0.00       1/1           Sikupy::read_links(Globals&) [131]
+                0.00    0.00       1/1           Sikupy::read_planet(Planet&) [132]
+                0.00    0.00       1/1           Sikupy::read_modeltime(ModelTime&) [136]
+                0.00    0.00       1/1           Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [135]
+                0.00    0.00       1/1           Sikupy::read_elements(Globals&) [133]
+                0.00    0.00       1/1           Sikupy::read_diagnostics_winds(Diagnostics&) [139]
+                0.00    0.00       1/1           Sikupy::read_diagnostics_meshes(Diagnostics&) [140]
+-----------------------------------------------
+                                                 <spontaneous>
+[56]     0.0    0.00    0.00                 Sikupy::fcall_inits(Globals&) [56]
+                0.00    0.00       3/7218        boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [47]
+                0.00    0.00       3/3609        boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [49]
+                0.00    0.00       5/6010        boost::date_time::counted_time_system<boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> >::get_time_of_day(boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> const&) [71]
+-----------------------------------------------
+                                                 <spontaneous>
+[57]     0.0    0.00    0.00                 Sikupy::fcall_conclusions(Globals&) [57]
+                0.00    0.00       3/7218        boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [47]
+                0.00    0.00       3/3609        boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [49]
+                0.00    0.00       5/6010        boost::date_time::counted_time_system<boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> >::get_time_of_day(boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> const&) [71]
+-----------------------------------------------
+                0.00    0.00       1/222778      Sikupy::read_planet(Planet&) [132]
+                0.00    0.00       1/222778      Sikupy::read_settings(Globals&) [134]
+                0.00    0.00       2/222778      Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [135]
+                0.00    0.00    8991/222778      Sikupy::read_vec3d(_object*, glm::detail::tvec3<double, (glm::precision)0>&) [75]
+                0.00    0.00   14985/222778      Sikupy::read_elements(Globals&) [133]
+                0.00    0.00   30010/222778      Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&) [73]
+                0.00    0.00   62583/222778      Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&) [74]
+                0.00    0.00  106205/222778      Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+[65]     0.0    0.00    0.00  222778         Sikupy::read_double(_object*, double&) [65]
+-----------------------------------------------
+                0.00    0.00  111114/111114      Coordinates::geo_to_cart_surf_velo(double const&, double const&, double const&, double const&) [67]
+[66]     0.0    0.00    0.00  111114         Coordinates::sph_to_cart(double const&, double const&, double const&) [66]
+-----------------------------------------------
+                0.00    0.00    2997/55557       Globals::post_init() [53]
+                0.00    0.00   52560/55557       Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+[67]     0.0    0.00    0.00   55557         Coordinates::geo_to_cart_surf_velo(double const&, double const&, double const&, double const&) [67]
+                0.00    0.00  111114/111114      Coordinates::sph_to_cart(double const&, double const&, double const&) [66]
+-----------------------------------------------
+                0.00    0.00   52560/52560       Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+[68]     0.0    0.00    0.00   52560         NMCVecfield::set_vec(glm::detail::tvec3<double, (glm::precision)0> const&, unsigned long const&, unsigned long const&) [68]
+-----------------------------------------------
+                0.00    0.00   13852/13852       _select_freeze(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, Globals&, double const&) [125]
+[69]     0.0    0.00    0.00   13852         _dist_freeze(ContactDetector::Contact&, Globals&, double) [69]
+                0.00    0.00   13852/13852       ContactDetector::Contact::find_edges(Globals&) [70]
+-----------------------------------------------
+                0.00    0.00   13852/13852       _dist_freeze(ContactDetector::Contact&, Globals&, double) [69]
+[70]     0.0    0.00    0.00   13852         ContactDetector::Contact::find_edges(Globals&) [70]
+-----------------------------------------------
+                0.00    0.00       5/6010        Sikupy::fcall_inits(Globals&) [56]
+                0.00    0.00       5/6010        Sikupy::fcall_conclusions(Globals&) [57]
+                0.00    0.00    6000/6010        Sikupy::fcall_pretimestep(Globals&) [42]
+[71]     0.0    0.00    0.00    6010         boost::date_time::counted_time_system<boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> >::get_time_of_day(boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> const&) [71]
+-----------------------------------------------
+                0.00    0.00       1/3004        Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [135]
+                0.00    0.00       2/3004        Sikupy::read_settings(Globals&) [134]
+                0.00    0.00       4/3004        Sikupy::read_info(Info&) [54]
+                0.00    0.00    2997/3004        Sikupy::read_elements(Globals&) [133]
+[72]     0.0    0.00    0.00    3004         Sikupy::read_string(_object*, std::string&) [72]
+-----------------------------------------------
+                0.00    0.00       4/3001        Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [135]
+                0.00    0.00    2997/3001        Sikupy::read_elements(Globals&) [133]
+[73]     0.0    0.00    0.00    3001         Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&) [73]
+                0.00    0.00   30010/222778      Sikupy::read_double(_object*, double&) [65]
+                0.00    0.00       2/2           std::vector<double, std::allocator<double> >::_M_default_append(unsigned long) [106]
+-----------------------------------------------
+                0.00    0.00       1/2998        Sikupy::read_settings(Globals&) [134]
+                0.00    0.00    2997/2998        Sikupy::read_elements(Globals&) [133]
+[74]     0.0    0.00    0.00    2998         Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&) [74]
+                0.00    0.00   62583/222778      Sikupy::read_double(_object*, double&) [65]
+                0.00    0.00    2997/2997        std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >::_M_default_append(unsigned long) [78]
+-----------------------------------------------
+                0.00    0.00    2997/2997        Sikupy::read_elements(Globals&) [133]
+[75]     0.0    0.00    0.00    2997         Sikupy::read_vec3d(_object*, glm::detail::tvec3<double, (glm::precision)0>&) [75]
+                0.00    0.00    8991/222778      Sikupy::read_double(_object*, double&) [65]
+-----------------------------------------------
+                0.00    0.00    2997/2997        Sikupy::read_elements(Globals&) [133]
+[76]     0.0    0.00    0.00    2997         Sikupy::read_quat(_object*, glm::detail::tquat<double, (glm::precision)0>&) [76]
+-----------------------------------------------
+                0.00    0.00    2997/2997        Sikupy::read_elements(Globals&) [133]
+[77]     0.0    0.00    0.00    2997         Globals::add_monit(std::string&, Element&) [77]
+                0.00    0.00       1/1           void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string const&>(std::string const&) [151]
+-----------------------------------------------
+                0.00    0.00    2997/2997        Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&) [74]
+[78]     0.0    0.00    0.00    2997         std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >::_M_default_append(unsigned long) [78]
+-----------------------------------------------
+                0.00    0.00       6/1206        Sikupy::read_settings(Globals&) [134]
+                0.00    0.00    1200/1206        Sikupy::fcall_pretimestep(Globals&) [42]
+[79]     0.0    0.00    0.00    1206         Sikupy::read_ulong(_object*, unsigned long&) [79]
+-----------------------------------------------
+                0.00    0.00    1201/1201        ContactDetector::detect(Globals&) [11]
+[80]     0.0    0.00    0.00    1201         ContactDetector::is_detect_time(Globals&) [80]
+-----------------------------------------------
+                0.00    0.00    1085/1085        Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+[81]     0.0    0.00    0.00    1085         std::map<double, unsigned long, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::operator[](double const&) [81]
+                0.00    0.00    1085/1085        std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<double const, unsigned long> >, double const&) [83]
+-----------------------------------------------
+                0.00    0.00    1085/1085        Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+[82]     0.0    0.00    0.00    1085         std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::operator[](unsigned long const&) [82]
+                0.00    0.00    1085/1085        std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<unsigned long const, double> >, unsigned long const&) [84]
+-----------------------------------------------
+                0.00    0.00    1085/1085        std::map<double, unsigned long, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::operator[](double const&) [81]
+[83]     0.0    0.00    0.00    1085         std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<double const, unsigned long> >, double const&) [83]
+                0.00    0.00      10/10          std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_unique_pos(double const&) [92]
+-----------------------------------------------
+                0.00    0.00    1085/1085        std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::operator[](unsigned long const&) [82]
+[84]     0.0    0.00    0.00    1085         std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<unsigned long const, double> >, unsigned long const&) [84]
+                0.00    0.00      10/10          std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_unique_pos(unsigned long const&) [93]
+-----------------------------------------------
+                0.00    0.00      30/30          merge_contacts(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > const&) [19]
+[85]     0.0    0.00    0.00      30         void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact const&>(ContactDetector::Contact const&) [85]
+-----------------------------------------------
+                0.00    0.00       2/14          Globals::Globals() [254]
+                0.00    0.00       3/14          std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+                0.00    0.00       9/14          boost::date_time::date_generator_formatter<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::date_generator_formatter() [128]
+[86]     0.0    0.00    0.00      14         void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&) [86]
+-----------------------------------------------
+                                1085             std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*) [87]
+                0.00    0.00       2/14          Vecfield::~Vecfield() [104]
+                0.00    0.00      12/14          NMCVecfield::clear() [95]
+[87]     0.0    0.00    0.00      14+1085    std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*) [87]
+                                1085             std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*) [87]
+-----------------------------------------------
+                                1085             std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*) [88]
+                0.00    0.00       2/14          Vecfield::~Vecfield() [104]
+                0.00    0.00      12/14          NMCVecfield::clear() [95]
+[88]     0.0    0.00    0.00      14+1085    std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*) [88]
+                                1085             std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*) [88]
+-----------------------------------------------
+                0.00    0.00      13/13          ContactDetector::sweep_n_prune(Globals&) [4]
+[89]     0.0    0.00    0.00      13         void std::vector<Element*, std::allocator<Element*> >::_M_emplace_back_aux<Element*>(Element*&&) [89]
+-----------------------------------------------
+                0.00    0.00      13/13          Sikupy::read_str_doub_map(_object*, std::map<std::string, double, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >&) [138]
+[90]     0.0    0.00    0.00      13         std::_Rb_tree_iterator<std::pair<std::string const, double> > std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<std::string const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::piecewise_construct_t const&, std::tuple<std::string const&>&&, std::tuple<>&&) [90]
+                0.00    0.00      13/13          std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::string const&) [91]
+-----------------------------------------------
+                0.00    0.00      13/13          std::_Rb_tree_iterator<std::pair<std::string const, double> > std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<std::string const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::piecewise_construct_t const&, std::tuple<std::string const&>&&, std::tuple<>&&) [90]
+[91]     0.0    0.00    0.00      13         std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::string const&) [91]
+                0.00    0.00       1/1           std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_unique_pos(std::string const&) [152]
+-----------------------------------------------
+                0.00    0.00      10/10          std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<double const, unsigned long> >, double const&) [83]
+[92]     0.0    0.00    0.00      10         std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_unique_pos(double const&) [92]
+-----------------------------------------------
+                0.00    0.00      10/10          std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<unsigned long const, double> >, unsigned long const&) [84]
+[93]     0.0    0.00    0.00      10         std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_unique_pos(unsigned long const&) [93]
+-----------------------------------------------
+                0.00    0.00       4/8           Sikupy::read_dt(_object*, boost::posix_time::time_duration&) [102]
+                0.00    0.00       4/8           Sikupy::read_time(_object*, boost::posix_time::ptime&) [103]
+[94]     0.0    0.00    0.00       8         boost::date_time::int_adapter<long> boost::date_time::int_adapter<long>::operator+<long>(boost::date_time::int_adapter<long> const&) const [94]
+-----------------------------------------------
+                0.00    0.00       1/6           Vecfield::~Vecfield() [104]
+                0.00    0.00       5/6           NMCVecfield::init_grid(unsigned long const&, unsigned long const&) [96]
+[95]     0.0    0.00    0.00       6         NMCVecfield::clear() [95]
+                0.00    0.00      12/14          std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*) [87]
+                0.00    0.00      12/14          std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*) [88]
+-----------------------------------------------
+                0.00    0.00       5/5           Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [45]
+[96]     0.0    0.00    0.00       5         NMCVecfield::init_grid(unsigned long const&, unsigned long const&) [96]
+                0.00    0.00       5/6           NMCVecfield::clear() [95]
+                0.00    0.00       5/5           std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > >::_M_fill_insert(__gnu_cxx::__normal_iterator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >*, std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > > >, unsigned long, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > const&) [98]
+-----------------------------------------------
+                0.00    0.00       5/5           Sikupy::fcall_update_wind(Globals&) [43]
+[97]     0.0    0.00    0.00       5         Sikupy::read_string_vector(_object*, std::vector<std::string, std::allocator<std::string> >&) [97]
+                0.00    0.00       1/1           std::vector<std::string, std::allocator<std::string> >::_M_default_append(unsigned long) [150]
+-----------------------------------------------
+                0.00    0.00       5/5           NMCVecfield::init_grid(unsigned long const&, unsigned long const&) [96]
+[98]     0.0    0.00    0.00       5         std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > >::_M_fill_insert(__gnu_cxx::__normal_iterator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >*, std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > > >, unsigned long, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > const&) [98]
+-----------------------------------------------
+                0.00    0.00       2/5           Globals::Globals() [254]
+                0.00    0.00       3/5           std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+[99]     0.0    0.00    0.00       5         void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string>(std::string&&) [99]
+-----------------------------------------------
+                0.00    0.00       3/3           Sikupy::read_modeltime(ModelTime&) [136]
+[100]    0.0    0.00    0.00       3         ModelTime::set_marker(unsigned int, boost::posix_time::ptime const&) [100]
+-----------------------------------------------
+                0.00    0.00       2/2           __libc_csu_init [368]
+[101]    0.0    0.00    0.00       2         _GLOBAL__sub_I__ZN5LowioC2Ev [101]
+-----------------------------------------------
+                0.00    0.00       2/2           Sikupy::read_modeltime(ModelTime&) [136]
+[102]    0.0    0.00    0.00       2         Sikupy::read_dt(_object*, boost::posix_time::time_duration&) [102]
+                0.00    0.00       4/8           boost::date_time::int_adapter<long> boost::date_time::int_adapter<long>::operator+<long>(boost::date_time::int_adapter<long> const&) const [94]
+-----------------------------------------------
+                0.00    0.00       2/2           Sikupy::read_modeltime(ModelTime&) [136]
+[103]    0.0    0.00    0.00       2         Sikupy::read_time(_object*, boost::posix_time::ptime&) [103]
+                0.00    0.00       4/8           boost::date_time::int_adapter<long> boost::date_time::int_adapter<long>::operator+<long>(boost::date_time::int_adapter<long> const&) const [94]
+-----------------------------------------------
+                0.00    0.00       2/2           Globals::~Globals() [255]
+[104]    0.0    0.00    0.00       2         Vecfield::~Vecfield() [104]
+                0.00    0.00       2/14          std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*) [88]
+                0.00    0.00       2/14          std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*) [87]
+                0.00    0.00       1/6           NMCVecfield::clear() [95]
+-----------------------------------------------
+                0.00    0.00       2/2           Sikupy::read_modeltime(ModelTime&) [136]
+[105]    0.0    0.00    0.00       2         ModelTime::set_dt(unsigned int, boost::posix_time::time_duration const&) [105]
+-----------------------------------------------
+                0.00    0.00       2/2           Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&) [73]
+[106]    0.0    0.00    0.00       2         std::vector<double, std::allocator<double> >::_M_default_append(unsigned long) [106]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[107]    0.0    0.00    0.00       1         _GLOBAL__sub_I__Z10monitoringR7GlobalsR6Sikupy [107]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[108]    0.0    0.00    0.00       1         _GLOBAL__sub_I__Z11forces_massR7Globals [108]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[109]    0.0    0.00    0.00       1         _GLOBAL__sub_I__Z11mpropertiesR7Globals [109]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[110]    0.0    0.00    0.00       1         _GLOBAL__sub_I__Z14contact_forcesR7Globals [110]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[111]    0.0    0.00    0.00       1         _GLOBAL__sub_I__Z8dynamicsR7Globalsd [111]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[112]    0.0    0.00    0.00       1         _GLOBAL__sub_I__Z8positionR7Globalsd [112]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[113]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN11Coordinates11sph_by_quatERKN3glm6detail5tquatIdLNS0_9precisionE0EEEPdS7_ [113]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[114]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN11NMCVecfield7get_vecERKiS1_ [114]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[115]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN15ContactDetector7Contact10find_edgesER7Globals [115]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[116]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN6Highio4saveERK7Globals [116]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[117]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN6SikupyC2ESs [117]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[118]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN7Element8containsERKN3glm6detail5tvec3IdLNS0_9precisionE0EEE [118]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[119]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN7GlobalsC2Ev [119]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[120]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN7OptionsC2EiPPc [120]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[121]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN8VecfieldC2ERKNS_11Source_TypeE [121]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[122]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN9ModelTime10set_markerEjiiiiiii [122]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[123]    0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN9Scheduler14set_event_timeEiiiiiii [123]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [368]
+[124]    0.0    0.00    0.00       1         _GLOBAL__sub_I_main [124]
+-----------------------------------------------
+                0.00    0.00       1/1           ContactDetector::freeze(Globals&, double) [1]
+[125]    0.0    0.00    0.00       1         _select_freeze(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, Globals&, double const&) [125]
+                0.00    0.00   13852/13852       _dist_freeze(ContactDetector::Contact&, Globals&, double) [69]
+-----------------------------------------------
+                0.00    0.00       1/1           Highio::~Highio() [243]
+[126]    0.0    0.00    0.00       1         Lowio::~Lowio() [126]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_info(Info&) [54]
+[127]    0.0    0.00    0.00       1         boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::counted_time_rep(boost::gregorian::date const&, boost::posix_time::time_duration const&) [127]
+-----------------------------------------------
+                0.00    0.00       1/1           std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+[128]    0.0    0.00    0.00       1         boost::date_time::date_generator_formatter<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::date_generator_formatter() [128]
+                0.00    0.00       9/14          void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&) [86]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_info(Info&) [54]
+[129]    0.0    0.00    0.00       1         boost::gregorian::date::date(boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day) [129]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_info(Info&) [54]
+[130]    0.0    0.00    0.00       1         std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+                0.00    0.00       3/5           void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string>(std::string&&) [99]
+                0.00    0.00       3/14          void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&) [86]
+                0.00    0.00       1/1           boost::date_time::date_generator_formatter<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::date_generator_formatter() [128]
+                0.00    0.00       1/1           std::locale::locale<boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&, boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >*) [147]
+                0.00    0.00       1/1           boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::do_put_tm(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, tm const&, std::string) const [146]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[131]    0.0    0.00    0.00       1         Sikupy::read_links(Globals&) [131]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[132]    0.0    0.00    0.00       1         Sikupy::read_planet(Planet&) [132]
+                0.00    0.00       1/222778      Sikupy::read_double(_object*, double&) [65]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[133]    0.0    0.00    0.00       1         Sikupy::read_elements(Globals&) [133]
+                0.00    0.00   14985/222778      Sikupy::read_double(_object*, double&) [65]
+                0.00    0.00    2997/2997        Sikupy::read_quat(_object*, glm::detail::tquat<double, (glm::precision)0>&) [76]
+                0.00    0.00    2997/3001        Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&) [73]
+                0.00    0.00    2997/2998        Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&) [74]
+                0.00    0.00    2997/3004        Sikupy::read_string(_object*, std::string&) [72]
+                0.00    0.00    2997/2997        Sikupy::read_vec3d(_object*, glm::detail::tvec3<double, (glm::precision)0>&) [75]
+                0.00    0.00    2997/2997        Globals::add_monit(std::string&, Element&) [77]
+                0.00    0.00       1/1           std::vector<Element, std::allocator<Element> >::_M_default_append(unsigned long) [148]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[134]    0.0    0.00    0.00       1         Sikupy::read_settings(Globals&) [134]
+                0.00    0.00       6/1206        Sikupy::read_ulong(_object*, unsigned long&) [79]
+                0.00    0.00       2/3004        Sikupy::read_string(_object*, std::string&) [72]
+                0.00    0.00       1/1           Sikupy::read_long_vector(_object*, std::vector<long, std::allocator<long> >&) [137]
+                0.00    0.00       1/2998        Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&) [74]
+                0.00    0.00       1/1           Sikupy::read_str_doub_map(_object*, std::map<std::string, double, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >&) [138]
+                0.00    0.00       1/222778      Sikupy::read_double(_object*, double&) [65]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[135]    0.0    0.00    0.00       1         Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [135]
+                0.00    0.00       4/3001        Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&) [73]
+                0.00    0.00       2/222778      Sikupy::read_double(_object*, double&) [65]
+                0.00    0.00       1/3004        Sikupy::read_string(_object*, std::string&) [72]
+                0.00    0.00       1/1           std::vector<Material, std::allocator<Material> >::_M_default_append(unsigned long) [149]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[136]    0.0    0.00    0.00       1         Sikupy::read_modeltime(ModelTime&) [136]
+                0.00    0.00       3/3           ModelTime::set_marker(unsigned int, boost::posix_time::ptime const&) [100]
+                0.00    0.00       2/2           Sikupy::read_time(_object*, boost::posix_time::ptime&) [103]
+                0.00    0.00       2/2           Sikupy::read_dt(_object*, boost::posix_time::time_duration&) [102]
+                0.00    0.00       2/2           ModelTime::set_dt(unsigned int, boost::posix_time::time_duration const&) [105]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_settings(Globals&) [134]
+[137]    0.0    0.00    0.00       1         Sikupy::read_long_vector(_object*, std::vector<long, std::allocator<long> >&) [137]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_settings(Globals&) [134]
+[138]    0.0    0.00    0.00       1         Sikupy::read_str_doub_map(_object*, std::map<std::string, double, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >&) [138]
+                0.00    0.00      13/13          std::_Rb_tree_iterator<std::pair<std::string const, double> > std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<std::string const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::piecewise_construct_t const&, std::tuple<std::string const&>&&, std::tuple<>&&) [90]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[139]    0.0    0.00    0.00       1         Sikupy::read_diagnostics_winds(Diagnostics&) [139]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::initialize(Globals&) [55]
+[140]    0.0    0.00    0.00       1         Sikupy::read_diagnostics_meshes(Diagnostics&) [140]
+-----------------------------------------------
+                0.00    0.00       1/1           Options::Options(int, char**) [257]
+[141]    0.0    0.00    0.00       1         Options::info() [141]
+-----------------------------------------------
+                0.00    0.00       1/1           Globals::post_init() [53]
+[142]    0.0    0.00    0.00       1         Vecfield::init(Vecfield::Source_Type const&) [142]
+-----------------------------------------------
+                0.00    0.00       1/1           Globals::Globals() [254]
+[143]    0.0    0.00    0.00       1         Vecfield::Vecfield() [143]
+-----------------------------------------------
+                0.00    0.00       1/1           Globals::Globals() [254]
+[144]    0.0    0.00    0.00       1         Vecfield::Vecfield(Vecfield::Source_Type const&) [144]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::Sikupy(std::string) [250]
+[145]    0.0    0.00    0.00       1         auxutils::remove_file_extension(std::string const&) [145]
+-----------------------------------------------
+                0.00    0.00       1/1           std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+[146]    0.0    0.00    0.00       1         boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::do_put_tm(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, tm const&, std::string) const [146]
+-----------------------------------------------
+                0.00    0.00       1/1           std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [130]
+[147]    0.0    0.00    0.00       1         std::locale::locale<boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&, boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >*) [147]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_elements(Globals&) [133]
+[148]    0.0    0.00    0.00       1         std::vector<Element, std::allocator<Element> >::_M_default_append(unsigned long) [148]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [135]
+[149]    0.0    0.00    0.00       1         std::vector<Material, std::allocator<Material> >::_M_default_append(unsigned long) [149]
+-----------------------------------------------
+                0.00    0.00       1/1           Sikupy::read_string_vector(_object*, std::vector<std::string, std::allocator<std::string> >&) [97]
+[150]    0.0    0.00    0.00       1         std::vector<std::string, std::allocator<std::string> >::_M_default_append(unsigned long) [150]
+-----------------------------------------------
+                0.00    0.00       1/1           Globals::add_monit(std::string&, Element&) [77]
+[151]    0.0    0.00    0.00       1         void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string const&>(std::string const&) [151]
+-----------------------------------------------
+                0.00    0.00       1/1           std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::string const&) [91]
+[152]    0.0    0.00    0.00       1         std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_unique_pos(std::string const&) [152]
+-----------------------------------------------
+                                  13             std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<std::string const, double> >*) [153]
+                0.00    0.00       1/1           Globals::~Globals() [255]
+[153]    0.0    0.00    0.00       1+13      std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<std::string const, double> >*) [153]
+                                  13             std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<std::string const, double> >*) [153]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+ [107] _GLOBAL__sub_I__Z10monitoringR7GlobalsR6Sikupy (monitoring.cc) [71] boost::date_time::counted_time_system<boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> >::get_time_of_day(boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config> const&) [36] Geometry::cvpoly2d::is_CCW_oriented_NC() const
+ [108] _GLOBAL__sub_I__Z11forces_massR7Globals (forces_mass.cc) [47] boost::date_time::gregorian_calendar_base<boost::date_time::year_month_day_base<boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day>, unsigned int>::from_day_number(unsigned int) [9] Geometry::cvpoly2d::contains(Geometry::vec2d const&) const
+ [109] _GLOBAL__sub_I__Z11mpropertiesR7Globals (mproperties.cc) [128] boost::date_time::date_generator_formatter<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::date_generator_formatter() [12] Geometry::cvpoly2d::is_convex() const
+ [110] _GLOBAL__sub_I__Z14contact_forcesR7Globals (contact_force.cc) [129] boost::gregorian::date::date(boost::gregorian::greg_year, boost::gregorian::greg_month, boost::gregorian::greg_day) [81] std::map<double, unsigned long, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::operator[](double const&)
+ [111] _GLOBAL__sub_I__Z8dynamicsR7Globalsd (dynamics.cc) [130] std::basic_ostream<char, std::char_traits<char> >& boost::gregorian::operator<< <char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, boost::gregorian::greg_month const&) [82] std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::operator[](unsigned long const&)
+ [112] _GLOBAL__sub_I__Z8positionR7Globalsd (position.cc) [131] Sikupy::read_links(Globals&) [147] std::locale::locale<boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > > >(std::locale const&, boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >*)
+ [113] _GLOBAL__sub_I__ZN11Coordinates11sph_by_quatERKN3glm6detail5tquatIdLNS0_9precisionE0EEEPdS7_ (coordinates.cc) [79] Sikupy::read_ulong(_object*, unsigned long&) [148] std::vector<Element, std::allocator<Element> >::_M_default_append(unsigned long)
+ [114] _GLOBAL__sub_I__ZN11NMCVecfield7get_vecERKiS1_ (nmc_reader.cc) [75] Sikupy::read_vec3d(_object*, glm::detail::tvec3<double, (glm::precision)0>&) [149] std::vector<Material, std::allocator<Material> >::_M_default_append(unsigned long)
+ [115] _GLOBAL__sub_I__ZN15ContactDetector7Contact10find_edgesER7Globals (contact_detect.cc) [65] Sikupy::read_double(_object*, double&) [26] void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::emplace_back<ContactDetector::Contact>(ContactDetector::Contact&&)
+ [101] _GLOBAL__sub_I__ZN5LowioC2Ev (lowio.cc) [132] Sikupy::read_planet(Planet&) [85] void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact const&>(ContactDetector::Contact const&)
+ [116] _GLOBAL__sub_I__ZN6Highio4saveERK7Globals (highio.cc) [72] Sikupy::read_string(_object*, std::string&) [44] void std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::_M_emplace_back_aux<ContactDetector::Contact>(ContactDetector::Contact&&)
+ [117] _GLOBAL__sub_I__ZN6SikupyC2ESs (sikupy.cc) [28] Sikupy::fcall_monitor(Globals const&, unsigned long, char const*) [50] std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >::~vector()
+ [118] _GLOBAL__sub_I__ZN7Element8containsERKN3glm6detail5tvec3IdLNS0_9precisionE0EEE (element.cc) [133] Sikupy::read_elements(Globals&) [78] std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >::_M_default_append(unsigned long)
+ [119] _GLOBAL__sub_I__ZN7GlobalsC2Ev (globals.cc) [134] Sikupy::read_settings(Globals&) [46] void std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >::_M_emplace_back_aux<Geometry::PointStatus const&>(Geometry::PointStatus const&)
+ [120] _GLOBAL__sub_I__ZN7OptionsC2EiPPc (options.cc) [135] Sikupy::read_materials(std::vector<Material, std::allocator<Material> >&) [30] void std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >::_M_emplace_back_aux<Geometry::PointStatus>(Geometry::PointStatus&&)
+ [121] _GLOBAL__sub_I__ZN8VecfieldC2ERKNS_11Source_TypeE (vecfield.cc) [136] Sikupy::read_modeltime(ModelTime&) [29] void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::emplace_back<Geometry::vec2d>(Geometry::vec2d&&)
+ [122] _GLOBAL__sub_I__ZN9ModelTime10set_markerEjiiiiiii (modeltime.cc) [137] Sikupy::read_long_vector(_object*, std::vector<long, std::allocator<long> >&) [41] std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_default_append(unsigned long)
+ [123] _GLOBAL__sub_I__ZN9Scheduler14set_event_timeEiiiiiii (scheduler.cc) [43] Sikupy::fcall_update_wind(Globals&) [27] void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d const&>(Geometry::vec2d const&)
+ [124] _GLOBAL__sub_I_main (siku.cc) [45] Sikupy::read_nmc_vecfield(NMCVecfield&, char const*) [16] void std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::_M_emplace_back_aux<Geometry::vec2d>(Geometry::vec2d&&)
+   [2] _collision(ContactData&) [138] Sikupy::read_str_doub_map(_object*, std::map<std::string, double, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >&) [17] std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >::operator=(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> > const&)
+  [25] monitoring(Globals&, Sikupy&) [74] Sikupy::read_vec3d_vector(_object*, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >&) [89] void std::vector<Element*, std::allocator<Element*> >::_M_emplace_back_aux<Element*>(Element*&&)
+  [32] clean_props(Globals&)  [73] Sikupy::read_double_vector(_object*, std::vector<double, std::allocator<double> >&) [98] std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > >::_M_fill_insert(__gnu_cxx::__normal_iterator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >*, std::vector<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > >, std::allocator<std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > > > >, unsigned long, std::vector<glm::detail::tvec3<double, (glm::precision)0>, std::allocator<glm::detail::tvec3<double, (glm::precision)0> > > const&)
+  [18] forces_mass(Globals&)  [97] Sikupy::read_string_vector(_object*, std::vector<std::string, std::allocator<std::string> >&) [86] void std::vector<std::string, std::allocator<std::string> >::emplace_back<std::string>(std::string&&)
+  [33] mproperties(Globals&) [139] Sikupy::read_diagnostics_winds(Diagnostics&) [150] std::vector<std::string, std::allocator<std::string> >::_M_default_append(unsigned long)
+  [69] _dist_freeze(ContactDetector::Contact&, Globals&, double) [140] Sikupy::read_diagnostics_meshes(Diagnostics&) [151] void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string const&>(std::string const&)
+ [125] _select_freeze(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, Globals&, double const&) [102] Sikupy::read_dt(_object*, boost::posix_time::time_duration&) [99] void std::vector<std::string, std::allocator<std::string> >::_M_emplace_back_aux<std::string>(std::string&&)
+  [19] merge_contacts(std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> >&, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > const&) [54] Sikupy::read_info(Info&) [106] std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
+  [13] _distributed_springs(ContactData&) [76] Sikupy::read_quat(_object*, glm::detail::tquat<double, (glm::precision)0>&) [90] std::_Rb_tree_iterator<std::pair<std::string const, double> > std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_emplace_hint_unique<std::piecewise_construct_t const&, std::tuple<std::string const&>, std::tuple<> >(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::piecewise_construct_t const&, std::tuple<std::string const&>&&, std::tuple<>&&)
+  [24] el_pointers_x_compare(Element*, Element*) [103] Sikupy::read_time(_object*, boost::posix_time::ptime&) [152] std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_unique_pos(std::string const&)
+  [38] dynamics(Globals&, double) [77] Globals::add_monit(std::string&, Element&) [91] std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<std::string const, double> >, std::string const&)
+  [39] position(Globals&, double) [141] Options::info()  [153] std::_Rb_tree<std::string, std::pair<std::string const, double>, std::_Select1st<std::pair<std::string const, double> >, std::less<std::string>, std::allocator<std::pair<std::string const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<std::string const, double> >*)
+   [8] ContactData::ContactData(ContactDetector::Contact&, Globals&) [34] Geometry::convex_hull(std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >) [92] std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_unique_pos(double const&)
+  [37] Coordinates::sph_by_quat(glm::detail::tquat<double, (glm::precision)0> const&, double*, double*) [6] Geometry::segment2d_intersect(Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d const&, Geometry::vec2d&) [83] std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<double const, unsigned long> >, double const&)
+  [66] Coordinates::sph_to_cart(double const&, double const&, double const&) [35] Geometry::cvpoly2d::intersect(Geometry::cvpoly2d const&, Geometry::cvpoly2d const&) [87] std::_Rb_tree<double, std::pair<double const, unsigned long>, std::_Select1st<std::pair<double const, unsigned long> >, std::less<double>, std::allocator<std::pair<double const, unsigned long> > >::_M_erase(std::_Rb_tree_node<std::pair<double const, unsigned long> >*)
+  [67] Coordinates::geo_to_cart_surf_velo(double const&, double const&, double const&, double const&) [5] Geometry::intersect(Geometry::cvpoly2d const&, Geometry::cvpoly2d const&, std::vector<Geometry::vec2d, std::allocator<Geometry::vec2d> >&, std::vector<Geometry::PointStatus, std::allocator<Geometry::PointStatus> >*, Geometry::vec2d*, double*) [93] std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_unique_pos(unsigned long const&)
+  [95] NMCVecfield::clear()   [21] Vecfield::get_at_lat_lon_rad(double, double) [84] std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_get_insert_hint_unique_pos(std::_Rb_tree_const_iterator<std::pair<unsigned long const, double> >, unsigned long const&)
+  [23] NMCVecfield::get_vec(int const&, int const&) [142] Vecfield::init(Vecfield::Source_Type const&) [88] std::_Rb_tree<unsigned long, std::pair<unsigned long const, double>, std::_Select1st<std::pair<unsigned long const, double> >, std::less<unsigned long>, std::allocator<std::pair<unsigned long const, double> > >::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, double> >*)
+  [68] NMCVecfield::set_vec(glm::detail::tvec3<double, (glm::precision)0> const&, unsigned long const&, unsigned long const&) [143] Vecfield::Vecfield() [14] void std::__adjust_heap<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, ContactDetector::Contact>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long, long, ContactDetector::Contact)
+  [96] NMCVecfield::init_grid(unsigned long const&, unsigned long const&) [144] Vecfield::Vecfield(Vecfield::Source_Type const&) [51] void std::__adjust_heap<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, Element*, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, long, Element*, bool (*)(Element*, Element*))
+   [4] ContactDetector::sweep_n_prune(Globals&) [104] Vecfield::~Vecfield() [20] void std::__heap_select<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >)
+  [80] ContactDetector::is_detect_time(Globals&) [145] auxutils::remove_file_extension(std::string const&) [52] void std::__insertion_sort<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >)
+  [10] ContactDetector::clear() [100] ModelTime::set_marker(unsigned int, boost::posix_time::ptime const&) [48] void std::__insertion_sort<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*))
+  [11] ContactDetector::detect(Globals&) [105] ModelTime::set_dt(unsigned int, boost::posix_time::time_duration const&) [7] void std::__introsort_loop<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long>(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, __gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >, long)
+   [1] ContactDetector::freeze(Globals&, double) [146] boost::date_time::date_facet<boost::gregorian::date, char, std::ostreambuf_iterator<char, std::char_traits<char> > >::do_put_tm(std::ostreambuf_iterator<char, std::char_traits<char> >, std::ios_base&, char, tm const&, std::string) const [22] void std::__introsort_loop<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, __gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, long, bool (*)(Element*, Element*))
+  [70] ContactDetector::Contact::find_edges(Globals&) [94] boost::date_time::int_adapter<long> boost::date_time::int_adapter<long>::operator+<long>(boost::date_time::int_adapter<long> const&) const [15] void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > > >(__gnu_cxx::__normal_iterator<ContactDetector::Contact*, std::vector<ContactDetector::Contact, std::allocator<ContactDetector::Contact> > >)
+ [126] Lowio::~Lowio()        [49] boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::date() const [31] void std::__unguarded_linear_insert<__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*)>(__gnu_cxx::__normal_iterator<Element**, std::vector<Element*, std::allocator<Element*> > >, bool (*)(Element*, Element*))
+ [127] boost::date_time::counted_time_rep<boost::posix_time::millisec_posix_time_system_config>::counted_time_rep(boost::gregorian::date const&, boost::posix_time::time_duration const&) [40] Geometry::cvpoly2d::mom_of_ine() const

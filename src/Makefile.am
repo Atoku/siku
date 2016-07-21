@@ -1,4 +1,4 @@
-STYLEFLAGS = -pedantic -Wall
+STYLEFLAGS = -pedantic -Wall -fopenmp -pg
 SHAPELIBDIR = ../deps/shapelib
 
 # float point correctness check
