@@ -62,8 +62,8 @@ AM_CONDITIONAL( [ISGCC], [test x${GCC} = xyes] )
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 src/geometry/Makefile
                  src/geometry/tests/Makefile
+                 src/geometry/Makefile
                  deps/Makefile
                  deps/shapelib/Makefile])
 
