@@ -102,6 +102,8 @@ def main():
     y = 2
 
     NN = [ 1, 2, 4, 8 ]
+##    NN = [ 2, 4, 8, 16 ]
+##    NN = [ 4, 8, 16, 32 ]
 
     nx = [ x*i for i in NN ]
     ny = [ y*i for i in NN ]
@@ -243,6 +245,7 @@ def main():
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
     siku.callback.updatewind = updatewind
+    siku.callback.global_monitor = global_monitor
 
     ##
     siku.callback.presave = presave
@@ -254,7 +257,15 @@ def presave( t, n, ns ):
 ##        fname = 'siku-' + t.strftime("%Y-%m-%d-%H:%M:%S") + '.h5'
 ##        return fname
     return
+# --------------------------------------------------------------------------
 
+def global_monitor( t, n, ns, Sigma ):
+    siku.sigma = Sigma
+    
+    siku.local.Smin = -0.5*(Sigma[1] + Sigma[3])
+    siku.local.Smax = -0.5*(Sigma[0] + Sigma[2])
+    
+    return 0
 # --------------------------------------------------------------------------
 
 def initializations( siku, t ):
@@ -333,7 +344,15 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
+def color_name( col1, col2, t ):
+    col = ( int( col1[0] + t*(col2[0] - col1[0]) ), \
+            int( col1[1] + t*(col2[1] - col1[1]) ), \
+            int( col1[2] + t*(col2[2] - col1[2]) ) )
+
+    return str(col[0])+'/'+str(col[1])+'/'+str(col[2])
+                         
+def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
+                   m, I, i, A, a_f, w_f ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -367,7 +386,18 @@ def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
+
+##            s = -0.5*(ss[0] + ss[1])
+##            d = (siku.local.Smax - siku.local.Smin)
+##            if not (abs(d) > 1e-12):
+##                t = 0.
+##            else:
+##                t = (s - siku.local.Smin) / d
+##
+##            poly.write( '> -G'+ color_name( (128, 255, 128), \
+##                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )
+##            pass
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

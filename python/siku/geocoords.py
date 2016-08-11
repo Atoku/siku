@@ -194,3 +194,18 @@ def quat0( u ):
     
     # normalization of the axis is necessary: checked!
     return mathutils.Quaternion( uu, - theta )
+
+def quat_to_ll( q ):
+    '''Calculates geographical latitude and longitude by quaternion
+
+    Argument:
+    q - mathutils.Quaternion
+
+    Returns:
+    longitude, latitude
+    '''
+
+    V = q.to_matrix() * mathutils.Vector((0,0,1))
+
+    return lonlat_deg_norm( V )
+    

@@ -155,16 +155,17 @@ inline double _rigidity( ContactData& cd )
 //      / ( abs(cd.r1) + abs(cd.r2) );
 
   // reduced thickness of floes
-  double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
-
-  // TODO: move this to 'mproperties' as a 'Elasticity' of each element
-  // search for thickest layer
-  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-    if( cd.e1.gh[i] > h1 )
-      h1 = cd.e1.gh[i];
-  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-    if( cd.e2.gh[i] > h2 )
-      h2 = cd.e2.gh[i];
+  double h1 = cd.e1.h_main, h2 = cd.e2.h_main; // should be the same as below
+//  double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
+//
+//  // TODO: move this to 'mproperties' as a 'Elasticity' of each element
+//  // search for thickest layer
+//  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
+//    if( cd.e1.gh[i] > h1 )
+//      h1 = cd.e1.gh[i];
+//  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
+//    if( cd.e2.gh[i] > h2 )
+//      h2 = cd.e2.gh[i];
 
 
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
@@ -253,6 +254,28 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
 
   cd.e2.F += F2;
   cd.e2.N += tq2;
+
+  // ------------ stress tensor components calculation ----------------------
+  vec2d n1 = rot_90_ccw( vec3_to_vec2(cd.e1.P[cd.c.v11]) -
+                         vec3_to_vec2(cd.e1.P[cd.c.v12]) );
+  vec2d n2 = rot_90_ccw( vec3_to_vec2(cd.e2.P[cd.c.v21]) -
+                         vec3_to_vec2(cd.e2.P[cd.c.v22]) );
+//  vec2d n1 = rot_90_ccw( cd.c.p1 - cd.c.p2 );
+//  vec2d n2 = rot_90_ccw( cd.c.p3 - cd.c.p4 );
+  vec2d ex { 1., 0. }, ey { 0., 1. };
+
+  double l1 = abs( n1 ), l2 = abs( n2 );  // length of edge and normal vector
+
+  if( l1 < 1e-12 || l2 < 1e-12 ) return;
+
+  n1 /= l1;  // normalizing
+  n2 /= l2;
+
+  cd.e1.Sxx += dot(vec3_to_vec2_s(F1), ex) * dot(n1, ex) / (cd.e1.h_main*l1);
+  cd.e1.Syy += dot(vec3_to_vec2_s(F1), ey) * dot(n1, ey) / (cd.e1.h_main*l1);
+  cd.e2.Sxx += dot(vec3_to_vec2_s(F2), ex) * dot(n2 ,ex) / (cd.e2.h_main*l2);
+  cd.e2.Syy += dot(vec3_to_vec2_s(F2), ey) * dot(n2, ey) / (cd.e2.h_main*l2);
+
 }
 
 inline void _update_contact( ContactData& cd )
@@ -302,7 +325,7 @@ inline void _update_contact( ContactData& cd )
 
 void contact_forces( Globals& siku )
 {
-  #pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
+//  #pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
   for( int i = 0; i < siku.ConDet.cont.size(); i++ )
 //  for( auto& c : siku.ConDet.cont ) // reorganized for OpenMP
     {
@@ -328,6 +351,7 @@ void contact_forces( Globals& siku )
       // calculating the forces
       if( c.type != ContType::JOINT )
         {
+          //if( c.type == ContType::COLLISION )
           intf = _collision( cd ); // collision forces
         }
       else if( c.durability <= 0. )

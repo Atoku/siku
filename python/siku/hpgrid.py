@@ -188,13 +188,95 @@ class Grid:
         psi (float)    -- angular max allowed distance between points
         units (DEGREES/RADIANS) -- how psi is set (default: DEGREES)
 
+        ''' 
+        # degrees into radians if necessary
+        if units == DEGREES:
+            psi = psi*ratio180
+
+        # divide and conqure: vertical columns
+        # N - liniar division parameter # heuristic approximation 
+        N = min( int( pow( len(self.points), 2./3. ) ), int( 2./psi ) )
+        dl = 2.0 / N #spatial step is (Max-Min)/N = (1 - -1)/N
+        pc = [ [ [] for j in range(N) ] for i in range(N) ] #point columns
+        
+        for p in self.points:
+            pc[ int((p[0]+1.0)//dl) ][ int((p[1]+1.0)//dl) ].append( p )
+
+        # cleaning points for further reaccumulation
+        self.points = []
+        self.points_angular = []
+
+        # filtering and gathering points
+        for ii in range(N):
+            for jj in range(N):
+              
+                t = []
+                t += pc[ (ii-1+N)%N ][ (jj-1+N)%N ]
+                t += pc[ (ii-1+N)%N ][ jj ]
+                t += pc[ (ii-1+N)%N ][ (jj+1)%N ]
+                t += pc[ ii ][ (jj-1+N)%N ]
+                t += pc[ ii ][ jj ]
+                t += pc[ ii ][ (jj+1)%N ]
+                t += pc[ (ii+1)%N ][ (jj-1+N)%N ]
+                t += pc[ (ii+1)%N ][ jj ]
+                t += pc[ (ii+1)%N ][ (jj+1)%N ]
+
+                if len(t) <= 1:
+                    continue
+
+                # same old algorithm...
+                mst = sorted( t, key = lambda x: x[2] ) # sort by z?
+
+                nst = [ mst[0] ]            # resulting list: first point is
+                                            # always there 
+                nst_ang = [ phi_theta( mst[0][0], mst[0][1], mst[0][2] ) ] 
+
+                Cpsi = cos( psi )
+
+                for i, m  in enumerate( mst[1:] ):
+
+                    good_point = True
+
+                    k = len( nst ) - 1      # index of the last
+                                            #element in nst
+
+                    while ( k > 0 ):
+                        if ( m[0]*nst[k][0] + m[1]*nst[k][1] + m[2]*nst[k][2]
+                             > Cpsi ):
+                            good_point = False
+                            break
+                        if ( abs(m[2] - nst[k][2]) > Cpsi ):
+                            break
+                        k -= 1
+
+                    if good_point:
+                        nst.append( m )
+                        nst_ang.append(phi_theta(
+                            nst[-1][0], nst[-1][1], nst[-1][2]))
+
+                self.points += nst
+                self.points_angular += nst_ang
+                
+        if verbose:
+            print('points left ' + str(len(self.points)))
+        return
+
+    def points_filter_( self, psi, units = DEGREES, verbose = True ):
+        '''Filters the list of poinst (in place) by the distance criteria:
+        each point cannot be closer than the angle psi. The method is
+        described in the documentation.
+
+        Arguments:
+        psi (float)    -- angular max allowed distance between points
+        units (DEGREES/RADIANS) -- how psi is set (default: DEGREES)
+
         '''
 
-        mst = sorted( self.points, key = lambda x: x[1] ) # sort by x
+        mst = sorted( self.points, key = lambda x: x[1] ) # sort by y
 
         nst = [ mst[0] ]            # resulting list: first point is
                                     # always there 
-        nst_ang = [ phi_theta( mst[0][0], mst[0][1], mst[0][2]) ]
+        nst_ang = [ phi_theta( mst[0][0], mst[0][1], mst[0][2] ) ]
 
         # degrees into radians if necessary
         if units == DEGREES:

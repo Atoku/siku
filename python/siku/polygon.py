@@ -68,14 +68,21 @@ class Polygon:
 
         '''
         self.poly = poly
-        self.A, \
-            self.i, \
-            self.C, \
-            self.q, \
-            self.poly_xyz, \
-            self.sbb_rmin, \
-            self.poly_xyz_loc, \
-            = self.parameters_calculation()
+        status = self.parameters_calculation()
+
+##        # Primitive bug report
+##        if status == None:
+##            print('error!')
+
+##        ##Deprecated
+##        self.A, \
+##            self.i, \
+##            self.C, \
+##            self.q, \
+##            self.poly_xyz, \
+##            self.sbb_rmin, \
+##            self.poly_xyz_loc, \
+##            = self.parameters_calculation()
 
         return
 
@@ -118,6 +125,7 @@ class Polygon:
         A = 0.0                 # area
         I = 0.0                 # geom. moment of inertia (divided by mass)
         poly_xyz = self.restore_poly_xyz()
+        self.poly_xyz = poly_xyz
 
         # geom pseudo-center
         P = mathutils.Vector( (0.0,0.0,0.0) )
@@ -136,41 +144,65 @@ class Polygon:
             Ai.append( Pi[i].cross(Pi[j]).length * 0.5 )
             Ci.append( poly_xyz[i] + poly_xyz[j] + P )
         A = sum( Ai )
-        
-        # Center of mass
-        for i in range( len(Pi) ):
-            C += Ai[i] * Ci[i]
-        C /= ( 3 * A )
+        self.A = A
 
-        # Bound sphere radius (excess 5%)
-        Rad = 0
-        for r in poly_xyz:
-            if ( r - C ).length > Rad:
-                Rad = ( r - C ).length
-        Rad *= 1.05
-        
-        # and moment of inertia
-        # (http://en.wikipedia.org/wiki/List_of_moments_of_inertia)
-        # checked manually for triangles by integration
+        # If area is too small - polygon should be wasted
+        # and all parameters set to default
+        if A <= 1e-15:
+            self.A = 0.
+            self.C = P
+            self.I = 0.
+            self.Q = mathutils.Quaternion()
+            self.Rad = max( [ p.length for p in Pi ] )
+            self.poly_xyz_loc = [ p - C for p in poly_xyz ]
 
-        Pi = [ U - C for U in poly_xyz ] # new Pi related to CM now
-        for i in range( 1, len(Pi) ):
-            j = ( i + 1 ) % len(Pi)
-            I += Ai[i] * ( Pi[j].length_squared +
-                           Pi[i].dot(Pi[j]) +
-                           Pi[i].length_squared )
+            return None
+
+        # if area is Ok - everything is honestly calculated 
+        else:
+            # Center of mass
+            for i in range( len(Pi) ):
+                C += Ai[i] * Ci[i]
+            C /= ( 3 * A )
+            self.C = C
+
+            # Bound sphere radius (excess 5%)
+            Rad = 0
+            for r in poly_xyz:
+                if ( r - C ).length > Rad:
+                    Rad = ( r - C ).length
+            Rad *= 1.05
+            self.sbb_rmin = Rad
             
-        I /= ( 6.0 * A )
+            # and moment of inertia
+            # (http://en.wikipedia.org/wiki/List_of_moments_of_inertia)
+            # checked manually for triangles by integration
 
-        # Calculate the initial quaternion for the position
-        Q = geocoords.quat0( C )
+            Pi = [ U - C for U in poly_xyz ] # new Pi related to CM now
+            for i in range( 1, len(Pi) ):
+                j = ( i + 1 ) % len(Pi)
+                I += Ai[i] * ( Pi[j].length_squared +
+                               Pi[i].dot(Pi[j]) +
+                               Pi[i].length_squared )
+                
+            I /= ( 6.0 * A )
+            self.i = I
 
-        # Calculate local Cartesian unit coordinates
-        qconj = Q.conjugated()
-        R = qconj.to_matrix()
-        poly_local_xyz = [ R * poly for poly in poly_xyz ]
+            # Calculate the initial quaternion for the position
+            Q = geocoords.quat0( C )
 
-        return A, I, C, Q, poly_xyz, Rad, poly_local_xyz
+            # Calculate local Cartesian unit coordinates
+            qconj = Q.conjugated()
+            R = qconj.to_matrix()
+            poly_local_xyz = [ R * poly for poly in poly_xyz ]
+
+            self.q = Q
+            self.poly_xyz_loc = poly_local_xyz
+            
+##            ## Deprecated
+##            return A, I, C, Q, poly_xyz, Rad, poly_local_xyz
+
+            return 0 # default return value - no errors
 
     pass
 

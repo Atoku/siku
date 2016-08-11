@@ -100,7 +100,8 @@ settings.wind_source_names = []
 
 settings.loadfile = ''
 
-settings.borders = 'borders.ll'
+settings.borders = ''   # filename with points to mark border elements,
+                        # lon-lat convension, name like 'borders.ll'
 settings.border_mark = 0
 
 ##settings.phys_consts = [ 1, 1, 1, 1, 1,\
@@ -179,6 +180,10 @@ def pretimestep( t, n, ns):
 
     return status
 
+def global_monitor( t, n, ns, Sigma ):
+    sigma = Sigma
+    return 0
+
 def updatewind( siku, t ):
     print("Your advertisement could be here")
     pass
@@ -195,6 +200,7 @@ def conclusions( siku, t ):
 
 callback.presave = presave
 callback.pretimestep = pretimestep
+callback.global_monitor = global_monitor
 callback.updatewind = updatewind
 callback.aftertimestep = aftertimestep
 callback.conclusions = conclusions

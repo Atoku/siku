@@ -316,7 +316,7 @@ namespace Geometry
   bool cvpoly2d::is_convex() const
   {
     // default check
-    if( verts.size() < 3 ) return 0.;
+    if( verts.size() < 3 ) return true;
 
     size_t size = verts.size();
 
@@ -335,7 +335,7 @@ namespace Geometry
 
         // UNDONE: this section contains hardcoded tolerance. It should be
         // rewritten
-        static const double tolerance = 0;//-1e-12;
+        static const double tolerance = 0.;//-1e-12;
         if( td2 * td1 < tolerance ) return false;  // if different signs - not convex
 
         td1 = td2;
@@ -343,8 +343,6 @@ namespace Geometry
 
     return true;
 
-//    //test // BUG
-//    return verts.size() == convex_hull( verts ).size();
   }
 
 // --------------------------------------------------------------------------
@@ -418,7 +416,7 @@ namespace Geometry
         res = cross ( PP, PO );
 
         // CCW rightwards check (inclusive)
-        if ( res < 0 )
+        if ( res < 0. )
           return false;
       }
     return true;

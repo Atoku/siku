@@ -1349,10 +1349,17 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
   // time step number
   const size_t tn = siku.time.get_n ();
 
+  // preparing stress
+  PyObject* pSTuple = PyTuple_New ( 2 ); // new
+  PyObject* pN = PyFloat_FromDouble ( pe->Sxx );  // new
+  PyTuple_SET_ITEM( pSTuple, 0, pN );                 // steals pNum
+  pN = PyFloat_FromDouble ( pe->Syy );  // new
+  PyTuple_SET_ITEM( pSTuple, 1, pN );                 // steals pNum
+
   // calling the 'monitor' method with all the arguments
   // !! synchronized with python
   PyObject* pReturnValue =      // new
-      PyObject_CallMethod ( pSiku, fname, "(O,i,O,O,I,I,k,O,O,d,d,d,d,d,d,d)",
+      PyObject_CallMethod ( pSiku, fname, "(O,i,O,O,I,I,k,O,O,d,O,d,d,d,d,d,d)",
                             pCurTime,       // time
                             tn,             // time step number
 
@@ -1364,6 +1371,7 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
                             pWTuple,        // angle velocity
                             pFTuple,        // current force
                             pe->N,          // torque (2d)
+                            pSTuple,        // stress
 
                             pe->m,          // mass
                             pe->I,          // moment of inertia
@@ -1381,6 +1389,47 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
   Py_DECREF( pPiList );
   Py_DECREF( pWTuple );
   Py_DECREF( pFTuple );
+  Py_DECREF( pSTuple );
+
+  return status;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_glob_monitor ( const Globals& siku )
+{
+  int status = FCALL_OK;
+
+  // creating tuple for extremal stress tensor components
+  PyObject* pSTuple = PyTuple_New ( 4 );
+
+  PyObject* pNum = PyFloat_FromDouble ( siku.SxxMax );  // new
+  PyTuple_SET_ITEM( pSTuple, 0, pNum );                 // steals pNum
+  pNum = PyFloat_FromDouble ( siku.SxxMin );            // new
+  PyTuple_SET_ITEM( pSTuple, 1, pNum );                 // steals pNum
+  pNum = PyFloat_FromDouble ( siku.SyyMax );            // new
+  PyTuple_SET_ITEM( pSTuple, 2, pNum );                 // steals pNum
+  pNum = PyFloat_FromDouble ( siku.SyyMin );            // new
+  PyTuple_SET_ITEM( pSTuple, 3, pNum );                 // steals pNum
+
+  // time step number
+  const size_t n = siku.time.get_n ();
+  const size_t ns = siku.time.get_ns ();
+
+  // calling the 'monitor' method with all the arguments
+  // !! synchronized with python
+  PyObject* pReturnValue =      // new
+      PyObject_CallMethod ( pSiku_callback, "global_monitor", "(O,i,i,O)",
+                            pCurTime, n, ns,    // time
+                            pSTuple             // stress tensor
+                            );  //new
+
+  if ( !pReturnValue )
+    PyErr_Print ();
+  else
+    Py_DECREF( pReturnValue );
+  Py_DECREF( pSTuple );
 
   return status;
 }

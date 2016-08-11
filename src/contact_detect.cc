@@ -63,58 +63,139 @@ inline double _dist2( const vec3d& v1, const vec3d& v2 )
 
 double ContactDetector::Contact::find_edges( Globals& siku )
 {
-  if( !i1 && !i2 ) return 0.; // if no elements were set
+  if( !i1 && !i2 ) throw("bad element indexes in contact");
+    //return 0.; // if no elements were set
 
-  //search for mutual edge
-  Element& e1 = siku.es[i1], & e2 = siku.es[i2];
+  //search for mutual edge:
 
-  bool first_found = false, second_found = false;
-  double l1 =0, l2 =0;
+  Element& e1 = siku.es[i1], & e2 = siku.es[i2];  // shortcut
 
+  // variables
   mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
   mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-  vec2d dump, r12 = vec3_to_vec2( e2_to_e1 * NORTH ),
-              r21 = vec3_to_vec2( e1_to_e2 * NORTH );
 
-  vec2d tv1 = vec3_to_vec2( e1.P[ e1.P.size()-1 ] );
-  vec2d tv2 = {};
+  // polygons in local (e1) coords
+  vector<vec2d> loc_P1;         // e1.P vertices in local 2D coords
+  vector<vec2d> loc_P2;         // e2.P vertices in local 2D coords
+  for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+  for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
 
-  for( size_t i = 0; i< e1.P.size(); i++)
-    {
-      tv2 = tv1;
-      tv1 = vec3_to_vec2( e1.P[i] );
-      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump )
-          && tv1 != tv2 )
+//  vector<vec3d> loc_P1;         // e1.P vertices in local 2D coords
+//  vector<vec3d> loc_P2;         // e2.P vertices in local 2D coords
+//  for( auto& p : e1.P ) loc_P1.push_back( p );
+//  for( auto& p : e2.P ) loc_P2.push_back( e2_to_e1 * p );
+
+  v11 = 0, v22 = 0, v12 = 0, v21 = 0;    // indexes in e1 and e2.
+  size_t s1 = loc_P1.size(), s2 = loc_P2.size();    // sizes of arrays
+  double d, mind = abs( loc_P1[0] - loc_P2[0] );    // minimal distance
+
+
+  // search for two closest vertices
+  for( size_t i = 0; i < s1; i++ )
+    for( size_t j = 0; j < s2; j++ )
+      if( ( d = abs( loc_P1[ i%s1 ] - loc_P2[ j%s2 ] ) ) < mind )
         {
-          l1 = (tv2 - tv1).abs();
-          v11 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
-          v12 = i;
-          first_found = true;
-          break;
+          mind = d;
+          v11 = i;
+          v22 = j;
         }
+
+  // test which of neighbor vertices are second closest pair
+  size_t v1l = (v11-1+s1) %s1,
+         v2l = (v22+1)    %s2,
+         v1r = (v11+1)    %s1,
+         v2r = (v22-1+s2) %s2;
+  if( abs( loc_P1[ v1l ] - loc_P2[ v2l ] ) <
+      abs( loc_P1[ v1r ] - loc_P2[ v2r ] ) )
+    {
+      v12 = v1l;
+      v21 = v2l;
+    }
+  else
+    {
+      v12 = v1r;
+      v21 = v2r;
     }
 
-  tv1 = vec3_to_vec2( e2.P[ e2.P.size()-1 ] );
-  for( size_t i = 0; i< e2.P.size(); i++)
-    {
-      tv2 = tv1;
-      tv1 = vec3_to_vec2( e2.P[i] );
-      if( segment2d_intersect( {0.,0.}, r21, tv1, tv2, dump )
-          && tv1 != tv2 )
-        {
-          l2 = (tv2 - tv1).abs();
-          v21 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
-          v22 = i;
-          second_found = true;
-          break;
-        }
-    }
+  // return - mean length of two edges of elements
+  return 0.5 * ( abs( loc_P1[v11] - loc_P1[v12] )
+               + abs( loc_P2[v22] - loc_P2[v21] ) );
 
-  if( first_found && second_found )
-    return ( l1 + l2 ) * 0.5;
-
-  return 0.;
 }
+
+////OLD
+//double ContactDetector::Contact::find_edges( Globals& siku )
+//{
+//  if( !i1 && !i2 ) throw("bad element indexes in contact");
+//    //return 0.; // if no elements were set
+//
+//  //search for mutual edge
+//  Element& e1 = siku.es[i1], & e2 = siku.es[i2];
+//
+//  bool first_found = false, second_found = false;
+//  double l1 =0, l2 =0;
+//
+//  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+//  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+//  double tol { 100. }; // 100 - heuristic tolerance
+//  vec2d dump, r12 = vec3_to_vec2( e2_to_e1 * NORTH ) * tol * tol,
+//              r21 = vec3_to_vec2( e1_to_e2 * NORTH ) * tol * tol;
+//
+//  vec2d tv1 = vec3_to_vec2( e1.P.back() ) * tol;
+//  vec2d tv2 = {};
+//
+//  for( size_t i = 0; i< e1.P.size(); i++)
+//    {
+//      tv2 = tv1;
+//      tv1 = vec3_to_vec2( e1.P[i] ) * tol;
+//
+//      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump ) && tv1 != tv2 )
+//        {
+//          l1 = (tv2 - tv1).abs();
+//          v11 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
+//          v12 = i;
+//          first_found = true;
+//          break;
+//        }
+//    }
+//
+//  tv1 = vec3_to_vec2( e2.P.back() ) * tol;
+//  for( size_t i = 0; i< e2.P.size(); i++)
+//    {
+//      tv2 = tv1;
+//      tv1 = vec3_to_vec2( e2.P[i] ) * tol;
+//
+//      if( segment2d_intersect( {0.,0.}, r21, tv1, tv2, dump ) && tv1 != tv2 )
+//        {
+//          l2 = (tv2 - tv1).abs();
+//          v21 = ( i + e2.P.size() - 1 ) % e2.P.size(); // i-1`st
+//          v22 = i;
+//          second_found = true;
+//          break;
+//        }
+//    }
+//
+//  if( first_found && second_found )
+//    return ( l1 + l2 ) * 0.5;
+//  else
+//    {
+//      cout<<r21<<"---\n";
+//      for( auto& a : e2.P )
+//        print( vec3_to_vec2( a ) );
+//      cout<<e2.A<<endl;
+//
+//      cout<<"\n"<<r12<<"---\n";
+//      for( auto& a : e1.P )
+//        print( vec3_to_vec2( a ) );
+//      cout<<e1.A<<endl;
+//
+//      if( !first_found ) throw("first element`s edge not found");
+//      if( !second_found) throw("second element`s edge not found");
+//    }
+//
+//
+//  return 0.;
+//}
 
 //---------------------------------------------------------------------
 
@@ -606,8 +687,12 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
             t21 = vec3_to_vec2( e2_to_e1 * e2.P[c.v21] ),
             t22 = vec3_to_vec2( e2_to_e1 * e2.P[c.v22] );
 
-      // if edges are close enough
-      if( segment2d_distance( t11, t12, t21, t22 ) < abs( r12 ) * tol )
+      //OLD: if edges are close enough
+//      if( segment2d_distance( t11, t12, t21, t22 ) < abs( r12 ) * tol )
+      //
+      //if vertices are close enough (relatively to edges length)
+      if( ( abs(t11-t22) + abs(t12-t21) ) <
+          ( abs(t11-t12) + abs(t21-t22) ) * tol )
         {
           c.type = ContType::JOINT;
 
@@ -632,10 +717,17 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
           c.durability = 1.;
         }
     }
-  else
+  else // in case of broken contact edge detection
     {
-      // UNDONE: remove this
       cout<<"TEST ERROR IN _dist_freeze"<<endl;
+      cout<<"elements: "<<c.i1<<", "<<c.i2<<endl;
+      cout<<"dist: "<< c.find_edges(siku)<<endl;
+      cout<<"vert inds: "<<c.v11<<", "<<c.v12<<"; "<<c.v21<<", "<<c.v22<<endl;
+      cout<<"points:"<<endl
+          <<siku.es[c.i1].P[c.v11]<<endl
+          <<siku.es[c.i1].P[c.v12]<<endl
+          <<siku.es[c.i2].P[c.v21]<<endl
+          <<siku.es[c.i2].P[c.v22]<<endl;
       cin.get();
       throw;
     }

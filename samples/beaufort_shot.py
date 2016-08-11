@@ -39,6 +39,9 @@ from   siku import h5load
 hload = h5load.Loader
 
 from   siku import wnd
+
+def is_inside( lo, la, mo, Mo, ma, Ma ):
+    return lo > mo and lo < Mo and la > ma and la < Ma
  
 def main():
 
@@ -97,9 +100,9 @@ def main():
     siku.time.start = siku.uw.times[st_t_ind]
     siku.time.last = siku.uw.times[st_t_ind]
     siku.time.last_update = siku.time.last
-    siku.time.finish = siku.uw.times[st_t_ind] + hour * 6
+    siku.time.finish = siku.uw.times[st_t_ind] + hour
     #siku.time.dt = datetime.timedelta ( milliseconds = 1 )
-    siku.time.dt = ( siku.time.finish - siku.time.start ) / 1200
+    siku.time.dt = ( siku.time.finish - siku.time.start ) / 1
    
     # ---------------------------------------------------------------------
     # elements
@@ -111,18 +114,11 @@ def main():
     # ---------------------- voronoi initialization ------------------------
     print('\nLoading polygons')
     ## North cap
-    PV = PolyVor( 'high.voronoi.xyz', 'high.voronoi.xyzf' )
-    ## Channel (handmade)
-##    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
+##    PV = PolyVor( 'high.voronoi.xyz', 'high.voronoi.xyzf' )
+    PV = PolyVor( 'h.voronoi.xyz', 'h.voronoi.xyzf' )
+##    PV = PolyVor( 'AnC5.voronoi.xyz', 'AnC5.voronoi.xyzf' )
     
     PV.filter_( 0, 360, 60, 90 )
-##    PC.filter_( 179, 187, 54, 60 )
-
-##TESTING!
-####    PV.filter_( 190, 230, 62, 82 )
-##    PC.filter_( 190, 230, 62, 82 )
-##/TESTING
-
     
     print('Deleting land polygons')
     PV.clear_the_land()
@@ -133,6 +129,7 @@ def main():
     siku.tempc = coords # for debug
 
     ### Initializing elements with polygon vertices
+    print('Initializing elements')
     for c in coords:
         siku.P.update( c )
      
@@ -142,20 +139,36 @@ def main():
         gh = [ 0.2, 0.2, 0.4, 0.2, 0.0, 
                0.0, 0.0, 0.0, 0.0, 0.0 ]
         E.set_gh( gh, ice )
-        
-        # all elements in the list
-        siku.elements.append( E )
 
-    ## Core will mark polygons, those contain at leas one point from next
+        # If area is too small - element is a garbage
+        if E.A > 1e-15:
+            siku.elements.append( E )
+
+    ## Core will mark polygons, those contain at least one point from next
     ## file as 'static'
-    siku.settings.border_mark = 1
-    siku.settings.borders = 'contours.ll'
+##    siku.settings.border_mark = 0 #1
+##    siku.settings.borders = 'contours.ll'
 
     print('Marking borders with GMT')
-    bor = PV.get_border_by_gmt()
+    bor = PV.get_border_by_gmt( siku.elements)
     for b in bor:
         siku.elements[ b ].flag_state = element.Element.f_static
     print('Done\n\n')
+
+    # ----------------------- average size analisis -----------------------
+
+    COUNT = 0
+    SIZE = 0.0
+    for e in siku.elements:
+        lo, la = geocoords.quat_to_ll( mathutils.Quaternion(e.q) )
+        if is_inside( lo, la, 210, 215, 70, 75 ):
+            COUNT += 1
+            SIZE += 2. * math.sqrt( e.A / math.pi )
+
+    print('\n@ Number of elements in region:\n  ' + \
+          str( COUNT ) + '\n@ Average diameter:\n  ' + \
+          str( SIZE / COUNT * 6400 ) + 'km\n\n' )
+        
 
     # ---------------------- loading from file ----------------------------
 
@@ -183,7 +196,7 @@ def main():
     siku.plotter = GMT_Plotter( 'beaufort94_plot.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 30
+    siku.diagnostics.monitor_period = 1
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -193,27 +206,27 @@ def main():
 
     # name of file to load from
     #siku.settings.loadfile = 'siku-2014-01-01-12:00:00.h5'
-    siku.settings.loadfile = 'save_test.h5'
+##    siku.settings.loadfile = 'save_test.h5'
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  1, 1, 1, 1, 1 ]
         
-    siku.settings.phys_consts = { 'rigidity' : 1.0,
-                                  'viscosity' : 1.0,
-                                  'rotatability' : 1.0,#0.75,
+    siku.settings.phys_consts = { 'rigidity' : 0.0,
+                                  'viscosity' : 0.0,
+                                  'rotatability' : 0.0,#0.75,
                                   'tangency' : -0.00003,#-0.00003
                                   
-                                  'elasticity' : 50000000.0,#-5000000.0,
+                                  'elasticity' : 00000000.0,#-5000000.0,
                                   'bendability' : 1.0,#1.0,
-                                  'solidity' : 0.5,#0.05,
-                                  'tensility' : 0.30,#0.615,
+                                  'solidity' : 0.0,#0.05,
+                                  'tensility' : 0.0,#0.615,
 
-                                  'anchority' : 0.000005,
-                                  'windage':    0.0051,
-                                  'fastency' : 0.250, #0.5
+                                  'anchority' : 0.,
+                                  'windage':    0.0,
+                                  'fastency' : 0.0, #0.5
 
-                                  'sigma' : 400000.0,        # -//- rigidity
-                                  'etha' : 0.0003          # -//- viscosity
+                                  'sigma' : 0.0,        # -//- rigidity
+                                  'etha' : 0.0          # -//- viscosity
                                   }
     
 
@@ -257,6 +270,7 @@ def main():
 def presave( t, n, ns ):
     '''no saving at all'''
     return
+
 # --------------------------------------------------------------------------
 
 def global_monitor( t, n, ns, Sigma ):
@@ -286,7 +300,7 @@ def conclusions( siku, t ):
 
     
     print('creating .gif')
-    subprocess.call( "nice convert -density 300 -delay 10 beaufort*.eps beaufort.gif", \
+    subprocess.call( "nice convert -density 500 -delay 10 shot.eps shot.gif", \
                      shell=True )
 
 # --------------------------------------------------------------------------
@@ -331,8 +345,7 @@ def updatewind( siku, t ):
 def aftertimestep( t, n, ns ):
     siku.local.poly_f.close()
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
-        pic_name = 'beaufort%03d.eps' % \
-            (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
+        pic_name = 'shot.eps'
         print('drawing ' + str( pic_name ) )
 
         siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
@@ -352,7 +365,6 @@ def color_name( col1, col2, t ):
 
 def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
                    m, I, i, A, a_f, w_f ):
-
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -367,12 +379,10 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
         poly = siku.local.poly_f
-        
 ##        if st & element.Element.f_errored: ##
-##            poly.write( '> -Gred -W0.1p,red \n' ) ##                 
+##            poly.write( '> -Gred -W0.1p,red \n' ) ##                  
 ##        elif st & element.Element.f_special: ## elif -> if
         if st & element.Element.f_special: ## elif -> if
-            
             poly.write( '> -Gpink -W0.1p,lightBlue \n' ) 
         elif st & element.Element.f_static:
             poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
@@ -380,16 +390,18 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+##          return 
 
-            s = -0.5*(ss[0] + ss[1])
-            d = (siku.local.Smax - siku.local.Smin)
-            if not (abs(d) > 1e-12):
-                t = 0.
-            else:
-                t = (s - siku.local.Smin) / d
-            poly.write( '> -G'+ color_name( (128, 255, 128), \
-                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )  
+##            s = -0.5*(ss[0] + ss[1])
+##            d = (siku.local.Smax - siku.local.Smin)
+##            if not (abs(d) > 1e-12):
+##                t = 0.
+##            else:
+##                t = (s - siku.local.Smin) / d
+##                
+##            poly.write( '> -G'+ color_name( (128, 255, 128), \
+##                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )     
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

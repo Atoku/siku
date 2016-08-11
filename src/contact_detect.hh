@@ -135,6 +135,7 @@ public:
     // elements in contact.
     //! \return: mean length of edges on success, 0 on failure
     double find_edges( Globals& siku );
+//    double find_edges_( Globals& siku );//OLD
 
 //    union
 //    {

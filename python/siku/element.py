@@ -41,12 +41,14 @@ class Element:
 
             self.verts_xyz_loc = [ (P[0],P[1],P[2]) for P in
                                    polygon.poly_xyz_loc ]
+            self.verts_xyz = [ (P[0], P[1], P[2]) for P in polygon.poly_xyz ]
         else:
             self.A = 0.0
             self.i = 0.0
             self.sbb_rmin = 0.0
             self.q = []
             self.verts_xyz_loc = []
+            self.verts_xyz = []
 
         # search the name in materials
         self.imat = imat

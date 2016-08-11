@@ -47,6 +47,18 @@ void Globals::post_init()
           // for new elements velocity must be inputed in East-North terms
           temp = glob_to_loc ( es[i].q, geo_to_cart_surf_velo(
               lat, lon, es[i].V.x, es[i].V.y ) );
+
+          // removing duplicated vertices
+          auto& P = es[i].P;
+          size_t ss = P.size();
+
+          // improve: points equality test
+          for( size_t j = 0; j < ss; )
+//            if( abs( P[ j ] - P[ (j+1)%ss ] ) < 1e-14 )
+            if( P[ j ] == P[ (j+1)%ss ] )
+              P.erase( P.begin() + (j+1)%(ss--) );
+            else
+              ++j;
         }
       else
         {

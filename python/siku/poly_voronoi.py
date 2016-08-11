@@ -45,10 +45,14 @@ def find_h( rc, r1, r2 ):
     d1 = (rc - r1).length
     d2 = (rc - r2).length
     d = (r2 - r1).length
-    if d == 0.0:
-        return d1
+    
     s = (d+d1+d2)*0.5
-    return 2 * math.sqrt( s*(s-d)*(s-d1)*(s-d2) ) / d
+    sq = s*(s-d)*(s-d1)*(s-d2)
+    
+    if d == 0.0 or sq <= 0.0:
+        return d1
+
+    return 2 * math.sqrt( sq ) / d
     
 def find_delta( poly ):
     '''Utility: calculates the radius of largest inscribed circle'''
@@ -251,28 +255,43 @@ class PolyVor:
                     break
         return 
 
-    def get_border_by_gmt( self, land_filter=None, ocean_filter=None, \
+    def get_border_by_gmt( self, Els = None, \
+                           land_filter=None, ocean_filter=None, \
                             vert_f='temp.lli', oceanf='oceanf.lli', \
-                            landf='landf.lli' ):
+                            landf='landf.lli', verb = False):
         '''Returns list of border polygon indexes. Uses GMT for searching
         the polygons, those have both wet and dry vertices.
         '''
 
+        if verb: print('-preparing file')
         tc = []
-        for i in range( len ( self.coords ) ):
-            p = self.coords[i]
-            [ tc.append( [ v[0], v[1], i ] ) for v in p ]
+        if Els == None:
+            for i in range( len ( self.coords ) ):
+                p = self.coords[i]
+                [ tc.append( [ v[0], v[1], i ] ) for v in p ]
+        else:
+            for i in range( len ( Els ) ):
+                p = Els[i].verts_xyz
+                for v in p:
+                    t = geocoords.lonlat_deg_norm(\
+                        mathutils.Vector( (v[0], v[1], v[2]) ) )
+                    tc.append( [t[0], t[1], i] )
+                    #print()
+                #[ tc.append( [ v[0], v[1], i ] ) for v in p ]
 
         geofiles.w_lonlati( vert_f, tc )
 
+        if verb: print('-filtering ocean')
         if ocean_filter == None:
             ocean_filter = self.default_ocean
         subprocess.call( ocean_filter, shell=True )  # most time spent here
 
+        if verb: print('-filtering land')
         if land_filter == None:
             land_filter = self.default_land
         subprocess.call( land_filter, shell=True )  # most time spent here
 
+        if verb: print('-finilizing')
         tc = geofiles.r_lonlati( landf )
         I = { p[2]:p[2] for p in tc }
         

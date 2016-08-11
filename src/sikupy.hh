@@ -94,6 +94,11 @@ public:
   int
   fcall_monitor ( const Globals& siku, const size_t i, const char* fname );
 
+  //! \brief call monitor function
+  //! \param[in] siku main global variables container
+  int
+  fcall_glob_monitor ( const Globals& siku );
+
   //! \brief call diagnostics function for vector field
   //! \param[in] siku main global variables container
   //! \param[in] i index of diagnostics function to call

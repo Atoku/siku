@@ -85,11 +85,11 @@ public:
 
   // --------------- Not changing handling parameters ----------------
 
-  unsigned int flag;            //!< state flag
+  unsigned int flag;                  //!< state flag
   //char* monitor {nullptr};         //!< monitor function name (0-term)
   //char* control {nullptr};         //!< control function name (0-term)
-  //std::string monitor;         //!< monitor function name
-  //std::string control;         //!< control function name
+  //std::string monitor;             //!< monitor function name
+  //std::string control;             //!< control function name
   size_t mon_ind { 0 };               //!< monitor function index
   size_t con_ind { 0 };               //!< control function index
 
@@ -115,7 +115,10 @@ public:
   double OA {0};        //!< m^2, total overlap area with landfast ice
   double Amin {0};      //!< m^2, minimal area of polygons for fastening checks
 
-  //?double h_main{0};     //!< m, thickness of the main (thickest) layer
+  double Sxx {0};       //!< N/m^2, stress tensor 'xx' component
+  double Syy {0};       //!< N/m^2, stress tensor 'yy' component
+
+  double h_main{0};     //!< m, thickness of the main (thickest) layer
   //?double ela {0};       //!< kg/s^2, elasticity of element (SI)
 
   // --------------- Not changing state parameters -------------------
