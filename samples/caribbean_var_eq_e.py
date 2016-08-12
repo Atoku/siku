@@ -271,6 +271,16 @@ def global_monitor( t, n, ns, Sigma ):
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_72cx17.5c"]) #24_20
 
+    siku.local.sigmaMax = 0.
+    siku.local.sigmaMin = 0.
+
+    siku.local.sMax = 0.5284816499797322
+    siku.local.sMin = -409396.54611198575
+##    siku.local.sMax = 516386.46676500165
+##    siku.local.sMin = -468575.8903352868
+##    siku.local.sMax = 879877.3152675817
+##    siku.local.sMin = -381127.9856318919
+
     siku.local.fces = []
     for i in range( len( siku.local.NN ) ):
         siku.local.fces.append( open( './forces/group' + str(i) + '.txt', 'w' ) )
@@ -279,6 +289,10 @@ def initializations( siku, t ):
 # --------------------------------------------------------------------------
 
 def conclusions( siku, t ):
+
+    print('minimal and maximal sigma:\n' +
+          str(siku.local.sigmaMin)+ ', '+str(siku.local.sigmaMax)+'\n' )
+    
     print('creating .gif')
     subprocess.call( "convert -density 100 -delay 10 carib*.eps caribbeans.gif", \
                      shell=True )
@@ -343,13 +357,6 @@ def aftertimestep( t, n, ns ):
     return 0
 
 # --------------------------------------------------------------------------
-
-def color_name( col1, col2, t ):
-    col = ( int( col1[0] + t*(col2[0] - col1[0]) ), \
-            int( col1[1] + t*(col2[1] - col1[1]) ), \
-            int( col1[2] + t*(col2[2] - col1[2]) ) )
-
-    return str(col[0])+'/'+str(col[1])+'/'+str(col[2])
                          
 def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
                    m, I, i, A, a_f, w_f ):
@@ -360,6 +367,10 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
     # get latitude and longitude of center of mass (0,0,1)
     R = q.to_matrix()
     c = R * C
+
+    s = -0.5*(ss[0] + ss[1])
+    if s < siku.local.sigmaMin: siku.local.sigmaMin = s
+    if s > siku.local.sigmaMax: siku.local.sigmaMax = s
 
     #forces monitor
     if index in siku.local.right_gi:
@@ -386,18 +397,19 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
+##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
 
-##            s = -0.5*(ss[0] + ss[1])
 ##            d = (siku.local.Smax - siku.local.Smin)
-##            if not (abs(d) > 1e-12):
-##                t = 0.
-##            else:
+            d = (siku.local.sMax - siku.local.sMin)
+            if not (abs(d) > 1e-12):
+                t = 0.
+            else:
 ##                t = (s - siku.local.Smin) / d
-##
-##            poly.write( '> -G'+ color_name( (128, 255, 128), \
-##                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )
-##            pass
+                t = (s - siku.local.sMin) / d
+
+            poly.write( '> -G'+ siku.utils.gmt_color_int( (128, 255, 128), \
+                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )
+            pass
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

@@ -264,6 +264,9 @@ def global_monitor( t, n, ns, Sigma ):
     
     siku.local.Smin = -0.5*(Sigma[1] + Sigma[3])
     siku.local.Smax = -0.5*(Sigma[0] + Sigma[2])
+
+    siku.local.sMax = 11467606.014943264 /1000.
+    siku.local.sMin = -103414844.46078965
     
     return 0
 
@@ -271,6 +274,9 @@ def global_monitor( t, n, ns, Sigma ):
 
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_17cx13c"])
+
+    siku.local.sigmaMax = 0.
+    siku.local.sigmaMin = 0.
 
 # --------------------------------------------------------------------------
 
@@ -284,6 +290,8 @@ def conclusions( siku, t ):
 ##                erf.write( str( t ) + '   ' )
             erf.write( '\n' )
 
+    print('minimal and maximal sigma:\n' +
+          str(siku.local.sigmaMin)+ ', '+str(siku.local.sigmaMax)+'\n' )
     
     print('creating .gif')
     subprocess.call( "nice convert -density 300 -delay 10 beaufort*.eps beaufort.gif", \
@@ -342,14 +350,6 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def color_name( col1, col2, t ):
-    col = ( int( col1[0] + t*(col2[0] - col1[0]) ), \
-            int( col1[1] + t*(col2[1] - col1[1]) ), \
-            int( col1[2] + t*(col2[2] - col1[2]) ) )
-
-    return str(col[0])+'/'+str(col[1])+'/'+str(col[2])
-                         
-
 def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
                    m, I, i, A, a_f, w_f ):
 
@@ -361,11 +361,15 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
     R = q.to_matrix()
     c = R * C
 
+    s = -0.5*(ss[0] + ss[1])
+    if s < siku.local.sigmaMin: siku.local.sigmaMin = s
+    if s > siku.local.sigmaMax: siku.local.sigmaMax = s
+
     # appending vertices to plotting list
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
-
+##        return##############################################
         poly = siku.local.poly_f
         
 ##        if st & element.Element.f_errored: ##
@@ -380,16 +384,18 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
 
-            s = -0.5*(ss[0] + ss[1])
-            d = (siku.local.Smax - siku.local.Smin)
+##            d = (siku.local.Smax - siku.local.Smin)
+            d = (siku.local.sMax - siku.local.sMin)
             if not (abs(d) > 1e-12):
                 t = 0.
             else:
-                t = (s - siku.local.Smin) / d
-            poly.write( '> -G'+ color_name( (128, 255, 128), \
-                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )  
+##                t = (s - siku.local.Smin) / d
+                t = (s - siku.local.sMin) / d
+
+            poly.write( '> -G'+ siku.utils.gmt_color_int( (128, 255, 128), \
+                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

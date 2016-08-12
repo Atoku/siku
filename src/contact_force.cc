@@ -256,20 +256,20 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
   cd.e2.N += tq2;
 
   // ------------ stress tensor components calculation ----------------------
-  vec2d n1 = rot_90_ccw( vec3_to_vec2(cd.e1.P[cd.c.v11]) -
-                         vec3_to_vec2(cd.e1.P[cd.c.v12]) );
-  vec2d n2 = rot_90_ccw( vec3_to_vec2(cd.e2.P[cd.c.v21]) -
-                         vec3_to_vec2(cd.e2.P[cd.c.v22]) );
-//  vec2d n1 = rot_90_ccw( cd.c.p1 - cd.c.p2 );
-//  vec2d n2 = rot_90_ccw( cd.c.p3 - cd.c.p4 );
+  vec3d v11 = vec2_to_vec3_s( vec3_to_vec2( cd.e1.P[cd.c.v11] ) ),
+        v12 = vec2_to_vec3_s( vec3_to_vec2( cd.e1.P[cd.c.v12] ) ),
+        v21 = vec2_to_vec3_s( vec3_to_vec2( cd.e2.P[cd.c.v21] ) ),
+        v22 = vec2_to_vec3_s( vec3_to_vec2( cd.e2.P[cd.c.v22] ) );
+
+  vec2d n1 = ort( vec3_to_vec2_s( cross( cross( v11, v12 ), (v11 - v12) ) ) );
+  vec2d n2 = ort( vec3_to_vec2_s( cross( cross( v21, v22 ), (v21 - v22) ) ) );
+
   vec2d ex { 1., 0. }, ey { 0., 1. };
 
-  double l1 = abs( n1 ), l2 = abs( n2 );  // length of edge and normal vector
+  double l1 = abs( v11 - v12 ) * cd.siku.planet.R,
+         l2 = abs( v21 - v22 ) * cd.siku.planet.R;
 
   if( l1 < 1e-12 || l2 < 1e-12 ) return;
-
-  n1 /= l1;  // normalizing
-  n2 /= l2;
 
   cd.e1.Sxx += dot(vec3_to_vec2_s(F1), ex) * dot(n1, ex) / (cd.e1.h_main*l1);
   cd.e1.Syy += dot(vec3_to_vec2_s(F1), ey) * dot(n1, ey) / (cd.e1.h_main*l1);
