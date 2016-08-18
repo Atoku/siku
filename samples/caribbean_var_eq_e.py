@@ -37,6 +37,7 @@ PolyVor = poly_voronoi.PolyVor
 
 from   siku import wnd
 from   siku import noisy_grid as NG
+from   siku import color_works as cworks
  
 def main():
 
@@ -233,7 +234,8 @@ def main():
 ##                                    for i in right_inds ]
 
     for i in right_inds:
-        siku.elements[i].velo = (1.0, 0.0, 0.0)
+##        siku.elements[i].velo = (1.0, 0.0, 0.0)
+        siku.elements[i].velo = (-1.0, -1.0, 0.0)
         siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
@@ -384,32 +386,29 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
+##        col1 = (128, 255, 127) #light green
+##        col2 = (128, 127, 255) #light blue
+        col1 = (255, 128, 0) #light red
+        col2 = (0, 127, 255) #light blue
+        col = cworks.gmt_color_hsv_scale( col2, col1, s, 1e5 )
+
         poly = siku.local.poly_f
 ##        if st & element.Element.f_errored: ##
 ##            poly.write( '> -Gred -W0.1p,red \n' ) ##
                                 
 ##        elif
         if st & element.Element.f_special: ## elif -> if
-            poly.write( '> -Gpink -W0.1p,lightBlue \n' ) 
+            poly.write( '> -Gpink -W0.4p,'+col+' \n' ) 
         elif st & element.Element.f_static:
-            poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+##            poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+            poly.write( '> -G'+ col +' -W0.2p,black \n' )
 ##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
         elif st & element.Element.f_steady:
-            poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
+            poly.write( '> -G'+ col +' -W0.2p,white \n' )
+##            poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
 ##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
-
-##            d = (siku.local.Smax - siku.local.Smin)
-            d = (siku.local.sMax - siku.local.sMin)
-            if not (abs(d) > 1e-12):
-                t = 0.
-            else:
-##                t = (s - siku.local.Smin) / d
-                t = (s - siku.local.sMin) / d
-
-            poly.write( '> -G'+ siku.utils.gmt_color_int( (128, 255, 128), \
-                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )
-            pass
+            poly.write( '> -G'+ col +' -W0.1p,'+ col +' \n' ) 
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

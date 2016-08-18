@@ -39,6 +39,7 @@ from   siku import h5load
 hload = h5load.Loader
 
 from   siku import wnd
+from   siku import color_works as cworks
  
 def main():
 
@@ -369,8 +370,13 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
     if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
-##        return##############################################
         poly = siku.local.poly_f
+
+##        col1 = (128, 255, 127) #light green
+##        col2 = (128, 127, 255) #light blue
+        col1 = (255, 128, 127) #light red
+        col2 = (128, 127, 255) #light blue
+        col = cworks.gmt_color_hsv_scale( col1, col2, s, 1e5 )
         
 ##        if st & element.Element.f_errored: ##
 ##            poly.write( '> -Gred -W0.1p,red \n' ) ##                 
@@ -379,23 +385,14 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
             
             poly.write( '> -Gpink -W0.1p,lightBlue \n' ) 
         elif st & element.Element.f_static:
-            poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+            poly.write( '> -G'+ col +' -W0.1p,brown \n' )
+##            poly.write( '> -Gblue -W0.1p,brown \n' )
 ##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
         elif st & element.Element.f_steady:
             poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
 ##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
-
-##            d = (siku.local.Smax - siku.local.Smin)
-            d = (siku.local.sMax - siku.local.sMin)
-            if not (abs(d) > 1e-12):
-                t = 0.
-            else:
-##                t = (s - siku.local.Smin) / d
-                t = (s - siku.local.sMin) / d
-
-            poly.write( '> -G'+ siku.utils.gmt_color_int( (128, 255, 128), \
-                    (128, 128, 255), t ) +' -W0.1p,lightBlue \n' )
+            poly.write( '> -G'+ col +' -W0.1p,'+ col +' \n' )        
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

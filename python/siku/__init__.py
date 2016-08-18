@@ -239,22 +239,6 @@ class Utils:
 
 utils = Utils()
 
-def gmt_color_int( col1, col2, t ):
-    '''Interpolates color from col1 to col2 (RGB-tuples) by parameter t,
-    
-    Return: string 'R/G/B', where R,G,B - integers from 0 to 255
-    '''
-    t = max( t, 0. )
-    t = min( t , 1. )
-    
-    col = ( int( col1[0] + t*(col2[0] - col1[0]) ), \
-            int( col1[1] + t*(col2[1] - col1[1]) ), \
-            int( col1[2] + t*(col2[2] - col1[2]) ) )
-
-    return str(col[0])+'/'+str(col[1])+'/'+str(col[2])
-
-utils.gmt_color_int = gmt_color_int
-
 # ---------------------------------------------------------------------
 # Surface wind grid (NMC)
 # ---------------------------------------------------------------------
