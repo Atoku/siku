@@ -117,6 +117,8 @@ public:
 
   double Sxx {0};       //!< N/m^2, stress tensor 'xx' component
   double Syy {0};       //!< N/m^2, stress tensor 'yy' component
+  double Sxy {0};       //!< N/m^2, stress tensor 'xy' component
+  double Syx {0};       //!< N/m^2, stress tensor 'yx' component
 
   double h_main{0};     //!< m, thickness of the main (thickest) layer
   //?double ela {0};       //!< kg/s^2, elasticity of element (SI)

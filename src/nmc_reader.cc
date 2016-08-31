@@ -84,8 +84,7 @@ NMCVecfield::get_node ( const double& lat, const double& lon )
 {
   try
     {
-      return NMCVecfield::GridNode (
-          lat, lon,
+      return NMCVecfield::GridNode ( lat, lon,
           grid.at ( lat_indexer.at ( lat ) ).at ( lon_indexer.at ( lon ) ) );
     }
   catch ( const std::out_of_range& oor )

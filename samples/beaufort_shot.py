@@ -39,6 +39,7 @@ from   siku import h5load
 hload = h5load.Loader
 
 from   siku import wnd
+from   siku import ice_nc
 
 def is_inside( lo, la, mo, Mo, ma, Ma ):
     return lo > mo and lo < Mo and la > ma and la < Ma
@@ -62,7 +63,7 @@ def main():
     
     # ---------------------------------------------------------------------
     #  Wind initializations (NMC grid example)
-    # ---------------------------------------------------------------------
+    # --------------------------------------------------------------------- 
     
     siku.uw = wnd.NMCVar( 'u1994.nc', 'uwnd' )
     siku.vw = wnd.NMCVar( 'v1994.nc', 'vwnd' )
@@ -116,6 +117,7 @@ def main():
     ## North cap
 ##    PV = PolyVor( 'high.voronoi.xyz', 'high.voronoi.xyzf' )
     PV = PolyVor( 'h.voronoi.xyz', 'h.voronoi.xyzf' )
+##    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
 ##    PV = PolyVor( 'AnC5.voronoi.xyz', 'AnC5.voronoi.xyzf' )
     
     PV.filter_( 0, 360, 60, 90 )
@@ -149,13 +151,37 @@ def main():
 ##    siku.settings.border_mark = 0 #1
 ##    siku.settings.borders = 'contours.ll'
 
+    # --------------------------- applying mask ---------------------------
+
+    print('Applying masks')
+    Mask = ice_nc.InterGrid('init_Beaufort.nc')
+
+    q2ll = geocoords.quat_to_ll
+
+    eln = []
+    for e in siku.elements:
+        
+        ll = q2ll( mathutils.Quaternion( e.q ) )
+        v = Mask.get( ll[0], ll[1] )
+        if v:
+            v = abs(int(v))
+
+        ####### refine the values! int-uint conversions are plausible
+        if v == 255 or v == 128 or v == 1:
+            e.flag_state = element.Element.f_special
+        if not (v == 0 or v == 64):
+            eln.append( e )
+    siku.elements = eln
+    print('Done')
+
     print('Marking borders with GMT')
     bor = PV.get_border_by_gmt( siku.elements)
     for b in bor:
         siku.elements[ b ].flag_state = element.Element.f_static
-    print('Done\n\n')
+    print('Done')
 
     # ----------------------- average size analisis -----------------------
+    print('\n')
 
     COUNT = 0
     SIZE = 0.0

@@ -209,7 +209,7 @@ def main():
                                   'solidity' : 0.5,#0.05,
                                   'tensility' : 0.30,#0.615,
 
-                                  'anchority' : 0.000005,
+                                  'anchority' : 0.05,
                                   'windage':    0.0051,
                                   'fastency' : 0.250, #0.5
 
@@ -374,8 +374,8 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
 
 ##        col1 = (128, 255, 127) #light green
 ##        col2 = (128, 127, 255) #light blue
-        col1 = (255, 128, 127) #light red
-        col2 = (128, 127, 255) #light blue
+        col1 = (255, 64, 0) #red
+        col2 = ( 0, 64, 255) # blue
         col = cworks.gmt_color_hsv_scale( col1, col2, s, 1e5 )
         
 ##        if st & element.Element.f_errored: ##

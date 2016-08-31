@@ -1350,11 +1350,17 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
   const size_t tn = siku.time.get_n ();
 
   // preparing stress
-  PyObject* pSTuple = PyTuple_New ( 2 ); // new
-  PyObject* pN = PyFloat_FromDouble ( pe->Sxx );  // new
+  PyObject* pSTuple = PyTuple_New ( 4 ); // new
+  PyObject* pN =
+       PyFloat_FromDouble ( pe->Sxx );  // new
   PyTuple_SET_ITEM( pSTuple, 0, pN );                 // steals pNum
   pN = PyFloat_FromDouble ( pe->Syy );  // new
   PyTuple_SET_ITEM( pSTuple, 1, pN );                 // steals pNum
+
+  pN = PyFloat_FromDouble ( pe->Sxy );  // new
+  PyTuple_SET_ITEM( pSTuple, 2, pN );                 // steals pNum
+  pN = PyFloat_FromDouble ( pe->Syx );  // new
+  PyTuple_SET_ITEM( pSTuple, 3, pN );                 // steals pNum
 
   // calling the 'monitor' method with all the arguments
   // !! synchronized with python
@@ -1402,7 +1408,7 @@ Sikupy::fcall_glob_monitor ( const Globals& siku )
   int status = FCALL_OK;
 
   // creating tuple for extremal stress tensor components
-  PyObject* pSTuple = PyTuple_New ( 4 );
+  PyObject* pSTuple = PyTuple_New ( 8 );
 
   PyObject* pNum = PyFloat_FromDouble ( siku.SxxMax );  // new
   PyTuple_SET_ITEM( pSTuple, 0, pNum );                 // steals pNum
@@ -1412,6 +1418,15 @@ Sikupy::fcall_glob_monitor ( const Globals& siku )
   PyTuple_SET_ITEM( pSTuple, 2, pNum );                 // steals pNum
   pNum = PyFloat_FromDouble ( siku.SyyMin );            // new
   PyTuple_SET_ITEM( pSTuple, 3, pNum );                 // steals pNum
+
+  pNum = PyFloat_FromDouble ( siku.SxyMax );                   // new
+  PyTuple_SET_ITEM( pSTuple, 4, pNum );                 // steals pNum
+  pNum = PyFloat_FromDouble ( siku.SxyMin );            // new
+  PyTuple_SET_ITEM( pSTuple, 5, pNum );                 // steals pNum
+  pNum = PyFloat_FromDouble ( siku.SyxMax );            // new
+  PyTuple_SET_ITEM( pSTuple, 6, pNum );                 // steals pNum
+  pNum = PyFloat_FromDouble ( siku.SyxMin );            // new
+  PyTuple_SET_ITEM( pSTuple, 7, pNum );                 // steals pNum
 
   // time step number
   const size_t n = siku.time.get_n ();

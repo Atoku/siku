@@ -271,10 +271,27 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
 
   if( l1 < 1e-12 || l2 < 1e-12 ) return;
 
-  cd.e1.Sxx += dot(vec3_to_vec2_s(F1), ex) * dot(n1, ex) / (cd.e1.h_main*l1);
-  cd.e1.Syy += dot(vec3_to_vec2_s(F1), ey) * dot(n1, ey) / (cd.e1.h_main*l1);
-  cd.e2.Sxx += dot(vec3_to_vec2_s(F2), ex) * dot(n2 ,ex) / (cd.e2.h_main*l2);
-  cd.e2.Syy += dot(vec3_to_vec2_s(F2), ey) * dot(n2, ey) / (cd.e2.h_main*l2);
+  double f1x = dot( vec3_to_vec2_s(F1), ex ),
+         f1y = dot( vec3_to_vec2_s(F1), ey ),
+         n1x = dot( n1, ex ),
+         n1y = dot( n1, ey ),
+         d1  = cd.e1.h_main * l1,
+
+         f2x = dot( vec3_to_vec2_s(F2), ex ),
+         f2y = dot( vec3_to_vec2_s(F2), ey ),
+         n2x = dot( n2 ,ex ),
+         n2y = dot( n2, ey ),
+         d2  = cd.e2.h_main * l2;
+
+  cd.e1.Sxx += f1x * n1x / d1;
+  cd.e1.Syy += f1y * n1y / d1;
+  cd.e1.Sxy += -f1x * n1y / d1;
+  cd.e1.Syx += f1y * n1x / d1;
+
+  cd.e2.Sxx += f2x * n2x / d2;
+  cd.e2.Syy += f2y * n2y / d2;
+  cd.e2.Sxy += -f2x * n2y / d2;
+  cd.e2.Syx += f2y * n2x / d2;
 
 }
 

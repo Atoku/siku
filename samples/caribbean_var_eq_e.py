@@ -371,6 +371,12 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
     c = R * C
 
     s = -0.5*(ss[0] + ss[1])
+    sxy = -0.5*(ss[2]+ss[3])
+##    if ss[2] != -ss[3]:
+####        print( abs(abs(ss[2])-abs(ss[3])) / (max(abs(ss[2]), abs(ss[3]))) )
+##        print( abs(abs(ss[2])-abs(ss[3])) / (0.5*(abs(ss[2])+abs(ss[3]))) )
+####        input(str(ss[2])+'  '+str(ss[3]))
+    s = -ss[3]  #@####
     if s < siku.local.sigmaMin: siku.local.sigmaMin = s
     if s > siku.local.sigmaMax: siku.local.sigmaMax = s
 
