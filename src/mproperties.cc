@@ -149,5 +149,10 @@ void clean_props( Globals& siku )
       e.Syy = 0.;
       e.Sxy = 0.;
       e.Syx = 0.;
+
+
+      e.flag &= ~Element::F_SPECIAL;
+      e.flag &= ~Element::F_SPECIAL1;
+      e.flag &= ~Element::F_SPECIAL2;
     }
 }

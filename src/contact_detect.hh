@@ -167,6 +167,14 @@ public:
     {
       return i1 < c.i1 || (i1 == c.i1 && i2 < c.i2);
     }
+    inline bool operator == ( const Contact& c ) const
+    {
+      return ( i1 == c.i1 ) && ( i2 == c.i2 );
+    }
+    inline bool operator != ( const Contact& c ) const
+    {
+      return ( i1 != c.i1 ) || ( i2 != c.i2 );
+    }
   };
 
   //! \brief Method specifier (ye, i know what 'meth' means...)

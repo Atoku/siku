@@ -96,6 +96,9 @@ struct ContactData
     // call for 'geometry'->'2d'->'polygon intersection'
     inter_res = intersect( loc_P1, loc_P2, interPoly, &stats, &icen, &area );
 
+    // some security for 1D and 0D intersections
+    if( inter_res < 3 ) area = 0.;
+
     // and calc centers` interpositions
     r12 = vec3_to_vec2( e2_to_e1 * NORTH );
     if( c.type == JOINT )
@@ -243,17 +246,32 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
   vec3d F1 = vec2_to_vec3_s( if_.F1 ),
         F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3_s( -if_.F1 ) );
 
+  // TEST //////////////////////
+//  double t = if_.rf1 ? cross( if_.rf1, if_.F1 ) : 0.;
+//  double tq1 = cd.siku.phys_consts["rotatability"] * if_.couple1 +
+//               isfinite( t ) ? t : 0.;
+//
+//  t =  if_.rf1 ? cross( if_.rf2 - cd.r12 * cd.siku.planet.R, -if_.F1 ) : 0.;
+//  double tq2 = cd.siku.phys_consts["rotatability"] * -if_.couple1 +
+//               isfinite( t ) ? t : 0.;
+
   // torques (combined) applied to e1 and e2 in their local coords (SI)
-  double tq1 =  if_.couple1 + cross( if_.rf1, if_.F1 );
-  double tq2 = -if_.couple1 + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
+  double tq1 =  cd.siku.phys_consts["rotatability"] *
+                if_.couple1 + cross( if_.rf1, if_.F1 );
+  double tq2 =  cd.siku.phys_consts["rotatability"] *
+                -if_.couple1 + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
                                      -if_.F1 ); // (SI) - that`s why ' * R'
 
   // TODO: find and clean (set properly) all adjustment factors like below
+
+#pragma omp critical
+  {
   cd.e1.F += F1;
   cd.e1.N += tq1;
 
   cd.e2.F += F2;
   cd.e2.N += tq2;
+  }
 
   // ------------ stress tensor components calculation ----------------------
   vec3d v11 = vec2_to_vec3_s( vec3_to_vec2( cd.e1.P[cd.c.v11] ) ),
@@ -283,6 +301,8 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
          n2y = dot( n2, ey ),
          d2  = cd.e2.h_main * l2;
 
+#pragma omp critical
+  {
   cd.e1.Sxx += f1x * n1x / d1;
   cd.e1.Syy += f1y * n1y / d1;
   cd.e1.Sxy += -f1x * n1y / d1;
@@ -292,6 +312,7 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
   cd.e2.Syy += f2y * n2y / d2;
   cd.e2.Sxy += -f2x * n2y / d2;
   cd.e2.Syx += f2y * n2x / d2;
+  }
 
 }
 
@@ -301,21 +322,26 @@ inline void _update_contact( ContactData& cd )
   double r_size = cd.siku.planet.R_rec / cd.c.init_len,   // reversed size (SI)
          dmax   = max( cd.d1, cd.d2 ),                    // maximal stretch
          dave   = (cd.d1 + cd.d2) * 0.5;                  // average stretch
+//         dave   = sqrt(cd.d1 * cd.d2);                    // average stretch
+//         dave   = (cd.d1 * cd.d2) / (cd.d1 + cd.d2);      // average stretch
 
   double sigma   = cd.siku.phys_consts["solidity"],
          epsilon = cd.siku.phys_consts["tensility"];
 
   // TODO: discuss time scaling
-  cd.c.durability -= cd.siku.time.get_dt() *
-      ( ( dmax * r_size > epsilon ) ? dave * r_size * sigma : 0. );
-//  cd.c.durability -=
+  cd.c.durability -= ( dmax * r_size > epsilon ) ?
+//      dave * r_size * cd.siku.time.get_dt() * sigma     :       0.;
+      dave * r_size     :       0.;
 
+#pragma omp critical
+  {
   // check for errors
   if( errored( cd.loc_P1 ) )   cd.e1.flag |= Element::F_ERRORED;
   if( errored( cd.loc_P2 ) )   cd.e2.flag |= Element::F_ERRORED;
 
   // land fastening
   _fasten( cd );
+  }
 
 // may be required in 'collision' contact type
 //      if( c.durability < 0.05 )
@@ -342,15 +368,15 @@ inline void _update_contact( ContactData& cd )
 
 void contact_forces( Globals& siku )
 {
-//  #pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
+  #pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
   for( int i = 0; i < siku.ConDet.cont.size(); i++ )
 //  for( auto& c : siku.ConDet.cont ) // reorganized for OpenMP
     {
       auto& c = siku.ConDet.cont[i];
 
       // conditional cancellation of interaction
-      // TODO: such errors should be removed by removing their reason
       if(
+          // TODO: such errors should be removed by removing their reason
           //(siku.es[c.i1].flag & Element::F_ERRORED) ||
           //(siku.es[c.i2].flag & Element::F_ERRORED) ||
       // No need to calculate interaction for two steady polygons
@@ -364,6 +390,7 @@ void contact_forces( Globals& siku )
       ContactData cd( c, siku );
 
       InterForces intf;  // elements` interaction forces
+      InterForces intf1;//////TEST
 
       // calculating the forces
       if( c.type != ContType::JOINT )
@@ -379,8 +406,6 @@ void contact_forces( Globals& siku )
         }
       else
         {
-
-
           // TODO: reconsider manual optimization: single switch on loading
           // combined with calling function by pointer on calculation time.
           switch( siku.cont_force_model )
@@ -395,6 +420,14 @@ void contact_forces( Globals& siku )
 
             case CF_DIST_SPRINGS:
               intf = _distributed_springs( cd );
+
+              ///TEST
+              auto cc = c;
+              cc.type = COLLISION;
+              ContactData ccd( cc, siku );
+              intf1 = _collision( ccd );
+              _apply_interaction( cd, intf1 );
+              ////\TEST
               break;
           }
         }

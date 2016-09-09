@@ -37,6 +37,7 @@ PolyVor = poly_voronoi.PolyVor
 
 from   siku import wnd
 from   siku import noisy_grid as NG
+from   siku import color_works as cworks
  
 def main():
 
@@ -82,9 +83,9 @@ def main():
 
     #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     siku.time.start = siku.uw.times[st_t_ind]
-    siku.time.finish   = siku.time.start + hour * 210#105#120
+    siku.time.finish   = siku.time.start + hour * 630#315#210#105#120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 9600 #60
+    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 7200#3600#2400 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     siku.time.last = siku.time.start
     siku.time.last_update = siku.time.last
@@ -102,6 +103,7 @@ def main():
     y = 2
 
     NN = [ 1, 2, 4, 8 ]
+##    NN = [ 2, 4, 8, 16 ]
 ##    NN = [ 4, 8, 16, 32 ]
 
     nx = [ x*i for i in NN ]
@@ -185,7 +187,7 @@ def main():
     siku.plotter = GMT_Plotter( 'caribbean_plot_e.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 240
+    siku.diagnostics.monitor_period = 45#60
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -194,7 +196,8 @@ def main():
     siku.settings.force_model = \
                     siku.CONTACT_FORCE_MODEL['distributed_spring']
 
-    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
+##    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
+    siku.settings.contact_method = siku.CONTACT_METHODS['n2']
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  -10000.0, 1.00, 0.2, 0.1, \
@@ -207,15 +210,15 @@ def main():
                                   
                                   'elasticity' : 500000.0,#5000000.0,
                                   'bendability' : 1.0,#1.0,
-                                  'solidity' : 0.5,#0.05,
-                                  'tensility' : 100.30,#0.615,
+                                  'solidity' : 1.,#0.5,#0.05,
+                                  'tensility' : 0.1,#10.30,#0.615,
 
-                                  'anchority' : 0.000001,
+                                  'anchority' : 0.0000001,
                                   'windage':    0.001,
                                   'fastency' : 0.250, #0.5
 
-                                  'sigma' : 1000000.0, #same as elasticity
-                                  'etha' : 0.051    # -//- viscosity
+                                  'sigma' : 400000.,#1000000.0, #same as elasticity
+                                  'etha' : 0.01#0.051    # -//- viscosity
                                   }
 
     # ------------------------- speed settings ----------------------------
@@ -232,7 +235,8 @@ def main():
 ##                                    for i in right_inds ]
 
     for i in right_inds:
-        siku.elements[i].velo = (1.0, 0.0, 0.0)
+##        siku.elements[i].velo = (1.0, 0.0, 0.0)
+        siku.elements[i].velo = (-0.20, 0.0, 0.0)
         siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
@@ -244,6 +248,7 @@ def main():
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
     siku.callback.updatewind = updatewind
+    siku.callback.global_monitor = global_monitor
 
     ##
     siku.callback.presave = presave
@@ -255,11 +260,29 @@ def presave( t, n, ns ):
 ##        fname = 'siku-' + t.strftime("%Y-%m-%d-%H:%M:%S") + '.h5'
 ##        return fname
     return
+# --------------------------------------------------------------------------
 
+def global_monitor( t, n, ns, Sigma ):
+    siku.sigma = Sigma
+    
+    siku.local.Smin = -0.5*(Sigma[1] + Sigma[3])
+    siku.local.Smax = -0.5*(Sigma[0] + Sigma[2])
+    
+    return 0
 # --------------------------------------------------------------------------
 
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_72cx17.5c"]) #24_20
+
+    siku.local.sigmaMax = 0.
+    siku.local.sigmaMin = 0.
+
+    siku.local.sMax = 0.5284816499797322
+    siku.local.sMin = -409396.54611198575
+##    siku.local.sMax = 516386.46676500165
+##    siku.local.sMin = -468575.8903352868
+##    siku.local.sMax = 879877.3152675817
+##    siku.local.sMin = -381127.9856318919
 
     siku.local.fces = []
     for i in range( len( siku.local.NN ) ):
@@ -269,8 +292,12 @@ def initializations( siku, t ):
 # --------------------------------------------------------------------------
 
 def conclusions( siku, t ):
+
+    print('minimal and maximal sigma:\n' +
+          str(siku.local.sigmaMin)+ ', '+str(siku.local.sigmaMax)+'\n' )
+    
     print('creating .gif')
-    subprocess.call( "convert -density 100 -delay 10 carib*.eps caribbeans.gif", \
+    subprocess.call( "convert -density 100 -delay 20 carib*.eps caribbeans.gif", \
                      shell=True )
 
     [ i.close() for i in siku.local.fces ]
@@ -290,9 +317,9 @@ def pretimestep( t, n, ns ):
 ##        siku.time.last = t
 
     # step by NMC own time step
-    if t >= siku.time.last: #siku.uw.times[siku.time.update_index + 1]: #
+    if t >= siku.uw.times[siku.time.update_index + 1]: #siku.time.last: #
         status += siku.MASK['WINDS']
-        siku.time.last = siku.time.finish#t #
+        siku.time.last = t #siku.time.finish#
 
     #accumulated force vectr and stress
     siku.local.FF = [ mathutils.Vector( (0.0,0.0,0.0) )\
@@ -334,7 +361,10 @@ def aftertimestep( t, n, ns ):
 
 # --------------------------------------------------------------------------
 
-def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
+##drift_monitor = siku.callback.default_monitor
+
+def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
+                   m, I, i, A, a_f, w_f ):
     # create actual quaternion
     q = mathutils.Quaternion( Q )
     C = mathutils.Vector( (0,0,1) )
@@ -342,6 +372,16 @@ def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
     # get latitude and longitude of center of mass (0,0,1)
     R = q.to_matrix()
     c = R * C
+
+    s = -0.5*(ss[0] + ss[1])
+    sxy = -0.5*(ss[2]+ss[3])
+##    if ss[2] != -ss[3]:
+####        print( abs(abs(ss[2])-abs(ss[3])) / (max(abs(ss[2]), abs(ss[3]))) )
+##        print( abs(abs(ss[2])-abs(ss[3])) / (0.5*(abs(ss[2])+abs(ss[3]))) )
+####        input(str(ss[2])+'  '+str(ss[3]))
+##    s = -ss[3]  #@####
+    if s < siku.local.sigmaMin: siku.local.sigmaMin = s
+    if s > siku.local.sigmaMax: siku.local.sigmaMax = s
 
     #forces monitor
     if index in siku.local.right_gi:
@@ -355,20 +395,33 @@ def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 
+##        col1 = (128, 255, 127) #light green
+##        col2 = (128, 127, 255) #light blue
+        col1 = (255, 128, 127) #light red
+        col2 = (128, 127, 255) #light blue
+        col = cworks.gmt_color_hsv_scale( col2, col1, s, 1e5 )
+
         poly = siku.local.poly_f
 ##        if st & element.Element.f_errored: ##
 ##            poly.write( '> -Gred -W0.1p,red \n' ) ##
                                 
 ##        elif
         if st & element.Element.f_special: ## elif -> if
-            poly.write( '> -Gpink -W0.1p,lightBlue \n' ) 
+            poly.write( '> -Gpink -W0.4p,'+col+' \n' )
+        elif st & 256: ## elif -> if
+            poly.write( '> -Gpurple -W0.5p,'+col+' \n' )
+        elif st & 512: ## elif -> if
+            poly.write( '> -Gmagenta -W0.5p,'+col+' \n' ) 
         elif st & element.Element.f_static:
-            poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+##            poly.write( '> -Gbrown -W0.1p,lightBlue \n' )
+            poly.write( '> -G'+ col +' -W0.2p,black \n' )
 ##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
         elif st & element.Element.f_steady:
-            poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
+            poly.write( '> -G'+ col +' -W0.2p,white \n' )
+##            poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
         else:
-            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )
+##            poly.write( '> -GlightCyan -W0.1p,lightBlue \n' )\
+            poly.write( '> -G'+ col +' -W0.1p,'+ col +' \n' ) 
             
         for v in vert:
             poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \

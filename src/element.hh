@@ -71,6 +71,8 @@ public:
   static const unsigned int F_MONITORED  {0x10};
   //! \brief special flag for special 'marked' elements
   static const unsigned int F_SPECIAL {0x20}; // aka 32
+  static const unsigned int F_SPECIAL1 {256};
+  static const unsigned int F_SPECIAL2 {512};
 
   //! \brief technical flag for NOT_NEW elements, means those elements were
   //! either loaded from snapshot or already processed by dynamics/position
