@@ -102,8 +102,8 @@ class Border:
 ##            domain = (0.0, 360.0, -90.0, 90.0)
 ##        self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )
 
-    def add_hp_verts( self, gen_dens, fil_dens, domain = None ):
-        '''Generates and appends vertices using hpgrid monule'''
+    def add_hp_verts( self, gen_dens, fil_dens, domain = None, verb = True ):
+        '''Generates and appends vertices using hpgrid module'''
         if domain == None:
             grid = hpgrid.Grid(  )
         else:
@@ -114,7 +114,11 @@ class Border:
                           GC.ratio180 * ( 90 - GC.norm_lat( domain[2] ) ) ) )
             grid = hpgrid.Grid( hpDomain )
 
+        if verb:
+            print(' generating... ')
         grid.points_gen( gen_dens )
+        if verb:
+            print(' filtering... ')
         grid.points_filter( fil_dens )
         self.verts = self.verts + grid.points
 
@@ -158,7 +162,7 @@ class Border:
 
         points = geofiles.xyz_to_lonlat( points )
         geofiles.w_lonlat( 'temp.ll', points )
-    
+
 ##        #outputting shapes
 ##        geofiles.w_xyz( file_s + '.xyz', points )
 ##        points = geofiles.xyz_to_lonlat( points )
@@ -168,6 +172,8 @@ class Border:
         ts = str( thick )
 ##        subprocess.call( 'gmt gmtselect ' + file_s + '.ll -fg -C' + ts + \
 ##                         'k/contours.ll > ' + file_b + '.ll', shell=True )
+
+        print('...GMT filtering - long operation...')
         subprocess.call( 'gmt gmtselect ' + 'temp.ll -fg -C' + ts + \
                          'k/contours.ll > ' + file_b, shell=True )
 

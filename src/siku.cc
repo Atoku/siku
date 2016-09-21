@@ -74,6 +74,7 @@ using namespace Coordinates;
 int
 main ( int argc, char* argv[] )
 {
+  try{
   // Reading and populating program options
   Options options ( argc, argv );
 
@@ -209,6 +210,11 @@ main ( int argc, char* argv[] )
 
   cout<<"\nDONE!\n";
   return 0;
+  }
+  catch( const char* c )
+  {
+      cout<<c<<endl;
+  }
 }
 
 // SHPHandle pcoast = SHPOpen( coastline, "rb" );

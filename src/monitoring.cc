@@ -13,8 +13,10 @@
 
 void monitoring( Globals& siku, Sikupy& sikupy )
 {
-  // Monitoring the elements
+  // global monitor function
+  sikupy.fcall_glob_monitor( siku );
 
+  // Monitoring the elements
   for ( size_t i = 0; i < siku.es.size(); ++i )
     {
     if ( siku.es[i].flag & Element::F_MONITORED )

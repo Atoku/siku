@@ -135,6 +135,7 @@ public:
     // elements in contact.
     //! \return: mean length of edges on success, 0 on failure
     double find_edges( Globals& siku );
+//    double find_edges_( Globals& siku );//OLD
 
 //    union
 //    {
@@ -165,6 +166,14 @@ public:
     inline bool operator < ( const Contact& c ) const
     {
       return i1 < c.i1 || (i1 == c.i1 && i2 < c.i2);
+    }
+    inline bool operator == ( const Contact& c ) const
+    {
+      return ( i1 == c.i1 ) && ( i2 == c.i2 );
+    }
+    inline bool operator != ( const Contact& c ) const
+    {
+      return ( i1 != c.i1 ) || ( i2 != c.i2 );
     }
   };
 

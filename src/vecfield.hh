@@ -103,6 +103,10 @@ private:
   const double nmc_grid_step
     { 2.5 / 180 * M_PI };
 
+  //! \brief longitude and latitude grid steps
+  double nmc_grid_step_lo{};
+  double nmc_grid_step_la{};
+
   //! \brief Number of longitudes
   int lon_size{0};
 
@@ -122,22 +126,30 @@ private:
   inline int
   norm_lon_ind ( int lon_i )
   {
-    while ( lon_i >= lon_size )
-      lon_i -= lon_size;
-    while ( lon_i < 0 )
-      lon_i += lon_size;
-    return lon_i;
+    return (lon_i < 0) ?
+        (lon_i % lon_size) + lon_size :
+        (lon_i % lon_size);
+
+//    while ( lon_i >= lon_size )
+//      lon_i -= lon_size;
+//    while ( lon_i < 0 )
+//      lon_i += lon_size;
+//    return lon_i;
   }
 
   //! \brief Normalizing latitude index
   inline int
   norm_lat_ind ( int lat_i )
   {
-    while ( lat_i >= lat_size )
-      lat_i -= lat_size;
-    while ( lat_i < 0 )
-      lat_i += lat_size;
-    return lat_i;
+    return (lat_i < 0) ?
+        (lat_i % lat_size) + lat_size :
+        (lat_i % lat_size);
+
+//    while ( lat_i >= lat_size )
+//      lat_i -= lat_size;
+//    while ( lat_i < 0 )
+//      lat_i += lat_size;
+//    return lat_i;
   }
 
 };

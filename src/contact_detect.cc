@@ -63,58 +63,139 @@ inline double _dist2( const vec3d& v1, const vec3d& v2 )
 
 double ContactDetector::Contact::find_edges( Globals& siku )
 {
-  if( !i1 && !i2 ) return 0.; // if no elements were set
+  if( !i1 && !i2 ) throw("bad element indexes in contact");
+    //return 0.; // if no elements were set
 
-  //search for mutual edge
-  Element& e1 = siku.es[i1], & e2 = siku.es[i2];
+  //search for mutual edge:
 
-  bool first_found = false, second_found = false;
-  double l1 =0, l2 =0;
+  Element& e1 = siku.es[i1], & e2 = siku.es[i2];  // shortcut
 
+  // variables
   mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
   mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
-  vec2d dump, r12 = vec3_to_vec2( e2_to_e1 * NORTH ),
-              r21 = vec3_to_vec2( e1_to_e2 * NORTH );
 
-  vec2d tv1 = vec3_to_vec2( e1.P[ e1.P.size()-1 ] );
-  vec2d tv2 = {};
+  // polygons in local (e1) coords
+  vector<vec2d> loc_P1;         // e1.P vertices in local 2D coords
+  vector<vec2d> loc_P2;         // e2.P vertices in local 2D coords
+  for( auto& p : e1.P ) loc_P1.push_back( vec3_to_vec2( p ) );
+  for( auto& p : e2.P ) loc_P2.push_back( vec3_to_vec2( e2_to_e1 * p ) );
 
-  for( size_t i = 0; i< e1.P.size(); i++)
-    {
-      tv2 = tv1;
-      tv1 = vec3_to_vec2( e1.P[i] );
-      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump )
-          && tv1 != tv2 )
+//  vector<vec3d> loc_P1;         // e1.P vertices in local 2D coords
+//  vector<vec3d> loc_P2;         // e2.P vertices in local 2D coords
+//  for( auto& p : e1.P ) loc_P1.push_back( p );
+//  for( auto& p : e2.P ) loc_P2.push_back( e2_to_e1 * p );
+
+  v11 = 0, v22 = 0, v12 = 0, v21 = 0;    // indexes in e1 and e2.
+  size_t s1 = loc_P1.size(), s2 = loc_P2.size();    // sizes of arrays
+  double d, mind = abs( loc_P1[0] - loc_P2[0] );    // minimal distance
+
+
+  // search for two closest vertices
+  for( size_t i = 0; i < s1; i++ )
+    for( size_t j = 0; j < s2; j++ )
+      if( ( d = abs( loc_P1[ i%s1 ] - loc_P2[ j%s2 ] ) ) < mind )
         {
-          l1 = (tv2 - tv1).abs();
-          v11 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
-          v12 = i;
-          first_found = true;
-          break;
+          mind = d;
+          v11 = i;
+          v22 = j;
         }
+
+  // test which of neighbor vertices are second closest pair
+  size_t v1l = (v11-1+s1) %s1,
+         v2l = (v22+1)    %s2,
+         v1r = (v11+1)    %s1,
+         v2r = (v22-1+s2) %s2;
+  if( abs( loc_P1[ v1l ] - loc_P2[ v2l ] ) <
+      abs( loc_P1[ v1r ] - loc_P2[ v2r ] ) )
+    {
+      v12 = v1l;
+      v21 = v2l;
+    }
+  else
+    {
+      v12 = v1r;
+      v21 = v2r;
     }
 
-  tv1 = vec3_to_vec2( e2.P[ e2.P.size()-1 ] );
-  for( size_t i = 0; i< e2.P.size(); i++)
-    {
-      tv2 = tv1;
-      tv1 = vec3_to_vec2( e2.P[i] );
-      if( segment2d_intersect( {0.,0.}, r21, tv1, tv2, dump )
-          && tv1 != tv2 )
-        {
-          l2 = (tv2 - tv1).abs();
-          v21 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
-          v22 = i;
-          second_found = true;
-          break;
-        }
-    }
+  // return - mean length of two edges of elements
+  return 0.5 * ( abs( loc_P1[v11] - loc_P1[v12] )
+               + abs( loc_P2[v22] - loc_P2[v21] ) );
 
-  if( first_found && second_found )
-    return ( l1 + l2 ) * 0.5;
-
-  return 0.;
 }
+
+////OLD
+//double ContactDetector::Contact::find_edges( Globals& siku )
+//{
+//  if( !i1 && !i2 ) throw("bad element indexes in contact");
+//    //return 0.; // if no elements were set
+//
+//  //search for mutual edge
+//  Element& e1 = siku.es[i1], & e2 = siku.es[i2];
+//
+//  bool first_found = false, second_found = false;
+//  double l1 =0, l2 =0;
+//
+//  mat3d e2_to_e1 = loc_to_loc_mat( e1.q, e2.q );
+//  mat3d e1_to_e2 = loc_to_loc_mat( e2.q, e1.q );
+//  double tol { 100. }; // 100 - heuristic tolerance
+//  vec2d dump, r12 = vec3_to_vec2( e2_to_e1 * NORTH ) * tol * tol,
+//              r21 = vec3_to_vec2( e1_to_e2 * NORTH ) * tol * tol;
+//
+//  vec2d tv1 = vec3_to_vec2( e1.P.back() ) * tol;
+//  vec2d tv2 = {};
+//
+//  for( size_t i = 0; i< e1.P.size(); i++)
+//    {
+//      tv2 = tv1;
+//      tv1 = vec3_to_vec2( e1.P[i] ) * tol;
+//
+//      if( segment2d_intersect( {0.,0.}, r12, tv1, tv2, dump ) && tv1 != tv2 )
+//        {
+//          l1 = (tv2 - tv1).abs();
+//          v11 = ( i + e1.P.size() - 1 ) % e1.P.size(); // i-1`st
+//          v12 = i;
+//          first_found = true;
+//          break;
+//        }
+//    }
+//
+//  tv1 = vec3_to_vec2( e2.P.back() ) * tol;
+//  for( size_t i = 0; i< e2.P.size(); i++)
+//    {
+//      tv2 = tv1;
+//      tv1 = vec3_to_vec2( e2.P[i] ) * tol;
+//
+//      if( segment2d_intersect( {0.,0.}, r21, tv1, tv2, dump ) && tv1 != tv2 )
+//        {
+//          l2 = (tv2 - tv1).abs();
+//          v21 = ( i + e2.P.size() - 1 ) % e2.P.size(); // i-1`st
+//          v22 = i;
+//          second_found = true;
+//          break;
+//        }
+//    }
+//
+//  if( first_found && second_found )
+//    return ( l1 + l2 ) * 0.5;
+//  else
+//    {
+//      cout<<r21<<"---\n";
+//      for( auto& a : e2.P )
+//        print( vec3_to_vec2( a ) );
+//      cout<<e2.A<<endl;
+//
+//      cout<<"\n"<<r12<<"---\n";
+//      for( auto& a : e1.P )
+//        print( vec3_to_vec2( a ) );
+//      cout<<e1.A<<endl;
+//
+//      if( !first_found ) throw("first element`s edge not found");
+//      if( !second_found) throw("second element`s edge not found");
+//    }
+//
+//
+//  return 0.;
+//}
 
 //---------------------------------------------------------------------
 
@@ -127,7 +208,7 @@ void ContactDetector::sweep_n_prune( Globals& siku )
   for( size_t i = 0; i < siku.es.size(); ++i )
     siku.pes.push_back( &siku.es[i] );
 
-  // sorting
+  // sorting (by left-most point of bounding sphere)
   std::sort( siku.pes.begin(), siku.pes.end(), el_pointers_x_compare );
 
   // IMPROVE: need to create empty vector of instantly large capacity
@@ -167,6 +248,8 @@ void ContactDetector::sweep_n_prune( Globals& siku )
   merge_contacts( siku.ConDet.cont, news );
 
   news.clear();  // should be O(1) without deallocation
+
+  std::sort( siku.ConDet.cont.begin(), siku.ConDet.cont.end() ); //TEST
 }
 
 //---------------------------------------------------------------------
@@ -175,6 +258,7 @@ void ContactDetector::find_pairs( Globals& siku )
 {
   // IMPROVE: need to create empty vector of instantly large capacity
   static std::vector<ContactDetector::Contact> news;
+  news.clear();
 
   for ( size_t i = 0; i < siku.es.size () - 1; ++i )
     {
@@ -183,48 +267,73 @@ void ContactDetector::find_pairs( Globals& siku )
           if ( _dist2( siku.es[i].Glob, siku.es[j].Glob ) <
               _sqr( siku.es[i].sbb_rmin + siku.es[j].sbb_rmin ) )
             add_cont( siku, i, j, siku.time.get_n() );
+//            news.push_back( ContactDetector::Contact( siku.es[i].id,
+//                    siku.es[j].id, siku.time.get_n(), NONE ) );
         }
     }
 
-  std::sort( news.begin(), news.end() );
+//  std::sort( news.begin(), news.end() );
+//
+//  merge_contacts( siku.ConDet.cont, news );
+//
+//  news.clear();  // should be O(1) without deallocation
 
-  merge_contacts( siku.ConDet.cont, news );
-
-  news.clear();  // should be O(1) without deallocation
+  std::sort( siku.ConDet.cont.begin(), siku.ConDet.cont.end() ); //TEST
 }
 
 // --------------------------------------------------------------------------
 
 void ContactDetector::clear()
 {
-  size_t size = cont.size();
-  for( size_t i = 0; i < size; ++i )
+
+//  cont.clear();
+
+  static std::vector<ContactDetector::Contact> temp;
+  temp.clear();
+
+  for( auto& a : cont )
     {
-      if( cont[i].type == ContType::JOINT )  // joints untouched
-        {
-          if( cont[i].durability < 0.05 )  // destruction
-            {
-//              cout<<"CRACK!!!!!!!!!!!!!!!!"<<endl;
-//              cin.get();
-// TODO: clean -^
-              cont[i].type = ContType::COLLISION;
-              cont[i].generation = 0;
-            }
-        }
-      else  // deleting contact
-        {
-          if( cont[i].generation > 1 )  // IMPROVE
-            {
-              cont[i] = cont[--size];  // replacing current with last
-              cont.pop_back();         // and deleting last
-            }
-          else
-            cont[i].generation++;
-        }
+      if( a.type == JOINT && a.durability > 0.05 )
+        temp.push_back( a );
     }
 
-  // sorting of remains. Required by contact_exist check
-  std::sort( cont.begin(), cont.end() );
+  temp.swap( cont );
+
+
+//  size_t size = cont.size();
+//  for( size_t i = 0; i < size; ++i )
+//    {
+//      if( cont[i].type == ContType::JOINT )  // joints untouched
+//        {
+//          if( cont[i].durability < 0.05 )  // destruction
+//            {
+////              cout<<"CRACK!!!!!!!!!!!!!!!!"<<endl;
+////              cin.get();
+//// TODO: clean -^
+//
+//
+////              cont[i].type = ContType::COLLISION;
+////              cont[i].generation = 0;
+//              cont[i] = cont[--size];  // replacing current with last
+//              cont.pop_back();         // and deleting last
+//            }
+//        }
+//      else  // deleting contact
+//        {
+//          cont[i] = cont[--size];  // replacing current with last
+//          cont.pop_back();         // and deleting last
+////          if( cont[i].generation > 1 )  // IMPROVE
+////            {
+////              cont[i] = cont[--size];  // replacing current with last
+////              cont.pop_back();         // and deleting last
+////            }
+////          else
+////            cont[i].generation++;
+//        }
+//    }
+//
+//  // sorting of remains. Required by contact_exist check
+//  std::sort( cont.begin(), cont.end() );
 }
 
 //---------------------------------------------------------------------
@@ -240,15 +349,117 @@ void ContactDetector::detect( Globals& siku )
   // smart clearing: joints remain untouched
   clear();
 
-  switch( det_meth )
-  {
-    case CONTACTS_N2:
-      find_pairs( siku );
-      break;
-    case SWEEP_N_PRUNE:
-      sweep_n_prune( siku );
-      break;
-  }
+  //////// TEST
+  static std::vector<ContactDetector::Contact> N;
+  N.clear();
+
+  find_pairs( siku );
+  auto save = siku.ConDet.cont;
+  N.swap( siku.ConDet.cont );
+  sweep_n_prune( siku );
+  auto& S = siku.ConDet.cont;
+
+
+//  if( N.size() > S.size() )
+//    cout<<"================================================"<<N.size()-S.size()<<endl;
+//  if( N.size() < S.size() )
+//    cout<<"------------------------------------------------"<<S.size()-N.size()<<endl;
+
+
+  size_t in = 0, is = 0;
+  while( in < N.size() && is < S.size() )
+    {
+      if( N[in] < S[is] )
+        {
+//          siku.es[N[in].i1].flag |= Element::F_SPECIAL;
+//          siku.es[N[in].i2].flag |= Element::F_SPECIAL;
+          if( N[in].type == JOINT )
+            {
+              siku.es[N[in].i1].flag |= Element::F_SPECIAL;
+              siku.es[N[in].i2].flag |= Element::F_SPECIAL;
+            }
+          else
+            {
+              siku.es[N[in].i1].flag |= Element::F_SPECIAL1;
+              siku.es[N[in].i2].flag |= Element::F_SPECIAL1;
+            }
+          ++in;
+        }
+      else if( S[is] < N[in])
+        {
+          siku.es[S[is].i1].flag |= Element::F_SPECIAL2;
+          siku.es[S[is].i2].flag |= Element::F_SPECIAL2;
+          ++is;
+        }
+      else
+        {
+          ++in;
+          ++is;
+        }
+    }
+
+  while( in < N.size() )
+    {
+      if( N[in].type == JOINT )
+        {
+          siku.es[N[in].i1].flag |= Element::F_SPECIAL;
+          siku.es[N[in].i2].flag |= Element::F_SPECIAL;
+        }
+      else
+        {
+          siku.es[N[in].i1].flag |= Element::F_SPECIAL1;
+          siku.es[N[in].i2].flag |= Element::F_SPECIAL1;
+        }
+//      siku.es[N[in].i1].flag |= Element::F_SPECIAL;
+//      siku.es[N[in].i2].flag |= Element::F_SPECIAL;
+      ++in;
+    }
+  while( is < S.size() )
+    {
+      siku.es[S[is].i1].flag |= Element::F_SPECIAL2;
+      siku.es[S[is].i2].flag |= Element::F_SPECIAL2;
+      ++is;
+    }
+
+//  size_t in = 0, is = 0;
+//  while( in < N.size() && is < S.size() )
+//    {
+//      if( N[in] != S[is] )
+//        {
+//          siku.es[N[in].i1].flag |= Element::F_SPECIAL;
+//          siku.es[N[in].i2].flag |= Element::F_SPECIAL;
+//          siku.es[S[is].i1].flag |= Element::F_SPECIAL1;
+//          siku.es[S[is].i2].flag |= Element::F_SPECIAL1;
+//        }
+//      ++in;
+//      ++is;
+//    }
+//
+//  while( in < N.size() )
+//    {
+//      siku.es[N[in].i1].flag |= Element::F_SPECIAL2;
+//      siku.es[N[in].i2].flag |= Element::F_SPECIAL2;
+//      ++in;
+//    }
+//  while( is < S.size() )
+//    {
+//      siku.es[S[is].i1].flag |= Element::F_SPECIAL2;
+//      siku.es[S[is].i2].flag |= Element::F_SPECIAL2;
+//      ++is;
+//    }
+
+  //////// \TEST
+
+//  switch( det_meth )
+//  {
+//    case CONTACTS_N2:
+//      find_pairs( siku );
+//      break;
+//    case SWEEP_N_PRUNE:
+//      sweep_n_prune( siku );
+//      break;
+//  }
+  siku.ConDet.cont = save;
 }
 
 // --------------------------------------------------------------------------
@@ -311,6 +522,7 @@ bool ContactDetector::is_detect_time( Globals& siku )
     case 0:  // always
       //return true; // same as default
       break;
+
     case 1:  // by ticks
       if( siku.time.get_n() > size_t( det_last + det_value ) )
         {
@@ -319,6 +531,7 @@ bool ContactDetector::is_detect_time( Globals& siku )
         }
       return false;
       break;
+
     case 2:  // by seconds
       if( (double)siku.time.get_total_microseconds() * 0.000001 >
           det_last + det_value )
@@ -328,6 +541,7 @@ bool ContactDetector::is_detect_time( Globals& siku )
         }
       return false;
       break;
+
     case 3:  // by speed (automatic)
 
       // searching max p speed
@@ -379,37 +593,56 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
   temp.clear();
   size_t oi = 0, ni = 0;
 
-  while( true ) //oi < olds.size() || ni < news.size() )
+  while( oi < olds.size() && ni < news.size() )
     {
-      // IMPROVE: remove unnecessary conditions
-      if( ni < news.size() )
-        {
-
-          if( oi < olds.size() )
-            {
-              if( news[ni] < olds[oi] )
-                temp.push_back( news[ni++] );
-
-              else if( olds[oi] < news[ni] )
-                temp.push_back( olds[oi++] );
-
-              else // <=> equal contacts
-                {
-                  temp.push_back( olds[oi++] );
-                  ni++;
-                }
-            }
-          else
-            temp.push_back( news[ni++] );
-
-        }
-      else if( oi < olds.size() )
+      if( news[ni] < olds[oi] )
+        temp.push_back( news[ni++] );
+      else if( olds[oi] < news[ni] )
         temp.push_back( olds[oi++] );
-
-      else
-        break; // instead of 'while' args
-
+      else // <=> equal contacts
+        {
+          temp.push_back( olds[oi++] );
+          ni++;
+        }
     }
+
+  while( oi < olds.size() )
+    temp.push_back( olds[oi++] );
+  while( ni < news.size() )
+    temp.push_back( news[ni++] );
+
+//// OLD and ugly
+//  while( true ) //oi < olds.size() && ni < news.size() )
+//    {
+//      // IMPROVE: remove unnecessary conditions
+//      if( ni < news.size() )
+//        {
+//
+//          if( oi < olds.size() )
+//            {
+//              if( news[ni] < olds[oi] )
+//                temp.push_back( news[ni++] );
+//
+//              else if( olds[oi] < news[ni] )
+//                temp.push_back( olds[oi++] );
+//
+//              else // <=> equal contacts
+//                {
+//                  temp.push_back( olds[oi++] );
+//                  ni++;
+//                }
+//            }
+//          else
+//            temp.push_back( news[ni++] );
+//
+//        }
+//      else if( oi < olds.size() )
+//        temp.push_back( olds[oi++] );
+//
+//      else
+//        break; // instead of 'while' args
+//
+//    }
 
   temp.swap( olds );  // now siku.ConDet.conts must be refreshed list
 
@@ -606,8 +839,12 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
             t21 = vec3_to_vec2( e2_to_e1 * e2.P[c.v21] ),
             t22 = vec3_to_vec2( e2_to_e1 * e2.P[c.v22] );
 
-      // if edges are close enough
-      if( segment2d_distance( t11, t12, t21, t22 ) < abs( r12 ) * tol )
+      //OLD: if edges are close enough
+//      if( segment2d_distance( t11, t12, t21, t22 ) < abs( r12 ) * tol )
+      //
+      //if vertices are close enough (relatively to edges length)
+      if( ( abs(t11-t22) + abs(t12-t21) ) <
+          ( abs(t11-t12) + abs(t21-t22) ) * tol )
         {
           c.type = ContType::JOINT;
 
@@ -632,10 +869,17 @@ void _dist_freeze( ContactDetector::Contact& c, Globals& siku, double tol )
           c.durability = 1.;
         }
     }
-  else
+  else // in case of broken contact edge detection
     {
-      // UNDONE: remove this
       cout<<"TEST ERROR IN _dist_freeze"<<endl;
+      cout<<"elements: "<<c.i1<<", "<<c.i2<<endl;
+      cout<<"dist: "<< c.find_edges(siku)<<endl;
+      cout<<"vert inds: "<<c.v11<<", "<<c.v12<<"; "<<c.v21<<", "<<c.v22<<endl;
+      cout<<"points:"<<endl
+          <<siku.es[c.i1].P[c.v11]<<endl
+          <<siku.es[c.i1].P[c.v12]<<endl
+          <<siku.es[c.i2].P[c.v21]<<endl
+          <<siku.es[c.i2].P[c.v22]<<endl;
       cin.get();
       throw;
     }

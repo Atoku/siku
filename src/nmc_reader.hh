@@ -42,10 +42,9 @@ public:
     double lon;
     vec3d value;
 
-    GridNode () : lat ( 0 ), lon ( 0 ) {}
+    GridNode () : lat { 0 }, lon { 0 }  {}
     GridNode ( const double& la, const double& lo, const vec3d& val ) :
-        lat ( la ), lon ( lo ), value ( val )
-    {}
+        lat { la }, lon { lo }, value ( val )  {}
   };
 
 protected:

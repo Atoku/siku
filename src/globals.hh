@@ -114,6 +114,10 @@ struct Globals
   //! Callback-returned status (masked flags)
   unsigned long callback_status { STATUS_NONE };
 
+  //! stress tensor components (max and min)
+  double SxxMax, SxxMin, SyyMax, SyyMin,
+         SxyMax, SxyMin, SyxMax, SyxMin;
+
   //! contact force model
   CONTACT_FORCE_MODEL cont_force_model { CF_DEFAULT };
 

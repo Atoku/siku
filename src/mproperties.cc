@@ -36,6 +36,12 @@ void mproperties( Globals& siku )
 //    cout<<"Cleared: "<<count<<" Elements after cleaning errors: "
 //        <<siku.es.size()<<endl;
 
+  // minimal and maximal stress tensor components
+  siku.SxxMax = siku.SxxMin = siku.es[0].Sxx;
+  siku.SyyMax = siku.SyyMin = siku.es[0].Syy;
+  siku.SxyMax = siku.SxyMin = siku.es[0].Sxy;
+  siku.SyxMax = siku.SyxMin = siku.es[0].Syx;
+
   for ( Element & e: siku.es )
     {
 //      if( e.flag & Element::F_ERRORED )
@@ -92,6 +98,22 @@ void mproperties( Globals& siku )
       e.m = e.A * m   * siku.planet.R2; // mass update
       e.I = e.m * e.i * siku.planet.R2; // moment of inertia update
 
+      // thickest layer
+      e.h_main = e.gh[0];
+      for( size_t i = 1; i < MAT_LAY_AMO; ++i )
+        if( e.gh[i] > e.h_main )
+          e.h_main = e.gh[i];
+
+      // extremal stress tensor components
+      if( e.Sxx > siku.SxxMax )  siku.SxxMax = e.Sxx;
+      if( e.Sxx < siku.SxxMin )  siku.SxxMin = e.Sxx;
+      if( e.Syy > siku.SyyMax )  siku.SyyMax = e.Syy;
+      if( e.Syy < siku.SyyMin )  siku.SyyMin = e.Syy;
+      if( e.Sxy > siku.SxyMax )  siku.SxyMax = e.Sxy;
+      if( e.Sxy < siku.SxyMin )  siku.SxyMin = e.Sxy;
+      if( e.Syx > siku.SyxMax )  siku.SyxMax = e.Syx;
+      if( e.Syx < siku.SyxMin )  siku.SyxMin = e.Syx;
+
       // current global position update
       e.Glob = Coordinates::loc_to_glob ( e.q, Coordinates::NORTH );
 
@@ -123,5 +145,14 @@ void clean_props( Globals& siku )
       e.N = 0;
       e.OA = 0.;
       e.Amin = e.A;
+      e.Sxx = 0.;
+      e.Syy = 0.;
+      e.Sxy = 0.;
+      e.Syx = 0.;
+
+
+      e.flag &= ~Element::F_SPECIAL;
+      e.flag &= ~Element::F_SPECIAL1;
+      e.flag &= ~Element::F_SPECIAL2;
     }
 }

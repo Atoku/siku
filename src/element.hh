@@ -71,6 +71,8 @@ public:
   static const unsigned int F_MONITORED  {0x10};
   //! \brief special flag for special 'marked' elements
   static const unsigned int F_SPECIAL {0x20}; // aka 32
+  static const unsigned int F_SPECIAL1 {256};
+  static const unsigned int F_SPECIAL2 {512};
 
   //! \brief technical flag for NOT_NEW elements, means those elements were
   //! either loaded from snapshot or already processed by dynamics/position
@@ -85,11 +87,11 @@ public:
 
   // --------------- Not changing handling parameters ----------------
 
-  unsigned int flag;            //!< state flag
+  unsigned int flag;                  //!< state flag
   //char* monitor {nullptr};         //!< monitor function name (0-term)
   //char* control {nullptr};         //!< control function name (0-term)
-  //std::string monitor;         //!< monitor function name
-  //std::string control;         //!< control function name
+  //std::string monitor;             //!< monitor function name
+  //std::string control;             //!< control function name
   size_t mon_ind { 0 };               //!< monitor function index
   size_t con_ind { 0 };               //!< control function index
 
@@ -115,7 +117,12 @@ public:
   double OA {0};        //!< m^2, total overlap area with landfast ice
   double Amin {0};      //!< m^2, minimal area of polygons for fastening checks
 
-  //?double h_main{0};     //!< m, thickness of the main (thickest) layer
+  double Sxx {0};       //!< N/m^2, stress tensor 'xx' component
+  double Syy {0};       //!< N/m^2, stress tensor 'yy' component
+  double Sxy {0};       //!< N/m^2, stress tensor 'xy' component
+  double Syx {0};       //!< N/m^2, stress tensor 'yx' component
+
+  double h_main{0};     //!< m, thickness of the main (thickest) layer
   //?double ela {0};       //!< kg/s^2, elasticity of element (SI)
 
   // --------------- Not changing state parameters -------------------
