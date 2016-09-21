@@ -1,4 +1,4 @@
-STYLEFLAGS = -pedantic -Wall -fopenmp -pg
+STYLEFLAGS = -pedantic -Wall
 SHAPELIBDIR = ../deps/shapelib
 
 # float point correctness check
@@ -32,6 +32,7 @@ siku_SOURCES = siku.cc siku.hh \
 	highio.hh highio.cc \
 	info.hh \
 	lowio.hh lowio.cc \
+        material.hh \
 	mesh.hh mesh.cc \
 	modeltime.hh modeltime.cc \
 	mproperties.hh mproperties.cc \

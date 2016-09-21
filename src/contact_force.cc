@@ -302,7 +302,9 @@ inline void _update_contact( ContactData& cd )
 
 void contact_forces( Globals& siku )
 {
-  #pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
+# ifdef SIKU_OPENMP  
+# pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
+# endif  
   for( int i = 0; i < siku.ConDet.cont.size(); i++ )
 //  for( auto& c : siku.ConDet.cont ) // reorganized for OpenMP
     {
