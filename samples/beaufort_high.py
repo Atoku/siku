@@ -113,6 +113,7 @@ def main():
     print('\nLoading polygons')
     ## North cap
     PV = PolyVor( 'high.voronoi.xyz', 'high.voronoi.xyzf' )
+##    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
     ## Channel (handmade)
 ##    PC = PolyVor( 'alaska.voronoi.xyz', 'alaska.voronoi.xyzf' )
     
@@ -216,6 +217,23 @@ def main():
                                   'sigma' : 400000.0,        # -//- rigidity
                                   'etha' : 0.0003          # -//- viscosity
                                   }
+####    siku.settings.phys_consts = { 'rigidity' : 1.0,
+####                                  'viscosity' : 1.0,
+####                                  'rotatability' : 1.0,#0.75,
+####                                  'tangency' : -0.00003,#-0.00003
+####                                  
+####                                  'elasticity' : 50000000.0,#-5000000.0,
+####                                  'bendability' : 1.0,#1.0,
+####                                  'solidity' : 0.5,#0.05,
+####                                  'tensility' : 0.30,#0.615,
+####
+####                                  'anchority' : 0.05,
+####                                  'windage':    0.1,
+####                                  'fastency' : 0.250, #0.5
+####
+####                                  'sigma' : 40000.0,        # -//- rigidity
+####                                  'etha' : 0.00003          # -//- viscosity
+####                                  }
     
 
 ##    siku.settings.contact_freq_met = siku.CONTACT_DET_FREQ_MET['speed']
@@ -372,10 +390,12 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
         poly = siku.local.poly_f
 
-##        col1 = (128, 255, 127) #light green
-##        col2 = (128, 127, 255) #light blue
-        col1 = (255, 64, 0) #red
-        col2 = ( 0, 64, 255) # blue
+####        col1 = (128, 255, 127) #light green
+####        col2 = (128, 127, 255) #light blue
+##        col1 = (255, 128, 127) #red
+##        col2 = ( 127, 128, 255) # blue
+        col2 = (255, 128, 127) #red
+        col1 = ( 127, 128, 255) # blue
         col = cworks.gmt_color_hsv_scale( col1, col2, s, 1e5 )
         
 ##        if st & element.Element.f_errored: ##

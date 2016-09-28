@@ -168,14 +168,16 @@ def main():
 
         ####### refine the values! int-uint conversions are plausible
         if v == 255 or v == 128 or v == 1:
-            e.flag_state = element.Element.f_special
+            e.flag_state = element.Element.f_special | \
+                           element.Element.f_static
+            
         if not (v == 0 or v == 64):
             eln.append( e )
     siku.elements = eln
     print('Done')
 
     print('Marking borders with GMT')
-    bor = PV.get_border_by_gmt( siku.elements)
+    bor = PV.get_border_by_gmt( siku.elements )
     for b in bor:
         siku.elements[ b ].flag_state = element.Element.f_static
     print('Done')
@@ -249,7 +251,7 @@ def main():
 
                                   'anchority' : 0.,
                                   'windage':    0.0,
-                                  'fastency' : 0.0, #0.5
+                                  'fastency' : 0.5, #0.5
 
                                   'sigma' : 0.0,        # -//- rigidity
                                   'etha' : 0.0          # -//- viscosity

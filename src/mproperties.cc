@@ -151,8 +151,8 @@ void clean_props( Globals& siku )
       e.Syx = 0.;
 
 
-      e.flag &= ~Element::F_SPECIAL;
-      e.flag &= ~Element::F_SPECIAL1;
-      e.flag &= ~Element::F_SPECIAL2;
+//      e.flag &= ~Element::F_SPECIAL;
+//      e.flag &= ~Element::F_SPECIAL1;
+//      e.flag &= ~Element::F_SPECIAL2;
     }
 }

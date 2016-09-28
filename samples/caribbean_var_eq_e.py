@@ -83,9 +83,9 @@ def main():
 
     #siku.time.start    = datetime.datetime  ( 2012, 3, 12, 00, 00, 00 )
     siku.time.start = siku.uw.times[st_t_ind]
-    siku.time.finish   = siku.time.start + hour * 630#315#210#105#120
+    siku.time.finish   = siku.time.start + hour * 120#630#315#210#105#120
 
-    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 7200#3600#2400 #60
+    siku.time.dt       = ( siku.time.finish - siku.time.start ) / 2400#7200#3600#2400 #60
     siku.time.dts      = datetime.timedelta ( seconds = 600 )
     siku.time.last = siku.time.start
     siku.time.last_update = siku.time.last
@@ -187,7 +187,7 @@ def main():
     siku.plotter = GMT_Plotter( 'caribbean_plot_e.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 45#60
+    siku.diagnostics.monitor_period = 30#45#60
     siku.drift_monitor = drift_monitor
     siku.diagnostics.step_count = 0
 
@@ -196,8 +196,8 @@ def main():
     siku.settings.force_model = \
                     siku.CONTACT_FORCE_MODEL['distributed_spring']
 
-##    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
-    siku.settings.contact_method = siku.CONTACT_METHODS['n2']
+    siku.settings.contact_method = siku.CONTACT_METHODS['sweep']
+##    siku.settings.contact_method = siku.CONTACT_METHODS['n2']
 
 ##    siku.settings.phys_consts = [ 5000 , 10000000 , 0.75, -0.00003, 1, \
 ##                                  -10000.0, 1.00, 0.2, 0.1, \
@@ -235,8 +235,8 @@ def main():
 ##                                    for i in right_inds ]
 
     for i in right_inds:
-##        siku.elements[i].velo = (1.0, 0.0, 0.0)
-        siku.elements[i].velo = (-0.20, 0.0, 0.0)
+        siku.elements[i].velo = (-1.0, 0.0, 0.0)
+##        siku.elements[i].velo = (-0.20, 0.0, 0.0)
         siku.elements[i].flag_state = element.Element.f_steady
 
     # ---------------------------------------------------------------------
