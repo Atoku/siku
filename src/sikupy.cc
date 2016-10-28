@@ -165,7 +165,6 @@ Sikupy::read_settings( Globals& siku )
 
 
   // read manual forces
-  // read physical constants
   pTemp = PyObject_GetAttrString ( pDef, "manual_inds" );
   assert( pTemp );
   success &= read_long_vector( pTemp, siku.man_inds );
@@ -176,15 +175,7 @@ Sikupy::read_settings( Globals& siku )
   success &= read_vec3d_vector( pTemp, siku.man_forces );
   Py_DECREF( pTemp );
 
-
-  // TODO: clear
-  // read physical constants
-//  pTemp = PyObject_GetAttrString ( pDef, "phys_consts" );
-//  assert( pTemp );
-//
-//  success &= read_double_vector( pTemp, siku.phys_consts );
-//  Py_DECREF( pTemp );
-
+  // read physical parameters
   pTemp = PyObject_GetAttrString ( pDef, "phys_consts" );
   assert( pTemp );
 
@@ -281,8 +272,6 @@ Sikupy::read_links ( Globals& siku )
   assert( pLinks );
   assert( PyList_Check( plist ) );
   Py_ssize_t N = PyList_Size ( pLinks );
-
-  //PyObject* plist, vector < long >& xs;
 
   // array sets length
   siku.ConDet.links.resize ( N );
@@ -564,8 +553,6 @@ Sikupy::read_materials ( vector < Material >& ms )
 
       Py_DECREF( pobj );
 
-      //assert( ms[i].rho.size () == ms[i].thickness_intervals.size () );
-
       // reading sigma_c
       pobj = PyObject_GetAttrString ( pitem, "sigma_c" ); // new
       assert( pobj );
@@ -577,8 +564,6 @@ Sikupy::read_materials ( vector < Material >& ms )
 
       Py_DECREF( pobj );
 
-      //assert( ms[i].sigma_c.size () == ms[i].thickness_intervals.size () );
-
       // reading sigma_t
       pobj = PyObject_GetAttrString ( pitem, "sigma_t" ); // new
       assert( pobj );
@@ -589,8 +574,6 @@ Sikupy::read_materials ( vector < Material >& ms )
         ms[i].layers[j].sigma_t = tvec[j];
 
       Py_DECREF( pobj );
-
-      //assert( ms[i].sigma_t.size () == ms[i].thickness_intervals.size () );
 
       // reading Young modulus
       pobj = PyObject_GetAttrString ( pitem, "E" ); // new
@@ -1049,14 +1032,6 @@ Sikupy::fcall_pretimestep ( Globals& siku )
 {
   int status = FCALL_OK;
 
-/////////////// Not needed any more
-//  // reading siku.callback.pretimestep
-//  PyObject* pFunc =
-//      PyObject_GetAttrString (pSiku_callback, "pretimestep"); // new
-//  assert(pFunc);
-//  if (!PyCallable_Check (pFunc))
-//    return FCALL_ERROR_NO_FUNCTION;
-
   // preparing paramaters to pass (we send model time and dt) as
   // datetime object
   const size_t n = siku.time.get_n ();
@@ -1296,7 +1271,6 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // creating quaternion object ( q )
   PyObject* pQTuple = PyTuple_New ( 4 ); // quaternion as a new tuple, len = 4
-
   for ( Py_ssize_t k = 0; k < 4; ++k )
     {
       PyObject* pNum = PyFloat_FromDouble ( pe->q[ (k+3)%4 ] );
@@ -1308,7 +1282,6 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // creating list of tuples with vertices ( P )
   PyObject* pPiList = PyList_New ( pe->P.size () ); // new
-
   for ( Py_ssize_t j = 0; j < Py_ssize_t ( pe->P.size () ); ++j )
     {
       // setting tuples
@@ -1327,7 +1300,6 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // preparing rotation vector
   PyObject* pWTuple = PyTuple_New ( 3 ); // new
-
   for ( Py_ssize_t k = 0; k < 3; ++k )
     {
       PyObject* pNum = PyFloat_FromDouble ( pe->W[k] );
@@ -1338,7 +1310,6 @@ Sikupy::fcall_monitor( const Globals& siku, const size_t i, const char* fname )
 
   // preparing force vector
   PyObject* pFTuple = PyTuple_New ( 3 ); // new
-
   for ( Py_ssize_t k = 0; k < 3; ++k )
     {
       PyObject* pNum = PyFloat_FromDouble ( pe->F[k] );
@@ -1527,9 +1498,6 @@ Sikupy::read_quat ( PyObject* pquat, quat& q )
 
   for ( Py_ssize_t k = 0; k < K; ++k )
     {
-      ///////////////ERROR WAS HERE!!!!
-      // mathutil.quat has wrong indexes order: ( (vec), scal )
-
       PyObject* pitem;
       pitem = PyList_GetItem ( pquat, k ); // borrowed
       if ( !PyFloat_Check( pitem ) )
@@ -1537,7 +1505,6 @@ Sikupy::read_quat ( PyObject* pquat, quat& q )
 
       // fixing indexes
       q[ (k+3)%K ] = PyFloat_AS_DOUBLE( pitem );
-      //q[k] = PyFloat_AS_DOUBLE( pitem );
     }
 
   return true;
@@ -1569,15 +1536,6 @@ Sikupy::read_double ( PyObject* pfloat, double& x )
   if ( PyErr_Occurred () ) // Returns borrowed ref, so no pointer is needed
     return false;
   return true;
-
-//  // OLD!!
-//  // check if pquat is the correct type
-//  if (!( PyFloat_Check(pfloat) or PyLong_Check(pfloat)))
-//    return false;
-//
-//  x = PyFloat_AsDouble (pfloat);
-//
-//  return true;
 }
 
 //! \brief reading long int number
@@ -1671,13 +1629,6 @@ Sikupy::read_double_vector ( PyObject* plist, vector < double >& xs )
 
       if( !read_double( pitem, xs[i] ) )
         return false;
-
-//// Deprecated due to a bug!
-//      // check if it is a number
-//      if ( !PyFloat_Check( pitem ) )
-//        return false;
-//
-//      xs[i] = PyFloat_AS_DOUBLE( pitem );
     }
 
   return true;
@@ -1740,11 +1691,6 @@ Sikupy::read_vec3d_vector ( PyObject* plist, vector < vec3d >& vs )
           psubitem = PyTuple_GetItem ( pitem, k ); // borrowed
 
           read_double( psubitem, vs[i][k] );
-
-//// deprecated!
-//          if ( !PyFloat_Check( psubitem ) )
-//            return false;
-//          vs[i][k] = PyFloat_AS_DOUBLE( psubitem );
         }
     }
 

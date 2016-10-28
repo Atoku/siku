@@ -82,7 +82,7 @@ main ( int argc, char* argv[] )
   if ( options.is_verbose () )
     std::cout << "Reading config: " << options.get_pythonfname () << std::endl;
 
-  // Coordinate transforms
+  //// Coordinate transforms
   // Coordinates coords;
 
   // Variables!
@@ -109,9 +109,9 @@ main ( int argc, char* argv[] )
   // Post-initialization of globals
   siku.post_init();
 
-///// temporally placed here because of changed order of calls in main loop
-  // --- Recovering mass, moments of inertia, other parameters if
-  // --- necessary
+
+  // Precycle initialization:
+  // Recovering mass, moments of inertia, other parameters if necessary
   mproperties ( siku );
 
   // python custom initializations
@@ -124,13 +124,6 @@ main ( int argc, char* argv[] )
     siku.ConDet.freeze_links( siku );
   else if( siku.ConDet.inital_freeze )
     siku.ConDet.freeze( siku );
-
-
-//  for( auto a : siku.ConDet.cont )
-//    {
-//      cout<<a.type<<" "<<a.durability<<"\t";
-//      cout<<a.i1<<" - "<<a.i2<<endl;
-//    }
 
   cout<<"Elements: "<<siku.es.size()<<endl;
 
@@ -216,8 +209,3 @@ main ( int argc, char* argv[] )
       cout<<c<<endl;
   }
 }
-
-// SHPHandle pcoast = SHPOpen( coastline, "rb" );
-// SHPClose( pcoast );
-
-// just for practice now

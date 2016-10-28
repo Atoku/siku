@@ -1,7 +1,9 @@
 '''Module for interpolating and plotting wind data.
 Right now it`s plotting random generated test data plot. 
 '''
+
 from math import sqrt
+from subprocess import call 
 
 from siku import gmt_Drawer
 from siku import wnd
@@ -91,7 +93,7 @@ class GMT_Plotter:
     
     def plot( self, out_file = 'map.eps', time = None, nmc_grid = None ):
         '''Main function:
-        performs plotting by loading inut, generating random positions grid,
+        performs plotting by loading input, generating random positions grid,
         calling interpolation, preparing draw_config.txt and finaly executing
         DMT_Drawer
         '''
@@ -207,7 +209,10 @@ class GMT_Plotter:
                 dc.write( line + '\n' )
             
 ##-------------------------------- drawing ------------------------------
-        
+
+        frame = self.config.get( 'frame', None )
+        if frame : call(["gmtset", str(frame)])
+                
         if self.config.get('verbose'):
             print('drawing')
         self.D = GMT_Drawer('draw_config.txt')

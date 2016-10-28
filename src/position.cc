@@ -29,7 +29,7 @@ position ( Globals& siku, const double dt )
       p = quat ( 1 , 0.5 * dt * vec3d( e.W.x, e.W.y, 0 ) );
       //e.q = glm::cross ( e.q, p );
 
-////////////////
+
       //translation
       e.q = glm::cross ( e.q, p );
       p = quat(1, 0.5*dt*vec3d(0,0,e.W.z));
@@ -37,7 +37,7 @@ position ( Globals& siku, const double dt )
       quat t = glm::cross ( e.q, p );
       e.W = Coordinates::loc_to_loc( t, e.q, e.W );
       e.q = t;
-////////////////////
+
 
       e.q = glm::normalize( e.q );
       VERIFY( e.q, "positioning");

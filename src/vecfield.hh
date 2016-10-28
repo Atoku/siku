@@ -24,7 +24,6 @@
 
 #include <cmath>
 
-////////////////
 #include <iostream>
 
 /*! \brief Vector field to contain air wind and sea streams and
@@ -129,12 +128,6 @@ private:
     return (lon_i < 0) ?
         (lon_i % lon_size) + lon_size :
         (lon_i % lon_size);
-
-//    while ( lon_i >= lon_size )
-//      lon_i -= lon_size;
-//    while ( lon_i < 0 )
-//      lon_i += lon_size;
-//    return lon_i;
   }
 
   //! \brief Normalizing latitude index
@@ -144,12 +137,6 @@ private:
     return (lat_i < 0) ?
         (lat_i % lat_size) + lat_size :
         (lat_i % lat_size);
-
-//    while ( lat_i >= lat_size )
-//      lat_i -= lat_size;
-//    while ( lat_i < 0 )
-//      lat_i += lat_size;
-//    return lat_i;
   }
 
 };
