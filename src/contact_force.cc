@@ -157,23 +157,22 @@ inline double _rigidity( ContactData& cd )
 //  return cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec
 //      / ( abs(cd.r1) + abs(cd.r2) );
 
-  // reduced thickness of floes
-  double h1 = cd.e1.h_main, h2 = cd.e2.h_main; // should be the same as below
-//  double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
-//  // search for thickest layer
-//  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-//    if( cd.e1.gh[i] > h1 )
-//      h1 = cd.e1.gh[i];
-//  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-//    if( cd.e2.gh[i] > h2 )
-//      h2 = cd.e2.gh[i];
+  // ice thickness at largest (main) layer
+  double h1 = cd.e1.h_main, h2 = cd.e2.h_main;
 
+  // elasticity of elements
+  double E1 = cd.siku.ms[cd.e1.imat].E, E2 = cd.siku.ms[cd.e2.imat].E;
 
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
   // close-to-linear-spring rigidity of ice
-  double H = h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
-  return ( isfinite( H ) ? H : 0.0 )
-      * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
+  double H = h1*E1 * h2*E2
+           / ( h1*E1 * abs( cd.r2 ) + h2*E2 * abs( cd.r1 ) );
+  return ( isfinite( H ) ? H : 0.0 ) * cd.siku.planet.R_rec;
+
+//// OLD:
+//  double H = h1 * h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
+//  return ( isfinite( H ) ? H : 0.0 )
+//      * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
 }
 
 // viscous and elastic forces applied to e1 caused by e2.
