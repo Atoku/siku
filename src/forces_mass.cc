@@ -13,9 +13,7 @@
 using namespace Geometry;
 using namespace Coordinates;
 
-//////testing
-#include <iostream>
-
+#include <iostream> // for some tests
 
 // ----------------------------- local utils --------------------------------
 
@@ -37,8 +35,8 @@ void forces_mass( Globals& siku )
       //error-safety??
       //if( siku.es[i].flag & Element::F_ERRORED ) continue;
 
-      if( siku.es[i].flag & Element::F_STEADY    // coz steady and static
-          || siku.es[i].flag & Element::F_STATIC )  // won`t change their speed
+      if(  siku.es[i].flag & Element::F_STEADY    // coz steady and static
+        || siku.es[i].flag & Element::F_STATIC )  // won`t change their speed
         continue;
 
       // i just don`t like range-based loops
@@ -63,7 +61,6 @@ void forces_mass( Globals& siku )
 
       // calculating local Force (draft)
       e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact ;
-//      VERIFY( e.F , "wind forces mass" );
 
       //-------- WATER (yet steady) ----------
 
@@ -71,27 +68,19 @@ void forces_mass( Globals& siku )
       V = e.V;
       if(!_verify(abs(V)))
               cout<<"-----"<<V<<endl;
-//      VERIFY( abs(V) ,"V F_M ");
-
 
       // interpolating currents speed
       // !!check for earth.R scaling
       vec3d W = siku.flows.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
                                                 Coordinates::norm_lon( lon ) );
-//      VERIFY( abs(W ),"1");
       // transforming currents into local coords
       W = Coordinates::glob_to_loc( e.q, W );
-//      VERIFY( abs(W ),"2");
 
       // velocity difference between ice element and water
       W -= V;
-//      VERIFY( abs(W ),"3");
 
       // applying water forces
       e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
-//      VERIFY( abs(W), "in f_m");
-//      if(!_verify(abs(W))) cout<<"===="<<W<<endl;
-//      VERIFY( e.F, string("water in forces mass ") + to_string(wat_fact)+string("  ") + to_string(e.A) );
 
       // rotation slow down
       e.N -= wat_fact * (e.i * siku.planet.R2)

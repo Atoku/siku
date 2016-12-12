@@ -114,7 +114,7 @@ struct Globals
   //! Callback-returned status (masked flags)
   unsigned long callback_status { STATUS_NONE };
 
-  //! stress tensor components (max and min)
+  //! stress tensor components (max and min) for deep analysis
   double SxxMax, SxxMin, SyyMax, SyyMin,
          SxyMax, SxyMin, SyxMax, SyxMin;
 

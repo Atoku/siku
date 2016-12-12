@@ -17,6 +17,8 @@ using namespace Geometry;
 
 void mproperties( Globals& siku )
 {
+
+//// Some OLD testing
 //  size_t size = siku.es.size();
 //  int count = 0;
 //  Element el;
@@ -44,9 +46,8 @@ void mproperties( Globals& siku )
 
   for ( Element & e: siku.es )
     {
-//      if( e.flag & Element::F_ERRORED )
-//        continue;
-/////////////////
+//      if( e.flag & Element::F_ERRORED ) continue;
+
       // input test: element`s NaN checks
       bool nan_flag = false;
 
@@ -76,15 +77,6 @@ void mproperties( Globals& siku )
           fatal( 1, "NaN value in element");
         }
       assert( nan_flag ); // somehow - does not work!
-
-//      if( e.flag & Element::F_SPECIAL )
-//        {
-//          double lat, lon;
-//          Coordinates::sph_by_quat(e.q, &lat, &lon);
-//          cout<<"special "<<e.id<<"\t"<<Coordinates::rad_to_deg(lon)<<"\t"
-//              <<Coordinates::rad_to_deg(lat);
-//        }
-//////////////
 
       Material *pmat = &siku.ms[ e.imat ]; // short link to material
 
@@ -127,9 +119,6 @@ void mproperties( Globals& siku )
         {
           e.flag &= ~( Element::F_FREE );//| Element::F_STEADY );
           e.flag |= Element::F_STATIC | Element::F_FASTENED;
-// TODO: clean
-//          cout<<"FAST!  "<<e.id<<": "<<e.OA<<", "<<e.Amin<<", "<<e.A<<endl;
-
         }
     }
 }
@@ -150,9 +139,9 @@ void clean_props( Globals& siku )
       e.Sxy = 0.;
       e.Syx = 0.;
 
-
-      e.flag &= ~Element::F_SPECIAL;
-      e.flag &= ~Element::F_SPECIAL1;
-      e.flag &= ~Element::F_SPECIAL2;
+//// For TEST - flag cleaning. TODO: remove
+//      e.flag &= ~Element::F_SPECIAL;
+//      e.flag &= ~Element::F_SPECIAL1;
+//      e.flag &= ~Element::F_SPECIAL2;
     }
 }

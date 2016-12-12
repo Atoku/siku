@@ -41,17 +41,6 @@ bool Element::contains( const vec3d& p )
   vec3d OP;
   double res;//, prev = PP.x * PO.y - PP.y * PO.x;
 
-//  int size = P.size();
-//  for( int i = 1; i < size; ++i )
-//    {
-//      vec3d PP = P[ (i+1)%size ]-P[i];
-//      vec3d PO = point - P[i];
-//      res = PP.x * PO.y - PP.y * PO.x;
-//
-//      if( res * prev < 0 ) // different signs check
-//        return false;
-//      prev = res;
-//    }
   int size = P.size();
   for( int i = 0; i < size; ++i )
       {
@@ -68,71 +57,3 @@ bool Element::contains( const vec3d& p )
 
   return true;
 }
-
-//try to reload std::swap for sort((
-//#include <utility>
-//
-//void swap( Element& E1, Element& E2 )
-//{
-//  cout<<"$$$$\n";
-//  std::swap( E1.flag, E2.flag );
-//
-//  //std::swap( monitor, E.monitor );
-//  char* tcp = E1.monitor;
-//  E1.monitor = E2.monitor;
-//  E2.monitor = tcp;
-//
-//  //std::swap( control, E.control );
-//  tcp = E1.control;
-//  E1.control = E2.control;
-//  E2.control = tcp;
-//
-//  std::swap( E1.i, E2.i );
-////  double td = i;
-////  i = E.i;
-////  E.i = td;
-//
-//  std::swap( E1.A, E2.A );
-////  td = A;
-////  A = E.A;
-////  E.A = td;
-//
-//  swap( E1.gh, E2.gh );
-//  swap( E1.P, E2.P );
-//
-//  std::swap( E1.sbb_rmin, E2.sbb_rmin );
-////  td = sbb_rmin;
-////  sbb_rmin = E.sbb_rmin;
-////  E.sbb_rmin = td;
-//
-//  std::swap( E1.imat, E2.imat );
-////  imat ^= E.imat;
-////  E.imat ^= imat;
-////  imat ^= E.imat;
-//
-//  std::swap( E1.igroup, E2.igroup );
-////  igroup ^= E.igroup;
-////  E.igroup ^= igroup;
-////  igroup ^= E.igroup;
-//
-//  std::swap( E1.q, E2.q );
-////  quat tq = q;
-////  q = E.q;
-////  E.q = q;
-//
-//  std::swap( E1.Glob, E2.Glob );
-////  vec3d tv = Glob;
-////  Glob = E.Glob;
-////  E.Glob = tv;
-//
-//  std::swap( E1.m, E2.m );
-////  td = m;
-////  m = E.m;
-////  E.m = td;
-//
-//  std::swap( E1.I, E2.I );
-//  std::swap( E1.W, E2.W );
-//  std::swap( E1.F, E2.F );
-//  std::swap( E1.N, E2.N );
-//
-//}

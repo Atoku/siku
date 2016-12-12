@@ -185,51 +185,7 @@ namespace Coordinates
     return { v.x * den, v.y * den, den };
   }
 
-//  inline vec2d _curve( const vec3d& v )
-//  {
-//    double l = acos( v.z );
-//    double l_sl = l / sqrt( 1. - v.z*v.z );
-//    return { v.x * l_sl, v.y * l_sl };
-//  }
-//  inline vec3d _curve_rev( const vec2d& v )
-//  {
-//    double l = sqrt( v.x*v.x + v.y*v.y );
-//    double sl_l = sin( l ) / l, cl = cos( l );
-//    return { v.x * sl_l, v.y * sl_l, cl };
-//  }
-//
-//  inline vec2d _curve( const vec3d& v )
-//  {
-//    double den = sqrt( acos( v.z ) / ( v.x*v.x + v.y*v.y ) );
-//    return { v.x * den, v.y * den };
-//  }
-//  inline vec3d _curve_rev( const vec2d& v )
-//  {
-//    double sq = v.x*v.x + v.y*v.y;
-//    double z = cos( sq );
-//    double d = sin( sq ) / sqrt( sq );
-//    return { d * v.x, d * v.y, z };
-//  }
-
 // ------------------------------- 2d utils ---------------------------------
-
-// TODO: REMOVE
-//// two ways transforming
-//  inline vec3d vec2_to_vec3( const vec2d& v2 )
-//  {
-//    return vec3d( v2.x, v2.y, 0. );
-//  }
-//  inline vec2d vec3_to_vec2( const vec3d& v3 )
-//  {
-//    return { v3.x, v3.y };
-//  }
-//
-//// transforming 2d vector to 3d vector on unit sphere as if original 2d
-//// vector was a projection on north direction
-//  inline vec3d vec2_to_vec3_s( const vec2d& v2 )
-//  {
-//    return vec3d{ v2.x, v2.y, sqrt( 1. - v2.x*v2.x - v2.y*v2.y ) };
-//  }
 
   // transforming surface (tangential) vec2 into vec3
   inline vec3d vec2_to_vec3_s( const vec2d& v )

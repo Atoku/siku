@@ -157,25 +157,22 @@ inline double _rigidity( ContactData& cd )
 //  return cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec
 //      / ( abs(cd.r1) + abs(cd.r2) );
 
-  // reduced thickness of floes
-  double h1 = cd.e1.h_main, h2 = cd.e2.h_main; // should be the same as below
-//  double h1 = cd.e1.gh[0], h2 = cd.e2.gh[0];
-//
-//  // TODO: move this to 'mproperties' as a 'Elasticity' of each element
-//  // search for thickest layer
-//  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-//    if( cd.e1.gh[i] > h1 )
-//      h1 = cd.e1.gh[i];
-//  for( unsigned i = 1; i < MAT_LAY_AMO; ++i )
-//    if( cd.e2.gh[i] > h2 )
-//      h2 = cd.e2.gh[i];
+  // ice thickness at largest (main) layer
+  double h1 = cd.e1.h_main, h2 = cd.e2.h_main;
 
+  // elasticity of elements
+  double E1 = cd.siku.ms[cd.e1.imat].E, E2 = cd.siku.ms[cd.e2.imat].E;
 
   // result reduced rigidity (improve: comments 'приведенная жесткость'):
   // close-to-linear-spring rigidity of ice
-  double H = h1*h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
-  return ( isfinite( H ) ? H : 0.0 )
-      * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
+  double H = h1*E1 * h2*E2
+           / ( h1*E1 * abs( cd.r2 ) + h2*E2 * abs( cd.r1 ) );
+  return ( isfinite( H ) ? H : 0.0 ) * cd.siku.planet.R_rec;
+
+//// OLD:
+//  double H = h1 * h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
+//  return ( isfinite( H ) ? H : 0.0 )
+//      * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
 }
 
 // viscous and elastic forces applied to e1 caused by e2.
@@ -245,15 +242,6 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
   // forces applied to e1 and e2 in their local coords (SI)
   vec3d F1 = vec2_to_vec3_s( if_.F1 ),
         F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3_s( -if_.F1 ) );
-
-  // TEST //////////////////////
-//  double t = if_.rf1 ? cross( if_.rf1, if_.F1 ) : 0.;
-//  double tq1 = cd.siku.phys_consts["rotatability"] * if_.couple1 +
-//               isfinite( t ) ? t : 0.;
-//
-//  t =  if_.rf1 ? cross( if_.rf2 - cd.r12 * cd.siku.planet.R, -if_.F1 ) : 0.;
-//  double tq2 = cd.siku.phys_consts["rotatability"] * -if_.couple1 +
-//               isfinite( t ) ? t : 0.;
 
   // torques (combined) applied to e1 and e2 in their local coords (SI)
   double tq1 =  cd.siku.phys_consts["rotatability"] *
@@ -343,6 +331,7 @@ inline void _update_contact( ContactData& cd )
   _fasten( cd );
   }
 
+//// Deprecated: replaced by other mechanism
 // may be required in 'collision' contact type
 //      if( c.durability < 0.05 )
 //        {
@@ -392,7 +381,8 @@ void contact_forces( Globals& siku )
       ContactData cd( c, siku );
 
       InterForces intf;  // elements` interaction forces
-      InterForces intf1;//////TEST
+      InterForces intf1;//////TEST: second set of forces for accumulating
+                        // both types of interaction
 
       // calculating the forces
       if( c.type != ContType::JOINT )
@@ -444,7 +434,7 @@ void contact_forces( Globals& siku )
     }
 }
 
-// ============================== definitions ==============================
+// ============================= definitions ================================
 
 InterForces _collision( ContactData& cd )
 {

@@ -88,10 +88,6 @@ public:
   // --------------- Not changing handling parameters ----------------
 
   unsigned int flag;                  //!< state flag
-  //char* monitor {nullptr};         //!< monitor function name (0-term)
-  //char* control {nullptr};         //!< control function name (0-term)
-  //std::string monitor;             //!< monitor function name
-  //std::string control;             //!< control function name
   size_t mon_ind { 0 };               //!< monitor function index
   size_t con_ind { 0 };               //!< control function index
 
@@ -123,7 +119,7 @@ public:
   double Syx {0};       //!< N/m^2, stress tensor 'yx' component
 
   double h_main{0};     //!< m, thickness of the main (thickest) layer
-  //?double ela {0};       //!< kg/s^2, elasticity of element (SI)
+  //?double elast{0};       //!< kg/s^2, elasticity of element (SI)
 
   // --------------- Not changing state parameters -------------------
 
@@ -147,16 +143,11 @@ public:
   //! Check if point (given inglobal x,y,z ) is inside the element
   bool contains( const vec3d& p );
 
-//  Element()
-//  {
-//    P = vector<vec3d>(0);
-//  }
 
-  //! Destructor takes care about monitor and control functions
+  //! Destructor
+  // Deprecated-> 'takes care about monitor and control functions'
   ~Element()
   {
-    //if ( monitor ) delete monitor;
-    //if ( control ) delete control;
   }
 };
 

@@ -40,12 +40,8 @@ dynamics ( Globals& siku, const double dt )
       if( ! ( e.flag & Element::F_STEADY ) )
         e.W += sT * dt;
 
-//      VERIFY( e.W, "dyn: W");
-
       // calculating local speed
       e.V = vec3d( e.W.y * siku.planet.R , -e.W.x * siku.planet.R, 0. );
-
-//      VERIFY(e.V, "V in dyn");
 
     }
 }

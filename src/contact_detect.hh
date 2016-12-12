@@ -88,19 +88,6 @@ struct Link
 //! storage and history access
 class ContactDetector
 {
-//public:
-//  struct _Frozen
-//  {
-//
-//  };
-//  struct _Shared
-//  {
-//
-//  };
-//  struct _Collision
-//  {
-//
-//  };
 
 public:
   //! \brief Inner structure for holding interaction pairs metadata
@@ -136,13 +123,6 @@ public:
     //! \return: mean length of edges on success, 0 on failure
     double find_edges( Globals& siku );
 //    double find_edges_( Globals& siku );//OLD
-
-//    union
-//    {
-//      _Frozen _F;
-//      _Shared _S;
-//      _Collision _C;
-//    };
 
     // -------------------------------
 
