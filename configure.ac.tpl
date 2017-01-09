@@ -159,6 +159,8 @@ AX_BOOST_BASE([1.53], [],
 AX_BOOST_DATE_TIME
 AX_BOOST_THREAD
 
+#TODO: glm installation check
+
 # CGAL
 
 #AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR([GNU MP not found, see https://gmplib.org/])])
@@ -180,9 +182,13 @@ AC_CHECK_LIB([gslcblas],[cblas_dgemm])
 AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
 
 #AC_CHECK_LIB([dl], [dlopen])  # for lua -- we should not need those.
-AC_CHECK_LIB([hdf5], [H5Fcreate], [],
-             [echo "No HDF5 found. Check it at http://www.hdfgroup.org/HDF5";
-              exit 1] )
+# Checking HDF5
+AX_LIB_HDF5()
+if test "$with_hdf5" = "yes"; then
+   AC_MSG_NOTICE([Found HDF5])
+else
+   AC_MSG_ERROR([Unable to find HDF5.])
+fi                              
 
 AC_CHECK_LIB([netcdf], [nc_open], [],
              [echo "No NetCDF found"; exit 1] )
@@ -222,5 +228,13 @@ AC_MSG_NOTICE( [PYTHON_CFLAGS: ${PYTHON_CFLAGS}] )
 AC_MSG_NOTICE( [PYTHON_CXXFLAGS: ${PYTHON_CXXFLAGS}] )
 AC_MSG_NOTICE( [PYTHON_LDFLAGS: ${PYTHON_LDFLAGS}] )
 AC_MSG_NOTICE( [----------------------------------------------------- ] )
+
+AC_MSG_NOTICE( [----------------HDF5 CONFIGURATION------------------- ] )
+AC_MSG_NOTICE( [ HDF5_LIBS    = ${HDF5_LIBS}] )
+AC_MSG_NOTICE( [ HDF5_LDFALGS = ${HDF5_LDFLAGS}] )
+AC_MSG_NOTICE( [ HDF5_CFLAGS  = ${HDF5_CFLAGS}] )
+AC_MSG_NOTICE( [ HDF5_CPPFLAGS= ${HDF5_CPPFLAGS}] )
+AC_MSG_NOTICE( [----------------------------------------------------- ] )
+AC_MSG_NOTICE( [ ] )
 
 fi
