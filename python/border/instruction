@@ -1,3 +1,0 @@
-- in terminal: "python3 setup.py build"
-- in terminal: "sudo python3 setup.py install"
-- in python3: "import ExtBords"
