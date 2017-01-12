@@ -26,8 +26,13 @@ using namespace Coordinates;
 
 //---------------------------------------------------------------------
 
-Sikupy::Sikupy( string filename )
+Sikupy::Sikupy( string filename, int argc, char* argv[] )
 {
+  progname = Py_DecodeLocale( argv[0], NULL );
+  if (progname == NULL) fatal( 1, "cannot decode argv[0]");
+
+  Py_SetProgramName( progname );  /* optional but recommended */  
+
   // Initialize the Python Interpreter
   Py_Initialize();
   flag |= FLAG_PY_INITIALIZED;
@@ -35,13 +40,8 @@ Sikupy::Sikupy( string filename )
   // Now we are just getting access to siku namespace: the only
   // namespace we actually read from
 
-  // Adding the current path to python path
-  //string python_path = string( Py_GetPath() );
-  //cout << python_path << endl;
-  // python_path = ".:" + python_path;
-  // char* pc = strdup( python_path.c_str() );
-  // PySys_SetPath( pc );
-  // free( pc );
+  // output the path
+  // wcout << Py_GetPath() << endl;
 
   // Converting the module name to PyString
   PyObject *pName;
@@ -53,7 +53,10 @@ Sikupy::Sikupy( string filename )
   pModule = PyImport_Import( pName );// new
   Py_DECREF( pName );// no need for pName anymore
   if ( !pModule )
-  fatal( 1, "module not found:   %s", module_name.c_str() );
+    {
+      PyErr_Print();
+      fatal( 1, "module cannot be loaded:   %s", module_name.c_str() );
+    }
 
   // Never fails if module OK
   pDict = PyModule_GetDict( pModule );// borrowed
@@ -132,6 +135,10 @@ Sikupy::finalize ()
 
   // Finish the Python Interpreter
   Py_Finalize ();
+
+  // clear the program name after finalizing
+  PyMem_RawFree( progname );
+
 }
 
 //---------------------------------------------------------------------

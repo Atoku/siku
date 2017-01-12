@@ -172,7 +172,7 @@ static PyObject* Ext_filter_contours( PyObject* self, PyObject *args)
   points.resize( N );
 
   // converting to xyz
-  for( size_t i = 0; i < N; ++i )
+  for( size_t i = 0; i < (size_t)N; ++i )
     points[i] = ll_to_xyz( coords[i] );
 
   // filtering
