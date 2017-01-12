@@ -58,7 +58,7 @@ class Sikupy
 public:
 
   //! \brief Start python, declare the variable
-  Sikupy ( string filename );
+  Sikupy( string filename, int argc, char* argv[] );
 
   //! \brief Do all initialization and open conf file
   void
@@ -169,6 +169,10 @@ private:
   //! \brief List of functions to call (common list for all general
   //! functions)
   vector < PyObject* > pSiku_funcs;
+
+  //! \brief program name equal to argv[0] but in wchar_t. It is used only in
+  //! constructor but has to be cleared in destructor only
+  wchar_t * progname;
 
   //! \brief Current time, generated at the beginning of each time step
   //! in fcall_pretimestep and cleared at the end in dcall_aftertimestep

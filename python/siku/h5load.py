@@ -99,7 +99,7 @@ class PlainElement:
         self.gh = list( dataset[17] )
 
     def to_element( self, mons, cons, mats ):
-        ''' Method for conversion into siku.Eleent.
+        ''' Method for conversion into siku.Element.
         Arguments:
         mons - list of monitor functions` names
         cons - list of control functions names

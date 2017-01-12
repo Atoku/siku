@@ -93,7 +93,7 @@ main ( int argc, char* argv[] )
 
   // Loading the config file as a module and getting PyObject* to siku
   // namespace
-  Sikupy sikupy ( options.get_pythonfname () );
+  Sikupy sikupy ( options.get_pythonfname (), argc, argv );
 
   // Initializing all global variables from config file.
   sikupy.initialize ( siku );

@@ -79,7 +79,7 @@ def main():
 ##    w = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 ##    w.make_test_field( 0.,0. )
 ##    siku.wind = w
-   
+
     # ---------------------------------------------------------------------
     # date/time settings
     # ---------------------------------------------------------------------
