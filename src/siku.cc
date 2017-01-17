@@ -109,14 +109,19 @@ main ( int argc, char* argv[] )
   // Post-initialization of globals
   siku.post_init();
 
-
+  std::cout << "Post init done" << endl;
+  
   // Precycle initialization:
   // Recovering mass, moments of inertia, other parameters if necessary
   mproperties ( siku );
 
+  std::cout << "mproperties done" << endl;
+  
   // python custom initializations
   sikupy.fcall_inits( siku );
 
+  std::cout << "fcall inits done" << endl;
+  
   // siku.time.print ();
 
   // yet it is here, but I think it should be somewhere in mproperties or close
@@ -135,7 +140,7 @@ main ( int argc, char* argv[] )
 
       double dt = siku.time.get_dt ();
 
-      cout<<"\n Step: "<<siku.time.get_n()<<endl;
+      //      cout<<"\n Step: " << siku.time.get_n()<<endl;
       //cout<<"dt: "<<dt<<endl;
 
       // --- pretimestep

@@ -73,6 +73,7 @@ void Globals::post_init()
   if( mark_borders )
     {
       cout<<"Marking borders with points\n";
+      cout<< bord_file << endl;
 
       // reading borders
       std::ifstream in( bord_file.c_str() );
@@ -80,9 +81,12 @@ void Globals::post_init()
       double d1, d2;
       vec3d point;
 
+      cout<< "Started while loop" << endl;
+
       while( !in.eof() )
       {
         in >> d1 >> d2;
+        //        cout << d1 << " " << d2 << endl;
 
         point =
             sph_to_cart( 1., M_PI / 2. - deg_to_rad( d2 ), deg_to_rad( d1 ) );
@@ -91,6 +95,8 @@ void Globals::post_init()
       }
 
       in.close();
+
+      cout<<"HERE" << endl;
 
       // marking borders by border points (2d approximation)
       size_t size = points.size();

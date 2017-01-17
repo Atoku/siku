@@ -78,6 +78,7 @@ void mproperties( Globals& siku )
         }
       assert( nan_flag ); // somehow - does not work!
 
+
       Material *pmat = &siku.ms[ e.imat ]; // short link to material
 
       // mass update
@@ -89,7 +90,7 @@ void mproperties( Globals& siku )
 
       e.m = e.A * m   * siku.planet.R2; // mass update
       e.I = e.m * e.i * siku.planet.R2; // moment of inertia update
-
+      
       // thickest layer
       e.h_main = e.gh[0];
       for( size_t i = 1; i < MAT_LAY_AMO; ++i )
@@ -120,6 +121,7 @@ void mproperties( Globals& siku )
           e.flag &= ~( Element::F_FREE );//| Element::F_STEADY );
           e.flag |= Element::F_STATIC | Element::F_FASTENED;
         }
+      
     }
 }
 

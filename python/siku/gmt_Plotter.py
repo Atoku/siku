@@ -213,11 +213,15 @@ class GMT_Plotter:
         frame = self.config.get( 'frame', None )
         if frame : call(["gmtset", str(frame)])
                 
-        if self.config.get('verbose'):
-            print('drawing')
+        if self.config.get('verbose'): print('drawing')
         self.D = GMT_Drawer('draw_config.txt')
+
+        if self.config.get('verbose'): print('drawer initialized, drawing now')
+        
         self.D.draw( verbose = self.config.get( 'verbose' ) ) #at last - plotting
 
+        if self.config.get('verbose'): print('drawing DONE')
+        
     pass
 
 def main():
