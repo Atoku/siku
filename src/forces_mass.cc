@@ -64,22 +64,23 @@ void forces_mass( Globals& siku )
 
       //-------- WATER (yet steady) ----------
 
-      // calculating element`s speed in local coords
-      V = e.V;
-      if(!_verify(abs(V)))
-              cout<<"-----"<<V<<endl;
-
       // interpolating currents speed
       // !!check for earth.R scaling
       vec3d W = siku.flows.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
                                                 Coordinates::norm_lon( lon ) );
+
       // transforming currents into local coords
       W = Coordinates::glob_to_loc( e.q, W );
 
+      // calculating element`s speed in local coords
+      V = e.V;
+      if(!_verify(abs(V)))
+              cout<<"-----"<<V<<endl;
       // velocity difference between ice element and water
       W -= V;
 
       // applying water forces
+
       e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
 
       // rotation slow down

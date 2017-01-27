@@ -53,12 +53,16 @@ public:
   //-------------------------------------------------------------------------
 
   Vecfield ();
-  Vecfield ( const Source_Type& SOURCE_TYPE );
+  Vecfield ( const Source_Type& SOURCE_TYPE,
+             const double gslo = 2.5, const double gsla = 2.5 );
   ~Vecfield ();
 
   //! \brief Inits Vecfield with some source
   //! \param source type
-  void init ( const Source_Type& SOURCE_TYPE );
+  //! \param [in] grid step longitude
+  //! \param [in] grid step latitude
+  void init ( const Source_Type& SOURCE_TYPE,
+              const double gslo = 2.5, const double gsla = 2.5 );
 
   //! \brief sets the vector field model (standard, specific
   //! interpolation model etc.: see MODE_VEC_ constants
@@ -102,15 +106,13 @@ private:
   const double nmc_grid_step
     { 2.5 / 180 * M_PI };
 
-  //! \brief longitude and latitude grid steps
-  double nmc_grid_step_lo{};
-  double nmc_grid_step_la{};
+  double grid_step_lon{};   //! \brief longitude grid step
+  double grid_step_lat{};   //! \brief latitude grid step
 
-  //! \brief Number of longitudes
-  int lon_size{0};
+  int lon_size{};   //! \brief Number of longitudes
+  int lat_size{};   //! \brief Number of latitudes
 
-  //! \brief Number of latitudes
-  int lat_size{0};
+  //-------------------------------------------------------------------------
 
   int mode;
 

@@ -48,6 +48,7 @@ public:
   };
 
 protected:
+public://////////////////////////////////////////////////////////////////////////////////////////////
   //! \brief the wind velocity value itself (storaged as vec3d)
   std::vector < std::vector < vec3d > > grid;
 
@@ -99,6 +100,18 @@ public:
 
   //! \brief Returns amount of longitude indexes
   inline size_t  get_lon_size ()  { return grid[0].size (); }
+
+  //! \brief Returns minimal latitude value
+  inline double get_min_lat () { return lat_indexer.begin()->first; }
+
+  //! \brief Returns maximal latitude value
+  inline double get_max_lat () { return lat_indexer.rbegin()->first; }
+
+  //! \brief Returns minimal longitude value
+  inline double get_min_lon () { return lon_indexer.begin()->first; }
+
+  //! \brief Returns maximal longitude value
+  inline double get_max_lon () { return lon_indexer.rbegin()->first; }
 
   //! \brief Sets the value at specified indexes
   void

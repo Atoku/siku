@@ -28,8 +28,10 @@ using namespace Coordinates;
 
 Sikupy::Sikupy( string filename, int argc, char* argv[] )
 {
-  progname = Py_DecodeLocale( argv[0], NULL );
-  if (progname == NULL) fatal( 1, "cannot decode argv[0]");
+  // BUG: undeclared name Py_DecodeLocale
+  //progname = Py_DecodeLocale( argv[0], NULL );
+  //if (progname == NULL) fatal( 1, "cannot decode argv[0]");
+  progname = L"siku_py";
 
   Py_SetProgramName( progname );  /* optional but recommended */  
 
@@ -980,7 +982,8 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
       //pTemp = PyList_GetItem ( Lat, lat_s ); //borrowed
       pTemp = PyList_GetItem ( Lat, lat_s - i - 1 ); //borrowed
 
-      read_double ( pTemp, dtemp );
+      //read_double ( pTemp, dtemp );
+      if( !read_double ( pTemp, dtemp ) )  dtemp = 0;
       vField.lat_indexer[dtemp] = i;
       vField.lat_valuator[i] = dtemp;
     }
@@ -989,7 +992,8 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
     {
       pTemp = PyList_GetItem ( Lon, i ); //borrowed
 
-      read_double ( pTemp, dtemp );
+      //read_double ( pTemp, dtemp );
+      if( !read_double ( pTemp, dtemp ) )  dtemp = 0;
       vField.lon_indexer[dtemp] = i;
       vField.lon_valuator[i] = dtemp;
     }
@@ -1002,7 +1006,7 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
 
   for ( size_t i = 0; i < lat_s; ++i )
     {
-      // reversed indexsation in NMC structures: lat[0] = 90, lat[size] = -90
+      // reversed indexing in NMC structures: lat[0] = 90, lat[size] = -90
       PyObject* pLine = PyList_GetItem ( pTemp, lat_s - i - 1 ); //borrowed
       //PyObject* pLine = PyList_GetItem ( pTemp, i ); //borrowed
 
@@ -1010,8 +1014,12 @@ Sikupy::read_nmc_vecfield ( NMCVecfield& vField, const char* vName )
         {
           pTuple = PyList_GetItem ( pLine, j ); //borrowed
 
-          read_double ( PyTuple_GetItem ( pTuple, 0 ), ew );
-          read_double ( PyTuple_GetItem ( pTuple, 1 ), nw );
+//          read_double ( PyTuple_GetItem ( pTuple, 0 ), ew );
+//          read_double ( PyTuple_GetItem ( pTuple, 1 ), nw );
+          if(!read_double( PyTuple_GetItem(pTuple, 0), ew ) || !isfinite(ew))
+            ew = 0.;
+          if(!read_double( PyTuple_GetItem(pTuple, 1), nw ) || !isfinite(nw))
+            nw = 0.;
 
           vField.set_vec (
               geo_to_cart_surf_velo ( deg_to_rad ( vField.lat_valuator[i] ),

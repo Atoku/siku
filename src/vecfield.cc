@@ -24,11 +24,27 @@ inline vec3d proport( const vec3d& d1, const vec3d& d2, const double& t )
   return d1 + ( d2 - d1 )*t;
 }
 
+inline double fastNormLon360(double lon)
+{
+  //slow accurate variant - change 'if' with 'while'
+  if( lon >= 2.*M_PI ) lon -= 2.*M_PI;
+  if( lon < 0 ) lon += 2.*M_PI;
+  return lon;
+}
+inline double fastNormLat180(double lat)
+{
+  //slow accurate variant - change 'if' with 'while'
+  if( lat >= M_PI ) lat -= M_PI;
+  if( lat < 0 ) lat += M_PI;
+  return lat;
+}
+
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 
-Vecfield::Vecfield(const Source_Type& SOURCE_TYPE) :
+Vecfield::Vecfield(const Source_Type& SOURCE_TYPE,
+                   const double gslo, const double gsla ) :
 FIELD_SOURCE_TYPE( SOURCE_TYPE )
 {
   mode = MODE_VEC_STD_FIELD1;
@@ -46,12 +62,14 @@ Vecfield::Vecfield()
 
 //---------------------------------------------------------------------
 
-void Vecfield::init ( const Source_Type& SOURCE_TYPE )
+void Vecfield::init ( const Source_Type& SOURCE_TYPE,
+                      const double gslo, const double gsla  )
 {
   mode = MODE_VEC_STD_FIELD1;
   FIELD_SOURCE_TYPE = SOURCE_TYPE;
 
   if( FIELD_SOURCE_TYPE == NMC )  NMCVec = new NMCVecfield;
+
 }
 
 //---------------------------------------------------------------------
@@ -83,91 +101,76 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 {
   //draft: the simplest interpolation
 
-  // inner testing
-  if( FIELD_SOURCE_TYPE == TEST )
-    {
-      return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 1. );
-      //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );
-    }
+ // inner testing
+ if( FIELD_SOURCE_TYPE == TEST )
+   {
+     return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 1. );
+     //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );
+   }
 
-  // default return
-  if( ! NMCVec )  return vec3d(0., 0., 0.);
+ // default return
+ if( ! NMCVec )  return vec3d(0., 0., 0.);
 
-  // input params check
-  if( !std::isfinite(lat) || !std::isfinite(lon) )
-    {
-      cout<<"\nERROR: NaN lat or/and lon!\n"<<lat<<" "<<lon<<"\n\n";
-      fatal( 1, "interpolation args are NaN of infinite!");
-    }
+ // input params check
+ if( !std::isfinite(lat) || !std::isfinite(lon) )
+   {
+     cout<<"\nERROR: NaN lat or/and lon!\n"<<lat<<" "<<lon<<"\n\n";
+     fatal( 1, "interpolation args are NaN of infinite!");
+   }
 
-  // normalizing latitude in range [0, Pi],
-  // longitude in range [0, 2Pi] (for proper indexing)
-  lat = norm_lat ( lat ) + M_PI/2.;
-  lon = norm_lon ( lon );
+  double mo = deg_to_rad( NMCVec->get_min_lon() ),
+         Mo = deg_to_rad( NMCVec->get_max_lon() ),
+         ma = deg_to_rad( NMCVec->get_min_lat() ),
+         Ma = deg_to_rad( NMCVec->get_max_lat() );
 
-  // refreshing grid sizes
-  lon_size = NMCVec->get_lon_size ();
-  lat_size = NMCVec->get_lat_size ();
+ // normalizing latitude in range [ -Pi/2, Pi/2],
+ // longitude in range [0, 2Pi] (for proper indexing)
+ lat = norm_lat ( lat );// + M_PI/2.;
+ lon = norm_lon ( lon );
 
-  // refreshing grid steps
-  nmc_grid_step_lo = 2. * M_PI / (lon_size - 1);
-  nmc_grid_step_la = M_PI / (lat_size - 1);
+//  // Region check. If outside - return zero-vector as nodata
+  if( (lat > Ma) || (lat < ma) )        return {}; // out of grid
+  else
+    if( lon < mo )
+      if( (lon + 2.* M_PI) > Mo )   return {}; // out of grid
+      else                          lon += 2.* M_PI; // continue calculation
+    else
+      if( lon > Mo )                return {}; // out of grid
 
-  /*
-   * TODO: CHECK DIS DAM INDEXES!
-   */
-  // calculating current cell indexes
-  int lat_ind = norm_lat_ind( ((double)lat / nmc_grid_step) );
-  if ( lat_ind == (lat_size - 1) )
-    --lat_ind;
+ // refreshing grid sizes
+ lon_size = NMCVec->get_lon_size ();
+ lat_size = NMCVec->get_lat_size ();
 
-  int lon_ind = norm_lon_ind ( ((double)lon / nmc_grid_step) );
-  //if ( lon_ind == (lon_size - 1) )
-  //  cout<<lon_ind*nmc_grid_step<<endl ;
+ // refreshing grid steps
+  grid_step_lon = (Mo - mo) / (lon_size - 1);
+  grid_step_lat = (Ma - ma) / (lat_size - 1);
 
-  // calculating cell` borders
-  double left = lon_ind * nmc_grid_step_lo;
-  double right = ( lon_ind + 1 ) * nmc_grid_step_lo;
-  double bottom = lat_ind * nmc_grid_step_la;
-  double top = ( lat_ind + 1 ) * nmc_grid_step_la;
+ // calculating current cell indexes
+ int lat_ind = norm_lat_ind( (((double)lat - ma) / grid_step_lat) );
+ if ( lat_ind == (lat_size - 1) )
+   --lat_ind;
 
-  // extracting corner vectors
-  vec3d LB = NMCVec->get_vec( lat_ind, lon_ind );
-  vec3d LT = NMCVec->get_vec( lat_ind + 1, lon_ind );
-  vec3d RB = NMCVec->get_vec( lat_ind, lon_ind + 1 );
-  vec3d RT = NMCVec->get_vec( lat_ind + 1, lon_ind + 1 );
+ int lon_ind = norm_lon_ind ( (((double)lon - mo) / grid_step_lon) );
+ //if ( lon_ind == (lon_size - 1) )
+ //  cout<<lon_ind*nmc_grid_step<<endl ;
 
-  // interpolating with proportion
-  vec3d top_v = proport( LT, RT, (lon - left)/(right - left) );
-  vec3d bot_v = proport( LB, RB, (lon - left)/(right - left) );
+ // calculating cell` borders
+ double left = lon_ind * grid_step_lon + mo;
+ double right = ( lon_ind + 1 ) * grid_step_lon + mo;
+ double bottom = lat_ind * grid_step_lat + ma;
+ double top = ( lat_ind + 1 ) * grid_step_lat + ma;
 
-//// TEST OUTPUT
-//  std::cout<<LB.x<<"\t"<<LB.y<<"\t"<<LB.z<<"\n";
-//  std::cout<<LT.x<<"\t"<<LT.y<<"\t"<<LT.z<<"\n";
-//  std::cout<<RB.x<<"\t"<<RB.y<<"\t"<<RB.z<<"\n";
-//  std::cout<<RT.x<<"\t"<<RT.y<<"\t"<<RT.z<<"\n";
-//
-//  std::cout<<top_v.x<<"\t"<<top_v.y<<"\t"<<top_v.z<<"\n";
-//  std::cout<<bot_v.x<<"\t"<<bot_v.y<<"\t"<<bot_v.z<<"\n";
-//
-//  vec3d V = proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
-//
-//  std::cout<<V.x<<"\t"<<V.y<<"\t"<<V.z<<"\n";
-//
-//  if( (lon - left)/(right - left) > 1. ||
-//      (lat - bottom)/(top - bottom) > 1. ||
-//      (lon - left)/(right - left) < 0. ||
-//      (lat - bottom)/(top - bottom) < 0.
-//      )
-//    {
-//      cout<<"WOUWOU\n";
-//      cout<<rad_to_deg(left)<<"\t"<<rad_to_deg(right)<<"\t"<<
-//            rad_to_deg(bottom)<<"\t"<<rad_to_deg(top)<<"\n";
-//      cout<<rad_to_deg(lon)<<"\t"<<rad_to_deg(lat)<<"\n";
-//      cin.get();
-//    }
+ // extracting corner vectors
+ vec3d LB = NMCVec->get_vec( lat_ind, lon_ind );
+ vec3d LT = NMCVec->get_vec( lat_ind + 1, lon_ind );
+ vec3d RB = NMCVec->get_vec( lat_ind, lon_ind + 1 );
+ vec3d RT = NMCVec->get_vec( lat_ind + 1, lon_ind + 1 );
 
-  return proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
+ // interpolating with proportion
+ vec3d top_v = proport( LT, RT, (lon - left)/(right - left) );
+ vec3d bot_v = proport( LB, RB, (lon - left)/(right - left) );
+
+ return proport( bot_v, top_v, (lat - bottom)/(top - bottom) );
 }
 
 //---------------------------------------------------------------------

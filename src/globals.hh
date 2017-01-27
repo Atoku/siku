@@ -40,6 +40,8 @@ enum CONTACT_FORCE_MODEL : unsigned long
   CF_DIST_SPRINGS = 2
 };
 
+class Sikupy; // avoiding circular includes
+
 //! \brief Structure to keep all "global" data here. This namespace
 //! (will have the name siku) contains all the variables being
 //! initialized from the config file and computed or re-computed.
@@ -89,7 +91,7 @@ struct Globals
   Vecfield wind;
 
   //! water currents data (parametrical constructor call)
-  Vecfield flows = Vecfield( Vecfield::NONE ); //YET NO FLOWS
+  Vecfield flows;// = Vecfield( Vecfield::NONE ); //YET NO FLOWS
 
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;
@@ -124,7 +126,7 @@ struct Globals
   // ------------------------------ METHODS ---------------------------------
 
   //! Post-initialization (with loaded values)
-  void post_init();
+  void post_init(Sikupy&);
 
   //! Default constructor
   Globals();

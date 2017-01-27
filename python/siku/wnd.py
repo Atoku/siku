@@ -16,24 +16,27 @@ NMC = nmc.NMC
 #------------------------------------------------------------------------------
 # VARIABLE STORAGING (IN LATITUDE-LONGITUDE COORDINATES)
 #------------------------------------------------------------------------------
+
+VAR_TYPE = nmc.VAR_TYPE
         
 class NMCVar(NMC):
     '''A class for storaging NMC specified variable data
     '''
-    def __init__( self, filename = None, var_name = ''):
+    def __init__( self, filename = None, var_name = '', \
+                  var_t = VAR_TYPE['WND'] ):
         '''Inits the class instance
         '''
         self.reinit_()
         if filename:
-            self.open( filename, var_name)
+            self.open( filename, var_name, var_t )
         return        
     
-    def open( self, filename, var_name='' ):
+    def open( self, filename, var_name='', var_t = VAR_TYPE['WND'] ):
         '''Opens file and reads grid and time information
         '''
-        NMC.open( self, filename )
+        NMC.open( self, filename, var_t )
         if var_name:
-            self.read_var_( var_name )
+            self.read_var_( var_name, var_t )
 
         return
 
@@ -50,10 +53,16 @@ class NMCVar(NMC):
         self.val = []
         return
 
-    def read_var_( self, var_name ):
+    def read_var_( self, var_name, var_t ):
         '''Reads variable data from file
         '''
-        self.val = self.f1.variables[var_name][:][:][:]
+        if var_t == VAR_TYPE['WND']:
+            self.val = self.f1.variables[var_name][:][:][:]
+        elif var_t == VAR_TYPE['CUR1']:
+            self.val = [ L[0][:][:] for L in self.f1.variables[var_name] ]
+        else:
+            #print("Undefined file type. Trying default...\n")
+            self.val = self.f1.variables[var_name][:]
         return
 
     pass

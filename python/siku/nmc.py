@@ -12,6 +12,12 @@ import bisect
 
 #from . import geocoords                # geocoordinates
 
+VAR_TYPE = \
+{
+    'WND' : 0,
+    'CUR1' :1
+}
+
 class NMC:
     '''Siku: NMC class
 
@@ -24,7 +30,8 @@ class NMC:
     TSTART = datetime.datetime( 1800, 1, 1, 0, 0, 0 )
     HOUR = datetime.timedelta( hours = 1 )
 
-    def __init__( self, filename=False, arrayname=False ):
+    def __init__( self, filename=False, arrayname=False,
+                  var_t = VAR_TYPE['WND']):
         '''Creates object to read and store reanalysis data
         filename -- string, what file to read
         arrayname -- string, main array to read
@@ -34,14 +41,14 @@ class NMC:
 
         # special case when we set file name immidiately
         if filename:
-            self.open( filename )
+            self.open( filename, var_t )
 
         if arrayname:
             self.arrayname = arrayname
         
         return
 
-    def open( self, filename ):
+    def open( self, filename, var_t = VAR_TYPE['WND'] ):
         '''Opens file and reads grid and time information
 
         '''
@@ -52,7 +59,7 @@ class NMC:
         self.filename = filename
         self.f1 = netCDF4.Dataset( filename )
         self.read_time_raw_()
-        self.read_latlon_()
+        self.read_latlon_( var_t )
         self.convert_time_()
 
         return
@@ -111,12 +118,20 @@ class NMC:
         self.arrayname = None   # main array name
         return
 
-    def read_latlon_( self ):
+    def read_latlon_( self, var_t ):
         '''Reads latitude and longitude arrays from the file
 
         '''
-        self.lon = self.f1.variables['lon'][:]
-        self.lat = self.f1.variables['lat'][:]
+        if var_t == VAR_TYPE['WND']:
+            self.lon = self.f1.variables['lon'][:]
+            self.lat = self.f1.variables['lat'][:]
+        elif var_t == VAR_TYPE['CUR1']:
+            self.lon = self.f1.variables['longitude'][:]
+            self.lat = self.f1.variables['latitude'][:]
+        else:
+            #print("Undefined file type. Trying default...\n")
+            self.lon = self.f1.variables['lon'][:]
+            self.lat = self.f1.variables['lat'][:]
         return
 
     def read_time_raw_( self ):

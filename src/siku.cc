@@ -107,7 +107,7 @@ main ( int argc, char* argv[] )
     std::cout << "End of reading config file" << std::endl;
 
   // Post-initialization of globals
-  siku.post_init();
+  siku.post_init(sikupy);
 
   std::cout << "Post init done" << endl;
   
@@ -132,6 +132,9 @@ main ( int argc, char* argv[] )
 
   cout<<"Elements: "<<siku.es.size()<<endl;
 
+//  cout<<"siku.cont_force_model: "<<siku.cont_force_model<<endl;
+//  cin.get();
+
   // Main Time Loop
   //while ( !siku.time.is_done () )
   do
@@ -141,6 +144,8 @@ main ( int argc, char* argv[] )
       double dt = siku.time.get_dt ();
 
       //      cout<<"\n Step: " << siku.time.get_n()<<endl;
+      //cout<<"\r Step: " << siku.time.get_n()<<"\t";
+      cout.flush();
       //cout<<"dt: "<<dt<<endl;
 
       // --- pretimestep
@@ -148,6 +153,7 @@ main ( int argc, char* argv[] )
 
       // --- Searching for interaction pairs
       siku.ConDet.detect( siku );
+//cout<<"==="<<siku.ConDet.cont.size()<<endl;
 
       // --- Broad Phase Contact Detection if necessary
 

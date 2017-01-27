@@ -252,7 +252,7 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
 
   // TODO: find and clean (set properly) all adjustment factors like below
 
-#pragma omp critical
+//#pragma omp critical
   {
   cd.e1.F += F1;
   cd.e1.N += tq1;
@@ -289,7 +289,7 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
          n2y = dot( n2, ey ),
          d2  = cd.e2.h_main * l2;
 
-#pragma omp critical
+//#pragma omp critical
   {
   cd.e1.Sxx += f1x * n1x / d1;
   cd.e1.Syy += f1y * n1y / d1;
@@ -357,9 +357,9 @@ inline void _update_contact( ContactData& cd )
 
 void contact_forces( Globals& siku )
 {
-# ifdef SIKU_OPENMP  
-# pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
-# endif  
+//# ifdef SIKU_OPENMP
+//# pragma omp parallel for //num_threads(4) // without 'n_t()' - auto-threading
+//# endif
   for( int i = 0; i < siku.ConDet.cont.size(); i++ )
 //  for( auto& c : siku.ConDet.cont ) // reorganized for OpenMP
     {

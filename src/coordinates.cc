@@ -49,6 +49,8 @@ namespace Coordinates
   geo_to_cart_surf_velo ( const double& lat, const double& lon,
                           const double& e_velo, const double& n_velo )
   {
+    //if( e_velo == 0. && n_velo == 0 ) return {};
+
     // east velo in cart representation
     vec3d ev = sph_to_cart ( e_velo, M_PI / 2, lon + M_PI / 2 );
     // north velo in cart representation

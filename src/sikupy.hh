@@ -142,6 +142,11 @@ public:
   static const int FCALL_ERROR_NOWINDS
     { 0x8 };
 
+  // -----------------------------------------------------------------
+  //! \brief Reading NMC vector grid with/from wnd.py
+  int
+  read_nmc_vecfield ( NMCVecfield& vField, const char* vName );
+
   //---------------------------------------------------------------------
   //                       PRIVATE METHODS
   //---------------------------------------------------------------------
@@ -226,11 +231,6 @@ private:
   //! \breif Reading how to diagnose winds 
   int
   read_diagnostics_winds ( Diagnostics& diag );
-
-  // -----------------------------------------------------------------
-  //! \brief Reading NMC vector grid with/from wnd.py
-  int
-  read_nmc_vecfield ( NMCVecfield& vField, const char* vName );
 
   // -----------------------------------------------------------------
   // local methods to simplify access to some data types
