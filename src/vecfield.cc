@@ -101,15 +101,15 @@ vec3d Vecfield::get_at_lat_lon_rad( double lat,  double lon )
 {
   //draft: the simplest interpolation
 
+  // just in case...
+  if( FIELD_SOURCE_TYPE == NONE && !NMCVec )  return {0., 0., 0.};
+
  // inner testing
  if( FIELD_SOURCE_TYPE == TEST )
    {
      return Coordinates::geo_to_cart_surf_velo ( lat, lon, -10., 1. );
      //return Coordinates::geo_to_cart_surf_velo( lat lon, 10, 0 );
    }
-
- // default return
- if( ! NMCVec )  return vec3d(0., 0., 0.);
 
  // input params check
  if( !std::isfinite(lat) || !std::isfinite(lon) )

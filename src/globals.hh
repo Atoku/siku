@@ -76,8 +76,9 @@ struct Globals
   std::vector < long > man_inds;
   std::vector < vec3d > man_forces;
 
-  //! a list of wind source files` names
+  //! a list of grid source files` names
   std::vector < std::string > wind_crs;
+  std::vector < std::string > water_crs;
 
   // IMPROVE: reconsider this mechanism
   //! physical constants
@@ -91,7 +92,7 @@ struct Globals
   Vecfield wind;
 
   //! water currents data (parametrical constructor call)
-  Vecfield flows;// = Vecfield( Vecfield::NONE ); //YET NO FLOWS
+  Vecfield water;// = Vecfield( Vecfield::NONE ); //YET NO FLOWS
 
   //! Datastructure to store diagnostics info 
   Diagnostics diagnostics;

@@ -18,26 +18,6 @@ using namespace Geometry;
 void mproperties( Globals& siku )
 {
 
-//// Some OLD testing
-//  size_t size = siku.es.size();
-//  int count = 0;
-//  Element el;
-//  for( size_t i = 0; i < size; ++i )
-//    {
-//      if( siku.es[i].ERRORED )
-//        {
-//          //std::swap( siku.es[i], siku.es[--size] );
-//          //el = siku.es[i];
-//          siku.es[i] = siku.es[--size];
-//          //siku.es[size] = el;
-//          siku.es.pop_back();
-//          count++;
-//        }
-//    }
-//  if(count)
-//    cout<<"Cleared: "<<count<<" Elements after cleaning errors: "
-//        <<siku.es.size()<<endl;
-
   // minimal and maximal stress tensor components
   siku.SxxMax = siku.SxxMin = siku.es[0].Sxx;
   siku.SyyMax = siku.SyyMin = siku.es[0].Syy;
@@ -97,6 +77,7 @@ void mproperties( Globals& siku )
         if( e.gh[i] > e.h_main )
           e.h_main = e.gh[i];
 
+      // improve: find better solution
       // extremal stress tensor components
       if( e.Sxx > siku.SxxMax )  siku.SxxMax = e.Sxx;
       if( e.Sxx < siku.SxxMin )  siku.SxxMin = e.Sxx;

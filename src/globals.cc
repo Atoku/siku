@@ -28,20 +28,7 @@ Globals::Globals()
 void Globals::post_init(Sikupy& sikupy)
 {
   wind.init( wind.FIELD_SOURCE_TYPE );
-  flows.init( Vecfield::NMC ); // hardcode!
-//  cout<<"+++++++"<<endl;
-  sikupy.read_nmc_vecfield( *flows.NMCVec, "current");
-//  ofstream out("OUTOUTOUT.txt");
-//  for(int i = 0; i < flows.NMCVec->grid.size() && i < 100; i++)
-//    {
-//      out<<endl;;
-//      auto& a = flows.NMCVec->grid[i];
-//      for(int j = 0; j < a.size() && j <100; j++)
-//        out<<abs(a[j])<<"\t";
-//    }
-//
-//  cout<<"+++++++"<<endl;
-//  cin.get();
+  water.init( water.FIELD_SOURCE_TYPE );
 
   for( size_t i =0; i < es.size(); ++i )
     {

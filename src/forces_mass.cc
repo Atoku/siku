@@ -46,6 +46,10 @@ void forces_mass( Globals& siku )
       double wnd_fact, wat_fact;
       _drag_factors( siku, e, wat_fact, wnd_fact );
 
+      // calculating element`s speed in local coords
+      vec3d V = e.V;
+      //if(!_verify(abs(V)))  cout<<"-----"<<V<<endl;
+
       //-------- WIND ----------
 
       // acquiring element` position in terms lat-lon
@@ -53,34 +57,32 @@ void forces_mass( Globals& siku )
       Coordinates::sph_by_quat ( e.q, &lat, &lon );
       
       // interpolating wind speed near element`s mass center
-      vec3d V = siku.wind.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
+      vec3d W = siku.wind.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
                                                Coordinates::norm_lon( lon ) );
 
       // transforming to local coordinates
-      V = Coordinates::glob_to_loc( e.q, V );
+      W = Coordinates::glob_to_loc( e.q, W );
+
+      // velocity difference between ice element and wind
+      W -= V;
 
       // calculating local Force (draft)
-      e.F += V * abs( V ) * e.A * siku.planet.R2 * wnd_fact ;
+      e.F += W * abs( W ) * e.A * siku.planet.R2 * wnd_fact ;
 
       //-------- WATER (yet steady) ----------
 
       // interpolating currents speed
       // !!check for earth.R scaling
-      vec3d W = siku.flows.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
-                                                Coordinates::norm_lon( lon ) );
+      W = siku.water.get_at_lat_lon_rad ( Coordinates::norm_lat( lat ),
+                                          Coordinates::norm_lon( lon ) );
 
       // transforming currents into local coords
       W = Coordinates::glob_to_loc( e.q, W );
 
-      // calculating element`s speed in local coords
-      V = e.V;
-      if(!_verify(abs(V)))
-              cout<<"-----"<<V<<endl;
       // velocity difference between ice element and water
       W -= V;
 
       // applying water forces
-
       e.F += W * abs( W ) * e.A * siku.planet.R2 * wat_fact;
 
       // rotation slow down

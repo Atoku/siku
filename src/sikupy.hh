@@ -112,6 +112,11 @@ public:
   int
   fcall_update_wind ( Globals& siku );
 
+  //! \brief Update water currents from NMC source
+  //! \param[in] siku main global variables container
+  int
+  fcall_update_water ( Globals& siku );
+
 //  //! \brief Check and perform winds update
 //  //! \param[in] siku main global variables container
 //  int

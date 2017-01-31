@@ -228,6 +228,15 @@ Sikupy::read_settings( Globals& siku )
   siku.wind.FIELD_SOURCE_TYPE = Vecfield::Source_Type( i );
   Py_DECREF( pTemp );
 
+  // read water source
+  pTemp = PyObject_GetAttrString ( pDef, "water_source_type" );
+  assert( pTemp );
+
+  success &= read_ulong( pTemp, i );
+  siku.water.FIELD_SOURCE_TYPE = Vecfield::Source_Type( i );
+  Py_DECREF( pTemp );
+
+
   // read initial freezing mask
   pTemp = PyObject_GetAttrString ( pDef, "initial_freeze" );
   assert( pTemp );
@@ -1077,6 +1086,7 @@ Sikupy::fcall_pretimestep ( Globals& siku )
 
   // Calls for inner methods. Mask is being checked inside each of them
   status |= fcall_update_wind ( siku );
+  status |= fcall_update_water ( siku );
 
   Py_DECREF( pReturnValue );
 
@@ -1121,7 +1131,7 @@ Sikupy::fcall_update_wind ( Globals& siku )
     {
     case Vecfield::NMC:
       // update itself
-      cout << "Updating wind. New time is: \n";
+      //cout << "Updating wind. New time is: \n";
 
       pTemp = PyObject_CallMethod ( pSiku_callback, "updatewind", "(O,O)",
                                     pSiku, pCurTime ); //new
@@ -1151,6 +1161,68 @@ Sikupy::fcall_update_wind ( Globals& siku )
 
     case Vecfield::TEST:
       cout << "Test wind field: no need to update\n";
+      break;  //-----------------------------
+
+    default:
+      fatal( 1, "No source specified" )      ;
+
+      break;  //-----------------------------
+    }
+
+  siku.callback_status &= ~STATUS_WINDS;
+  return FCALL_OK;
+}
+
+//---------------------------------------------------------------------
+
+int
+Sikupy::fcall_update_water ( Globals& siku )
+{
+  if ( !( siku.callback_status & STATUS_CURRENTS ) )
+    return FCALL_OK;
+
+  // temporal reference. Static coz only one update call is possible at a time.
+  static PyObject* pTemp;
+
+  // updating grid with specification of source type
+  switch (siku.water.FIELD_SOURCE_TYPE)
+    {
+    case Vecfield::NMC:
+      // update itself
+      //cout << "Updating water. New time is: \n";
+
+      pTemp = PyObject_CallMethod ( pSiku_callback, "updatewater", "(O,O)",
+                                    pSiku, pCurTime ); //new
+
+      if ( !pTemp )
+        return FCALL_ERROR_NO_FUNCTION;
+
+      Py_DECREF( pTemp );
+
+      if ( !read_nmc_vecfield ( *siku.water.NMCVec, "water" ) )
+        return FCALL_ERROR_NOWINDS;
+
+      // read water source names
+      PyObject* pDef;
+      pDef = PyObject_GetAttrString ( pSiku, "settings" ); // Settings handler
+      assert( pDef );
+
+      pTemp = PyObject_GetAttrString ( pDef, "water_source_names" ); // List
+      assert( pTemp );
+
+      read_string_vector( pTemp, siku.water_crs );  // Read names
+
+      Py_DECREF( pTemp );  // clear memory
+      Py_DECREF( pDef );
+
+      break;  //-----------------------------
+
+    case Vecfield::TEST:
+      //cout << "Test vector field: no need to update\n";
+      break;  //-----------------------------
+
+    case Vecfield::NONE:
+      //cout << "Empty vector field: no need to update\n";
       break;  //-----------------------------
 
     default:

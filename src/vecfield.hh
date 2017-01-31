@@ -36,7 +36,7 @@ class Vecfield
 public:
 
   //! \brief Defines the source type for the vector field used
-  enum Source_Type : unsigned long { NONE, TEST, NMC };
+  enum Source_Type : unsigned long { NONE = 0, TEST, NMC };
 
   //! \brief Flag points to standard field from Fuselier paper
   static const int MODE_VEC_STD_FIELD1 { 1 };
@@ -102,9 +102,10 @@ public:
 //  }
 
 private:
-  // DANGER: HARDCODED CONSTANT FOR NMC GRID
-  const double nmc_grid_step
-    { 2.5 / 180 * M_PI };
+///////DEPRECATED!
+//  // DANGER: HARDCODED CONSTANT FOR NMC GRID
+////  const double nmc_grid_step
+////    { 2.5 / 180 * M_PI };
 
   double grid_step_lon{};   //! \brief longitude grid step
   double grid_step_lat{};   //! \brief latitude grid step

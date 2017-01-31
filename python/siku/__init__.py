@@ -53,7 +53,7 @@ CONTACT_FORCE_MODEL = {
     'distributed_spring' : 2
     }
 
-WIND_SOURCES = {
+GRID_SOURCES = {
     'NONE' : 0,
     'TEST' : 1,
     'NMC' : 2
@@ -97,8 +97,10 @@ settings.contact_value = 1
 
 settings.force_model = CONTACT_FORCE_MODEL['default']
 
-settings.wind_source_type = WIND_SOURCES['TEST']
+settings.wind_source_type = GRID_SOURCES['TEST']
 settings.wind_source_names = []
+settings.water_source_type = GRID_SOURCES['NONE']
+settings.water_source_names = []
 
 settings.loadfile = ''
 
@@ -179,11 +181,14 @@ def pretimestep( t, n, ns):
     status = MASK['NONE']
     diagnostics.step_count = n
 
+    print("\r Step: " + str(n) + "\t", end = "")
+          
     local.poly_f = open( 'Polygons.txt', 'w' )
 
     # primitive time stepping
     if t > ( time.last + time.dt ):
         status += siku.MASK['WINDS']
+        #status += siku.MASK['CURRENTS']
         time.last = t
 
     return status
@@ -198,6 +203,10 @@ def global_monitor( t, n, ns, Sigma ):
 
 def updatewind( siku, t ):
     print("Your advertisement could be here")
+    pass
+
+def updatewater( siku, t ):
+    print("Yet no water")
     pass
 
 def aftertimestep( t, n, ns ):
@@ -267,6 +276,7 @@ callback.presave = presave
 callback.pretimestep = pretimestep
 callback.global_monitor = global_monitor
 callback.updatewind = updatewind
+callback.updatewater = updatewater
 callback.aftertimestep = aftertimestep
 callback.conclusions = conclusions
 callback.initializations = initializations

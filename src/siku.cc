@@ -145,7 +145,7 @@ main ( int argc, char* argv[] )
 
       //      cout<<"\n Step: " << siku.time.get_n()<<endl;
       //cout<<"\r Step: " << siku.time.get_n()<<"\t";
-      cout.flush();
+      //cout.flush();
       //cout<<"dt: "<<dt<<endl;
 
       // --- pretimestep
@@ -153,7 +153,6 @@ main ( int argc, char* argv[] )
 
       // --- Searching for interaction pairs
       siku.ConDet.detect( siku );
-//cout<<"==="<<siku.ConDet.cont.size()<<endl;
 
       // --- Broad Phase Contact Detection if necessary
 
