@@ -1,9 +1,7 @@
 '''
-Basic test for saving-loading procedure.
-Consists of two scripts those represent one continuous modelling session.
-
-This particular sript loads some previously saved file, continues the
-modelling and generates the second half of the pictures.
+A test for wind grids usage, picturing and interpolation.
+Generates a set of pictures with wind grids and additional interpolated vectors
+in some region.
 '''
 
 import subprocess
@@ -50,97 +48,91 @@ def main():
     matnames = {
         'ice': 0,
     }
-    
+
     # ---------------------------------------------------------------------
     #  Wind initializations (NMC grid example)
     # ---------------------------------------------------------------------
 
-    #start time index
-    st_t_ind = 2
+    st_t_ind = 1 # first time entry in .nc files
+    N_steps = 10
+    siku.time.update_index = st_t_ind - 1
     
     siku.uw = wnd.NMCVar( 'u2014.nc', 'uwnd' )
-    siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )
+    siku.vw = wnd.NMCVar( 'v2014.nc', 'vwnd' )  
+    
     siku.wind = wnd.NMCSurfaceVField( siku.uw, siku.vw, st_t_ind )
 
     siku.settings.wind_source_type = siku.GRID_SOURCES['NMC']
     siku.settings.wind_source_names = [ 'u2014.nc', 'v2014.nc' ]
-   
+       
     # ---------------------------------------------------------------------
     # date/time settings
     # ---------------------------------------------------------------------
-
+    
     hour = datetime.timedelta ( minutes = 60 )
 
     ## time inits by NMC grid times
-    siku.time.start       = siku.uw.times[st_t_ind] + 12 * hour
-    siku.time.last        = siku.time.start
-    siku.time.last_update = siku.time.last
-    siku.time.finish      = siku.time.start + 12 * hour
-    siku.time.dt          = (siku.time.finish - siku.time.start) / 1800
-    siku.time.dts         = 0.5 * hour
-   
+    siku.time.start = siku.uw.times[st_t_ind]
+
+    siku.time.last_update = siku.uw.times[st_t_ind]
+
+    # .nc files have 6-hours timestep. In this way we should have windfield
+    # updated at each second step
+    siku.time.finish = siku.uw.times[st_t_ind] + 3 * hour * N_steps
+    
+    siku.time.dt  = (siku.time.finish - siku.time.start) / N_steps
+    siku.time.dts = datetime.timedelta ( seconds = 600 )
+
+
     # ---------------------------------------------------------------------
     # elements
     # ---------------------------------------------------------------------
-    
-    coords = []
-    siku.elements = []
 
-    # ---------------------- loading from file ----------------------------
-
-    print('file start atempt\n')
-
-    try:
-        hl = hload('siku-2014-01-01-23:30:00.h5')
-    except:
-        print("Could not open the file!!")
-        exit()
-
-    #### partially loading
-    hl.load_fnames()
-    hl.load_mats()
-    hl.load_els()  # most time spent here (inevitable)
-    print('\n')
-
-    siku.elements = hl.extract_els()
-    siku.materials = hl.extract_mats()
-
-    hl = None
-    print('DONE!\n')
+    #No elements! Just some winds and maps
 
     # ---------------------------------------------------------------------
     #  Monitor function for the polygon
     # ---------------------------------------------------------------------
 
     ## Plotter initialization
-    siku.plotter = GMT_Plotter( 'RTF_config.py' )
+    siku.plotter = GMT_Plotter( 'wind_config.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 60
-    siku.diagnostics.step_count = 0
-    siku.settings.picname_base = 'RTF_1'
+    siku.diagnostics.monitor_period = 1
+    siku.drift_monitor = drift_monitor
+    siku.settings.picname_base = 'W_'
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
     # ---------------------------------------------------------------------
 
-    siku.callback.pretimestep = scb.single_w_pretimestep
+    siku.callback.pretimestep = scb.grid_pretimestep
     siku.callback.aftertimestep = scb.basic_aftertimestep
     siku.callback.conclusions = conclusions
     siku.callback.initializations = initializations
+    siku.callback.updatewind = scb.basic_updatewind
+
     
     return 0
 
 # --------------------------------------------------------------------------
 
-def conclusions( siku, t ):
+def initializations( siku, t ):
+    subprocess.call(["gmtset", "PS_MEDIA=Custom_17cx17c"])
+    pass
+
+# --------------------------------------------------------------------------
+
+def conclusions( siku, t ):   
     print('creating .gif')
-    subprocess.call( "convert -density 300 -delay 10 RTF_*.eps RTF.gif", \
+    subprocess.call( "nice convert -density 600 -delay 100 W_*.eps W.gif", \
                      shell=True )
     pass
 
-def initializations( siku, t ):
-    subprocess.call(["gmtset", "PS_MEDIA=Custom_24cx20c"])
+# --------------------------------------------------------------------------
+
+def drift_monitor( t,n, Q, Ps, st, index, ID, W, F, N, m, I, i, A, a_f, w_f ):
+    return
 
 # ---------------------------------------------------------------------
 # Calling main function at the end

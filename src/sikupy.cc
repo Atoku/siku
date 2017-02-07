@@ -1079,6 +1079,7 @@ Sikupy::fcall_pretimestep ( Globals& siku )
                                                   pCurTime, n, ns ); //new
 
   // should return long. If I`m not wrong- there is no 'int' methods nor values.
+  if( !pReturnValue ) fatal( 1 );
   if ( !PyLong_Check( pReturnValue ) )
     return FCALL_ERROR_PRETIMESTEP_NOLONG;
 
@@ -1256,12 +1257,12 @@ Sikupy::fcall_inits ( Globals& siku )
   // conslusions call
   PyObject* pTemp = PyObject_CallMethod ( pSiku_callback, "initializations",
                                           "(O,O)", pSiku, pCurTime ); //new
-
   if ( !pTemp )
     status = FCALL_ERROR_NO_FUNCTION;
+  else
+    Py_DECREF( pTemp );
 
   Py_DECREF( pCurTime );
-  Py_DECREF( pTemp );
 
   return status;
 }

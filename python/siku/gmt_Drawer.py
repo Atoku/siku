@@ -15,9 +15,17 @@ class GMT_Drawer:
         and fast access to them
 
         '''
+
+        ## old idea to save configure strings into file and
+        ## load when required. It does work yet no examples provided.
         self.dict = {}
-        with open( 'draw_dict', 'rb' ) as inp:
-            self.dict = pickle.load( inp )
+        try:
+            with open( 'draw_dict', 'rb' ) as inp:
+                self.dict = pickle.load( inp )
+        except:
+            pass
+        
+        
         self.config_header = ''
         self.AUTOSPACING = True
         
@@ -26,9 +34,10 @@ class GMT_Drawer:
 
     def __del__( self ):
         '''Automatic saving dictionary configuration'''
-        with open( 'draw_dict', 'wb' ) as out:
-            pickle.dump( self.dict, out )
-
+        if len(self.dict) > 0:
+            with open( 'draw_dict', 'wb' ) as out:
+                pickle.dump( self.dict, out )
+    
     def load_config( self, configFile = 'draw_config.txt' ):
         '''Load drawing configuration from specified file
         '''

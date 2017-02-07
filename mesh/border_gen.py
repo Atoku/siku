@@ -221,7 +221,7 @@ class Border:
         return
         
 
-# ----------------------- technical (private) methods --------------------
+# ----------------------- utils (private) methods --------------------
     
 def dupl_del( verts ):
     '''Deletion of duplicated vertices'''

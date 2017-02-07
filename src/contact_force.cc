@@ -575,7 +575,7 @@ InterForces _distributed_springs( ContactData& cd )
   cd.d2 = abs( dr2 );
 
   // The Force itself
-  // TODO: recombine viscous force with respectie method inside 'collision'
+  // TODO: recombine viscous force with respective method inside 'collision'
   vec2d F = hardness * (dr1 + dr2) * 0.5                     // elastic
             - area * cd.siku.phys_consts["etha"] * cd.va12;  // viscous
 

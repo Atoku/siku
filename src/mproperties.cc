@@ -18,11 +18,14 @@ using namespace Geometry;
 void mproperties( Globals& siku )
 {
 
-  // minimal and maximal stress tensor components
-  siku.SxxMax = siku.SxxMin = siku.es[0].Sxx;
-  siku.SyyMax = siku.SyyMin = siku.es[0].Syy;
-  siku.SxyMax = siku.SxyMin = siku.es[0].Sxy;
-  siku.SyxMax = siku.SyxMin = siku.es[0].Syx;
+  if( siku.es.size() )
+    {
+      // minimal and maximal stress tensor components
+      siku.SxxMax = siku.SxxMin = siku.es[0].Sxx;
+      siku.SyyMax = siku.SyyMin = siku.es[0].Syy;
+      siku.SxyMax = siku.SxyMin = siku.es[0].Sxy;
+      siku.SyxMax = siku.SyxMin = siku.es[0].Syx;
+    }
 
   for ( Element & e: siku.es )
     {
@@ -115,8 +118,10 @@ void clean_props( Globals& siku )
       // clearing all accumulated values
       e.F = nullvec3d;
       e.N = 0;
+
       e.OA = 0.;
       e.Amin = e.A;
+
       e.Sxx = 0.;
       e.Syy = 0.;
       e.Sxy = 0.;

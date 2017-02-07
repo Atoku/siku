@@ -97,7 +97,7 @@ class GMT_Plotter:
         calling interpolation, preparing draw_config.txt and finaly executing
         DMT_Drawer
         '''
-        
+    
         if out_file:
             self.config['out_pic_name'] = out_file
 
@@ -159,7 +159,7 @@ class GMT_Plotter:
 
 
 ##------------------------- preparing draw_config.txt -------------------------
-
+        
         if self.config.get('verbose'):
             print('preparing draw_config')
         
@@ -174,6 +174,7 @@ class GMT_Plotter:
                 self.deft_conf['vector_scaling'] )
 ##        if dphi > 90:
 ##            psi /=4
+        
         with open('draw_config.txt','w') as dc:
             
             dc.write( self.draw_prep_str.format( \
@@ -183,7 +184,7 @@ class GMT_Plotter:
                 coasts = self.config.get( 'coasts', self.deft_conf['coasts'] ),
                 verb = self.verbose
                 ))
-            
+        
             for line in self.config.get( 'underlays',
                                          self.deft_conf['underlays'] ):
                 dc.write( line + '\n' )
@@ -197,19 +198,19 @@ class GMT_Plotter:
                 if inw == None:
                     inw = self.deft_conf['coasts']
                 if grw == None:
-                    rgw = self.deft_conf['grid_wind']
-                    
+                    grw = self.deft_conf['grid_wind']                
+                
                 dc.write( self.draw_wind_str.format(
                     verb = self.verbose, inter_wind = inw, grid_wind = grw,
                     inter_scale = str( (psi * 40) / (max_wind * width) ),
                     grid_scale = str( (psi * 40) / (max_wind * width) ),
                     ) )
-            
+                
             for line in self.config.get( 'overlays', [] ):
                 dc.write( line + '\n' )
             
 ##-------------------------------- drawing ------------------------------
-
+        
         frame = self.config.get( 'frame', None )
         if frame : call(["gmtset", str(frame)])
                 
