@@ -1,6 +1,6 @@
 set term post eps
 
-set output "group0.eps"
+set output "forces.eps"
 plot 'group0.txt' u 1:2 w l lt rgb 'red', \
  'group1.txt' u 1:2 w l lt rgb 'black', \
  'group2.txt' u 1:2 w l lt rgb 'blue', \

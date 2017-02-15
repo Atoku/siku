@@ -41,7 +41,7 @@ def main():
     ice = material.Material()       # default ice values, 10 thicknesses
     ice.name = 'ice'                # prefer to use our own name instead
                                     # of default
-    ice.E = 4e5
+    ice.E = 4e5 #4e4 for 'hopkins'
     
     siku.materials.append( ice )    # list of all materials
 
@@ -90,7 +90,7 @@ def main():
     siku.time.last_update = siku.time.start
     siku.time.finish = siku.time.start + 24 * hour
     siku.time.dt = (siku.time.finish - siku.time.start) / 3601
-    siku.time.dts      = 4 * hour
+    siku.time.dts      = 30 * hour
 
    
     # ---------------------------------------------------------------------
@@ -103,7 +103,7 @@ def main():
     # ---------------------- voronoi initialization ------------------------
 
     print('\nLoading polygons')
-    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )        
+    PV = PolyVor( 'shapes.voronoi.xyz', 'shapes.voronoi.xyzf' )
     PV.filter_( 0, 360, 60, 90 )
 
     print('Deleting land polygons')
@@ -173,29 +173,40 @@ def main():
 
     ### period of picturing
     siku.diagnostics.monitor_period = 60
-##    siku.drift_monitor = drift_monitor
     siku.drift_monitor = scb.stress_monitor
     siku.settings.picname_base = 'C_'
 
     siku.settings.phys_consts['windage'] = 0.001
     siku.settings.phys_consts['anchority'] = 0.01
     siku.settings.phys_consts['tensility'] = 0.5
-    siku.settings.phys_consts['etha'] = 0.001    
+    siku.settings.phys_consts['etha'] = 0.001
+
+##    ## Uncomment this to test 'hopkins' physical model
+##    siku.settings.phys_consts['rigidity'] = 0.001 #0.1 
+##    
+##    siku.settings.force_model = siku.CONTACT_FORCE_MODEL['hopkins']
+##
+##    siku.settings.phys_consts['sigma_t'] = 3.5e4
+##    siku.settings.phys_consts['sigma_c'] = 1.285e4
+##    siku.settings.phys_consts['sigma_s'] = 3.5e4
+##    siku.settings.phys_consts['tan_mu'] = 1.
+##    
+##    siku.settings.phys_consts['hop_visc'] = 0.01
+##    siku.settings.phys_consts['dest_threshold'] = 0.5
+##    
+##    siku.settings.phys_consts['n_integ_segments'] = 10.
 
     # ---------------------------------------------------------------------
     #  Callback flag-mask generator
     # ---------------------------------------------------------------------
 
-##    siku.callback.pretimestep = pretimestep
     siku.callback.pretimestep = scb.grid_pretimestep
-##    siku.callback.aftertimestep = aftertimestep
     siku.callback.aftertimestep = scb.basic_aftertimestep
-##    siku.callback.conclusions = conclusions
     siku.callback.conclusions = scb.basic_conclusions
     siku.callback.initializations = initializations
-##    siku.callback.updatewind = updatewind
     siku.callback.updatewind = scb.basic_updatewind
-##    siku.callback.global_monitor = global_monitor
+
+    siku.callback.presave = scb.basic_presave
 
     siku.err_test = {}
     
@@ -203,116 +214,9 @@ def main():
 
 # --------------------------------------------------------------------------
 
-##def global_monitor( t, n, ns, Sigma ):
-##    siku.sigma = Sigma
-##        
-##    return 0
-
-# --------------------------------------------------------------------------
-
 def initializations( siku, t ):
     subprocess.call(["gmtset", "PS_MEDIA=Custom_17cx15c"])
     pass
-    
-
-# --------------------------------------------------------------------------
-
-##def conclusions( siku, t ):
-##        
-##    print('creating .gif')
-##    subprocess.call( "convert -density 300 -delay 10 _C*.eps C.gif", \
-##                     shell=True )
-##    pass
-
-# --------------------------------------------------------------------------
-
-##def pretimestep( t, n, ns ):
-##    status = siku.MASK['NONE']
-##    siku.diagnostics.step_count = n
-##
-##    print("\r Step: " + str(n) + "\t", end = "", flush=True)
-##
-##    siku.local.poly_f = open( 'Polygons.txt', 'w' )
-##
-##    # step by NMC own time step
-##    if t >= siku.uw.times[siku.time.update_index + 1]:
-##        status += siku.MASK['WINDS']
-##
-##    return status
-
-# --------------------------------------------------------------------------
-
-##def updatewind( siku, t ):
-##    print( "updating winds: ", end = "" )
-##    siku.time.update_index += 1
-##    siku.time.last_update = t
-##    siku.wind = \
-##              wnd.NMCSurfaceVField( siku.uw, siku.vw, siku.time.update_index )
-##    print( str( t ) )
-##    pass
-
-# --------------------------------------------------------------------------
-
-##def aftertimestep( t, n, ns ):
-##    siku.local.poly_f.close()
-##    if siku.diagnostics.step_count == 0 or \
-##       (siku.diagnostics.step_count+1) % siku.diagnostics.monitor_period == 0:
-##        pic_name = '_C%03d.eps' % \
-##            (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
-##        print('drawing ' + str( pic_name ) )
-##
-##        siku.plotter.plot( pic_name, siku.time.update_index, siku.wind )
-##
-##    return 0
-
-# --------------------------------------------------------------------------
-
-##def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss,\
-##                   m, I, i, A, a_f, w_f ):
-##
-##    # create actual quaternion
-##    q = mathutils.Quaternion( Q )
-##    C = mathutils.Vector( (0,0,1) )
-##
-##    # get latitude and longitude of center of mass (0,0,1)
-##    R = q.to_matrix()
-##    c = R * C
-##
-##    s = -0.5*(ss[0] + ss[1])
-##
-##    # appending vertices to plotting list
-##    if siku.diagnostics.step_count == 0 or \
-##       (siku.diagnostics.step_count+1) % siku.diagnostics.monitor_period == 0:
-##
-##        Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
-##        vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
-##        poly = siku.local.poly_f
-##
-##        ## color interpolation to paint the elements according to applied
-##        ## stress
-##        col2 = (255, 128, 127) #red
-##        col1 = ( 127, 128, 255) # blue
-##        col = cworks.gmt_color_hsv_scale( col1, col2, s, 1e5 )
-##        
-##        if st & element.Element.f_special:       
-##            poly.write( '> -G'+ col +' -W0.1p,purple \n' ) 
-##        elif st & element.Element.f_static:
-##            poly.write( '> -G'+ col +' -W0.1p,brown \n' )
-##        elif st & element.Element.f_steady:
-##            poly.write( '> -GlightGreen -W0.1p,lightBlue \n' )
-##        else:
-##            poly.write( '> -G'+ col +' -W0.1p,white \n' )        
-##            
-##        for v in vert:
-##            poly.write( str( geocoords.norm_lon(v[0]) )+'\t'+ \
-##                        str( v[1] )+'\n' )
-##
-##    return
-
-# --------------------------------------------------------------------------
-
-##def winds_diag( t, winds ):
-##    return
 
 # ---------------------------------------------------------------------
 # Calling main function at the end

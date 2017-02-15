@@ -479,39 +479,6 @@ void merge_contacts( vector<ContactDetector::Contact>& olds,
   while( ni < news.size() )
     temp.push_back( news[ni++] );
 
-//// OLD and ugly
-//  while( true ) //oi < olds.size() && ni < news.size() )
-//    {
-//      // IMPROVE: remove unnecessary conditions
-//      if( ni < news.size() )
-//        {
-//
-//          if( oi < olds.size() )
-//            {
-//              if( news[ni] < olds[oi] )
-//                temp.push_back( news[ni++] );
-//
-//              else if( olds[oi] < news[ni] )
-//                temp.push_back( olds[oi++] );
-//
-//              else // <=> equal contacts
-//                {
-//                  temp.push_back( olds[oi++] );
-//                  ni++;
-//                }
-//            }
-//          else
-//            temp.push_back( news[ni++] );
-//
-//        }
-//      else if( oi < olds.size() )
-//        temp.push_back( olds[oi++] );
-//
-//      else
-//        break; // instead of 'while' args
-//
-//    }
-
   temp.swap( olds );  // now siku.ConDet.conts must be refreshed list
 
   temp.clear();  // if all is correct - size will be 0, but no deallocation
@@ -564,8 +531,9 @@ void _select_freeze( std::vector<ContactDetector::Contact>& cont,
 
     case CF_HOPKINS :
       for( auto& c : cont )
-        _freeze( c, siku, tol );
-        //_share( c, siku, tol );
+        _dist_freeze( c, siku, tol );
+        //_freeze( c, siku, tol );
+        //_share( c, siku, tol );   //outdated
       break;
 
     case CF_DIST_SPRINGS :
@@ -634,6 +602,7 @@ void _freeze( ContactDetector::Contact& c, Globals& siku, double tol )
 
 // --------------------------------------------------------------------------
 
+// Outdated
 void _share( ContactDetector::Contact& c, Globals& siku, double tol )
 {
   Element& e1 = siku.es[c.i1];

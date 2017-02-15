@@ -34,7 +34,7 @@ dynamics ( Globals& siku, const double dt )
 
       // first we create a vector of Super-Torque
       vec3d sT ( -e.F[1] / ( siku.planet.R * e.m ),
-                 e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );
+                       e.F[0] / ( siku.planet.R * e.m ), e.N / e.I );
 
       // and increment the angular velocity using it (if not steady)
       if( ! ( e.flag & Element::F_STEADY ) )

@@ -207,7 +207,7 @@ def main():
     siku.plotter = GMT_Plotter( 'CC_config.py' )
 
     ### period of picturing
-    siku.diagnostics.monitor_period = 30
+    siku.diagnostics.monitor_period = 60
     siku.settings.picname_base = 'CC_'
 
     # ---------------------------------------------------------------------

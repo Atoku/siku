@@ -164,6 +164,21 @@ def main():
     siku.settings.phys_consts['fastency'] = 0.25    # Low borders fastency.
     siku.settings.phys_consts['etha'] = 0.01        # Pretty low viscosity.
     siku.settings.phys_consts['tensility'] = 1      # High tensility of bounds.
+
+##    ## Uncomment this to test 'hopkins' physical model
+##    siku.settings.phys_consts['rigidity'] = 0. #0.1 
+##
+##    siku.settings.force_model = siku.CONTACT_FORCE_MODEL['hopkins']
+##    
+##    siku.settings.phys_consts['sigma_t'] = 35e4
+##    siku.settings.phys_consts['sigma_c'] = 1.285e6
+##    siku.settings.phys_consts['sigma_s'] = 35e4
+##    siku.settings.phys_consts['tan_mu'] = 1.
+##    
+##    siku.settings.phys_consts['hop_visc'] = 0.01
+##    siku.settings.phys_consts['dest_threshold'] = 0.5
+##    
+##    siku.settings.phys_consts['n_integ_segments'] = 10.
     
     # ------------------------- speed settings ----------------------------
  
@@ -256,8 +271,7 @@ def pretimestep( t, n, ns ):
 def aftertimestep( t, n, ns ):
     siku.local.poly_f.close()
 
-    if siku.diagnostics.step_count == 0 or \
-       (siku.diagnostics.step_count+1) % siku.diagnostics.monitor_period == 0:
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         pic_name = '_GT%03d.eps' % \
             (siku.diagnostics.step_count / siku.diagnostics.monitor_period)
         print('drawing ' + str( pic_name ) )
@@ -300,8 +314,7 @@ def drift_monitor( t, n, Q, Ps, st, index, ID, W, F, N, ss, \
                        mathutils.Vector( F ).length
 
     # appending vertices to plotting list
-    if siku.diagnostics.step_count == 0 or \
-       (siku.diagnostics.step_count+1) % siku.diagnostics.monitor_period == 0:
+    if siku.diagnostics.step_count % siku.diagnostics.monitor_period == 0:
         Pglob = [ R*mathutils.Vector( p ) for p in Ps ]
         vert = [ geocoords.lonlat_deg(mathutils.Vector( p ) ) for p in Pglob ]
 

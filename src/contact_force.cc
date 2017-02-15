@@ -136,7 +136,8 @@ struct InterForces
   vec2d rf1,        // application point of force at e1
         rf2,        // application point of force at e2
         F1;         // force applied to e1 ( = - F2 )
-  double couple1;   // couple (wikipedia) applied to e1 ( = - couple2 ) ( SI )
+  double couple1,   // couple (wikipedia) applied to e1 ( = - couple2 ) ( SI )
+         couple2;
 };
 
 // ==================== local functions` declarations =======================
@@ -154,9 +155,6 @@ InterForces _distributed_springs( ContactData& cd );
 // calculates linear rigidity of ice with respect to material and other props
 inline double _rigidity( ContactData& cd )
 {
-//  return cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec
-//      / ( abs(cd.r1) + abs(cd.r2) );
-
   // ice thickness at largest (main) layer
   double h1 = cd.e1.h_main, h2 = cd.e2.h_main;
 
@@ -168,11 +166,6 @@ inline double _rigidity( ContactData& cd )
   double H = h1*E1 * h2*E2
            / ( h1*E1 * abs( cd.r2 ) + h2*E2 * abs( cd.r1 ) );
   return ( isfinite( H ) ? H : 0.0 ) * cd.siku.planet.R_rec;
-
-//// OLD:
-//  double H = h1 * h2 / ( h1*abs( cd.r2 ) + h2*abs( cd.r1 ) );
-//  return ( isfinite( H ) ? H : 0.0 )
-//      * cd.siku.phys_consts["sigma"] * cd.siku.planet.R_rec;
 }
 
 // viscous and elastic forces applied to e1 caused by e2.
@@ -244,11 +237,10 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
         F2 = lay_on_surf( cd.e1_to_e2 * vec2_to_vec3_s( -if_.F1 ) );
 
   // torques (combined) applied to e1 and e2 in their local coords (SI)
-  double tq1 =  cd.siku.phys_consts["rotatability"] *
-                if_.couple1 + cross( if_.rf1, if_.F1 );
-  double tq2 =  cd.siku.phys_consts["rotatability"] *
-                -if_.couple1 + cross( if_.rf2 - cd.r12 * cd.siku.planet.R,
-                                     -if_.F1 ); // (SI) - that`s why ' * R'
+  double tq1 = cd.siku.phys_consts["rotatability"] * if_.couple1
+             + cross( if_.rf1, if_.F1 );
+  double tq2 = cd.siku.phys_consts["rotatability"] * if_.couple2
+             + cross( if_.rf2, -if_.F1 );
 
   // TODO: find and clean (set properly) all adjustment factors like below
 
@@ -306,20 +298,33 @@ inline void _apply_interaction( ContactData& cd, InterForces& if_ )
 
 inline void _update_contact( ContactData& cd )
 {
-  // durability change - joint destruction
-  double r_size = cd.siku.planet.R_rec / cd.c.init_len,   // reversed size (SI)
-         dmax   = max( cd.d1, cd.d2 ),                    // maximal stretch
-         dave   = (cd.d1 + cd.d2) * 0.5;                  // average stretch
-//         dave   = sqrt(cd.d1 * cd.d2);                    // average stretch
-//         dave   = (cd.d1 * cd.d2) / (cd.d1 + cd.d2);      // average stretch
+  // Hopkins physics special case
+  if( cd.siku.cont_force_model == CF_HOPKINS )
+    {
+      // durability depends on the number of broken integral parts
+      cd.c.durability -= (1. - cd.d1); // additive
+      //cd.c.durability *= cd.d1; // or multiplicative
 
-  double sigma   = cd.siku.phys_consts["solidity"],
-         epsilon = cd.siku.phys_consts["tensility"];
+      if(cd.c.durability < cd.siku.phys_consts["dest_threshold"])
+        cd.c.durability = 0.;
+    }
+  else
+    {
+      // durability change - joint destruction
+      double r_size = cd.siku.planet.R_rec / cd.c.init_len,// reversed size (SI)
+             dmax   = max( cd.d1, cd.d2 ),                 // maximal stretch
+             dave   = (cd.d1 + cd.d2) * 0.5;                  // average stretch
+             //dave   = sqrt(cd.d1 * cd.d2);               // average stretch
+             //dave   = (cd.d1 * cd.d2) / (cd.d1 + cd.d2); // average stretch
 
-  // TODO: discuss time scaling
-  cd.c.durability -= ( dmax * r_size > epsilon ) ?
-//      dave * r_size * cd.siku.time.get_dt() * sigma     :       0.;
-      dave * r_size     :       0.;
+      double sigma   = cd.siku.phys_consts["solidity"],
+             epsilon = cd.siku.phys_consts["tensility"];
+
+      // TODO: discuss time scaling
+      cd.c.durability -= ( dmax * r_size > epsilon ) ?
+          //dave * r_size * cd.siku.time.get_dt() * sigma     :       0.;
+          dave * r_size     :       0.;
+    }
 
 #pragma omp critical
   {
@@ -380,9 +385,10 @@ void contact_forces( Globals& siku )
       // some additional parameters
       ContactData cd( c, siku );
 
-      InterForces intf;  // elements` interaction forces
+      InterForces intf{};  // elements` interaction forces
       InterForces intf1;//////TEST: second set of forces for accumulating
                         // both types of interaction
+/////////////////////////////////////////////////
 
       // calculating the forces
       if( c.type != ContType::JOINT )
@@ -394,7 +400,7 @@ void contact_forces( Globals& siku )
         {
           // IMPROVE: find this leak in 'update' function and prevent the
           // possibility of such contacts
-          intf = {};
+          //intf = {};  // by default
         }
       else
         {
@@ -454,9 +460,10 @@ InterForces _collision( ContactData& cd )
                    * pow( (cd.area * cd.siku.planet.R2), 2 ) / ( 6. * M_PI );
 
       if_.rf1 = cd.r1 * cd.siku.planet.R;
-      if_.rf2 = cd.r1 * cd.siku.planet.R;
+      if_.rf2 = (cd.r1 - cd.r12) * cd.siku.planet.R;
       if_.F1 = F;
       if_.couple1 = vt;
+      if_.couple2 = -vt;
 
       // renewing the contact to avoid deletion
       cd.c.generation = 0;
@@ -489,55 +496,140 @@ InterForces _test_springs( ContactData& cd )
   cd.d1 = cd.d2 = abs( def ) * cd.siku.planet.R;
 
   if_.rf1 = p1 * cd.siku.planet.R;
-  if_.rf2 = p2 * cd.siku.planet.R;
+  if_.rf2 = (p2 - cd.r12) * cd.siku.planet.R;
   if_.F1  = F;
-  //if_.couple1 = 0.; by default
+  //if_.couple1 = if_.couple2 = 0.; by default
 
   return if_;
 }
 
 // -----------------------------------------------------------------------
 
+inline bool _teta(ContactData& cd, double ss, double sn)
+{
+  double Ss = cd.siku.phys_consts["sigma_s"],
+         Sc = cd.siku.phys_consts["sigma_c"],
+         St = cd.siku.phys_consts["sigma_t"],
+         tm = cd.siku.phys_consts["tan_mu"];
+
+  return ((sn >= 0 && sn < St) && (ss > -Ss && ss < Ss))
+      || ((sn > -Sc && sn < 0) && (abs(ss) < Ss - sn*tm));
+}
+
+inline void _hop_rig(ContactData& cd, double& hn, double& hs)
+{
+  // ice thickness at largest (main) layer
+  double h1 = cd.e1.h_main, h2 = cd.e2.h_main;
+
+  // elasticity of elements
+  double E1 = cd.siku.ms[cd.e1.imat].E, E2 = cd.siku.ms[cd.e2.imat].E;
+  double nu1 = cd.siku.ms[cd.e1.imat].nu, nu2 = cd.siku.ms[cd.e2.imat].nu;
+
+  hn = (h1*E1 + h2*E2) * 0.5;
+  hs = (h1*E1/( 2.*(1. + nu1)) + h2*E2/( 2.*(1. + nu2) )) * 0.5;
+  return;
+}
+
 InterForces _hopkins_frankenstein( ContactData& cd )
 {
-  InterForces if_{};
+  InterForces if_{}; // should be filled with zeroes
 
-  // physical params of ice (from python scenario)
-  double K =  cd.siku.phys_consts["sigma"];
-//  double K = _rigidity( cd );
+  // original contact points considering current shift of elements (SI)
+  vec2d p1 = cd.c.p1 * cd.siku.planet.R,
+        p2 = cd.c.p2 * cd.siku.planet.R,
+        p3 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p3 ) )
+          * cd.siku.planet.R,
+        p4 = vec3_to_vec2( cd.e2_to_e1 * vec2_to_vec3( cd.c.p4 ) )
+          * cd.siku.planet.R;
 
-  // calculating forces and torques (this method seems to be working wrong)
-  vec2d p11 = vec3_to_vec2( cd.siku.es[cd.c.i1].P[cd.c.v11] );
-  vec2d p12 = vec3_to_vec2( cd.siku.es[cd.c.i1].P[cd.c.v12] );
-  vec2d p21 = vec3_to_vec2( cd.e2_to_e1 * cd.siku.es[cd.c.i2].P[cd.c.v21] );
-  vec2d p22 = vec3_to_vec2( cd.e2_to_e1 * cd.siku.es[cd.c.i2].P[cd.c.v22] );
-  vec2d X;
+  vec2d dr1 = p4 - p1,
+        dr2 = p3 - p2;
 
-//  double sinX = cross( (p12-p11).ort(), ( p21-p22 ).ort() );
-//  double cosX = dot( (p12-p11).ort(), ( p21-p22 ).ort() );
+  // tangential vector to the middle line of joint and normal vector
+  vec2d tau = (p1 + 0.5*dr1) - (p2 + 0.5*dr2);
+  double L = abs(tau);
+  tau /= L;
+  vec2d norm = rot_90_ccw(tau);
 
-  double Al = 0.5 * cross( p12 - X, p21 - X );
-  double Ar = 0.5 * cross( p22 - X, p11 - X );
-  vec2d Cl = (p12 + p21 + X) / 3.;
-  vec2d Cr = (p22 + p11 + X) / 3.;
+  vec2d r0 = p1 + 0.5*dr1;
+  double r01 = cross(r0, norm),
+         r02 = cross(r0 - cd.r12*cd.siku.planet.R, norm);
 
-  vec2d r12 = vec3_to_vec2( cd.e2_to_e1 * NORTH );
-  vec2d Fl = Al * cd.siku.planet.R * K * r12.ort();
-  vec2d Fr = Ar * cd.siku.planet.R * K * r12.ort();
+  // elasticities...
+  double hn, hs;
+  _hop_rig( cd, hn, hs );
+  hn /= L, hs /= L;
 
-  vec2d F = Fl + Fr;
+  // tangential and normal displacements
+  double Ds = 0.5 * dot( (dr1+dr2), tau );
+  double Dn1 = dot( dr1, norm ), Dn2 = dot( dr2, norm ), aaa = Dn2-Dn1;
 
-  double torque1 = cd.siku.planet.R_rec *
-      ( cross( Cl, Fl ) + cross( Cr, Fr ) );
+  // segments length for integration
+  double dDz = 1./cd.siku.phys_consts["n_integ_segments"],
+         Dz0 =  0.5 * dDz;
 
-  double torque2 = cd.siku.planet.R_rec *
-            ( cross( r12 - Cl, Fl ) + cross( r12 - Cr, Fr ) );
+  // accumulators and temporals for integral
+  double N1{}, N2{};
+  double Dz, Sn, Dn, Ss = Ds*hs;
+  vec2d Fn{}, Fs{}, Fni{}; // Fsi - constant;
 
-  cd.c.area = Ar > 0 ? Ar : 0.
-         + Al > 0 ? Al : 0.;
+  double durability = 1.; // to accumulate destruction.
 
-  // UNDONE!!!
-  cd.d1 = cd.d2 = {};
+//  norm *= dDz*hn; // factored out of integral (norm no longer used as unit vec)
+
+  // kinda integration
+  for(double i=0; i<cd.siku.phys_consts["n_integ_segments"]; ++i)
+    {
+      Dz = Dz0 + i*dDz;
+      Dn = Dn1 + Dz*aaa;
+      Sn = hn*Dn;
+
+      if(!_teta(cd, Ss, Sn))
+        {
+          durability -= dDz;
+          continue;
+        }
+
+      Fni = Sn*dDz*norm;
+      Fn += Fni;
+      // Fsi = constant
+
+      N1 += (r01 + Dz*L) * Fni;
+      N2 += (r02 + Dz*L) * -Fni;
+    }
+
+  // tangential force
+  //Fsi = Ss * tau
+  Fs = Ss * tau * durability;
+  N1 += cross( r0, Fs );
+  N2 += cross( Fs, r0 - cd.r12*cd.siku.planet.R );//reverse order instead of '-'
+
+  // applying (L was factored out)
+  if_.F1 = (Fs + Fn) * L;
+  if_.couple1 = N1 * L;
+  if_.couple2 = N2 * L;
+
+  // --- additional viscosity ---
+
+  // viscous force
+  double area = L * L * M_PI * 0.25;
+  vec2d C = (p1 + p2 + p3 + p4) * 0.25;
+  vec2d Fv = - area * cd.siku.phys_consts["hop_visc"] * cd.va12;
+  double vt = (cd.e2.W.z - cd.e1.W.z) * cd.siku.phys_consts["hop_visc"]
+              * pow( area, 2 ) / (6. * M_PI) ;
+
+  if_.F1 += Fv;
+  if_.couple1 += cross( C, Fv ) + vt;
+  if_.couple2 += cross( Fv, C - cd.r12*cd.siku.planet.R ) - vt;
+
+  // --- adjusting force according to durability ---
+  if_.F1 *= cd.c.durability;
+  if_.couple1 *= cd.c.durability;
+  if_.couple2 *= cd.c.durability;
+  //if_.rf1 = if_.rf2 = {} by default
+
+  // durability passing
+  cd.d1 = durability;
 
   return if_;
 }
@@ -586,8 +678,9 @@ InterForces _distributed_springs( ContactData& cd )
 
   if_.F1 = F;
   if_.rf1 = (p1 + p2) * 0.5;
-  if_.rf2 = (p3 + p4) * 0.5;
+  if_.rf2 = (p3 + p4) * 0.5  - cd.r12 * cd.siku.planet.R;
   if_.couple1 = rotablty * cross( p1 - p2, dr1 - dr2 ) + vt;
+  if_.couple2 = -if_.couple1;
 //// IMPROVE: clean dis mess
 //      rotablty * cross( p1 - p2, (p4 + p2) - (p1 + p3) ) // same as above
 
