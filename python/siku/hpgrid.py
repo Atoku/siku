@@ -179,7 +179,8 @@ class Grid:
 
         return
 
-    def points_filter( self, psi, units = DEGREES, verbose = True ):
+    ## !!!UNDONE!!!
+    def points_filter_( self, psi, units = DEGREES, verbose = True ):
         '''Filters the list of poinst (in place) by the distance criteria:
         each point cannot be closer than the angle psi. The method is
         described in the documentation.
@@ -261,7 +262,7 @@ class Grid:
             print('points left ' + str(len(self.points)))
         return
 
-    def points_filter_( self, psi, units = DEGREES, verbose = True ):
+    def points_filter( self, psi, units = DEGREES, verbose = True ):
         '''Filters the list of poinst (in place) by the distance criteria:
         each point cannot be closer than the angle psi. The method is
         described in the documentation.

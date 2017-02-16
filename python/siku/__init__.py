@@ -49,7 +49,7 @@ CONTACT_DET_FREQ_MET = {
 
 CONTACT_FORCE_MODEL = {
     'test_springs' : 0,
-    'Hopkins_Frankenstein' : 1,
+    'Hopkins' : 1, 'hopkins' : 1,
     'default' : 2, 'distributed_spring' : 2
     }
 
@@ -118,8 +118,8 @@ settings.phys_consts = {
                         'tangency' : 1.0,     #part of Force applied to sliding
 
 ##                        'elasticity' : 1.0,   #hardness of spring in joints
-##                        'bendability' : 1.0,  #prt f sprng frc ap to rotation
-                        'solidity' : 1.0,     #part of extension ap to damage
+##                        'bendability' : 1.0,  #rotation intensity
+                        'solidity' : 1.0,     #destruction intensity
                         'tensility' : 0.1,    #extension-without-damage cap
 
                         'windage' : 0.001,    #part of wind applied to force
@@ -128,7 +128,17 @@ settings.phys_consts = {
                                               #to become landfast itself
 
 ##                        'sigma' : 400000.0,   # -//- rigidity
-                        'etha' : 0.001        # -//- viscosity
+                        'etha' : 0.001,       # -//- viscosity
+
+                        'sigma_t' : 35e4,    #Hopkins physics method paramentes:
+                        'sigma_c' : 1.285e6, #three extreme values for stress
+                        'sigma_s' : 35e4,      #diagrams
+                        'tan_mu' : 1.,       #and an ice friction angle
+
+                        'hop_visc' : 0.001,        #viscosity
+                        'dest_threshold' : 0.2, #desctruction threshold
+                        
+                        'n_integ_segments' : 10 #number of integration segments
                         }
 
 settings.manual_inds = []

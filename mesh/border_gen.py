@@ -77,6 +77,35 @@ class Border:
             for l in inp:
                 self.contour.append( [ float( w ) for w in l.split() ] )
 
+    def filter_verts( self, dens, domain=None ):
+        '''Filters non-contour vertices (only inside domain, if one is given)
+        for lowering resolution.
+        '''
+        verts = []
+        self.verts = geofiles.xyz_to_lonlat( self.verts )
+        newv = []
+
+        if domain:
+            for c in self.verts:
+                if is_inside( c, domain ):
+                    verts.append( c )
+                    ##self.verts.remove( c )
+                else:
+                    newv.append( c )
+            self.verts = newv[:]
+            newv = None
+        else:
+            verts = self.verts[:]
+            self.verts = []
+
+        verts = geofiles.lonlat_to_xyz( verts )
+        g = hpgrid.Grid()
+        g.points = verts
+        g.points_filter( dens )
+        self.verts = geofiles.lonlat_to_xyz( self.verts )
+
+        self.verts = self.verts + g.points
+
     def filter_contour( self, dens, domain=None ):
         '''Filters contour vertices (only inside domain, if one is given)
         for lowering resolution.'''
@@ -90,7 +119,7 @@ class Border:
         else:
             verts = self.contour[:]
             self.contour= []
-
+        
         verts = geofiles.lonlat_to_xyz( verts )
         g = hpgrid.Grid()
         g.points = verts
@@ -98,6 +127,7 @@ class Border:
         verts = geofiles.xyz_to_lonlat( g.points )
 
         self.contour = self.contour + verts
+        pass
 ##        if domain == None:
 ##            domain = (0.0, 360.0, -90.0, 90.0)
 ##        self.contour = ExtBords.filter_contours( self.contour[:], dens, domain )

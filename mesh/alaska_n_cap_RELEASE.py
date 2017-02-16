@@ -11,8 +11,7 @@ def main():
 
     ## Initializing border generator with loading specific shapefile. 
     print('-loading shapes')
-    bord = BG.Border(\
-        '/Documents/GMT_DATA/gshhg-shp-2.3.4/GSHHS_shp/l/GSHHS_l_L1' )
+    bord = BG.Border('/home/gleb/Documents/GMT_DATA/gshhg-shp-2.3.4/GSHHS_shp/l/GSHHS_l_L1' )
 
     print('-preparing contours')
     ## Generating seed points from actual shores 
@@ -33,6 +32,10 @@ def main():
     print('-filtering contours')
     bord.filter_contour( 0.05, (0, 360, 50, 90) )
 
+    ## Just in case one needs it
+    ##print('-filtering verts')
+    ##bord.filter_verts( 5, (0, 360, 50, 90) )
+
     ## Automatically generate borders - create a file with points
     ## close enough to coastline (border zone)
     print('-actually generating borders` file')
@@ -46,7 +49,7 @@ def main():
 
     ## Removing points in coastal area from sea covering points,
     ## combining and saving all the files in proper format.
-    print('\n-finalizing files')
+    print('\n-finalizing files (this will take some time)')
     bord.extract_borders_from_v( 'verts.ll', 'borders.ll', 1 )
     verts = geofiles.r_lonlat( 'extrd.ll' )
     bords = geofiles.r_lonlat( 'borders.ll' )
