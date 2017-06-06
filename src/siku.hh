@@ -1,11 +1,7 @@
-/*! \file siku.hh
- *  \brief Default values and some basic definitions
- */
-
 /*
- * Siku: Discrete element method sea-ice model: siku.cc
+ * Siku: Discrete element method sea-ice model: description.hh
  *
- * Copyright (C) 2013 UAF. Author: Anton Kulchitsky
+ * Copyright (C) UAF
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -22,6 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+ */
+
+/*! \file siku.hh
+ *  \brief Default values and some basic definitions
  */
 
 #ifndef SIKU_HH

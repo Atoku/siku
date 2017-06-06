@@ -1,8 +1,7 @@
 /*
- * Siku: Discrete element method sea-ice model: options.hh
- *       Options reading, settings initializer
+ * Siku: Discrete element method sea-ice model: description.hh
  *
- * Copyright (C) 2013 UAF. Author: Anton Kulchitsky
+ * Copyright (C) UAF
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

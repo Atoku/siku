@@ -1,8 +1,7 @@
 /*
- * Siku: Discrete element method sea-ice model: element.hh
- *       Ice Element class: ice element representation and methods
+ * Siku: Discrete element method sea-ice model
  *
- * Copyright (C) 2013 UAF. Author: Anton Kulchitsky
+ * Copyright (C) UAF
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
