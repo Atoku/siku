@@ -1,4 +1,4 @@
-f/*
+/*
  * Siku: Discrete element method sea-ice model: description.hh
  *
  * Copyright (C) UAF
